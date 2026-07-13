@@ -1,0 +1,65 @@
+{
+  "contract_version": "1.0.0",
+  "asset_id": "asset_corridor_0001",
+  "coordinate_space": "normalized_image_0_1",
+  "skeleton_model": "fixture-wholebody-v1",
+  "keypoints": [
+    {
+      "name": "left_shoulder",
+      "x": 0.58,
+      "y": 0.3,
+      "z": 0.0,
+      "confidence": 0.95
+    },
+    {
+      "name": "right_shoulder",
+      "x": 0.66,
+      "y": 0.32,
+      "z": 0.0,
+      "confidence": 0.95
+    },
+    {
+      "name": "left_hip",
+      "x": 0.6,
+      "y": 0.56,
+      "z": 0.0,
+      "confidence": 0.92
+    },
+    {
+      "name": "right_hip",
+      "x": 0.66,
+      "y": 0.57,
+      "z": 0.0,
+      "confidence": 0.92
+    },
+    {
+      "name": "right_wrist",
+      "x": 0.68,
+      "y": 0.27,
+      "z": 0.0,
+      "confidence": 0.88
+    }
+  ],
+  "derived_features": {
+    "joint_angles_deg": {
+      "right_elbow": 74.0
+    },
+    "torso_orientation": "three_quarter_left",
+    "weight_bearing_leg": "right",
+    "head_direction": "camera_right",
+    "relations": [
+      "right_hand_near_face",
+      "left_hand_holds_book"
+    ]
+  },
+  "constraints": [
+    "single_person",
+    "standing_or_simple_seated",
+    "camera_viewpoint_must_be_comparable"
+  ],
+  "provenance": {
+    "model": "fixture",
+    "model_version": "1",
+    "reviewed": true
+  }
+}

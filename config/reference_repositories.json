@@ -1,0 +1,134 @@
+{
+  "schema_version": "1.1",
+  "updated_at": "2026-07-13",
+  "policy": {
+    "clone_destination": "docs/references/repos",
+    "destination_is_gitignored": true,
+    "commit_foreign_source": false,
+    "pin_commit_after_fetch": true,
+    "license_rule": "No license or non-commercial license means study only; do not copy into product code.",
+    "model_rule": "Code license, model-weight license, and training-data license are separate approvals."
+  },
+  "repositories": [
+    {
+      "id": "android-camera-samples",
+      "projects": [
+        "app"
+      ],
+      "url": "https://github.com/android/camera-samples.git",
+      "folder": "android__camera-samples",
+      "profile": "core",
+      "reuse_mode": "SPIKE_REFERENCE",
+      "purpose": "Official CameraX Preview, ImageCapture, ImageAnalysis, lifecycle and test patterns",
+      "license_snapshot": "Apache-2.0; pin commit and preserve notices",
+      "copy_code_allowed": "small reviewed snippets only"
+    },
+    {
+      "id": "mediapipe-samples",
+      "projects": [
+        "app"
+      ],
+      "url": "https://github.com/google-ai-edge/mediapipe-samples.git",
+      "folder": "google-ai-edge__mediapipe-samples",
+      "profile": "core",
+      "reuse_mode": "SPIKE",
+      "purpose": "Official Android Pose Landmarker CameraX live-stream, delegate and overlay patterns",
+      "license_snapshot": "Apache-2.0 code; verify task model assets separately",
+      "copy_code_allowed": "after pinned-version review"
+    },
+    {
+      "id": "mlkit-samples",
+      "projects": [
+        "app"
+      ],
+      "url": "https://github.com/googlesamples/mlkit.git",
+      "folder": "googlesamples__mlkit",
+      "profile": "optional",
+      "reuse_mode": "SPIKE_BASELINE",
+      "purpose": "ML Kit Android pose, VisionProcessor and GraphicOverlay integration patterns",
+      "license_snapshot": "Sample code Apache-2.0; Pose SDK is Beta and terms/version must be rechecked",
+      "copy_code_allowed": "after review"
+    },
+    {
+      "id": "tensorflow-examples",
+      "projects": [
+        "app"
+      ],
+      "url": "https://github.com/tensorflow/examples.git",
+      "folder": "tensorflow__examples",
+      "profile": "optional",
+      "reuse_mode": "DEFERRED_SPIKE",
+      "purpose": "Android TFLite MoveNet/PoseNet fallback benchmark",
+      "license_snapshot": "Apache-2.0 code; exact model license/source separate",
+      "copy_code_allowed": "after review"
+    },
+    {
+      "id": "aingle",
+      "projects": [
+        "app"
+      ],
+      "url": "https://github.com/crunchy-child/AIngle.git",
+      "folder": "crunchy-child__AIngle",
+      "profile": "optional",
+      "reuse_mode": "CONCEPT_ONLY",
+      "purpose": "Reference recreation, ghost overlay and guidance product concept",
+      "license_snapshot": "License undetermined",
+      "copy_code_allowed": "no"
+    },
+    {
+      "id": "ai-snapcoach",
+      "projects": [
+        "app"
+      ],
+      "url": "https://github.com/m8802527/AI-SnapCoach---A-smart-photography-composition-assistant-using-AI-and-AR-technology.git",
+      "folder": "m8802527__AI-SnapCoach",
+      "profile": "optional",
+      "reuse_mode": "CONCEPT_ONLY",
+      "purpose": "Lightweight browser composition prototype",
+      "license_snapshot": "No valid repository license identified",
+      "copy_code_allowed": "no"
+    },
+    {
+      "id": "compolens",
+      "projects": [
+        "app",
+        "pipeline"
+      ],
+      "url": "https://github.com/sp00xe/CompoLens.git",
+      "folder": "sp00xe__CompoLens",
+      "profile": "optional",
+      "reuse_mode": "CONCEPT_ONLY",
+      "purpose": "Saliency-based composition review concept",
+      "license_snapshot": "Verify before reuse",
+      "copy_code_allowed": "no until licensed"
+    },
+    {
+      "id": "posescript",
+      "projects": [
+        "app",
+        "pipeline"
+      ],
+      "url": "https://github.com/naver/posescript.git",
+      "folder": "naver__posescript",
+      "profile": "optional",
+      "reuse_mode": "RESEARCH_ONLY",
+      "purpose": "Pose description/correction language taxonomy",
+      "license_snapshot": "Principal assets/code CC BY-NC-SA 4.0",
+      "copy_code_allowed": "no production reuse"
+    },
+    {
+      "id": "ml-fastvlm",
+      "projects": [
+        "app",
+        "pipeline"
+      ],
+      "url": "https://github.com/apple/ml-fastvlm.git",
+      "folder": "apple__ml-fastvlm",
+      "profile": "optional",
+      "reuse_mode": "RESEARCH_ONLY",
+      "purpose": "Mobile VLM architecture research for later stages",
+      "license_snapshot": "Code and weights differ; released weights research-only",
+      "copy_code_allowed": "do not ship research weights"
+    }
+  ]
+}

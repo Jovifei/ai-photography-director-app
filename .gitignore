@@ -1,0 +1,92 @@
+# Android / Gradle
+.gradle/
+build/
+**/build/
+local.properties
+.idea/
+*.iml
+.externalNativeBuild/
+.cxx/
+captures/
+*.jks
+*.keystore
+keystore.properties
+
+# macOS / editor
+.DS_Store
+.idea/
+.vscode/
+*.swp
+
+# Future iOS second-platform artifacts (ios/ is forbidden before Android Gate)
+DerivedData/
+build/
+.build/
+.swiftpm/
+xcuserdata/
+*.xcuserstate
+*.xccheckout
+*.xcscmblueprint
+*.moved-aside
+*.ipa
+*.dSYM
+*.dSYM.zip
+Pods/
+Carthage/Build/
+
+# Secrets / local configuration
+.env
+.env.*
+!.env.example
+Secrets.*
+*.p12
+*.mobileprovision
+*.cer
+*.key
+*.pem
+
+# Private media / local runtime
+private-data/
+runtime/
+local-data/
+user-library/
+reference-images-private/
+models/
+model-cache/
+*.safetensors
+*.ckpt
+*.pth
+*.pt
+*.onnx
+*.tflite
+*.gguf
+*.mlmodel
+*.mlpackage
+*.mlmodelc
+
+# Third-party reference clones (read locally, never commit)
+docs/references/repos/
+
+# Generated app artifacts / reports containing private media
+artifacts/private/
+reports/private/
+*.heic
+*.dng
+*.raw
+
+# Local databases and logs (Room/SQLite runtime, logcat captures)
+*.db
+*.sqlite
+*.sqlite3
+*.db-wal
+*.db-shm
+*.log
+
+# Derived media derivatives (thumbnails / masks / cutouts)
+thumbnails/
+masks/
+cutouts/
+
+# Docker private override (local-only, if ever used)
+docker-compose.override.yml
+*.local.yml

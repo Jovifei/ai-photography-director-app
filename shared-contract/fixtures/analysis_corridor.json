@@ -1,0 +1,92 @@
+{
+  "contract_version": "1.0.0",
+  "asset_id": "asset_corridor_0001",
+  "observed_facts": {
+    "person_count": 1,
+    "scene_type": "indoor_school_corridor",
+    "visible_elements": [
+      "windows",
+      "wooden_wall",
+      "door_frames",
+      "long_corridor"
+    ],
+    "props": [
+      "book"
+    ],
+    "lighting": {
+      "main_direction": "image_left",
+      "quality": "soft",
+      "risk": "bright_corridor_end"
+    },
+    "composition": {
+      "shot_size": "medium_full",
+      "dominant_structure": "leading_lines",
+      "subject_position": "right_third"
+    }
+  },
+  "photographic_interpretation": {
+    "usable_elements": [
+      {
+        "element": "windows",
+        "value": "soft_side_light"
+      },
+      {
+        "element": "corridor",
+        "value": "depth_and_leading_lines"
+      },
+      {
+        "element": "wall",
+        "value": "support_for_leaning_pose"
+      }
+    ],
+    "mood_candidates": [
+      "quiet",
+      "nostalgic",
+      "after_school"
+    ],
+    "constraints": [
+      "narrow_space",
+      "bright_background_end",
+      "avoid_large_jump"
+    ],
+    "color_grade_direction": [
+      "warm_wood",
+      "natural_skin",
+      "reduce_highlights",
+      "slightly_lift_blacks"
+    ]
+  },
+  "story_candidates": [
+    {
+      "kind": "safe",
+      "title": "窗边抱书",
+      "story": "放学后在窗边整理书本",
+      "feasibility": 0.94
+    },
+    {
+      "kind": "narrative",
+      "title": "等待同学",
+      "story": "一个人在走廊里等待迟到的同学",
+      "feasibility": 0.89
+    },
+    {
+      "kind": "dynamic",
+      "title": "被叫住后的回头",
+      "story": "从教室出来，听见身后有人叫名字后回头",
+      "feasibility": 0.84
+    }
+  ],
+  "uncertainties": [
+    "original_lens_unknown",
+    "exact_gaze_not_reliable"
+  ],
+  "provenance": {
+    "schema_version": "1.0.0",
+    "model_versions": {
+      "vlm": "fixture"
+    },
+    "prompt_version": "fixture-v1",
+    "reviewed": true,
+    "reviewer": "gold_fixture"
+  }
+}

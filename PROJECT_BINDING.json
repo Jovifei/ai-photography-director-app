@@ -1,0 +1,28 @@
+{
+  "project_id": "app",
+  "repository_name": "ai-photography-director-app",
+  "local_path": "E:\\project\\ai-photography-director-app",
+  "remote_url": "https://github.com/Jovifei/ai-photography-director-app.git",
+  "github_repository": "Jovifei/ai-photography-director-app",
+  "default_branch": "main",
+  "remote_visibility_snapshot": "public",
+  "remote_state_snapshot": "created; initial project commit still required",
+  "bundle_role": "consumer",
+  "sibling_project_id": "pipeline",
+  "github_repository_id": 1299347277,
+  "remote_size_kb_snapshot": 0,
+  "sibling": {
+    "project_id": "pipeline",
+    "repository_name": "nightly-photo-intelligence-pipeline",
+    "local_path": "E:\\project\\nightly-photo-intelligence-pipeline",
+    "remote_url": "https://github.com/Jovifei/nightly-photo-intelligence-pipeline.git",
+    "github_repository": "Jovifei/nightly-photo-intelligence-pipeline",
+    "default_branch": "main",
+    "remote_visibility_snapshot": "public",
+    "remote_state_snapshot": "created; initial project commit still required",
+    "bundle_role": "producer",
+    "sibling_project_id": "app",
+    "github_repository_id": 1299347898,
+    "remote_size_kb_snapshot": 0
+  }
+}

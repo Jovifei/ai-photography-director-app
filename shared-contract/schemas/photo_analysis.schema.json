@@ -1,0 +1,169 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://photoai.local/schemas/photo_analysis.schema.json",
+  "title": "Photo Analysis",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "contract_version",
+    "asset_id",
+    "observed_facts",
+    "photographic_interpretation",
+    "story_candidates",
+    "uncertainties",
+    "provenance"
+  ],
+  "properties": {
+    "contract_version": {
+      "type": "string",
+      "pattern": "^1\\."
+    },
+    "asset_id": {
+      "type": "string"
+    },
+    "observed_facts": {
+      "type": "object",
+      "required": [
+        "person_count",
+        "scene_type",
+        "visible_elements"
+      ],
+      "properties": {
+        "person_count": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "scene_type": {
+          "type": "string"
+        },
+        "visible_elements": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "props": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "lighting": {
+          "type": "object"
+        },
+        "composition": {
+          "type": "object"
+        }
+      }
+    },
+    "photographic_interpretation": {
+      "type": "object",
+      "required": [
+        "usable_elements",
+        "constraints"
+      ],
+      "properties": {
+        "usable_elements": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "element",
+              "value"
+            ],
+            "properties": {
+              "element": {
+                "type": "string"
+              },
+              "value": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "mood_candidates": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "constraints": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "color_grade_direction": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "story_candidates": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 3,
+      "items": {
+        "type": "object",
+        "required": [
+          "kind",
+          "title",
+          "story",
+          "feasibility"
+        ],
+        "properties": {
+          "kind": {
+            "enum": [
+              "safe",
+              "narrative",
+              "dynamic"
+            ]
+          },
+          "title": {
+            "type": "string"
+          },
+          "story": {
+            "type": "string"
+          },
+          "feasibility": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1
+          }
+        }
+      }
+    },
+    "uncertainties": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "provenance": {
+      "type": "object",
+      "required": [
+        "schema_version",
+        "reviewed"
+      ],
+      "properties": {
+        "schema_version": {
+          "type": "string"
+        },
+        "model_versions": {
+          "type": "object"
+        },
+        "prompt_version": {
+          "type": "string"
+        },
+        "reviewed": {
+          "type": "boolean"
+        },
+        "reviewer": {
+          "type": "string"
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,26 @@
+{
+  "contract_version": "1.0.0",
+  "release_id": "fixture-release-001",
+  "created_at": "2026-07-12T00:00:00Z",
+  "producer": {
+    "name": "nightly-photo-intelligence-pipeline",
+    "version": "fixture",
+    "git_commit": "fixture"
+  },
+  "items": [
+    {
+      "asset_id": "asset_corridor_0001",
+      "review_status": "APPROVED_PRIVATE",
+      "analysis_path": "analyses/asset_corridor_0001.json",
+      "pose_path": "poses/asset_corridor_0001.json",
+      "plan_path": "plans/plan_waiting_001.json",
+      "thumbnail_path": "media/thumbs/asset_corridor_0001.jpg",
+      "skeleton_overlay_path": "media/overlays/asset_corridor_0001.png",
+      "sha256": {
+        "analyses/asset_corridor_0001.json": "83837dcf0d499a5ed80a3b6c01ccd184482e1e9b7f8642336371092eb22f03fe",
+        "poses/asset_corridor_0001.json": "fb574429bfad24ccef5256e6298c9cb349e1b455115f6b6c6823e2176dc53f4d",
+        "plans/plan_waiting_001.json": "7e3aeed39bc80deb93f7af70ee8f1884950b1597626095a21fd56900a2108816"
+      }
+    }
+  ]
+}

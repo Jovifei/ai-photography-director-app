@@ -1,0 +1,118 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://photoai.local/schemas/pose_template.schema.json",
+  "title": "Pose Template",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "contract_version",
+    "asset_id",
+    "coordinate_space",
+    "skeleton_model",
+    "keypoints",
+    "derived_features",
+    "constraints",
+    "provenance"
+  ],
+  "properties": {
+    "contract_version": {
+      "type": "string",
+      "pattern": "^1\\."
+    },
+    "asset_id": {
+      "type": "string"
+    },
+    "coordinate_space": {
+      "const": "normalized_image_0_1"
+    },
+    "skeleton_model": {
+      "type": "string"
+    },
+    "keypoints": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "name",
+          "x",
+          "y",
+          "confidence"
+        ],
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "x": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1
+          },
+          "y": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1
+          },
+          "z": {
+            "type": "number"
+          },
+          "confidence": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1
+          }
+        }
+      }
+    },
+    "derived_features": {
+      "type": "object",
+      "properties": {
+        "joint_angles_deg": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "number"
+          }
+        },
+        "torso_orientation": {
+          "type": "string"
+        },
+        "weight_bearing_leg": {
+          "type": "string"
+        },
+        "head_direction": {
+          "type": "string"
+        },
+        "relations": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "constraints": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "provenance": {
+      "type": "object",
+      "required": [
+        "model",
+        "model_version",
+        "reviewed"
+      ],
+      "properties": {
+        "model": {
+          "type": "string"
+        },
+        "model_version": {
+          "type": "string"
+        },
+        "reviewed": {
+          "type": "boolean"
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,8 @@
+{
+  "name": "photo-intelligence-bundle",
+  "version": "1.0.0",
+  "status": "draft-for-G0-freeze",
+  "producer": "nightly-photo-intelligence-pipeline",
+  "consumer": "ai-photography-director-app",
+  "updated_at": "2026-07-12T00:00:00Z"
+}

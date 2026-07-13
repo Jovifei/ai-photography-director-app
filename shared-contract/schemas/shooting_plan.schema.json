@@ -1,0 +1,123 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://photoai.local/schemas/shooting_plan.schema.json",
+  "title": "Shooting Plan",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "contract_version",
+    "asset_id",
+    "plan_id",
+    "title",
+    "kind",
+    "camera_guidance",
+    "model_guidance",
+    "sequence",
+    "provenance"
+  ],
+  "properties": {
+    "contract_version": {
+      "type": "string",
+      "pattern": "^1\\."
+    },
+    "asset_id": {
+      "type": "string"
+    },
+    "plan_id": {
+      "type": "string"
+    },
+    "title": {
+      "type": "string"
+    },
+    "kind": {
+      "enum": [
+        "safe",
+        "narrative",
+        "dynamic"
+      ]
+    },
+    "camera_guidance": {
+      "type": "object",
+      "required": [
+        "shot_size",
+        "subject_position",
+        "camera_height"
+      ],
+      "properties": {
+        "shot_size": {
+          "type": "string"
+        },
+        "subject_position": {
+          "type": "string"
+        },
+        "camera_height": {
+          "type": "string"
+        },
+        "lens_suggestion": {
+          "type": "string"
+        },
+        "lighting_action": {
+          "type": "string"
+        },
+        "safety_note": {
+          "type": "string"
+        }
+      }
+    },
+    "model_guidance": {
+      "type": "object",
+      "required": [
+        "standard",
+        "drama",
+        "plan_b"
+      ],
+      "properties": {
+        "standard": {
+          "type": "string"
+        },
+        "drama": {
+          "type": "string"
+        },
+        "plan_b": {
+          "type": "string"
+        }
+      }
+    },
+    "sequence": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "order",
+          "instruction"
+        ],
+        "properties": {
+          "order": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "instruction": {
+            "type": "string"
+          },
+          "completion_event": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "provenance": {
+      "type": "object",
+      "required": [
+        "reviewed"
+      ],
+      "properties": {
+        "reviewed": {
+          "type": "boolean"
+        },
+        "template_version": {
+          "type": "string"
+        }
+      }
+    }
+  }
+}

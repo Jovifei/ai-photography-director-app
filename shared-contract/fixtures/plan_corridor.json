@@ -1,0 +1,46 @@
+{
+  "contract_version": "1.0.0",
+  "asset_id": "asset_corridor_0001",
+  "plan_id": "plan_waiting_001",
+  "title": "放学后的等待",
+  "kind": "narrative",
+  "camera_guidance": {
+    "shot_size": "medium_full",
+    "subject_position": "right_third",
+    "camera_height": "slightly_low",
+    "lens_suggestion": "normal_to_short_telephoto_equivalent",
+    "lighting_action": "turn_face_toward_left_window",
+    "safety_note": "confirm path behind photographer before stepping back"
+  },
+  "model_guidance": {
+    "standard": "身体再向窗边侧一点，重心放到右腿，右手轻轻靠近脸颊。",
+    "drama": "像是刚刚想到一个答案，但暂时不准备说出来。眼睛先看向走廊那边。",
+    "plan_b": "手靠脸不自然的话，改成低头翻书，再慢慢抬头看镜头。"
+  },
+  "sequence": [
+    {
+      "order": 1,
+      "instruction": "站到右侧三分线附近",
+      "completion_event": "subject_position_ready"
+    },
+    {
+      "order": 2,
+      "instruction": "身体向窗边侧转",
+      "completion_event": "torso_ready"
+    },
+    {
+      "order": 3,
+      "instruction": "右手靠近脸部",
+      "completion_event": "hand_relation_ready"
+    },
+    {
+      "order": 4,
+      "instruction": "视线看向走廊尽头",
+      "completion_event": "head_gaze_ready"
+    }
+  ],
+  "provenance": {
+    "reviewed": true,
+    "template_version": "fixture-v1"
+  }
+}

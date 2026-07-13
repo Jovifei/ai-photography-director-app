@@ -1,0 +1,99 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://photoai.local/schemas/bundle_manifest.schema.json",
+  "title": "Photo Intelligence Bundle Manifest",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "contract_version",
+    "release_id",
+    "created_at",
+    "producer",
+    "items"
+  ],
+  "properties": {
+    "contract_version": {
+      "type": "string",
+      "pattern": "^1\\."
+    },
+    "release_id": {
+      "type": "string",
+      "minLength": 3
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "producer": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "name",
+        "version"
+      ],
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "version": {
+          "type": "string"
+        },
+        "git_commit": {
+          "type": "string"
+        }
+      }
+    },
+    "items": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "asset_id",
+          "review_status",
+          "analysis_path",
+          "pose_path",
+          "plan_path",
+          "sha256"
+        ],
+        "properties": {
+          "asset_id": {
+            "type": "string",
+            "minLength": 8
+          },
+          "review_status": {
+            "enum": [
+              "APPROVED_PRIVATE",
+              "APPROVED_PRODUCT"
+            ]
+          },
+          "analysis_path": {
+            "type": "string"
+          },
+          "pose_path": {
+            "type": "string"
+          },
+          "plan_path": {
+            "type": "string"
+          },
+          "thumbnail_path": {
+            "type": "string"
+          },
+          "skeleton_overlay_path": {
+            "type": "string"
+          },
+          "person_mask_path": {
+            "type": "string"
+          },
+          "sha256": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            }
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,59 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://photoai.local/schemas/feedback_bundle.schema.json",
+  "title": "App Feedback Bundle",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "contract_version",
+    "created_at",
+    "events"
+  ],
+  "properties": {
+    "contract_version": {
+      "type": "string",
+      "pattern": "^1\\."
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "events": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "asset_id",
+          "event_type",
+          "timestamp"
+        ],
+        "properties": {
+          "asset_id": {
+            "type": "string"
+          },
+          "plan_id": {
+            "type": "string"
+          },
+          "event_type": {
+            "enum": [
+              "viewed",
+              "started_shoot",
+              "instruction_skipped",
+              "plan_b_used",
+              "saved",
+              "liked",
+              "user_corrected"
+            ]
+          },
+          "timestamp": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "anonymous_payload": {
+            "type": "object"
+          }
+        }
+      }
+    }
+  }
+}
