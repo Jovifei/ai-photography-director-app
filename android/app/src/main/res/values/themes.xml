@@ -1,5 +1,4 @@
 <resources>
-    <style name="Theme.PhotoDirector" parent="android:Theme.Material.Light.NoActionBar">
-        <item name="android:windowLayoutInDisplayCutoutMode">shortEdges</item>
-    </style>
+    <!-- Base theme: no cutout attribute (API 24-26 do not support it). -->
+    <style name="Theme.PhotoDirector" parent="android:Theme.Material.Light.NoActionBar" />
 </resources>

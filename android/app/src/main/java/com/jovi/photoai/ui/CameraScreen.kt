@@ -26,12 +26,23 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import androidx.core.content.ContextCompat
-import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.compose.ui.viewinterop.AndroidView
+import androidx.core.content.ContextCompat
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import com.jovi.photoai.camera.CameraXManager
 import java.io.File
 
+/**
+ * AH0 baseline camera screen. B1 remediation:
+ * - CameraScreen owns permission state + first request + ON_RESUME re-check.
+ * - CameraContent (and thus CameraX init/bind) is composed ONLY when permission is granted.
+ * - When permission flips false->true, CameraContent re-enters composition and a NEW
+ *   CameraXManager is created. When it flips true->false, onDispose shuts the manager down.
+ * - ON_RESUME re-checks permission so returning from system Settings is reflected even if
+ *   the launcher callback was never invoked.
+ */
 @Composable
 fun CameraScreen() {
     val context = LocalContext.current
@@ -43,17 +54,46 @@ fun CameraScreen() {
                 PackageManager.PERMISSION_GRANTED
         )
     }
+
     val permissionLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestPermission()
     ) { granted -> hasCameraPermission = granted }
 
+    // First entry: request once if not granted.
     LaunchedEffect(Unit) {
         if (!hasCameraPermission) {
             permissionLauncher.launch(Manifest.permission.CAMERA)
         }
     }
 
-    val manager = remember { CameraXManager(context) }
+    // Re-check on ON_RESUME (user may have toggled permission in system Settings).
+    DisposableEffect(lifecycleOwner) {
+        val observer = LifecycleEventObserver { _, event ->
+            if (event == Lifecycle.Event.ON_RESUME) {
+                hasCameraPermission = ContextCompat.checkSelfPermission(
+                    context, Manifest.permission.CAMERA
+                ) == PackageManager.PERMISSION_GRANTED
+            }
+        }
+        lifecycleOwner.lifecycle.addObserver(observer)
+        onDispose { lifecycleOwner.lifecycle.removeObserver(observer) }
+    }
+
+    if (hasCameraPermission) {
+        CameraContent()
+    } else {
+        PermissionContent(
+            onRequest = { permissionLauncher.launch(Manifest.permission.CAMERA) }
+        )
+    }
+}
+
+@Composable
+private fun CameraContent() {
+    val context = LocalContext.current
+    val lifecycleOwner = LocalLifecycleOwner.current
+    // Re-created when CameraContent re-enters composition (permission false->true).
+    val manager = remember { CameraXManager(context.applicationContext) }
     val previewView = remember { PreviewView(context) }
     var captureCount by remember { mutableIntStateOf(0) }
 
@@ -62,7 +102,7 @@ fun CameraScreen() {
             onReady = {
                 manager.bindToLifecycle(lifecycleOwner, previewView)
                 manager.setAnalyzer { imageProxy ->
-                    // AH0 baseline: keep-only-latest; close immediately so preview/shutter never block.
+                    // KEEP_ONLY_LATEST: close immediately so preview/shutter never block.
                     imageProxy.close()
                 }
             }
@@ -71,33 +111,32 @@ fun CameraScreen() {
     }
 
     Box(modifier = Modifier.fillMaxSize()) {
-        if (hasCameraPermission) {
-            AndroidView(factory = { previewView }, modifier = Modifier.fillMaxSize())
-            Button(
-                onClick = {
-                    val file = File(context.cacheDir, "captures/capture_${System.currentTimeMillis()}.jpg")
-                    file.parentFile?.mkdirs()
-                    manager.takePicture(
-                        outputFile = file,
-                        onSaved = { captureCount++ },
-                        onError = { }
-                    )
-                },
-                modifier = Modifier
-                    .align(Alignment.BottomCenter)
-                    .padding(32.dp)
-            ) { Text("拍摄 ($captureCount)") }
-        } else {
-            Column(
-                modifier = Modifier.fillMaxSize().wrapContentSize(Alignment.Center),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Text("需要相机权限")
-                Spacer(Modifier.height(8.dp))
-                Button(onClick = { permissionLauncher.launch(Manifest.permission.CAMERA) }) {
-                    Text("授予权限")
-                }
-            }
-        }
+        AndroidView(factory = { previewView }, modifier = Modifier.fillMaxSize())
+        Button(
+            onClick = {
+                val file = File(context.cacheDir, "captures/capture_${System.currentTimeMillis()}.jpg")
+                file.parentFile?.mkdirs()
+                manager.takePicture(
+                    outputFile = file,
+                    onSaved = { captureCount++ },
+                    onError = { }
+                )
+            },
+            modifier = Modifier
+                .align(Alignment.BottomCenter)
+                .padding(32.dp)
+        ) { Text("拍摄 ($captureCount)") }
+    }
+}
+
+@Composable
+private fun PermissionContent(onRequest: () -> Unit) {
+    Column(
+        modifier = Modifier.fillMaxSize().wrapContentSize(Alignment.Center),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Text("需要相机权限")
+        Spacer(Modifier.height(8.dp))
+        Button(onClick = onRequest) { Text("授予权限") }
     }
 }

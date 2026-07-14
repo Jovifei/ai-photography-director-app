@@ -1,0 +1,6 @@
+<resources>
+    <!-- API 27+: shortEdges cutout mode for edge-to-edge camera preview. -->
+    <style name="Theme.PhotoDirector" parent="android:Theme.Material.Light.NoActionBar">
+        <item name="android:windowLayoutInDisplayCutoutMode">shortEdges</item>
+    </style>
+</resources>
