@@ -5,15 +5,23 @@ import android.content.pm.PackageManager
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.camera.view.PreviewView
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
@@ -32,46 +40,41 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import com.jovi.photoai.camera.CameraXManager
+import com.jovi.photoai.ui.camera.CameraDirectorChrome
+import com.jovi.photoai.ui.design.AppColors
+import com.jovi.photoai.ui.design.AppDimensions
 import java.io.File
 
 /**
- * AH0 baseline camera screen. B1 remediation:
- * - CameraScreen owns permission state + first request + ON_RESUME re-check.
- * - CameraContent (and thus CameraX init/bind) is composed ONLY when permission is granted.
- * - When permission flips false->true, CameraContent re-enters composition and a NEW
- *   CameraXManager is created. When it flips true->false, onDispose shuts the manager down.
- * - ON_RESUME re-checks permission so returning from system Settings is reflected even if
- *   the launcher callback was never invoked.
+ * UI0 product shell around the frozen AH0 CameraX baseline.
+ * Permission state is refreshed on resume; CameraX only exists while permission is granted.
  */
 @Composable
-fun CameraScreen() {
+fun CameraScreen(onBack: () -> Unit = {}) {
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
 
     var hasCameraPermission by remember {
         mutableStateOf(
             ContextCompat.checkSelfPermission(context, Manifest.permission.CAMERA) ==
-                PackageManager.PERMISSION_GRANTED
+                PackageManager.PERMISSION_GRANTED,
         )
     }
 
     val permissionLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.RequestPermission()
+        contract = ActivityResultContracts.RequestPermission(),
     ) { granted -> hasCameraPermission = granted }
 
-    // First entry: request once if not granted.
     LaunchedEffect(Unit) {
-        if (!hasCameraPermission) {
-            permissionLauncher.launch(Manifest.permission.CAMERA)
-        }
+        if (!hasCameraPermission) permissionLauncher.launch(Manifest.permission.CAMERA)
     }
 
-    // Re-check on ON_RESUME (user may have toggled permission in system Settings).
     DisposableEffect(lifecycleOwner) {
         val observer = LifecycleEventObserver { _, event ->
             if (event == Lifecycle.Event.ON_RESUME) {
                 hasCameraPermission = ContextCompat.checkSelfPermission(
-                    context, Manifest.permission.CAMERA
+                    context,
+                    Manifest.permission.CAMERA,
                 ) == PackageManager.PERMISSION_GRANTED
             }
         }
@@ -80,63 +83,139 @@ fun CameraScreen() {
     }
 
     if (hasCameraPermission) {
-        CameraContent()
+        CameraContent(onBack = onBack)
     } else {
         PermissionContent(
-            onRequest = { permissionLauncher.launch(Manifest.permission.CAMERA) }
+            onBack = onBack,
+            onRequest = { permissionLauncher.launch(Manifest.permission.CAMERA) },
         )
     }
 }
 
 @Composable
-private fun CameraContent() {
+private fun CameraContent(onBack: () -> Unit) {
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
-    // Re-created when CameraContent re-enters composition (permission false->true).
     val manager = remember { CameraXManager(context.applicationContext) }
     val previewView = remember { PreviewView(context) }
     var captureCount by remember { mutableIntStateOf(0) }
+    var cameraReady by remember { mutableStateOf(false) }
+    var captureInFlight by remember { mutableStateOf(false) }
+    var captureError by remember { mutableStateOf(false) }
 
     DisposableEffect(lifecycleOwner) {
         manager.initialize(
             onReady = {
                 manager.bindToLifecycle(lifecycleOwner, previewView)
                 manager.setAnalyzer { imageProxy ->
-                    // KEEP_ONLY_LATEST: close immediately so preview/shutter never block.
+                    // Preserve AH0 KEEP_ONLY_LATEST behavior: every frame is always closed.
                     imageProxy.close()
                 }
-            }
+                cameraReady = true
+            },
+            onError = {
+                cameraReady = false
+                captureError = true
+            },
         )
         onDispose { manager.shutdown() }
     }
 
-    Box(modifier = Modifier.fillMaxSize()) {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(AppColors.TextPrimary),
+    ) {
         AndroidView(factory = { previewView }, modifier = Modifier.fillMaxSize())
-        Button(
-            onClick = {
-                val file = File(context.cacheDir, "captures/capture_${System.currentTimeMillis()}.jpg")
-                file.parentFile?.mkdirs()
-                manager.takePicture(
-                    outputFile = file,
-                    onSaved = { captureCount++ },
-                    onError = { }
-                )
+        CameraDirectorChrome(
+            captureCount = captureCount,
+            captureInFlight = captureInFlight || !cameraReady,
+            captureError = captureError,
+            onBack = onBack,
+            onCapture = {
+                if (cameraReady && !captureInFlight) {
+                    captureInFlight = true
+                    captureError = false
+                    val file = File(
+                        context.cacheDir,
+                        "captures/capture_${System.currentTimeMillis()}.jpg",
+                    )
+                    file.parentFile?.mkdirs()
+                    manager.takePicture(
+                        outputFile = file,
+                        onSaved = {
+                            captureCount++
+                            captureInFlight = false
+                        },
+                        onError = {
+                            captureError = true
+                            captureInFlight = false
+                        },
+                    )
+                }
             },
-            modifier = Modifier
-                .align(Alignment.BottomCenter)
-                .padding(32.dp)
-        ) { Text("拍摄 ($captureCount)") }
+        )
     }
 }
 
 @Composable
-private fun PermissionContent(onRequest: () -> Unit) {
+private fun PermissionContent(onBack: () -> Unit, onRequest: () -> Unit) {
     Column(
-        modifier = Modifier.fillMaxSize().wrapContentSize(Alignment.Center),
-        horizontalAlignment = Alignment.CenterHorizontally
+        modifier = Modifier
+            .fillMaxSize()
+            .background(AppColors.AppBackground)
+            .padding(AppDimensions.PagePadding),
     ) {
-        Text("需要相机权限")
-        Spacer(Modifier.height(8.dp))
-        Button(onClick = onRequest) { Text("授予权限") }
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            TextButton(onClick = onBack) { Text("返回") }
+            Text("相机权限", style = MaterialTheme.typography.titleMedium)
+            Spacer(Modifier.height(AppDimensions.MinTouchTarget))
+        }
+        Column(
+            modifier = Modifier
+                .weight(1f)
+                .fillMaxWidth(),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center,
+        ) {
+            Surface(
+                shape = RoundedCornerShape(AppDimensions.RadiusLarge),
+                color = AppColors.SurfacePrimary.copy(alpha = 0.88f),
+                border = androidx.compose.foundation.BorderStroke(1.dp, AppColors.Divider),
+            ) {
+                Column(
+                    modifier = Modifier.padding(24.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                ) {
+                    Text("需要相机权限", style = MaterialTheme.typography.headlineSmall)
+                    Spacer(Modifier.height(12.dp))
+                    Text(
+                        "相机仅用于实时预览与拍摄。照片保存在应用缓存中；UI0 不上传、不联网，也不执行 AI 分析。",
+                        color = AppColors.TextSecondary,
+                        style = MaterialTheme.typography.bodyMedium,
+                    )
+                    Spacer(Modifier.height(24.dp))
+                    Button(
+                        onClick = onRequest,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(AppDimensions.PrimaryButtonHeight),
+                        colors = ButtonDefaults.buttonColors(containerColor = AppColors.AccentBlue),
+                    ) {
+                        Text("授予权限")
+                    }
+                }
+            }
+        }
     }
+}
+
+/** Static permission state for Compose tooling. */
+@Composable
+fun CameraPermissionPreviewContent() {
+    PermissionContent(onBack = {}, onRequest = {})
 }
