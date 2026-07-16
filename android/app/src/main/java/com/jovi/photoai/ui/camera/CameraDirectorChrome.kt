@@ -4,8 +4,7 @@ import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.gestures.detectHorizontalDragGestures
+import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -15,12 +14,13 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -31,7 +31,6 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -39,93 +38,91 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.disabled
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.jovi.photoai.domain.model.GuidePanel
 import com.jovi.photoai.domain.model.OverlayMode
-import com.jovi.photoai.ui.components.AppSegmentedControl
-import com.jovi.photoai.ui.components.EdgeGuideHandle
-import com.jovi.photoai.ui.components.EdgeGuideSide
 import com.jovi.photoai.ui.design.AppColors
 import com.jovi.photoai.ui.design.AppDimensions
 
-enum class DirectorGuidePanel {
-    ENVIRONMENT,
-    SUBJECT,
-}
+/** Preview-only adapter. Runtime panel state is always [GuidePanel] in [CameraUiState]. */
+enum class DirectorGuidePanel { ENVIRONMENT, SUBJECT }
 
 @Composable
 fun CameraDirectorChrome(
-    captureCount: Int,
-    captureInFlight: Boolean,
-    captureError: Boolean,
+    uiState: CameraUiState,
+    onEvent: (CameraUiEvent) -> Unit,
     onBack: () -> Unit,
     onCapture: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    var overlayMode by remember { mutableStateOf(OverlayMode.SKELETON) }
-    var showGrid by remember { mutableStateOf(true) }
-    var openPanel by remember { mutableStateOf<DirectorGuidePanel?>(null) }
-
-    BackHandler(enabled = openPanel != null) { openPanel = null }
+    val closePanelOrBack = {
+        if (cameraBackClosesPanel(uiState)) {
+            onEvent(CameraUiEvent.ClosePanel)
+        } else {
+            onBack()
+        }
+    }
+    BackHandler(enabled = cameraBackClosesPanel(uiState)) {
+        onEvent(CameraUiEvent.ClosePanel)
+    }
 
     Box(modifier = modifier.fillMaxSize()) {
-        DemoOverlay(mode = overlayMode, showGrid = showGrid)
+        DemoOverlay(mode = uiState.overlayMode, showGrid = uiState.gridVisible)
 
         CameraTopBar(
-            onBack = onBack,
+            onBack = closePanelOrBack,
             modifier = Modifier.align(Alignment.TopCenter),
         )
-
         CameraHint(
-            captureCount = captureCount,
-            captureError = captureError,
+            uiState = uiState,
             modifier = Modifier
                 .align(Alignment.TopCenter)
                 .padding(top = 88.dp),
         )
 
         EdgeGestureZone(
-            panel = DirectorGuidePanel.ENVIRONMENT,
-            onOpen = { openPanel = it },
+            panel = GuidePanel.ENVIRONMENT,
+            onOpen = { onEvent(CameraUiEvent.GuidePanelSelected(it)) },
             modifier = Modifier.align(Alignment.CenterStart),
         )
         EdgeGestureZone(
-            panel = DirectorGuidePanel.SUBJECT,
-            onOpen = { openPanel = it },
+            panel = GuidePanel.SUBJECT,
+            onOpen = { onEvent(CameraUiEvent.GuidePanelSelected(it)) },
             modifier = Modifier.align(Alignment.CenterEnd),
         )
-        EdgeGuideHandle(
-            side = EdgeGuideSide.ENVIRONMENT,
-            onClick = { openPanel = DirectorGuidePanel.ENVIRONMENT },
+        CameraEdgeHandle(
+            label = "环境",
+            contentDescription = "打开环境指导",
+            onClick = { onEvent(CameraUiEvent.GuidePanelSelected(GuidePanel.ENVIRONMENT)) },
             modifier = Modifier.align(Alignment.CenterStart),
         )
-        EdgeGuideHandle(
-            side = EdgeGuideSide.SUBJECT,
-            onClick = { openPanel = DirectorGuidePanel.SUBJECT },
+        CameraEdgeHandle(
+            label = "人物",
+            contentDescription = "打开人物指导",
+            onClick = { onEvent(CameraUiEvent.GuidePanelSelected(GuidePanel.SUBJECT)) },
             modifier = Modifier.align(Alignment.CenterEnd),
         )
 
         CameraBottomControls(
-            overlayMode = overlayMode,
-            onOverlaySelected = { overlayMode = it },
-            showGrid = showGrid,
-            onGridChanged = { showGrid = it },
-            captureCount = captureCount,
-            captureInFlight = captureInFlight,
+            uiState = uiState,
+            onEvent = onEvent,
             onCapture = onCapture,
             modifier = Modifier.align(Alignment.BottomCenter),
         )
 
-        openPanel?.let { panel ->
+        if (uiState.selectedGuidePanel != GuidePanel.NONE) {
             GuidePanelSheet(
-                panel = panel,
-                onClose = { openPanel = null },
+                uiState = uiState,
+                onEvent = onEvent,
+                onClose = { onEvent(CameraUiEvent.ClosePanel) },
                 modifier = Modifier.align(
-                    if (panel == DirectorGuidePanel.ENVIRONMENT) {
+                    if (uiState.selectedGuidePanel == GuidePanel.ENVIRONMENT) {
                         Alignment.CenterStart
                     } else {
                         Alignment.CenterEnd
@@ -138,60 +135,69 @@ fun CameraDirectorChrome(
 
 @Composable
 private fun CameraTopBar(onBack: () -> Unit, modifier: Modifier = Modifier) {
-    Row(
-        modifier = modifier
-            .fillMaxWidth()
-            .background(Color.Black.copy(alpha = 0.22f))
-            .padding(horizontal = 12.dp, vertical = 12.dp),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.SpaceBetween,
+    Surface(
+        modifier = modifier.fillMaxWidth(),
+        color = AppColors.CameraChromeSurface,
+        border = androidx.compose.foundation.BorderStroke(1.dp, AppColors.CameraChromeBorder),
+        shadowElevation = AppDimensions.GlassElevation,
     ) {
-        TextButton(onClick = onBack, modifier = Modifier.semantics { contentDescription = "返回" }) {
-            Text("返回", color = AppColors.CameraText)
-        }
-        Column(horizontalAlignment = Alignment.CenterHorizontally) {
-            Text(
-                "参考图拍摄",
-                color = AppColors.CameraText,
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.SemiBold,
-            )
-            Text(
-                "当前参考图：窗边等待感",
-                color = AppColors.CameraTextSecondary,
-                style = MaterialTheme.typography.labelSmall,
-            )
-        }
-        TextButton(
-            onClick = {},
+        Row(
             modifier = Modifier
-                .semantics {
-                    contentDescription = "更多，本阶段为界面占位"
-                },
+                .fillMaxWidth()
+                .padding(horizontal = AppDimensions.Space12, vertical = AppDimensions.Space8),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween,
         ) {
-            Text("更多", color = AppColors.CameraText)
+            TextButton(onClick = onBack, modifier = Modifier.semantics { contentDescription = "返回" }) {
+                Text("返回", color = AppColors.CameraChromeText)
+            }
+            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                Text(
+                    "参考图拍摄",
+                    color = AppColors.CameraChromeText,
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.SemiBold,
+                )
+                Text(
+                    "当前参考图：窗边等待感 · Demo",
+                    color = AppColors.CameraChromeSecondaryText,
+                    style = MaterialTheme.typography.labelSmall,
+                )
+            }
+            TextButton(
+                onClick = {},
+                enabled = false,
+                modifier = Modifier.semantics {
+                    contentDescription = "更多，暂未开放"
+                    disabled()
+                },
+            ) {
+                Text("更多", color = AppColors.CameraChromeDisabled)
+            }
         }
     }
 }
 
 @Composable
-private fun CameraHint(captureCount: Int, captureError: Boolean, modifier: Modifier = Modifier) {
+private fun CameraHint(uiState: CameraUiState, modifier: Modifier = Modifier) {
+    val text = when {
+        uiState.message == CameraUiMessage.CAPTURE_FAILED -> "拍摄未完成，请稍后再试 · Demo"
+        uiState.currentGuidance != null -> {
+            "${uiState.currentGuidance.title} · Demo\n${uiState.currentGuidance.instruction}"
+        }
+        else -> "暂无 Demo 指导，请先确认现场安全与取景。"
+    }
     Surface(
-        modifier = modifier.padding(horizontal = 52.dp),
-        color = AppColors.CameraGlassDark,
+        modifier = modifier.padding(horizontal = 40.dp),
+        color = AppColors.CameraChromeSurface,
         shape = RoundedCornerShape(AppDimensions.RadiusLarge),
-        border = androidx.compose.foundation.BorderStroke(1.dp, AppColors.CameraBorder),
+        border = androidx.compose.foundation.BorderStroke(1.dp, AppColors.CameraChromeBorder),
+        shadowElevation = AppDimensions.GlassElevation,
     ) {
         Text(
-            text = if (captureError) {
-                "未能保存照片，请稍后再试"
-            } else if (captureCount == 0) {
-                "向右移动半步 · Demo 指引"
-            } else {
-                "已保存 $captureCount 张至应用缓存"
-            },
-            modifier = Modifier.padding(horizontal = 16.dp, vertical = 10.dp),
-            color = AppColors.CameraText,
+            text = text,
+            modifier = Modifier.padding(horizontal = AppDimensions.Space16, vertical = AppDimensions.Space12),
+            color = AppColors.CameraChromeText,
             style = MaterialTheme.typography.bodyMedium,
             textAlign = TextAlign.Center,
         )
@@ -200,121 +206,206 @@ private fun CameraHint(captureCount: Int, captureError: Boolean, modifier: Modif
 
 @Composable
 private fun EdgeGestureZone(
-    panel: DirectorGuidePanel,
-    onOpen: (DirectorGuidePanel) -> Unit,
+    panel: GuidePanel,
+    onOpen: (GuidePanel) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    var accumulatedDrag by remember { mutableFloatStateOf(0f) }
-    val isLeft = panel == DirectorGuidePanel.ENVIRONMENT
+    val thresholdPx = with(LocalDensity.current) { 56.dp.toPx() }
+    var horizontalDrag by remember(panel) { mutableFloatStateOf(0f) }
+    var verticalDrag by remember(panel) { mutableFloatStateOf(0f) }
     Box(
         modifier = modifier
             .width(AppDimensions.EdgeGestureWidth)
             .fillMaxHeight()
-            .pointerInput(panel) {
-                detectHorizontalDragGestures(
-                    onDragStart = { accumulatedDrag = 0f },
-                    onHorizontalDrag = { _, amount -> accumulatedDrag += amount },
+            .pointerInput(panel, thresholdPx) {
+                detectDragGestures(
+                    onDragStart = {
+                        horizontalDrag = 0f
+                        verticalDrag = 0f
+                    },
+                    onDrag = { change, amount ->
+                        change.consume()
+                        horizontalDrag += amount.x
+                        verticalDrag += amount.y
+                    },
                     onDragEnd = {
-                        val opens = if (isLeft) accumulatedDrag > 56f else accumulatedDrag < -56f
-                        if (opens) onOpen(panel)
+                        if (shouldOpenEdgeGuide(panel, horizontalDrag, verticalDrag, thresholdPx)) {
+                            onOpen(panel)
+                        }
                     },
                 )
             }
             .semantics {
-                contentDescription = if (isLeft) "左侧环境指导手势区" else "右侧人物指导手势区"
+                contentDescription = if (panel == GuidePanel.ENVIRONMENT) {
+                    "左侧环境指导手势区"
+                } else {
+                    "右侧人物指导手势区"
+                }
             },
     )
 }
 
 @Composable
-private fun CameraBottomControls(
-    overlayMode: OverlayMode,
-    onOverlaySelected: (OverlayMode) -> Unit,
-    showGrid: Boolean,
-    onGridChanged: (Boolean) -> Unit,
-    captureCount: Int,
-    captureInFlight: Boolean,
-    onCapture: () -> Unit,
+private fun CameraEdgeHandle(
+    label: String,
+    contentDescription: String,
+    onClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    Column(
+    Surface(
+        onClick = onClick,
         modifier = modifier
-            .fillMaxWidth()
-            .background(Color.Black.copy(alpha = 0.24f))
-            .padding(horizontal = 16.dp, vertical = 12.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
+            .heightIn(min = AppDimensions.MinTouchTarget)
+            .semantics { this.contentDescription = contentDescription },
+        color = AppColors.CameraChromeSurface,
+        contentColor = AppColors.CameraChromeText,
+        shape = RoundedCornerShape(AppDimensions.RadiusMedium),
+        border = androidx.compose.foundation.BorderStroke(1.dp, AppColors.CameraChromeBorder),
     ) {
-        AppSegmentedControl(
-            options = OverlayMode.entries,
-            selectedOption = overlayMode,
-            onOptionSelected = onOverlaySelected,
-            label = {
-                when (it) {
-                    OverlayMode.SKELETON -> "骨架 · 示意"
-                    OverlayMode.OUTLINE -> "轮廓 · 示意"
-                    OverlayMode.REFERENCE -> "参考图 · 示意"
-                }
-            },
-            cameraStyle = true,
-        )
-        Spacer(Modifier.height(10.dp))
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            Surface(
-                modifier = Modifier.size(48.dp),
-                shape = RoundedCornerShape(12.dp),
-                color = AppColors.CameraGlassLight,
-                border = androidx.compose.foundation.BorderStroke(1.dp, AppColors.CameraBorder),
-            ) {
-                Box(contentAlignment = Alignment.Center) {
-                    Text("参考", color = AppColors.TextPrimary, style = MaterialTheme.typography.labelSmall)
-                }
-            }
-            Box(
-                modifier = Modifier
-                    .size(AppDimensions.ShutterSize)
-                    .border(3.dp, Color.White, CircleShape)
-                    .padding(6.dp)
-                    .background(
-                        if (captureInFlight) Color.White.copy(alpha = 0.5f) else Color.White,
-                        CircleShape,
-                    )
-                    .clickable(enabled = !captureInFlight, onClick = onCapture)
-                    .semantics { contentDescription = if (captureInFlight) "正在拍摄" else "拍摄" },
-            )
-            Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                TextButton(onClick = { onGridChanged(!showGrid) }) {
-                    Text(if (showGrid) "网格开" else "网格关", color = AppColors.CameraText)
-                }
-                Text("镜头切换 · 禁用", color = AppColors.CameraTextSecondary, style = MaterialTheme.typography.labelSmall)
-            }
-        }
-        Spacer(Modifier.height(4.dp))
         Text(
-            text = if (captureInFlight) "保存中…" else "已拍 $captureCount 张 · 仅保存至应用缓存",
-            color = AppColors.CameraTextSecondary,
-            style = MaterialTheme.typography.labelSmall,
+            label,
+            modifier = Modifier.padding(horizontal = AppDimensions.Space12, vertical = AppDimensions.Space12),
+            style = MaterialTheme.typography.labelMedium,
         )
     }
 }
 
 @Composable
+private fun CameraBottomControls(
+    uiState: CameraUiState,
+    onEvent: (CameraUiEvent) -> Unit,
+    onCapture: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Surface(
+        modifier = modifier.fillMaxWidth(),
+        color = AppColors.CameraChromeSurface,
+        border = androidx.compose.foundation.BorderStroke(1.dp, AppColors.CameraChromeBorder),
+        shadowElevation = AppDimensions.GlassElevation,
+    ) {
+        Column(
+            modifier = Modifier.padding(horizontal = AppDimensions.Space16, vertical = AppDimensions.Space12),
+            horizontalAlignment = Alignment.CenterHorizontally,
+        ) {
+            OverlayModeControls(
+                selected = uiState.overlayMode,
+                onSelected = { onEvent(CameraUiEvent.OverlayModeSelected(it)) },
+            )
+            Spacer(Modifier.height(AppDimensions.Space8))
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Surface(
+                    shape = RoundedCornerShape(AppDimensions.RadiusSmall),
+                    color = AppColors.AccentBlueSoft,
+                    border = androidx.compose.foundation.BorderStroke(1.dp, AppColors.CameraChromeBorder),
+                ) {
+                    Text(
+                        "参考图 · Demo",
+                        modifier = Modifier.padding(horizontal = AppDimensions.Space12, vertical = AppDimensions.Space12),
+                        color = AppColors.CameraChromeText,
+                        style = MaterialTheme.typography.labelSmall,
+                    )
+                }
+                CameraShutter(
+                    enabled = uiState.canCapture,
+                    onClick = onCapture,
+                )
+                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                    TextButton(onClick = { onEvent(CameraUiEvent.GridToggled) }) {
+                        Text(
+                            if (uiState.gridVisible) "网格开" else "网格关",
+                            color = AppColors.CameraChromeText,
+                        )
+                    }
+                    Text(
+                        "镜头切换 · 禁用",
+                        color = AppColors.CameraChromeDisabled,
+                        style = MaterialTheme.typography.labelSmall,
+                    )
+                }
+            }
+            Text(
+                text = if (uiState.captureInFlight) {
+                    "保存中…"
+                } else {
+                    "已拍 ${uiState.captureCount} 张 · 仅保存至应用缓存"
+                },
+                color = AppColors.CameraChromeSecondaryText,
+                style = MaterialTheme.typography.labelSmall,
+            )
+        }
+    }
+}
+
+@Composable
+private fun OverlayModeControls(
+    selected: OverlayMode,
+    onSelected: (OverlayMode) -> Unit,
+) {
+    Row(horizontalArrangement = Arrangement.spacedBy(AppDimensions.Space4)) {
+        OverlayMode.entries.forEach { mode ->
+            val isSelected = mode == selected
+            Surface(
+                onClick = { onSelected(mode) },
+                modifier = Modifier.heightIn(min = AppDimensions.MinTouchTarget),
+                shape = RoundedCornerShape(percent = 50),
+                color = if (isSelected) AppColors.AccentBlueSoft else AppColors.SurfacePrimary,
+                border = androidx.compose.foundation.BorderStroke(1.dp, AppColors.CameraChromeBorder),
+            ) {
+                Text(
+                    (when (mode) {
+                        OverlayMode.SKELETON -> "骨架 · 示意"
+                        OverlayMode.OUTLINE -> "轮廓 · 示意"
+                        OverlayMode.REFERENCE -> "参考图 · 示意"
+                    }) + if (isSelected) " · 已选" else "",
+                    modifier = Modifier.padding(horizontal = AppDimensions.Space8, vertical = AppDimensions.Space12),
+                    color = AppColors.CameraChromeText,
+                    style = MaterialTheme.typography.labelSmall,
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun CameraShutter(enabled: Boolean, onClick: () -> Unit) {
+    Surface(
+        onClick = onClick,
+        enabled = enabled,
+        modifier = Modifier
+            .size(AppDimensions.ShutterSize)
+            .semantics { contentDescription = if (enabled) "拍摄" else "相机准备中" },
+        shape = CircleShape,
+        color = Color.Transparent,
+        border = androidx.compose.foundation.BorderStroke(3.dp, AppColors.CameraChromeText),
+    ) {
+        Box(contentAlignment = Alignment.Center) {
+            Surface(
+                modifier = Modifier.size(AppDimensions.ShutterInnerSize),
+                shape = CircleShape,
+                color = if (enabled) AppColors.CameraChromeText else AppColors.CameraChromeDisabled,
+            ) {}
+        }
+    }
+}
+
+@Composable
 private fun GuidePanelSheet(
-    panel: DirectorGuidePanel,
+    uiState: CameraUiState,
+    onEvent: (CameraUiEvent) -> Unit,
     onClose: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val environment = panel == DirectorGuidePanel.ENVIRONMENT
-    var panelOverlayMode by remember(panel) { mutableStateOf(OverlayMode.SKELETON) }
+    val environment = uiState.selectedGuidePanel == GuidePanel.ENVIRONMENT
     Surface(
         modifier = modifier
             .fillMaxHeight()
             .fillMaxWidth(AppDimensions.GuidePanelWidthFraction),
-        color = Color(0xFFF7F7F9).copy(alpha = 0.96f),
-        shadowElevation = 12.dp,
+        color = AppColors.SurfacePrimary.copy(alpha = 0.96f),
+        shadowElevation = AppDimensions.FloatingElevation,
         shape = RoundedCornerShape(
             topStart = if (environment) 0.dp else AppDimensions.RadiusExtraLarge,
             topEnd = if (environment) AppDimensions.RadiusExtraLarge else 0.dp,
@@ -326,7 +417,7 @@ private fun GuidePanelSheet(
             modifier = Modifier
                 .fillMaxSize()
                 .verticalScroll(rememberScrollState())
-                .padding(horizontal = 24.dp, vertical = 32.dp),
+                .padding(horizontal = AppDimensions.Space24, vertical = AppDimensions.Space32),
         ) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -342,11 +433,7 @@ private fun GuidePanelSheet(
                 TextButton(onClick = onClose) { Text("关闭") }
             }
             Text(
-                if (environment) {
-                    "这个背景能讲什么故事"
-                } else {
-                    "怎么站，手放哪里，眼神看哪里"
-                },
+                if (environment) "这个背景能讲什么故事" else "怎么站，手放哪里，眼神看哪里",
                 color = AppColors.TextSecondary,
                 style = MaterialTheme.typography.labelMedium,
             )
@@ -355,7 +442,7 @@ private fun GuidePanelSheet(
                 color = AppColors.AccentBlue,
                 style = MaterialTheme.typography.labelSmall,
             )
-            Spacer(Modifier.height(20.dp))
+            Spacer(Modifier.height(AppDimensions.Space20))
             if (environment) {
                 listOf(
                     "当前场景" to "室内窗边",
@@ -367,22 +454,14 @@ private fun GuidePanelSheet(
                     "Plan B" to "如果背景太乱，就靠近拍半身",
                 ).forEach { (title, detail) ->
                     GuideItem(status = "Demo", title = title, detail = detail)
-                    Spacer(Modifier.height(12.dp))
+                    Spacer(Modifier.height(AppDimensions.Space12))
                 }
             } else {
-                AppSegmentedControl(
-                    options = OverlayMode.entries,
-                    selectedOption = panelOverlayMode,
-                    onOptionSelected = { panelOverlayMode = it },
-                    label = {
-                        when (it) {
-                            OverlayMode.SKELETON -> "骨架"
-                            OverlayMode.OUTLINE -> "轮廓"
-                            OverlayMode.REFERENCE -> "参考图"
-                        }
-                    },
+                OverlayModeControls(
+                    selected = uiState.overlayMode,
+                    onSelected = { onEvent(CameraUiEvent.OverlayModeSelected(it)) },
                 )
-                Spacer(Modifier.height(16.dp))
+                Spacer(Modifier.height(AppDimensions.Space16))
                 listOf(
                     Triple("需要调整", "动作摘要", "身体微侧，重心放在后脚，视线看向窗外"),
                     Triple("接近", "头部", "下巴微收，头部向窗边轻转"),
@@ -395,7 +474,7 @@ private fun GuidePanelSheet(
                     Triple("尚未判断", "Plan B", "如果姿势太别扭，先只保留下巴微收、肩膀放松和看向窗外"),
                 ).forEach { (status, title, detail) ->
                     GuideItem(status = status, title = title, detail = detail)
-                    Spacer(Modifier.height(12.dp))
+                    Spacer(Modifier.height(AppDimensions.Space12))
                 }
             }
             Button(
@@ -411,22 +490,24 @@ private fun GuidePanelSheet(
     }
 }
 
-/** Static panel surface for Compose tooling; it never inspects a camera frame. */
+/** Static panel surface for Compose tooling; it never initializes CameraX. */
 @Composable
 fun CameraGuidePanelPreviewContent(
     panel: DirectorGuidePanel,
     modifier: Modifier = Modifier,
 ) {
+    val previewPanel = if (panel == DirectorGuidePanel.ENVIRONMENT) {
+        GuidePanel.ENVIRONMENT
+    } else {
+        GuidePanel.SUBJECT
+    }
     Box(modifier.fillMaxSize().background(Color(0xFF7A8491))) {
         GuidePanelSheet(
-            panel = panel,
+            uiState = CameraUiState(selectedGuidePanel = previewPanel),
+            onEvent = {},
             onClose = {},
             modifier = Modifier.align(
-                if (panel == DirectorGuidePanel.ENVIRONMENT) {
-                    Alignment.CenterStart
-                } else {
-                    Alignment.CenterEnd
-                },
+                if (previewPanel == GuidePanel.ENVIRONMENT) Alignment.CenterStart else Alignment.CenterEnd,
             ),
         )
     }
@@ -436,14 +517,14 @@ fun CameraGuidePanelPreviewContent(
 private fun GuideItem(status: String, title: String, detail: String) {
     Surface(
         shape = RoundedCornerShape(AppDimensions.RadiusMedium),
-        color = Color.White.copy(alpha = 0.82f),
-        border = androidx.compose.foundation.BorderStroke(1.dp, AppColors.Divider.copy(alpha = 0.7f)),
+        color = AppColors.SurfacePrimary,
+        border = androidx.compose.foundation.BorderStroke(1.dp, AppColors.Divider),
     ) {
-        Column(modifier = Modifier.padding(16.dp)) {
+        Column(modifier = Modifier.padding(AppDimensions.Space16)) {
             Text(status, color = AppColors.AccentBlue, style = MaterialTheme.typography.labelMedium)
-            Spacer(Modifier.height(6.dp))
+            Spacer(Modifier.height(AppDimensions.Space4))
             Text(title, color = AppColors.TextPrimary, fontWeight = FontWeight.SemiBold)
-            Spacer(Modifier.height(4.dp))
+            Spacer(Modifier.height(AppDimensions.Space4))
             Text(detail, color = AppColors.TextSecondary, style = MaterialTheme.typography.bodyMedium)
         }
     }
@@ -452,70 +533,42 @@ private fun GuideItem(status: String, title: String, detail: String) {
 @Composable
 private fun DemoOverlay(mode: OverlayMode, showGrid: Boolean) {
     Box(Modifier.fillMaxSize()) {
-        if (showGrid) Canvas(Modifier.fillMaxSize()) {
-            val lineColor = Color.White.copy(alpha = 0.62f)
-            drawLine(lineColor, Offset(size.width / 3f, 0f), Offset(size.width / 3f, size.height), 1.dp.toPx())
-            drawLine(lineColor, Offset(size.width * 2f / 3f, 0f), Offset(size.width * 2f / 3f, size.height), 1.dp.toPx())
-            drawLine(lineColor, Offset(0f, size.height / 3f), Offset(size.width, size.height / 3f), 1.dp.toPx())
-            drawLine(lineColor, Offset(0f, size.height * 2f / 3f), Offset(size.width, size.height * 2f / 3f), 1.dp.toPx())
-        }
+        if (showGrid) GridOverlay()
         when (mode) {
-        OverlayMode.REFERENCE -> Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-            Box(
-                Modifier
-                    .fillMaxWidth(0.58f)
-                    .fillMaxHeight(0.58f)
-                    .border(2.dp, Color.White.copy(alpha = 0.68f), RoundedCornerShape(24.dp)),
-            )
+            OverlayMode.REFERENCE -> OverlayLabel("参考轮廓 · 示意")
+            OverlayMode.SKELETON -> OverlayLabel("骨架 · 示意")
+            OverlayMode.OUTLINE -> OverlayLabel("人物轮廓 · 示意")
+        }
+    }
+}
+
+@Composable
+private fun GridOverlay() {
+    Canvas(Modifier.fillMaxSize()) {
+        val lineColor = Color.White.copy(alpha = 0.62f)
+        val stroke = 1.dp.toPx()
+        drawLine(lineColor, Offset(size.width / 3f, 0f), Offset(size.width / 3f, size.height), stroke)
+        drawLine(lineColor, Offset(size.width * 2f / 3f, 0f), Offset(size.width * 2f / 3f, size.height), stroke)
+        drawLine(lineColor, Offset(0f, size.height / 3f), Offset(size.width, size.height / 3f), stroke)
+        drawLine(lineColor, Offset(0f, size.height * 2f / 3f), Offset(size.width, size.height * 2f / 3f), stroke)
+    }
+}
+
+@Composable
+private fun OverlayLabel(label: String) {
+    Box(Modifier.fillMaxSize(), contentAlignment = Alignment.TopCenter) {
+        Surface(
+            modifier = Modifier.padding(top = 176.dp),
+            color = AppColors.CameraChromeSurface,
+            shape = RoundedCornerShape(AppDimensions.RadiusSmall),
+            border = androidx.compose.foundation.BorderStroke(1.dp, AppColors.CameraChromeBorder),
+        ) {
             Text(
-                "参考轮廓 · 示意",
-                modifier = Modifier
-                    .align(Alignment.Center)
-                    .background(AppColors.CameraGlassDark, RoundedCornerShape(14.dp))
-                    .padding(horizontal = 12.dp, vertical = 7.dp),
-                color = Color.White,
+                label,
+                modifier = Modifier.padding(horizontal = AppDimensions.Space12, vertical = AppDimensions.Space8),
+                color = AppColors.CameraChromeText,
                 style = MaterialTheme.typography.labelMedium,
             )
-        }
-        OverlayMode.SKELETON -> Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-            Canvas(Modifier.size(width = 180.dp, height = 360.dp)) {
-                val c = Color.White.copy(alpha = 0.72f)
-                val stroke = 3.dp.toPx()
-                drawCircle(c, 24.dp.toPx(), Offset(size.width / 2f, 32.dp.toPx()), style = androidx.compose.ui.graphics.drawscope.Stroke(stroke))
-                drawLine(c, Offset(size.width / 2f, 56.dp.toPx()), Offset(size.width / 2f, 190.dp.toPx()), stroke)
-                drawLine(c, Offset(size.width / 2f, 88.dp.toPx()), Offset(24.dp.toPx(), 164.dp.toPx()), stroke)
-                drawLine(c, Offset(size.width / 2f, 88.dp.toPx()), Offset(size.width - 24.dp.toPx(), 142.dp.toPx()), stroke)
-                drawLine(c, Offset(size.width / 2f, 190.dp.toPx()), Offset(48.dp.toPx(), size.height - 12.dp.toPx()), stroke)
-                drawLine(c, Offset(size.width / 2f, 190.dp.toPx()), Offset(size.width - 34.dp.toPx(), size.height - 12.dp.toPx()), stroke)
-            }
-            Text(
-                "骨架 · 示意",
-                modifier = Modifier
-                    .align(Alignment.BottomCenter)
-                    .padding(bottom = 164.dp)
-                    .background(AppColors.CameraGlassDark, RoundedCornerShape(14.dp))
-                    .padding(horizontal = 12.dp, vertical = 7.dp),
-                color = Color.White,
-                style = MaterialTheme.typography.labelMedium,
-            )
-        }
-        OverlayMode.OUTLINE -> Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-            Box(
-                Modifier
-                    .size(width = 176.dp, height = 356.dp)
-                    .border(3.dp, Color.White.copy(alpha = 0.68f), RoundedCornerShape(percent = 50)),
-            )
-            Text(
-                "人物轮廓 · 示意",
-                modifier = Modifier
-                    .align(Alignment.BottomCenter)
-                    .padding(bottom = 164.dp)
-                    .background(AppColors.CameraGlassDark, RoundedCornerShape(14.dp))
-                    .padding(horizontal = 12.dp, vertical = 7.dp),
-                color = Color.White,
-                style = MaterialTheme.typography.labelMedium,
-            )
-        }
         }
     }
 }

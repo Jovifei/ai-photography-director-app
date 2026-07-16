@@ -23,6 +23,13 @@ object AppColors {
     val CameraText = Color.White
     val CameraTextSecondary = Color.White.copy(alpha = 0.76f)
 
+    // Stable light containers keep camera controls legible over both bright and dark preview frames.
+    val CameraChromeSurface = Color(0xEBFFFFFF)
+    val CameraChromeText = Color(0xFF1D1D1F)
+    val CameraChromeSecondaryText = Color(0xFF515156)
+    val CameraChromeBorder = Color(0xFFD2D2D7)
+    val CameraChromeDisabled = Color(0xFF6E6E73)
+
     val GlassBorder = Color.White.copy(alpha = 0.56f)
     val GlassHighlight = Color.White.copy(alpha = 0.72f)
     val CameraBorder = Color.White.copy(alpha = 0.34f)

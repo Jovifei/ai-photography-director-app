@@ -1,6 +1,9 @@
 package com.jovi.photoai.ui.camera
 
+import com.jovi.photoai.data.demo.DemoContentRepository
 import com.jovi.photoai.domain.model.GuidePanel
+import com.jovi.photoai.domain.model.GuidanceItem
+import com.jovi.photoai.domain.model.GuidancePriority
 import com.jovi.photoai.domain.model.OverlayMode
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
@@ -19,6 +22,7 @@ class CameraUiStateTest {
         assertNull(state.selectedReferencePhotoId)
         assertEquals(GuidePanel.NONE, state.selectedGuidePanel)
         assertEquals(OverlayMode.SKELETON, state.overlayMode)
+        assertTrue(state.gridVisible)
         assertEquals(0, state.captureCount)
         assertFalse(state.canCapture)
     }
@@ -203,6 +207,7 @@ class CameraUiStateTest {
         assertEquals("window-portrait", restored.selectedReferencePhotoId)
         assertEquals(GuidePanel.SUBJECT, restored.selectedGuidePanel)
         assertEquals(OverlayMode.REFERENCE, restored.overlayMode)
+        assertTrue(restored.gridVisible)
         assertEquals(7, restored.captureCount)
         assertEquals(CameraPermission.UNKNOWN, restored.permission)
         assertEquals(CameraRuntime.STOPPED, restored.cameraRuntime)
@@ -239,8 +244,108 @@ class CameraUiStateTest {
         assertEquals(CameraUiState(), restored)
     }
 
+    @Test
+    fun runtimeCameraHint_usesTheDemoPlanSafetyGuidance() {
+        val guidance = cameraGuidanceFor(DemoContentRepository.defaultShootingPlan.guidance)
+        val state = reduceCameraUiState(CameraUiState(), CameraUiEvent.GuidanceUpdated(guidance))
+
+        assertEquals("确认人物脚下安全", state.currentGuidance?.title)
+        assertEquals(GuidancePriority.SAFETY, state.currentGuidance?.priority)
+    }
+
+    @Test
+    fun runtimeCameraHint_isPriorityOrderedAndTieStable() {
+        val firstSafety = guidance("first", GuidancePriority.SAFETY)
+        val laterSafety = guidance("later", GuidancePriority.SAFETY)
+        val framing = guidance("framing", GuidancePriority.FRAMING)
+
+        assertSame(firstSafety, cameraGuidanceFor(listOf(framing, firstSafety, laterSafety)))
+        assertSame(firstSafety, cameraGuidanceFor(listOf(firstSafety, framing, laterSafety)))
+        assertNull(cameraGuidanceFor(emptyList()))
+    }
+
+    @Test
+    fun edgeGestureThreshold_isDensityAwareAndUsesSharedDirectionRules() {
+        assertEquals(56f, edgeGestureThresholdPx(1f), 0f)
+        assertEquals(112f, edgeGestureThresholdPx(2f), 0f)
+        assertEquals(168f, edgeGestureThresholdPx(3f), 0f)
+        assertEquals(32f, edgeGestureWidthPx(1f), 0f)
+        assertEquals(64f, edgeGestureWidthPx(2f), 0f)
+
+        val threshold = edgeGestureThresholdPx(2f)
+        assertFalse(shouldOpenEdgeGuide(GuidePanel.ENVIRONMENT, threshold - 1f, 0f, threshold))
+        assertTrue(shouldOpenEdgeGuide(GuidePanel.ENVIRONMENT, threshold, 0f, threshold))
+        assertTrue(shouldOpenEdgeGuide(GuidePanel.SUBJECT, -threshold, 0f, threshold))
+        assertFalse(shouldOpenEdgeGuide(GuidePanel.ENVIRONMENT, -threshold, 0f, threshold))
+        assertFalse(shouldOpenEdgeGuide(GuidePanel.SUBJECT, threshold, 0f, threshold))
+        assertFalse(shouldOpenEdgeGuide(GuidePanel.ENVIRONMENT, 0f, threshold, threshold))
+        assertFalse(shouldOpenEdgeGuide(GuidePanel.ENVIRONMENT, threshold, threshold, threshold))
+        assertFalse(shouldOpenEdgeGuide(GuidePanel.NONE, threshold, 0f, threshold))
+    }
+
+    @Test
+    fun guidePanelGridAndBackAreAllReducerDriven() {
+        val environment = reduceCameraUiState(
+            CameraUiState(),
+            CameraUiEvent.GuidePanelSelected(GuidePanel.ENVIRONMENT),
+        )
+        val subject = reduceCameraUiState(
+            environment,
+            CameraUiEvent.GuidePanelSelected(GuidePanel.SUBJECT),
+        )
+        val closed = reduceCameraUiState(subject, CameraUiEvent.ClosePanel)
+        val gridToggled = reduceCameraUiState(closed, CameraUiEvent.GridToggled)
+
+        assertEquals(GuidePanel.ENVIRONMENT, environment.selectedGuidePanel)
+        assertTrue(cameraBackClosesPanel(environment))
+        assertEquals(GuidePanel.SUBJECT, subject.selectedGuidePanel)
+        assertEquals(GuidePanel.NONE, closed.selectedGuidePanel)
+        assertFalse(cameraBackClosesPanel(closed))
+        assertFalse(gridToggled.gridVisible)
+    }
+
+    @Test
+    fun overlayModeSwitch_usesTheSameReducerAsRuntimeChrome() {
+        val withReference = reduceCameraUiState(
+            CameraUiState(),
+            CameraUiEvent.ReferenceSelected("window-portrait"),
+        )
+        val outline = reduceCameraUiState(
+            withReference,
+            CameraUiEvent.OverlayModeSelected(OverlayMode.OUTLINE),
+        )
+        val reference = reduceCameraUiState(
+            outline,
+            CameraUiEvent.OverlayModeSelected(OverlayMode.REFERENCE),
+        )
+
+        assertEquals(OverlayMode.OUTLINE, outline.overlayMode)
+        assertEquals(OverlayMode.REFERENCE, reference.overlayMode)
+    }
+
+    @Test
+    fun snapshotRoundTrip_restoresGridAndNeverPersistsInjectedGuidance() {
+        val state = CameraUiState(
+            gridVisible = false,
+            currentGuidance = guidance("safety", GuidancePriority.SAFETY),
+        )
+
+        val restored = restoreCameraUiState(state.toSnapshot())
+
+        assertFalse(restored.gridVisible)
+        assertNull(restored.currentGuidance)
+    }
+
     private fun capturableState() = CameraUiState(
         permission = CameraPermission.GRANTED,
         cameraRuntime = CameraRuntime.READY,
+    )
+
+    private fun guidance(id: String, priority: GuidancePriority) = GuidanceItem(
+        id = id,
+        panel = GuidePanel.ENVIRONMENT,
+        priority = priority,
+        title = id,
+        instruction = id,
     )
 }

@@ -26,9 +26,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.mapSaver
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -40,20 +41,65 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import com.jovi.photoai.camera.CameraXManager
+import com.jovi.photoai.domain.model.GuidanceItem
 import com.jovi.photoai.ui.camera.CameraDirectorChrome
+import com.jovi.photoai.ui.camera.CameraPermission
+import com.jovi.photoai.ui.camera.CameraUiEvent
+import com.jovi.photoai.ui.camera.CameraUiSnapshot
+import com.jovi.photoai.ui.camera.CameraUiState
+import com.jovi.photoai.ui.camera.cameraGuidanceFor
+import com.jovi.photoai.ui.camera.reduceCameraUiState
+import com.jovi.photoai.ui.camera.restoreCameraUiState
+import com.jovi.photoai.ui.camera.toSnapshot
 import com.jovi.photoai.ui.design.AppColors
 import com.jovi.photoai.ui.design.AppDimensions
 import java.io.File
 
-/**
- * UI0 product shell around the frozen AH0 CameraX baseline.
- * Permission state is refreshed on resume; CameraX only exists while permission is granted.
- */
+private val CameraUiStateSaver = mapSaver(
+    save = { state ->
+        val snapshot = state.toSnapshot()
+        mapOf(
+            "version" to snapshot.version,
+            "reference" to (snapshot.selectedReferencePhotoId ?: ""),
+            "panel" to snapshot.selectedGuidePanel.name,
+            "overlay" to snapshot.overlayMode.name,
+            "grid" to snapshot.gridVisible,
+            "captureCount" to snapshot.captureCount,
+        )
+    },
+    restore = { values ->
+        val reference = values["reference"] as? String
+        val panel = (values["panel"] as? String)?.let { name ->
+            runCatching { com.jovi.photoai.domain.model.GuidePanel.valueOf(name) }.getOrNull()
+        } ?: com.jovi.photoai.domain.model.GuidePanel.NONE
+        val overlay = (values["overlay"] as? String)?.let { name ->
+            runCatching { com.jovi.photoai.domain.model.OverlayMode.valueOf(name) }.getOrNull()
+        } ?: com.jovi.photoai.domain.model.OverlayMode.SKELETON
+        restoreCameraUiState(
+            CameraUiSnapshot(
+                version = values["version"] as? Int ?: 0,
+                selectedReferencePhotoId = reference?.takeIf(String::isNotBlank),
+                selectedGuidePanel = panel,
+                overlayMode = overlay,
+                gridVisible = values["grid"] as? Boolean ?: true,
+                captureCount = values["captureCount"] as? Int ?: 0,
+            ),
+        )
+    },
+)
+
+/** UI0 product shell around the frozen AH0 CameraX baseline. */
 @Composable
-fun CameraScreen(onBack: () -> Unit = {}) {
+fun CameraScreen(
+    guidanceItems: List<GuidanceItem>,
+    onBack: () -> Unit = {},
+) {
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
-
+    var uiState by rememberSaveable(stateSaver = CameraUiStateSaver) { mutableStateOf(CameraUiState()) }
+    val dispatch: (CameraUiEvent) -> Unit = { event ->
+        uiState = reduceCameraUiState(uiState, event)
+    }
     var hasCameraPermission by remember {
         mutableStateOf(
             ContextCompat.checkSelfPermission(context, Manifest.permission.CAMERA) ==
@@ -67,6 +113,16 @@ fun CameraScreen(onBack: () -> Unit = {}) {
 
     LaunchedEffect(Unit) {
         if (!hasCameraPermission) permissionLauncher.launch(Manifest.permission.CAMERA)
+    }
+    LaunchedEffect(hasCameraPermission) {
+        dispatch(
+            CameraUiEvent.PermissionObserved(
+                if (hasCameraPermission) CameraPermission.GRANTED else CameraPermission.DENIED,
+            ),
+        )
+    }
+    LaunchedEffect(guidanceItems) {
+        dispatch(CameraUiEvent.GuidanceUpdated(cameraGuidanceFor(guidanceItems)))
     }
 
     DisposableEffect(lifecycleOwner) {
@@ -83,7 +139,7 @@ fun CameraScreen(onBack: () -> Unit = {}) {
     }
 
     if (hasCameraPermission) {
-        CameraContent(onBack = onBack)
+        CameraContent(uiState = uiState, dispatch = dispatch, onBack = onBack)
     } else {
         PermissionContent(
             onBack = onBack,
@@ -93,17 +149,18 @@ fun CameraScreen(onBack: () -> Unit = {}) {
 }
 
 @Composable
-private fun CameraContent(onBack: () -> Unit) {
+private fun CameraContent(
+    uiState: CameraUiState,
+    dispatch: (CameraUiEvent) -> Unit,
+    onBack: () -> Unit,
+) {
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
     val manager = remember { CameraXManager(context.applicationContext) }
     val previewView = remember { PreviewView(context) }
-    var captureCount by remember { mutableIntStateOf(0) }
-    var cameraReady by remember { mutableStateOf(false) }
-    var captureInFlight by remember { mutableStateOf(false) }
-    var captureError by remember { mutableStateOf(false) }
 
     DisposableEffect(lifecycleOwner) {
+        dispatch(CameraUiEvent.CameraStartRequested)
         manager.initialize(
             onReady = {
                 manager.bindToLifecycle(lifecycleOwner, previewView)
@@ -111,12 +168,9 @@ private fun CameraContent(onBack: () -> Unit) {
                     // Preserve AH0 KEEP_ONLY_LATEST behavior: every frame is always closed.
                     imageProxy.close()
                 }
-                cameraReady = true
+                dispatch(CameraUiEvent.CameraReady)
             },
-            onError = {
-                cameraReady = false
-                captureError = true
-            },
+            onError = { dispatch(CameraUiEvent.CameraFailed) },
         )
         onDispose { manager.shutdown() }
     }
@@ -128,14 +182,12 @@ private fun CameraContent(onBack: () -> Unit) {
     ) {
         AndroidView(factory = { previewView }, modifier = Modifier.fillMaxSize())
         CameraDirectorChrome(
-            captureCount = captureCount,
-            captureInFlight = captureInFlight || !cameraReady,
-            captureError = captureError,
+            uiState = uiState,
+            onEvent = dispatch,
             onBack = onBack,
             onCapture = {
-                if (cameraReady && !captureInFlight) {
-                    captureInFlight = true
-                    captureError = false
+                if (uiState.canCapture) {
+                    dispatch(CameraUiEvent.CaptureStarted)
                     val file = File(
                         context.cacheDir,
                         "captures/capture_${System.currentTimeMillis()}.jpg",
@@ -143,14 +195,8 @@ private fun CameraContent(onBack: () -> Unit) {
                     file.parentFile?.mkdirs()
                     manager.takePicture(
                         outputFile = file,
-                        onSaved = {
-                            captureCount++
-                            captureInFlight = false
-                        },
-                        onError = {
-                            captureError = true
-                            captureInFlight = false
-                        },
+                        onSaved = { dispatch(CameraUiEvent.CaptureSucceeded) },
+                        onError = { dispatch(CameraUiEvent.CaptureFailed) },
                     )
                 }
             },

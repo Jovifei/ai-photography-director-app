@@ -10,6 +10,7 @@ import com.jovi.photoai.ui.CameraPermissionPreviewContent
 import com.jovi.photoai.ui.analysis.AnalysisDetailScreen
 import com.jovi.photoai.ui.camera.CameraDirectorChrome
 import com.jovi.photoai.ui.camera.CameraGuidePanelPreviewContent
+import com.jovi.photoai.ui.camera.CameraUiState
 import com.jovi.photoai.ui.camera.DirectorGuidePanel
 import com.jovi.photoai.ui.components.CameraPreviewPlaceholder
 import com.jovi.photoai.ui.design.PhotographyDirectorTheme
@@ -55,9 +56,8 @@ private fun AnalysisPreview() = PreviewTheme {
 private fun CameraPreview() = PreviewTheme {
     CameraPreviewPlaceholder(modifier = Modifier.fillMaxSize(), label = "设计预览 · 非实时画面") {
         CameraDirectorChrome(
-            captureCount = 2,
-            captureInFlight = false,
-            captureError = false,
+            uiState = CameraUiState(captureCount = 2),
+            onEvent = {},
             onBack = {},
             onCapture = {},
         )
