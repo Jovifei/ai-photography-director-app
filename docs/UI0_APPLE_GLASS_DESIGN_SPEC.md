@@ -44,11 +44,19 @@ The interface should feel airy and premium rather than decorative. Camera chrome
 | CameraGlassDark | Black at 22% | Stable preview contrast |
 | CameraText | White | Camera primary text |
 | CameraTextSecondary | White at 76% | Camera supporting text |
-| CameraChromeSurface | White at 92% | Stable top bar, hint, bottom controls and edge handles over any preview |
+| CameraChromeSurface | `#EBFFFFFF` (alpha `235/255`) | Stable top bar, hint, bottom controls and edge handles over any preview |
 | CameraChromeText | `#1D1D1F` | Camera chrome primary text and large icon contrast |
 | CameraChromeSecondaryText | `#515156` | Camera chrome small labels |
 | CameraChromeBorder | `#D2D2D7` | Stable chrome edge definition |
 | CameraChromeDisabled | `#6E6E73` | Disabled controls, always paired with disabled text |
+
+### Runtime camera-chrome contrast contract
+
+`AppColors` is the sole runtime source for the camera-chrome surface, primary text, secondary text, border, and disabled tokens. `CameraDirectorChrome` renders those same tokens, and the JVM contrast tests convert the actual Compose `Color` instances through `toChromeRgba()` before compositing and measuring them. There are no test-only duplicate camera-chrome color values.
+
+The surface alpha is the runtime value `235/255` (not an approximated `0.92f`). The test contract composites that actual surface over black, white, and mid-gray Preview frames. With the current tokens, the lowest verified ratios occur on black Preview: primary text / shutter icon `14.1175:1`, secondary small labels `6.6193:1`, and disabled content `4.2540:1` (validated against the `3:1` large-content threshold). Normal primary and secondary text are each verified at `>= 4.5:1` on all three frames.
+
+This is JVM token and math evidence only. Final device visual review, orientation review, 200% font verification, and TalkBack verification remain outstanding.
 
 ### Shape and spacing
 
@@ -153,8 +161,8 @@ Only one panel may be open. Back closes the panel before leaving the camera.
 - Only one guidance item is visible at a time.
 - Guidance is selected by priority: safety, in-frame, framing, body, hand, head/gaze, emotion.
 - Grid and Demo overlays never block shutter input.
-- Top bar, current guidance, bottom controls, and explicit edge handles use the stable 92% light CameraChromeSurface with dark text; they do not depend on preview brightness or shadow for readability.
-- The pure token calculation verifies normal text and small labels at >= 4.5:1 against the surface composited over pure black and pure white Preview; the large shutter/icon target is >= 3:1.
+- Top bar, current guidance, bottom controls, and explicit edge handles use the stable `CameraChromeSurface` runtime token (`#EBFFFFFF`, alpha `235/255`) with dark runtime text tokens; they do not depend on preview brightness or shadow for readability.
+- The JVM calculation converts the same runtime Compose tokens and verifies normal text and small labels at >= 4.5:1 against the surface composited over pure black, pure white, and mid-gray Preview; disabled/large content is >= 3:1.
 - Selected overlay modes add the text `已选`; Demo, disabled, and selected states never rely on color alone.
 - No runtime placeholder may replace CameraX.
 
