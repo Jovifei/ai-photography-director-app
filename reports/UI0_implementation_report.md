@@ -9,6 +9,22 @@
 - Platform: Android, minSdk 24
 - Install/runtime dependency changes: none
 
+## Reviewer remediation: `REQUEST_CHANGES_UI0`
+
+The original UI0 candidate received four blocking findings. This remediation keeps the approved CameraX baseline and addresses the findings in the runtime path, rather than only changing tests or documentation.
+
+| Finding | Closure |
+| --- | --- |
+| B1: hardcoded camera hint | App injects the Demo plan guidance into CameraScreen; a pure mapper calls `selectHighestPriorityGuidance`; reducer state owns the selected item; Chrome renders that item. The supplied plan displays `确认人物脚下安全 · Demo`. Empty input renders an honest no-guidance state. |
+| B2: pixel gesture threshold | Runtime uses `with(LocalDensity.current) { 56.dp.toPx() }` in the two 32dp edge zones. Shared pure helpers and tests prove 56/112/168px at density 1/2/3 and reject small, wrong-direction, and vertical drags. |
+| B3: unstable camera contrast | Top bar, hint, bottom controls, and explicit edge handles now use named 92% light CameraChrome tokens and dark text. Pure sRGB compositing tests verify normal/small text >=4.5:1 and large icon >=3:1 over pure white and pure black preview backgrounds. |
+| B4: reducer not used at runtime | CameraScreen owns one saveable CameraUiState and dispatches CameraUiEvent. Overlay, panel, grid, capture state/count, and injected guidance flow through the same reducer used by JVM tests. CameraX objects, Context, PreviewView, Uri, and permission API state remain outside the reducer. |
+
+Related non-blocking remediation:
+
+- NB1 closed: camera return source is saved; Home returns to Home, Analysis returns to Analysis. A panel consumes first Back through `ClosePanel` before navigation.
+- NB3 closed: `更多` is explicitly disabled with `暂未开放` semantics; `参考图 · Demo` is a non-clickable status chip, not a false button.
+
 ## Stage boundary
 
 - `AH0_FULL_DEVICE_GATE = DEFERRED_BY_OWNER`
@@ -67,21 +83,21 @@ Compose tooling includes previews for the design-system gallery, home, import em
 
 | Gate | Result |
 | --- | --- |
-| `gradlew.bat clean` | exit 0 after stopping one stale Gradle/Lint file lock; the first attempt exited 1 on locked generated lint-cache JARs |
+| `gradlew.bat clean` | remediation rerun exit 0 |
 | `gradlew.bat assembleDebug` | exit 0 |
-| `gradlew.bat testDebugUnitTest` | exit 0; 28 tests, 0 failures, 0 errors, 0 skipped |
+| `gradlew.bat testDebugUnitTest` | remediation rerun exit 0; 38 tests, 0 failures, 0 errors, 0 skipped |
 | `gradlew.bat lintDebug` | exit 0; 0 errors, 12 warnings |
 | Lint warning scope | Existing build/manifest maintenance notices: target/dependency updates, data extraction rules, and missing application icon; no dependency or manifest widening was authorized for UI0 |
 | APK | `android/app/build/outputs/apk/debug/app-debug.apk`, 11,715,411 bytes |
-| APK SHA-256 | `BF2AB4834C7C79A17BC003A2941B8688AD19EB6415B2ABCD8AA65F1ADEF05965` |
-| Privacy audit | exit 0; no forbidden private assets, unapproved images, model weights, databases, reference clones, or common secrets detected |
-| `git diff --check` | exit 0 before commit; no whitespace errors |
+| APK SHA-256 | `E7602CAE3CDAF70DA3A05C625125E35397305CEA72768268DE84DB163880E27B` (this remediation build only; not a reproducibility gate) |
+| Privacy audit | remediation rerun exit 0; no forbidden private assets, unapproved images, model weights, databases, reference clones, or common secrets detected |
+| `git diff --check` | remediation comparison exit 0; no whitespace errors |
 
-JVM coverage includes exact enum contracts, every adjacent priority ordering, stable tie behavior, optional panel filtering, Demo repository consistency and required analysis modules, permission/runtime transitions, overlay constraints, single-panel state, capture state, stale decode rejection, and snapshot restoration.
+JVM coverage includes exact enum contracts, every adjacent priority ordering, stable tie behavior, optional panel filtering, Demo repository consistency and required analysis modules, permission/runtime transitions, overlay constraints, reducer-owned single-panel/grid/capture state, stale decode rejection, snapshot restoration, injected safety guidance, empty guidance safety, density-aware edge thresholds, directional/vertical gesture rejection, navigation return routing, and white/black preview contrast compositing.
 
-## Changed area
+## Remediation changed area
 
-Before this report, the implementation changed 35 paths: 34 Kotlin paths plus the design specification, including replacement of the placeholder arithmetic test. This report is the 36th delivery path. Build outputs, APK, logs, local.properties, screenshots, private images, and device identifiers remain untracked and uncommitted.
+The remediation is restricted to Camera Director runtime binding, Chrome readability, App-level return routing, focused pure Kotlin utilities/tests, and the two UI0 documents. Build outputs, APK, logs, local.properties, screenshots, private images, and device identifiers remain untracked and uncommitted.
 
 ## Current limitations and review risks
 
@@ -89,9 +105,14 @@ Before this report, the implementation changed 35 paths: 34 Kotlin paths plus th
 - AH0 device stability and second-device work remain deferred, so the branch must not be interpreted as a device-gate pass.
 - Overlay/guidance content is static Demo content, not frame analysis.
 - Lens switching is intentionally unavailable.
-- The platform BitmapFactory path performs bounded sampling without adding an EXIF library; reviewers should check representative rotated picker images before product release.
+- NB2 remains deferred: the platform BitmapFactory path performs bounded sampling without adding an EXIF library; reviewers should check representative rotated picker images before product release.
 - Translucent styling intentionally avoids real backdrop blur; final opacity and contrast need device review over varied scenes.
 - The app has no production icon/data-extraction declaration yet; these are existing lint warnings and are outside this UI0 change boundary.
+- NB4 remains deferred: Home search and scene chips are visual shell controls without product behavior.
+- NB5 remains deferred: system-bar Insets, 200% font sizing, and landscape require dedicated device validation.
+- NB7 remains deferred: a real Picker race integration test is outside this JVM-only remediation scope.
+- Full device visual review and TalkBack verification, a production app icon, and dependency upgrades remain deferred by scope.
+- Debug APK SHA-256 is reported only as this local build output identifier; it is not claimed to be a cross-machine or time-independent reproducible-build gate.
 
 ## Independent reviewer checklist
 

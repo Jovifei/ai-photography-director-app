@@ -44,6 +44,11 @@ The interface should feel airy and premium rather than decorative. Camera chrome
 | CameraGlassDark | Black at 22% | Stable preview contrast |
 | CameraText | White | Camera primary text |
 | CameraTextSecondary | White at 76% | Camera supporting text |
+| CameraChromeSurface | White at 92% | Stable top bar, hint, bottom controls and edge handles over any preview |
+| CameraChromeText | `#1D1D1F` | Camera chrome primary text and large icon contrast |
+| CameraChromeSecondaryText | `#515156` | Camera chrome small labels |
+| CameraChromeBorder | `#D2D2D7` | Stable chrome edge definition |
+| CameraChromeDisabled | `#6E6E73` | Disabled controls, always paired with disabled text |
 
 ### Shape and spacing
 
@@ -119,13 +124,19 @@ Shows the selected local thumbnail when available and a fixed Demo template othe
 
 ### Camera director
 
-The runtime background remains the real CameraX `PreviewView`; the shutter remains real `ImageCapture`; `ImageAnalysis` remains the approved empty KEEP_ONLY_LATEST pipeline. UI0 adds only chrome, local state, grid visibility, Demo overlay modes, one guidance card, guide panels, and navigation.
+The runtime background remains the real CameraX `PreviewView`; the shutter remains real `ImageCapture`; `ImageAnalysis` remains the approved empty KEEP_ONLY_LATEST pipeline. UI0 adds only chrome, reducer-owned grid/overlay/panel/capture state, one guidance card, guide panels, and navigation.
+
+The current camera hint is data-injected rather than hardcoded:
+
+`DemoContentRepository → ShootingPlan.guidance → selectHighestPriorityGuidance → CameraUiState.currentGuidance → CameraDirectorChrome`
+
+For the supplied Demo plan, the visible first guidance is `确认人物脚下安全 · Demo`. Empty guidance lists show an honest no-guidance state.
 
 The lens-switch appearance is disabled because the approved `CameraXManager` does not implement lens switching. Overlay modes are labeled `示意` and perform no person recognition.
 
 ### Environment panel
 
-Enters from the left explicit button or a 32dp left-edge inward gesture. It covers about 86% of the width and explains scene, background value, story, position, camera height, composition, and Plan B.
+Enters from the left explicit button or a 32dp left-edge inward gesture. The drag threshold is 56dp converted through `LocalDensity` at runtime, so it is 56/112/168px at 1x/2x/3x density. It covers about 86% of the width and explains scene, background value, story, position, camera height, composition, and Plan B.
 
 ### Subject panel
 
@@ -137,12 +148,17 @@ Only one panel may be open. Back closes the panel before leaving the camera.
 
 - The center preview never becomes a horizontal navigation surface.
 - Gesture enhancement is restricted to the two 32dp edge zones.
+- An edge panel opens only after a 56dp inward horizontal drag; wrong-direction, small, and substantial vertical drags do not open it.
 - Explicit environment and subject buttons remain the accessible primary actions.
 - Only one guidance item is visible at a time.
 - Guidance is selected by priority: safety, in-frame, framing, body, hand, head/gaze, emotion.
 - Grid and Demo overlays never block shutter input.
-- Top and bottom chrome use stable contrast surfaces over unpredictable footage.
+- Top bar, current guidance, bottom controls, and explicit edge handles use the stable 92% light CameraChromeSurface with dark text; they do not depend on preview brightness or shadow for readability.
+- The pure token calculation verifies normal text and small labels at >= 4.5:1 against the surface composited over pure black and pure white Preview; the large shutter/icon target is >= 3:1.
+- Selected overlay modes add the text `已选`; Demo, disabled, and selected states never rely on color alone.
 - No runtime placeholder may replace CameraX.
+
+Back closes a reducer-owned open panel first. Camera return routing preserves source: Home → Camera → Home, and Analysis → Camera → Analysis.
 
 ## 8. Accessibility
 
