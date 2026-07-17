@@ -19,7 +19,16 @@ class CameraChromeContrastTest {
             AppColors.CameraChromeSecondaryText.toChromeRgba().alpha,
             0f,
         )
-        assertEquals(AppColors.CameraChromeDisabled.alpha, AppColors.CameraChromeDisabled.toChromeRgba().alpha, 0f)
+        assertEquals(
+            AppColors.CameraChromeDisabledText.alpha,
+            AppColors.CameraChromeDisabledText.toChromeRgba().alpha,
+            0f,
+        )
+        assertEquals(
+            AppColors.CameraChromeDisabledGraphic.alpha,
+            AppColors.CameraChromeDisabledGraphic.toChromeRgba().alpha,
+            0f,
+        )
     }
 
     @Test
@@ -41,12 +50,25 @@ class CameraChromeContrastTest {
     }
 
     @Test
-    fun runtimeCameraChromeDisabledContent_meetsLargeContentThresholdAcrossPreviewFrames() {
+    fun disabledTextMeetsNormalTextContrastOnAllRepresentativePreviews() {
         representativePreviewFrames().forEach { (name, preview) ->
             assertTrue(
-                "$name disabled content contrast",
+                "$name disabled text contrast",
                 CameraChromeContrast.contrastRatio(
-                    AppColors.CameraChromeDisabled.toChromeRgba(),
+                    AppColors.CameraChromeDisabledText.toChromeRgba(),
+                    renderedRuntimeSurface(preview),
+                ) >= 4.5,
+            )
+        }
+    }
+
+    @Test
+    fun disabledLargeGraphicMeetsNonTextContrastOnAllRepresentativePreviews() {
+        representativePreviewFrames().forEach { (name, preview) ->
+            assertTrue(
+                "$name disabled large graphic contrast",
+                CameraChromeContrast.contrastRatio(
+                    AppColors.CameraChromeDisabledGraphic.toChromeRgba(),
                     renderedRuntimeSurface(preview),
                 ) >= 3.0,
             )

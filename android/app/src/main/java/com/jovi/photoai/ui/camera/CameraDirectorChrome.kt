@@ -172,7 +172,7 @@ private fun CameraTopBar(onBack: () -> Unit, modifier: Modifier = Modifier) {
                     disabled()
                 },
             ) {
-                Text("更多", color = AppColors.CameraChromeDisabled)
+                Text("更多", color = AppColors.CameraChromeDisabledText)
             }
         }
     }
@@ -322,7 +322,7 @@ private fun CameraBottomControls(
                     }
                     Text(
                         "镜头切换 · 禁用",
-                        color = AppColors.CameraChromeDisabled,
+                        color = AppColors.CameraChromeDisabledText,
                         style = MaterialTheme.typography.labelSmall,
                     )
                 }
@@ -386,7 +386,7 @@ private fun CameraShutter(enabled: Boolean, onClick: () -> Unit) {
             Surface(
                 modifier = Modifier.size(AppDimensions.ShutterInnerSize),
                 shape = CircleShape,
-                color = if (enabled) AppColors.CameraChromeText else AppColors.CameraChromeDisabled,
+                color = if (enabled) AppColors.CameraChromeText else AppColors.CameraChromeDisabledGraphic,
             ) {}
         }
     }

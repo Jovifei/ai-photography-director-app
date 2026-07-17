@@ -28,7 +28,8 @@ object AppColors {
     val CameraChromeText = Color(0xFF1D1D1F)
     val CameraChromeSecondaryText = Color(0xFF515156)
     val CameraChromeBorder = Color(0xFFD2D2D7)
-    val CameraChromeDisabled = Color(0xFF6E6E73)
+    val CameraChromeDisabledText = Color(0xFF646469)
+    val CameraChromeDisabledGraphic = Color(0xFF6E6E73)
 
     val GlassBorder = Color.White.copy(alpha = 0.56f)
     val GlassHighlight = Color.White.copy(alpha = 0.72f)
