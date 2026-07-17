@@ -48,13 +48,14 @@ The interface should feel airy and premium rather than decorative. Camera chrome
 | CameraChromeText | `#1D1D1F` | Camera chrome primary text and large icon contrast |
 | CameraChromeSecondaryText | `#515156` | Camera chrome small labels |
 | CameraChromeBorder | `#D2D2D7` | Stable chrome edge definition |
-| CameraChromeDisabled | `#6E6E73` | Disabled controls, always paired with disabled text |
+| CameraChromeDisabledText | `#646469` | Disabled ordinary text, including `更多` and `镜头切换 · 禁用` |
+| CameraChromeDisabledGraphic | `#6E6E73` | Disabled large graphic only: the 62dp shutter inner circle |
 
 ### Runtime camera-chrome contrast contract
 
-`AppColors` is the sole runtime source for the camera-chrome surface, primary text, secondary text, border, and disabled tokens. `CameraDirectorChrome` renders those same tokens, and the JVM contrast tests convert the actual Compose `Color` instances through `toChromeRgba()` before compositing and measuring them. There are no test-only duplicate camera-chrome color values.
+`AppColors` is the sole runtime source for the camera-chrome surface, primary text, secondary text, border, Disabled Text, and Disabled Large Graphic tokens. `CameraDirectorChrome` renders those same tokens, and the JVM contrast tests convert the actual Compose `Color` instances through `toChromeRgba()` before compositing and measuring them. There are no test-only duplicate camera-chrome color values.
 
-The surface alpha is the runtime value `235/255` (not an approximated `0.92f`). The test contract composites that actual surface over black, white, and mid-gray Preview frames. With the current tokens, the lowest verified ratios occur on black Preview: primary text / shutter icon `14.1175:1`, secondary small labels `6.6193:1`, and disabled content `4.2540:1` (validated against the `3:1` large-content threshold). Normal primary and secondary text are each verified at `>= 4.5:1` on all three frames.
+The surface alpha is the runtime value `235/255` (not an approximated `0.92f`). The test contract composites that actual surface over black, white, and mid-gray Preview frames. Disabled ordinary text is verified at `4.9361:1` / `5.8845:1` / `5.3974:1` (black / white / mid-gray), all `>= 4.5:1`. The disabled large graphic is verified at `4.2540:1` / `5.0713:1` / `4.6516:1`, all `>= 3:1`. Normal primary and secondary text remain verified at `>= 4.5:1` on all three frames.
 
 This is JVM token and math evidence only. Final device visual review, orientation review, 200% font verification, and TalkBack verification remain outstanding.
 
@@ -162,7 +163,7 @@ Only one panel may be open. Back closes the panel before leaving the camera.
 - Guidance is selected by priority: safety, in-frame, framing, body, hand, head/gaze, emotion.
 - Grid and Demo overlays never block shutter input.
 - Top bar, current guidance, bottom controls, and explicit edge handles use the stable `CameraChromeSurface` runtime token (`#EBFFFFFF`, alpha `235/255`) with dark runtime text tokens; they do not depend on preview brightness or shadow for readability.
-- The JVM calculation converts the same runtime Compose tokens and verifies normal text and small labels at >= 4.5:1 against the surface composited over pure black, pure white, and mid-gray Preview; disabled/large content is >= 3:1.
+- Ordinary disabled labels use `CameraChromeDisabledText` and are verified at >= 4.5:1 against the surface composited over pure black, pure white, and mid-gray Preview. The disabled 62dp shutter inner circle uses `CameraChromeDisabledGraphic` and is verified at >= 3:1 on those same frames.
 - Selected overlay modes add the text `已选`; Demo, disabled, and selected states never rely on color alone.
 - No runtime placeholder may replace CameraX.
 

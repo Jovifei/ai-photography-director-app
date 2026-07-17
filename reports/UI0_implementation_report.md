@@ -17,7 +17,7 @@ The original UI0 candidate received four blocking findings. This remediation kee
 | --- | --- |
 | B1: hardcoded camera hint | App injects the Demo plan guidance into CameraScreen; a pure mapper calls `selectHighestPriorityGuidance`; reducer state owns the selected item; Chrome renders that item. The supplied plan displays `确认人物脚下安全 · Demo`. Empty input renders an honest no-guidance state. |
 | B2: pixel gesture threshold | Runtime uses `with(LocalDensity.current) { 56.dp.toPx() }` in the two 32dp edge zones. Shared pure helpers and tests prove 56/112/168px at density 1/2/3 and reject small, wrong-direction, and vertical drags. |
-| B3: contrast tests were detached from runtime tokens | `AppColors` remains the sole visual token source used by Camera Director Chrome. `toChromeRgba()` converts those exact runtime Compose `Color` values for pure JVM math; CameraChromeContrast no longer defines surface/text/secondary/disabled visual tokens. Tests composite the actual surface alpha (`235/255`) over white, black, and mid-gray Preview frames and verify primary/secondary text >=4.5:1 plus disabled/large content >=3:1. |
+| B3: contrast tests were detached from runtime tokens | `AppColors` remains the sole visual token source used by Camera Director Chrome. `toChromeRgba()` converts those exact runtime Compose `Color` values for pure JVM math; CameraChromeContrast no longer defines visual tokens. Tests composite the actual surface alpha (`235/255`) over white, black, and mid-gray Preview frames. Ordinary disabled text uses a dedicated >=4.5:1 token; the disabled 62dp shutter graphic uses a dedicated >=3:1 token. |
 | B4: reducer not used at runtime | CameraScreen owns one saveable CameraUiState and dispatches CameraUiEvent. Overlay, panel, grid, capture state/count, and injected guidance flow through the same reducer used by JVM tests. CameraX objects, Context, PreviewView, Uri, and permission API state remain outside the reducer. |
 
 Related non-blocking remediation:
@@ -25,15 +25,16 @@ Related non-blocking remediation:
 - NB1 closed: camera return source is saved; Home returns to Home, Analysis returns to Analysis. A panel consumes first Back through `ClosePanel` before navigation.
 - NB3 closed: `更多` is explicitly disabled with `暂未开放` semantics; `参考图 · Demo` is a non-clickable status chip, not a false button.
 
-## Final B3 runtime-token single-source evidence
+## Final B3 runtime-token and semantic-contrast evidence
 
 - Original blocker: the runtime used `AppColors.CameraChromeSurface`, while `CameraChromeContrast` and its test owned a separate `ChromeRgba(..., 0.92f)` visual copy. A runtime token edit could therefore leave the test falsely passing.
-- Final design: `AppColors.kt` is the only camera-chrome visual token owner. `CameraDirectorChrome.kt` continues to render those tokens unchanged. `CameraChromeContrast.kt` contains only the pure `Color → ChromeRgba` adapter, alpha compositing, relative luminance, and contrast math.
-- Modified implementation files: `CameraChromeContrast.kt` and `CameraChromeContrastTest.kt`. `AppColors.kt` and `CameraDirectorChrome.kt` were inspected but not modified in this B3 remediation.
-- Test binding: the contrast test calls `AppColors.CameraChromeSurface.toChromeRgba()`, `CameraChromeText.toChromeRgba()`, `CameraChromeSecondaryText.toChromeRgba()`, and `CameraChromeDisabled.toChromeRgba()` directly. It owns only neutral test frames and math fixtures, not a duplicate UI token.
+- Final blocker B3-FINAL-01: one `CameraChromeDisabled` token was incorrectly accepted at the `3:1` large-graphic threshold even though it rendered ordinary disabled text.
+- Final design: `AppColors.kt` is the only camera-chrome visual token owner. `CameraDirectorChrome.kt` renders `CameraChromeDisabledText` for `更多` and `镜头切换 · 禁用`, and `CameraChromeDisabledGraphic` only for the disabled 62dp shutter inner circle. `CameraChromeContrast.kt` remains pure adapter and math.
+- Modified implementation files: `AppColors.kt`, `CameraDirectorChrome.kt`, and `CameraChromeContrastTest.kt`. `CameraChromeContrast.kt` was not changed in this final semantic remediation.
+- Test binding: the contrast test calls `AppColors.CameraChromeSurface.toChromeRgba()`, `CameraChromeText.toChromeRgba()`, `CameraChromeSecondaryText.toChromeRgba()`, `CameraChromeDisabledText.toChromeRgba()`, and `CameraChromeDisabledGraphic.toChromeRgba()` directly. It owns only neutral test frames and math fixtures, not duplicate UI tokens.
 - Removed duplicate visual tokens: independent surface, primary text, secondary text, disabled, white-preview, and black-preview properties were removed from `CameraChromeContrast`.
-- Runtime alpha and measured ratios: surface alpha is exactly `235/255`; the black/white/mid-gray rendered surfaces are `#EBEBEB`/`#FFFFFF`/`#F5F5F5`. Primary contrast is `14.1175`/`16.8300`/`15.4371`; secondary contrast is `6.6193`/`7.8911`/`7.2380`; disabled content is `4.2540`/`5.0713`/`4.6516`.
-- Added math contracts: direct runtime-token conversion, white/black/mid-gray compositing, alpha 0/1/0.5 and transparent-output behavior, black/white 21:1, same-color 1:1, and sRGB low/high transfer boundaries.
+- Runtime alpha and measured ratios: surface alpha is exactly `235/255`; the black/white/mid-gray rendered surfaces are `#EBEBEB`/`#FFFFFF`/`#F5F5F5`. Primary contrast is `14.1175`/`16.8300`/`15.4371`; secondary contrast is `6.6193`/`7.8911`/`7.2380`; Disabled Text is `4.9361`/`5.8845`/`5.3974`; Disabled Graphic is `4.2540`/`5.0713`/`4.6516` (black / white / mid-gray order).
+- Added semantic contracts: Disabled Text is tested at >=4.5:1 on all three representative previews; Disabled Large Graphic is tested at >=3:1 on all three. Existing runtime-token conversion, alpha 0/1/0.5 and transparent-output behavior, black/white 21:1, same-color 1:1, and sRGB low/high transfer boundaries remain covered.
 - Child-claude use: three bounded read-only audit packages (token source, contrast math, scope/regression) were dispatched in parallel and retried under the prescribed limits. They produced no valid structured evidence before timeout, so no child conclusion was accepted; the parent independently audited and implemented the remediation. This is not an independent-reviewer approval.
 - Quality evidence for this local build: `gradlew.bat clean`, `assembleDebug`, `testDebugUnitTest`, and `lintDebug` all exited 0. JVM results: 41 tests, 0 failures, 0 errors, 0 skipped. Lint: 0 errors, 12 pre-existing warnings. `python scripts/prepush_privacy_audit.py` passed.
 - Build output: `android/app/build/outputs/apk/debug/app-debug.apk`, 11,715,411 bytes, SHA-256 `9E965A81483D9823E2A8FD7EC5A2B1F84DBB005DC058E6ABCBD0B7F11154E5A6`. This hash identifies this local debug build only and is not a reproducibility claim.
@@ -93,19 +94,35 @@ Central tokens cover color, typography, shape, spacing, touch targets, camera gl
 
 Compose tooling includes previews for the design-system gallery, home, import empty and selected states, analysis, camera placeholder chrome, environment panel, subject panel, and permission state. Preview code never initializes CameraX.
 
-## Verification evidence
+## Historical build evidence — b659879
 
 | Gate | Result |
 | --- | --- |
 | `gradlew.bat clean` | remediation rerun exit 0 |
 | `gradlew.bat assembleDebug` | exit 0 |
-| `gradlew.bat testDebugUnitTest` | remediation rerun exit 0; 38 tests, 0 failures, 0 errors, 0 skipped |
+| `gradlew.bat testDebugUnitTest` | historical candidate evidence: exit 0; 38 tests, 0 failures, 0 errors, 0 skipped |
 | `gradlew.bat lintDebug` | exit 0; 0 errors, 12 warnings |
 | Lint warning scope | Existing build/manifest maintenance notices: target/dependency updates, data extraction rules, and missing application icon; no dependency or manifest widening was authorized for UI0 |
 | APK | `android/app/build/outputs/apk/debug/app-debug.apk`, 11,715,411 bytes |
-| APK SHA-256 | `E7602CAE3CDAF70DA3A05C625125E35397305CEA72768268DE84DB163880E27B` (this remediation build only; not a reproducibility gate) |
+| APK SHA-256 | `E7602CAE3CDAF70DA3A05C625125E35397305CEA72768268DE84DB163880E27B` (historical candidate build identifier only) |
 | Privacy audit | remediation rerun exit 0; no forbidden private assets, unapproved images, model weights, databases, reference clones, or common secrets detected |
 | `git diff --check` | remediation comparison exit 0; no whitespace errors |
+
+## Current final candidate evidence
+
+This section supersedes the historical b659879 evidence above for the current final candidate.
+
+| Gate | Result |
+| --- | --- |
+| `gradlew.bat clean` | exit 0 |
+| `gradlew.bat assembleDebug` | exit 0 |
+| `gradlew.bat testDebugUnitTest` | exit 0; 42 tests, 0 failures, 0 errors, 0 skipped |
+| `gradlew.bat lintDebug` | exit 0; 0 errors, 12 existing warnings |
+| Lint warning scope | Existing build/manifest maintenance notices: target/dependency updates, data extraction rules, and missing application icon; no dependency or manifest widening was authorized |
+| Privacy audit | PASS; no forbidden private assets, unapproved images, model weights, databases, reference clones, or common secrets detected |
+| APK | `android/app/build/outputs/apk/debug/app-debug.apk`, 11,715,411 bytes |
+| APK SHA-256 | `334C4C8719D5F3F7ECDF1C1305C49E3F6D3D823088618148B043EA8134AAE038` (current local debug build identifier only) |
+| Current final candidate code SHA | `4e22a38`; the following documentation commit records this evidence without changing the built code |
 
 JVM coverage includes exact enum contracts, every adjacent priority ordering, stable tie behavior, optional panel filtering, Demo repository consistency and required analysis modules, permission/runtime transitions, overlay constraints, reducer-owned single-panel/grid/capture state, stale decode rejection, snapshot restoration, injected safety guidance, empty guidance safety, density-aware edge thresholds, directional/vertical gesture rejection, navigation return routing, and white/black preview contrast compositing.
 
