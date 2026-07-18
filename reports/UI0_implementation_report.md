@@ -11,7 +11,7 @@
 
 ## Reviewer remediation: `REQUEST_CHANGES_UI0`
 
-The original UI0 candidate received four blocking findings. This remediation keeps the approved CameraX baseline and addresses the findings in the runtime path, rather than only changing tests or documentation.
+The original pre-remediation UI0 implementation received four blocking findings. This remediation keeps the approved CameraX baseline and addresses the findings in the runtime path, rather than only changing tests or documentation.
 
 | Finding | Closure |
 | --- | --- |
@@ -25,7 +25,7 @@ Related non-blocking remediation:
 - NB1 closed: camera return source is saved; Home returns to Home, Analysis returns to Analysis. A panel consumes first Back through `ClosePanel` before navigation.
 - NB3 closed: `更多` is explicitly disabled with `暂未开放` semantics; `参考图 · Demo` is a non-clickable status chip, not a false button.
 
-## Final B3 runtime-token and semantic-contrast evidence
+## Final candidate remediation summary — 11a66667515b47cb773226037cce21665052d3f0
 
 - Original blocker: the runtime used `AppColors.CameraChromeSurface`, while `CameraChromeContrast` and its test owned a separate `ChromeRgba(..., 0.92f)` visual copy. A runtime token edit could therefore leave the test falsely passing.
 - Final blocker B3-FINAL-01: one `CameraChromeDisabled` token was incorrectly accepted at the `3:1` large-graphic threshold even though it rendered ordinary disabled text.
@@ -36,8 +36,6 @@ Related non-blocking remediation:
 - Runtime alpha and measured ratios: surface alpha is exactly `235/255`; the black/white/mid-gray rendered surfaces are `#EBEBEB`/`#FFFFFF`/`#F5F5F5`. Primary contrast is `14.1175`/`16.8300`/`15.4371`; secondary contrast is `6.6193`/`7.8911`/`7.2380`; Disabled Text is `4.9361`/`5.8845`/`5.3974`; Disabled Graphic is `4.2540`/`5.0713`/`4.6516` (black / white / mid-gray order).
 - Added semantic contracts: Disabled Text is tested at >=4.5:1 on all three representative previews; Disabled Large Graphic is tested at >=3:1 on all three. Existing runtime-token conversion, alpha 0/1/0.5 and transparent-output behavior, black/white 21:1, same-color 1:1, and sRGB low/high transfer boundaries remain covered.
 - Child-claude use: three bounded read-only audit packages (token source, contrast math, scope/regression) were dispatched in parallel and retried under the prescribed limits. They produced no valid structured evidence before timeout, so no child conclusion was accepted; the parent independently audited and implemented the remediation. This is not an independent-reviewer approval.
-- Quality evidence for this local build: `gradlew.bat clean`, `assembleDebug`, `testDebugUnitTest`, and `lintDebug` all exited 0. JVM results: 41 tests, 0 failures, 0 errors, 0 skipped. Lint: 0 errors, 12 pre-existing warnings. `python scripts/prepush_privacy_audit.py` passed.
-- Build output: `android/app/build/outputs/apk/debug/app-debug.apk`, 11,715,411 bytes, SHA-256 `9E965A81483D9823E2A8FD7EC5A2B1F84DBB005DC058E6ABCBD0B7F11154E5A6`. This hash identifies this local debug build only and is not a reproducibility claim.
 - Regression review: B1 remains reducer-injected priority guidance with the visible `确认人物脚下安全 · Demo` and an honest empty state; B2 remains density-aware 56dp edge handling with direction/vertical rejection and no central horizontal navigation; B4 remains one reducer-owned CameraUiState; NB1 retains source-preserving Camera return; NB3 retains disabled More and non-clickable Demo reference status.
 
 ## Stage boundary
@@ -94,7 +92,37 @@ Central tokens cover color, typography, shape, spacing, touch targets, camera gl
 
 Compose tooling includes previews for the design-system gallery, home, import empty and selected states, analysis, camera placeholder chrome, environment panel, subject panel, and permission state. Preview code never initializes CameraX.
 
-## Historical build evidence — b659879
+## Current final candidate evidence — 11a66667515b47cb773226037cce21665052d3f0
+
+This is the only current/final candidate evidence in this report.
+
+| Gate | Result |
+| --- | --- |
+| Final candidate SHA | `11a66667515b47cb773226037cce21665052d3f0` |
+| Branch | `feat/ui0-apple-glass-product-shell` |
+| `gradlew.bat clean` | exit 0 |
+| `gradlew.bat assembleDebug` | exit 0 |
+| `gradlew.bat testDebugUnitTest` | exit 0; 42 tests, 0 failures, 0 errors, 0 skipped |
+| `gradlew.bat lintDebug` | exit 0; 0 errors, 12 existing warnings |
+| Lint warning scope | Existing build/manifest maintenance notices: target/dependency updates, data extraction rules, and missing application icon; no dependency or manifest widening was authorized |
+| Privacy audit | PASS |
+| `git diff --check` | PASS |
+| Current APK | `android/app/build/outputs/apk/debug/app-debug.apk`, 11,715,411 bytes |
+| Current local debug APK SHA-256 | `334C4C8719D5F3F7ECDF1C1305C49E3F6D3D823088618148B043EA8134AAE038` |
+
+The APK hash identifies this local debug build only; it is not a cross-machine or cross-time reproducibility commitment.
+
+## Historical build evidence
+
+Historical evidence is retained for auditability only. Neither historical candidate below is the current merge candidate.
+
+### Historical candidate — b6598794ffecef7b26868c9c0f8bea04f2a4b87b
+
+- Historical only.
+- Superseded by later remediation candidates.
+- Not the current merge candidate.
+- 38 tests, 0 failures, 0 errors, 0 skipped.
+- APK SHA-256: `E7602CAE3CDAF70DA3A05C625125E35397305CEA72768268DE84DB163880E27B`.
 
 | Gate | Result |
 | --- | --- |
@@ -108,21 +136,19 @@ Compose tooling includes previews for the design-system gallery, home, import em
 | Privacy audit | remediation rerun exit 0; no forbidden private assets, unapproved images, model weights, databases, reference clones, or common secrets detected |
 | `git diff --check` | remediation comparison exit 0; no whitespace errors |
 
-## Current final candidate evidence
+### Historical candidate — 8479fbd0b27161e0a9b69a368a990a29df6c4da3
 
-This section supersedes the historical b659879 evidence above for the current final candidate.
+- Historical only.
+- Superseded by `11a66667515b47cb773226037cce21665052d3f0`.
+- Not the current merge candidate.
+- 41 tests, 0 failures, 0 errors, 0 skipped.
+- APK SHA-256: `9E965A81483D9823E2A8FD7EC5A2B1F84DBB005DC058E6ABCBD0B7F11154E5A6`.
 
 | Gate | Result |
 | --- | --- |
-| `gradlew.bat clean` | exit 0 |
-| `gradlew.bat assembleDebug` | exit 0 |
-| `gradlew.bat testDebugUnitTest` | exit 0; 42 tests, 0 failures, 0 errors, 0 skipped |
-| `gradlew.bat lintDebug` | exit 0; 0 errors, 12 existing warnings |
-| Lint warning scope | Existing build/manifest maintenance notices: target/dependency updates, data extraction rules, and missing application icon; no dependency or manifest widening was authorized |
-| Privacy audit | PASS; no forbidden private assets, unapproved images, model weights, databases, reference clones, or common secrets detected |
+| `gradlew.bat testDebugUnitTest` | historical candidate evidence: exit 0; 41 tests, 0 failures, 0 errors, 0 skipped |
 | APK | `android/app/build/outputs/apk/debug/app-debug.apk`, 11,715,411 bytes |
-| APK SHA-256 | `334C4C8719D5F3F7ECDF1C1305C49E3F6D3D823088618148B043EA8134AAE038` (current local debug build identifier only) |
-| Current final candidate code SHA | `4e22a38`; the following documentation commit records this evidence without changing the built code |
+| APK SHA-256 | `9E965A81483D9823E2A8FD7EC5A2B1F84DBB005DC058E6ABCBD0B7F11154E5A6` (historical candidate build identifier only) |
 
 JVM coverage includes exact enum contracts, every adjacent priority ordering, stable tie behavior, optional panel filtering, Demo repository consistency and required analysis modules, permission/runtime transitions, overlay constraints, reducer-owned single-panel/grid/capture state, stale decode rejection, snapshot restoration, injected safety guidance, empty guidance safety, density-aware edge thresholds, directional/vertical gesture rejection, navigation return routing, and white/black preview contrast compositing.
 
@@ -130,7 +156,7 @@ JVM coverage includes exact enum contracts, every adjacent priority ordering, st
 
 The remediation is restricted to Camera Director runtime binding, Chrome readability, App-level return routing, focused pure Kotlin utilities/tests, and the two UI0 documents. Build outputs, APK, logs, local.properties, screenshots, private images, and device identifiers remain untracked and uncommitted.
 
-## Current limitations and review risks
+## Current final candidate limitations and review risks — 11a66667515b47cb773226037cce21665052d3f0
 
 - UI0 has compile, JVM, lint, and APK evidence but no instrumentation, screenshot, accessibility-device, or independent visual review.
 - AH0 device stability and second-device work remain deferred, so the branch must not be interpreted as a device-gate pass.
