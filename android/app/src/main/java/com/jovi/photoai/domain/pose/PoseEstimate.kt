@@ -13,11 +13,27 @@ data class PoseEstimate(
         require(frameId >= 0) { "frameId must be non-negative" }
         require(generation >= 0) { "generation must be non-negative" }
         require(timestampNs >= 0) { "timestampNs must be non-negative" }
-        require(state == PoseState.TRACKED || state == PoseState.PARTIAL_OR_LOW_CONFIDENCE || person == null) {
-            "terminal/no-person estimates must not carry a person"
-        }
-        require(diagnostics.pointCount == (person?.presentPointCount ?: 0)) {
-            "diagnostics point count must match the canonical person"
+        when (state) {
+            PoseState.TRACKED -> {
+                require(person != null) { "TRACKED requires a non-null person" }
+                require(person.presentPointCount > 0) { "TRACKED requires at least one canonical point" }
+                require(diagnostics.pointCount == person.presentPointCount) {
+                    "diagnostics.pointCount must match person.presentPointCount"
+                }
+            }
+            PoseState.PARTIAL_OR_LOW_CONFIDENCE -> {
+                require(person != null) { "PARTIAL_OR_LOW_CONFIDENCE requires a non-null person" }
+                require(person.presentPointCount > 0) {
+                    "PARTIAL_OR_LOW_CONFIDENCE requires at least one canonical point"
+                }
+                require(diagnostics.pointCount == person.presentPointCount) {
+                    "diagnostics.pointCount must match person.presentPointCount"
+                }
+            }
+            else -> {
+                require(person == null) { "$state must not carry a person" }
+                require(diagnostics.pointCount == 0) { "$state requires zero diagnostic points" }
+            }
         }
     }
 }

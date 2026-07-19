@@ -51,4 +51,26 @@ class FakePoseEstimatorTest {
         assertEquals(1, engine.engineCloseCount)
         assertTrue(engine.isClosed)
     }
+
+    @Test
+    fun history_isBoundedAndEachSubmitHasIndependentTokenForReverseCallbacks() {
+        val engine = FakePoseEstimator(FakePoseScenario.NeverCallback, historyCapacity = 3)
+        val callbacks = mutableListOf<Long>()
+        engine.submit(PoseTestFixtures.frame(id = 4L)) { callbacks += it.timestampNs }
+        engine.submit(PoseTestFixtures.frame(id = 4L, timestampNs = 2_000_000L)) { callbacks += it.timestampNs }
+        engine.submit(PoseTestFixtures.frame(id = 5L, timestampNs = 3_000_000L)) { callbacks += it.timestampNs }
+
+        assertEquals(3, engine.historySize)
+        val retained = engine.requestTokens(4L)
+        assertEquals(2, retained.size)
+        val latest = engine.requestTokens(5L).single()
+        engine.emitRequest(latest)
+        engine.emitRequest(retained.last())
+        engine.emitRequest(retained.first())
+        assertEquals(listOf(3_000_000L, 2_000_000L, 4_000_000L), callbacks)
+        assertEquals(0, engine.pendingCount)
+        assertEquals(3, engine.drainHistory().size)
+        assertEquals(0, engine.historySize)
+        engine.close()
+    }
 }

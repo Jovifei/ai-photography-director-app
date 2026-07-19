@@ -74,6 +74,37 @@ class PoseCoordinateMapperTest {
         assertFalse(geometry.project(points[4]).outOfViewport)
         assertTrue(points.last().outOfFrame)
     }
+
+    @Test
+    fun composition_nonFullCropRotationCenterCropViewportAndFrontMirror_hasHandCalculatedResults() {
+        val crop = CropGeometry.centerCrop(sourceAspectRatio = 4.0 / 3.0, targetAspectRatio = 1.0)
+        val sensorPoint = NormalizedPoint(0.2, 0.7)
+        val portrait = PreviewGeometry.centerCrop(100.0, 100.0, 50.0, 100.0)
+        val wide = PreviewGeometry.centerCrop(100.0, 100.0, 200.0, 100.0)
+
+        val at90 = PoseCoordinateMapper.sensorToViewport(
+            sensorPoint,
+            PoseCoordinateTransform(90),
+            crop,
+            portrait,
+            mirrorForDisplay = true,
+        )
+        // 90° => (0.3, 0.2); crop => (7/30, 0.2); front mirror => (23/30, 0.2).
+        assertEquals(51.66666666666667, at90.xPx, epsilon)
+        assertEquals(20.0, at90.yPx, epsilon)
+
+        val at270 = PoseCoordinateMapper.sensorToViewport(
+            sensorPoint,
+            PoseCoordinateTransform(270),
+            crop,
+            wide,
+            mirrorForDisplay = true,
+        )
+        // 270° => (0.7, 0.8); crop => (23/30, 0.8); front mirror => (7/30, 0.8).
+        assertEquals(46.66666666666667, at270.xPx, epsilon)
+        assertEquals(110.0, at270.yPx, epsilon)
+        assertTrue(at270.outOfViewport)
+    }
 }
 
 private fun assertPoint(actual: NormalizedPoint, expectedX: Double, expectedY: Double) {

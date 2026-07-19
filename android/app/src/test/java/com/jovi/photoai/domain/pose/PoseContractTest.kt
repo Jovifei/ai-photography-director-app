@@ -3,6 +3,7 @@ package com.jovi.photoai.domain.pose
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
+import org.junit.Assert.fail
 import org.junit.Test
 
 class PoseContractTest {
@@ -60,5 +61,49 @@ class PoseContractTest {
         assertEquals(PoseState.ENGINE_ERROR, error.state)
         assertNull(noPerson.person)
         assertNull(multiPersonUnknown.person)
+    }
+
+    @Test
+    fun estimateStateInvariant_matrixRejectsInvalidAndAcceptsCanonicalTrackedPartial() {
+        val point = PosePoint(PoseKeypoint33.NOSE, 0.5, 0.5)
+        val person = PosePerson(mapOf(PoseKeypoint33.NOSE to point))
+        val emptyPerson = PosePerson(emptyMap())
+
+        assertEquals(PoseState.TRACKED, estimate(PoseState.TRACKED, person, 1).state)
+        assertEquals(PoseState.PARTIAL_OR_LOW_CONFIDENCE, estimate(PoseState.PARTIAL_OR_LOW_CONFIDENCE, person, 1).state)
+
+        assertInvalid(PoseState.TRACKED, null, 0, "TRACKED requires a non-null person")
+        assertInvalid(PoseState.TRACKED, emptyPerson, 0, "TRACKED requires at least one canonical point")
+        assertInvalid(PoseState.PARTIAL_OR_LOW_CONFIDENCE, null, 0, "PARTIAL_OR_LOW_CONFIDENCE requires a non-null person")
+        assertInvalid(
+            PoseState.PARTIAL_OR_LOW_CONFIDENCE,
+            emptyPerson,
+            0,
+            "PARTIAL_OR_LOW_CONFIDENCE requires at least one canonical point",
+        )
+        PoseState.entries.filter { it != PoseState.TRACKED && it != PoseState.PARTIAL_OR_LOW_CONFIDENCE }.forEach { state ->
+            assertInvalid(state, person, 1, "$state must not carry a person")
+            assertInvalid(state, null, 1, "$state requires zero diagnostic points")
+        }
+        assertInvalid(PoseState.TRACKED, person, 0, "diagnostics.pointCount must match person.presentPointCount")
+    }
+
+    private fun estimate(state: PoseState, person: PosePerson?, pointCount: Int): PoseEstimate = PoseEstimate(
+        frameId = 1L,
+        generation = 0L,
+        timestampNs = 1L,
+        engineId = PoseEngineId.FAKE,
+        state = state,
+        person = person,
+        diagnostics = PoseDiagnostics(pointCount = pointCount),
+    )
+
+    private fun assertInvalid(state: PoseState, person: PosePerson?, pointCount: Int, message: String) {
+        try {
+            estimate(state, person, pointCount)
+            fail("expected IllegalArgumentException for $state")
+        } catch (error: IllegalArgumentException) {
+            assertEquals(message, error.message)
+        }
     }
 }

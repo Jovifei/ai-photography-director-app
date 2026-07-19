@@ -11,28 +11,36 @@ import com.jovi.photoai.domain.pose.PoseState
 import com.jovi.photoai.pose.PoseEstimating
 import com.jovi.photoai.pose.PoseInputFrame
 import com.jovi.photoai.pose.PoseSubmission
-import java.util.concurrent.ConcurrentHashMap
+import java.util.ArrayDeque
 import java.util.concurrent.Executors
 import java.util.concurrent.ScheduledExecutorService
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicBoolean
 import java.util.concurrent.atomic.AtomicInteger
+import java.util.concurrent.atomic.AtomicLong
 
 /** Deterministic test/debug engine. It is never wired into the product Camera Director. */
 class FakePoseEstimator(
     private val scenario: FakePoseScenario,
     private val scheduler: ScheduledExecutorService = daemonScheduler(),
     private val ownsScheduler: Boolean = true,
+    private val historyCapacity: Int = DEFAULT_HISTORY_CAPACITY,
 ) : PoseEstimating {
+    init {
+        require(historyCapacity > 0) { "historyCapacity must be positive" }
+    }
+
     override val descriptor = PoseEngineDescriptor(
         id = PoseEngineId.FAKE,
         displayName = "Fake Pose Engine",
         version = "p0",
     )
 
+    private val lock = Any()
     private val closed = AtomicBoolean(false)
-    private val active = ConcurrentHashMap<Long, Pending>()
-    private val history = ConcurrentHashMap<Long, Pending>()
+    private val nextToken = AtomicLong(1L)
+    private val active = mutableMapOf<Long, Pending>()
+    private val history = ArrayDeque<Pending>(historyCapacity)
     private val closeCount = AtomicInteger(0)
     private val cancelCount = AtomicInteger(0)
 
@@ -46,26 +54,36 @@ class FakePoseEstimator(
         get() = cancelCount.get()
 
     val pendingCount: Int
-        get() = active.size
+        get() = synchronized(lock) { active.size }
+
+    val historySize: Int
+        get() = synchronized(lock) { history.size }
+
+    val activeRequestTokens: List<Long>
+        get() = synchronized(lock) { active.keys.toList().sorted() }
 
     override fun submit(frame: PoseInputFrame, callback: (PoseEstimate) -> Unit): PoseSubmission {
         check(!closed.get()) { "fake engine is closed" }
-        val pending = Pending(frame.frameId, frame.generation, frame.timestampNs, callback)
-        active[frame.frameId] = pending
-        history[frame.frameId] = pending
+        val pending = synchronized(lock) {
+            val request = Pending(nextToken.getAndIncrement(), frame.frameId, frame.generation, frame.timestampNs, callback)
+            active[request.requestToken] = request
+            if (history.size == historyCapacity) history.removeFirst()
+            history.addLast(request)
+            request
+        }
         when (val selected = scenario) {
             FakePoseScenario.SinglePerson,
             FakePoseScenario.NoPerson,
             FakePoseScenario.Partial,
             FakePoseScenario.LowConfidence,
             FakePoseScenario.MultiPersonUnknown,
-            -> emit(frame.frameId)
+            -> emitRequest(pending.requestToken)
             is FakePoseScenario.EngineError -> {
-                active.remove(frame.frameId)
+                synchronized(lock) { active.remove(pending.requestToken) }
                 throw IllegalStateException(selected.message)
             }
             is FakePoseScenario.Delayed -> scheduler.schedule(
-                { emit(frame.frameId) },
+                { emitRequest(pending.requestToken) },
                 selected.delayMs,
                 TimeUnit.MILLISECONDS,
             )
@@ -74,21 +92,42 @@ class FakePoseEstimator(
         return Submission(pending)
     }
 
-    /** Emits a callback even after cancellation/close, proving coordinator stale protection. */
+    /** Emits the newest retained request for [frameId], including after cancel. */
     fun emit(frameId: Long) {
-        val pending = history[frameId] ?: return
-        active.remove(frameId)
+        val token = synchronized(lock) { history.lastOrNull { it.frameId == frameId }?.requestToken } ?: return
+        emitRequest(token)
+    }
+
+    /** Emits one exact retained request, allowing old/reverse callback tests. */
+    fun emitRequest(requestToken: Long) {
+        val pending = synchronized(lock) {
+            history.firstOrNull { it.requestToken == requestToken }?.also { active.remove(requestToken) }
+        } ?: return
         pending.callback(estimate(pending))
     }
 
-    fun emitAllReversed() = history.keys.toList().sortedDescending().forEach(::emit)
+    fun requestTokens(frameId: Long): List<Long> = synchronized(lock) {
+        history.filter { it.frameId == frameId }.map { it.requestToken }
+    }
+
+    fun emitAllReversed() = synchronized(lock) { history.map { it.requestToken }.sortedDescending() }
+        .forEach(::emitRequest)
+
+    fun clearHistory() = synchronized(lock) { history.clear() }
+
+    fun drainHistory(): List<Long> = synchronized(lock) {
+        history.map { it.requestToken }.also { history.clear() }
+    }
 
     override fun invalidateGeneration(generation: Long) = Unit
 
     override fun close() {
         if (!closed.compareAndSet(false, true)) return
         closeCount.incrementAndGet()
-        active.clear()
+        synchronized(lock) {
+            active.clear()
+            history.clear()
+        }
         if (ownsScheduler) scheduler.shutdownNow()
     }
 
@@ -148,12 +187,13 @@ class FakePoseEstimator(
         override fun cancel() {
             if (cancelled.compareAndSet(false, true)) {
                 cancelCount.incrementAndGet()
-                active.remove(pending.frameId)
+                synchronized(lock) { active.remove(pending.requestToken) }
             }
         }
     }
 
     private data class Pending(
+        val requestToken: Long,
         val frameId: Long,
         val generation: Long,
         val timestampNs: Long,
@@ -161,6 +201,8 @@ class FakePoseEstimator(
     )
 
     private companion object {
+        const val DEFAULT_HISTORY_CAPACITY = 128
+
         fun daemonScheduler(): ScheduledExecutorService = Executors.newSingleThreadScheduledExecutor { runnable ->
             Thread(runnable, "fake-pose-engine").apply { isDaemon = true }
         }

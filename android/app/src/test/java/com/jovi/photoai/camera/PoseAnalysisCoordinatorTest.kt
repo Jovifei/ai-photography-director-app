@@ -6,6 +6,11 @@ import com.jovi.photoai.pose.PoseTestFixtures
 import com.jovi.photoai.pose.fake.FakePoseEstimator
 import com.jovi.photoai.pose.fake.FakePoseScenario
 import java.util.concurrent.CountDownLatch
+import java.util.concurrent.Callable
+import java.util.concurrent.Future
+import java.util.concurrent.ScheduledFuture
+import java.util.concurrent.ScheduledThreadPoolExecutor
+import java.util.concurrent.RejectedExecutionException
 import java.util.concurrent.TimeUnit
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
@@ -175,5 +180,114 @@ class PoseAnalysisCoordinatorTest {
         assertEquals(1, duplicateLease.releaseCount)
         coordinator.close()
         assertEquals(1, firstLease.releaseCount)
+    }
+
+    @Test
+    fun oldCallbackAndTimeout_cannotAffectReusedFrameId() {
+        val scheduler = ManualScheduler()
+        val engine = FakePoseEstimator(FakePoseScenario.NeverCallback)
+        val firstLease = CloseOnceFrameLease(Unit) {}
+        val secondLease = CloseOnceFrameLease(Unit) {}
+        val states = mutableListOf<PoseState>()
+        val coordinator = PoseAnalysisCoordinator(engine, scheduler = scheduler, ownsScheduler = false)
+
+        assertTrue(coordinator.submit(PoseTestFixtures.frame(id = 7L, lease = firstLease)) { states += it.state })
+        val firstToken = engine.requestTokens(7L).single()
+        engine.emitRequest(firstToken)
+        assertEquals(1, firstLease.releaseCount)
+
+        assertTrue(coordinator.submit(PoseTestFixtures.frame(id = 7L, lease = secondLease)) { states += it.state })
+        val secondToken = engine.requestTokens(7L).last()
+        scheduler.futures.first().fire()
+        assertEquals(0, secondLease.releaseCount)
+        engine.emitRequest(firstToken)
+        assertEquals(0, secondLease.releaseCount)
+        engine.emitRequest(secondToken)
+        assertEquals(2, states.size)
+        assertEquals(1, secondLease.releaseCount)
+        coordinator.close()
+    }
+
+    @Test
+    fun synchronousCallback_cancelsTimeoutAndCallbackTimeoutRaceDeliversOnce() {
+        val scheduler = ManualScheduler()
+        val engine = FakePoseEstimator(FakePoseScenario.SinglePerson)
+        val lease = CloseOnceFrameLease(Unit) {}
+        var callbacks = 0
+        val coordinator = PoseAnalysisCoordinator(engine, scheduler = scheduler, ownsScheduler = false)
+
+        assertTrue(coordinator.submit(PoseTestFixtures.frame(lease = lease)) { callbacks++ })
+        assertTrue(scheduler.futures.single().isCancelled)
+        assertEquals(1, callbacks)
+        assertEquals(1, lease.releaseCount)
+        scheduler.futures.single().fire()
+        assertEquals(1, callbacks)
+        coordinator.close()
+    }
+
+    @Test
+    fun schedulerRejection_failClosesLeaseWithoutCallingEngine() {
+        val scheduler = ManualScheduler(reject = true)
+        val engine = FakePoseEstimator(FakePoseScenario.NeverCallback)
+        val lease = CloseOnceFrameLease(Unit) {}
+        val states = mutableListOf<PoseState>()
+        val coordinator = PoseAnalysisCoordinator(engine, scheduler = scheduler, ownsScheduler = false)
+
+        assertTrue(coordinator.submit(PoseTestFixtures.frame(lease = lease)) { states += it.state })
+        assertEquals(listOf(PoseState.ENGINE_ERROR), states)
+        assertEquals(1, lease.releaseCount)
+        assertEquals(0, engine.pendingCount)
+        assertEquals(1L, coordinator.metricsSnapshot().schedulerRejectionCount)
+        assertEquals(1L, coordinator.metricsSnapshot().error)
+        coordinator.close()
+    }
+
+    @Test
+    fun releaseFailure_isTerminalAndDistinctFromSuccessfulRelease() {
+        val engine = FakePoseEstimator(FakePoseScenario.SinglePerson)
+        val lease = CloseOnceFrameLease(Unit) { error("release failure") }
+        var callbacks = 0
+        val coordinator = PoseAnalysisCoordinator(engine)
+
+        assertTrue(coordinator.submit(PoseTestFixtures.frame(lease = lease)) { callbacks++ })
+
+        val snapshot = coordinator.metricsSnapshot()
+        assertEquals(1, callbacks)
+        assertEquals(1L, snapshot.frameReleaseFailureCount)
+        assertEquals(0L, snapshot.frameReleaseSuccessCount)
+        assertEquals(1L, snapshot.infrastructureErrorCount)
+        coordinator.close()
+    }
+
+    private class ManualScheduler(private val reject: Boolean = false) : ScheduledThreadPoolExecutor(1) {
+        val futures = mutableListOf<ManualFuture>()
+
+        override fun schedule(command: Runnable, delay: Long, unit: TimeUnit): ScheduledFuture<*> {
+            if (reject) throw RejectedExecutionException("manual rejection")
+            return ManualFuture(command).also { futures += it }
+        }
+    }
+
+    private class ManualFuture(private val action: Runnable) : ScheduledFuture<Unit> {
+        private var cancelled = false
+        private var fired = false
+
+        fun fire() {
+            fired = true
+            action.run()
+        }
+
+        override fun cancel(mayInterruptIfRunning: Boolean): Boolean {
+            if (cancelled || fired) return false
+            cancelled = true
+            return true
+        }
+
+        override fun isCancelled(): Boolean = cancelled
+        override fun isDone(): Boolean = cancelled || fired
+        override fun get(): Unit = Unit
+        override fun get(timeout: Long, unit: TimeUnit): Unit = Unit
+        override fun getDelay(unit: TimeUnit): Long = 0L
+        override fun compareTo(other: java.util.concurrent.Delayed): Int = 0
     }
 }

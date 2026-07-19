@@ -3,7 +3,8 @@ package com.jovi.photoai.camera
 import com.jovi.photoai.domain.pose.PoseDiagnostics
 import com.jovi.photoai.domain.pose.PoseEstimate
 import com.jovi.photoai.domain.pose.PoseState
-import com.jovi.photoai.pose.CloseOnceFrameLease
+import com.jovi.photoai.pose.FrameLease
+import com.jovi.photoai.pose.FrameReleaseStatus
 import com.jovi.photoai.pose.PoseEstimating
 import com.jovi.photoai.pose.PoseInputFrame
 import com.jovi.photoai.pose.PoseSubmission
@@ -11,6 +12,7 @@ import com.jovi.photoai.pose.metrics.PoseMetricOutcome
 import com.jovi.photoai.pose.metrics.PoseMetricsAccumulator
 import com.jovi.photoai.pose.metrics.PoseMetricsSnapshot
 import java.util.concurrent.Executors
+import java.util.concurrent.RejectedExecutionException
 import java.util.concurrent.ScheduledExecutorService
 import java.util.concurrent.ScheduledFuture
 import java.util.concurrent.TimeUnit
@@ -19,6 +21,10 @@ import java.util.concurrent.atomic.AtomicBoolean
 /**
  * Engine-neutral owner of frame leases and callback lifetime. It is deliberately
  * not wired into CameraXManager or CameraScreen in AA0-P0.
+ *
+ * Each accepted frame receives an opaque request token. Neither frame id nor
+ * generation is used as the pending primary key, so late callbacks and timeout
+ * tasks from an older request cannot affect a newer request reusing the same id.
  */
 class PoseAnalysisCoordinator(
     private val engine: PoseEstimating,
@@ -29,9 +35,12 @@ class PoseAnalysisCoordinator(
     private val metrics: PoseMetricsAccumulator = PoseMetricsAccumulator(),
 ) : AutoCloseable {
     private val lock = Any()
+    private val lifecycleGate = Any()
     private val pending = mutableMapOf<Long, Pending>()
+    private val activeFrameTokens = mutableMapOf<Long, Long>()
     private val closed = AtomicBoolean(false)
     private var activeGeneration = 0L
+    private var nextRequestToken = 1L
 
     init {
         require(timeoutMs > 0L)
@@ -42,56 +51,90 @@ class PoseAnalysisCoordinator(
 
     fun metricsSnapshot(): PoseMetricsSnapshot = metrics.snapshot()
 
-    /** Returns false when the frame is stale, duplicated, or the coordinator is disposed. */
+    /** Returns false for stale, duplicate, or disposed input. */
     fun submit(frame: PoseInputFrame, sink: (PoseEstimate) -> Unit): Boolean {
-        val pendingFrame = Pending(
-            frameId = frame.frameId,
-            generation = frame.generation,
-            timestampNs = frame.timestampNs,
-            lease = frame.lease,
-        )
-        val accepted = synchronized(lock) {
-            if (closed.get() || frame.generation < activeGeneration || pending.containsKey(frame.frameId)) {
-                false
+        val acceptedAtNs = clockNs().also { require(it >= 0L) { "clock must be non-negative" } }
+        val pendingFrame: Pending?
+        val rejectAsStale: Boolean
+        synchronized(lock) {
+            rejectAsStale = frame.generation < activeGeneration
+            if (closed.get() || rejectAsStale || activeFrameTokens.containsKey(frame.frameId)) {
+                pendingFrame = null
             } else {
-                pending[frame.frameId] = pendingFrame
-                metrics.recordSubmitted(frame.timestampNs)
-                true
+                val token = nextRequestToken++
+                pendingFrame = Pending(
+                    requestToken = token,
+                    frameId = frame.frameId,
+                    generation = frame.generation,
+                    acceptedAtNs = acceptedAtNs,
+                    lease = frame.lease,
+                )
+                pending[token] = pendingFrame
+                activeFrameTokens[frame.frameId] = token
+                metrics.recordSubmitted(acceptedAtNs)
             }
         }
-        if (!accepted) {
-            closeLease(frame)
+        if (pendingFrame == null) {
+            releaseRejected(frame.lease)
             metrics.recordDroppedFrame()
-            if (frame.generation < currentGeneration) metrics.recordOutcome(PoseMetricOutcome.STALE_DROP)
+            if (rejectAsStale) metrics.recordOutcome(PoseMetricOutcome.STALE_DROP)
             return false
         }
 
-        val timeout = scheduler.schedule(
-            { onTimeout(frame.frameId, frame.generation, sink) },
-            timeoutMs,
-            TimeUnit.MILLISECONDS,
-        )
-        synchronized(lock) {
-            pending[frame.frameId]?.timeout = timeout
+        val token = pendingFrame.requestToken
+        val timeout = try {
+            scheduler.schedule(
+                { onTimeout(token, pendingFrame.generation, sink) },
+                timeoutMs,
+                TimeUnit.MILLISECONDS,
+            )
+        } catch (rejection: RejectedExecutionException) {
+            metrics.recordSchedulerRejection()
+            metrics.recordInfrastructureError()
+            failBeforeEngineSubmit(pendingFrame, sink, "timeout scheduler rejected request")
+            return true
+        } catch (runtime: RuntimeException) {
+            metrics.recordSchedulerRejection()
+            metrics.recordInfrastructureError()
+            failBeforeEngineSubmit(pendingFrame, sink, "timeout scheduler failed: ${runtime::class.simpleName}")
+            return true
         }
 
-        try {
-            val submission = engine.submit(frame) { estimate ->
-                onEngineResult(estimate, sink)
+        val cancelUnboundTimeout = synchronized(lock) {
+            val current = pending[token]
+            if (current === pendingFrame && !current.terminal) {
+                current.timeout = timeout
+                false
+            } else {
+                true
             }
-            val shouldCancel = synchronized(lock) {
-                val current = pending[frame.frameId]
-                if (current == null || current.terminal) {
-                    true
-                } else {
-                    current.submission = submission
-                    false
+        }
+        if (cancelUnboundTimeout) timeout.cancel(false)
+
+        // Serialize the close-vs-submit boundary. The engine is never called after
+        // close() has acquired this gate and closed the engine.
+        synchronized(lifecycleGate) {
+            val canSubmit = synchronized(lock) { pending[token] === pendingFrame && !pendingFrame.terminal && !closed.get() }
+            if (!canSubmit) return true
+            try {
+                val submission = engine.submit(frame) { estimate ->
+                    onEngineResult(token, pendingFrame.generation, estimate, sink)
                 }
+                val cancelReturnedSubmission = synchronized(lock) {
+                    val current = pending[token]
+                    if (current === pendingFrame && !current.terminal) {
+                        current.submission = submission
+                        false
+                    } else {
+                        true
+                    }
+                }
+                if (cancelReturnedSubmission) submission.cancel()
+            } catch (throwable: Throwable) {
+                metrics.recordInfrastructureError()
+                val estimate = errorEstimate(frame, "engine submit failed: ${throwable::class.simpleName}")
+                finishToken(token, PoseMetricOutcome.ERROR, estimate, sink, deliver = true)
             }
-            if (shouldCancel) submission.cancel()
-        } catch (throwable: Throwable) {
-            val estimate = errorEstimate(frame, "engine submit failed: ${throwable::class.simpleName}")
-            finish(frame.frameId, frame.generation, PoseMetricOutcome.ERROR, estimate, sink, deliver = true)
         }
         return true
     }
@@ -104,96 +147,94 @@ class PoseAnalysisCoordinator(
                 emptyList()
             } else {
                 activeGeneration = generation
-                pending.values.filter { it.generation < generation }.onEach {
-                    it.terminal = true
-                    pending.remove(it.frameId)
+                pending.values.filter { it.generation < generation }.also { stale ->
+                    stale.forEach { removeTerminalLocked(it) }
                 }
             }
         }
         victims.forEach { finalize(it, PoseMetricOutcome.STALE_DROP, null, null, deliver = false) }
-        runCatching { engine.invalidateGeneration(generation) }
+        synchronized(lifecycleGate) {
+            if (!closed.get()) runCatching { engine.invalidateGeneration(generation) }
+        }
     }
 
     fun cancel(frameId: Long): Boolean {
-        val victim = synchronized(lock) {
-            pending.remove(frameId)?.also { it.terminal = true }
-        } ?: return false
-        finalize(victim, PoseMetricOutcome.CANCELLED, null, null, deliver = false)
-        return true
+        val token = synchronized(lock) { activeFrameTokens[frameId] } ?: return false
+        return finishToken(token, PoseMetricOutcome.CANCELLED, null, null, deliver = false)
     }
 
     override fun close() {
         if (!closed.compareAndSet(false, true)) return
         val victims = synchronized(lock) {
-            pending.values.toList().also { victims ->
-                victims.forEach { it.terminal = true }
-                pending.clear()
-            }
+            pending.values.toList().also { all -> all.forEach(::removeTerminalLocked) }
         }
         victims.forEach { finalize(it, PoseMetricOutcome.CANCELLED, null, null, deliver = false) }
-        runCatching { engine.close() }
+        synchronized(lifecycleGate) { runCatching { engine.close() } }
         if (ownsScheduler) scheduler.shutdownNow()
     }
 
     fun dispose() = close()
 
-    private fun onEngineResult(estimate: PoseEstimate, sink: (PoseEstimate) -> Unit) {
-        val current = synchronized(lock) { pending[estimate.frameId] }
+    private fun onEngineResult(
+        token: Long,
+        expectedGeneration: Long,
+        estimate: PoseEstimate,
+        sink: (PoseEstimate) -> Unit,
+    ) {
+        val current = synchronized(lock) { pending[token] }
         if (current == null) {
             metrics.recordOutcome(PoseMetricOutcome.STALE_DROP)
             metrics.recordDroppedFrame()
             return
         }
-        if (estimate.generation != current.generation || estimate.generation < currentGeneration) {
-            val removed = synchronized(lock) {
-                pending.remove(current.frameId)?.also { it.terminal = true }
-            }
-            if (removed != null) finalize(removed, PoseMetricOutcome.STALE_DROP, null, null, deliver = false)
+        if (estimate.frameId != current.frameId || estimate.generation != expectedGeneration ||
+            estimate.generation != current.generation || estimate.generation < currentGeneration
+        ) {
+            finishToken(token, PoseMetricOutcome.STALE_DROP, null, null, deliver = false)
             return
         }
         val outcome = when (estimate.state) {
             PoseState.TRACKED,
             PoseState.PARTIAL_OR_LOW_CONFIDENCE,
-            PoseState.MULTI_PERSON_UNKNOWN,
             -> PoseMetricOutcome.SUCCESS
+            PoseState.MULTI_PERSON_UNKNOWN -> PoseMetricOutcome.MULTI_PERSON_UNKNOWN
             PoseState.NO_PERSON -> PoseMetricOutcome.NO_PERSON
             PoseState.ENGINE_ERROR -> PoseMetricOutcome.ERROR
             PoseState.STALE_RESULT_DROPPED -> PoseMetricOutcome.STALE_DROP
             PoseState.CANCELLED -> PoseMetricOutcome.CANCELLED
         }
-        finish(estimate.frameId, estimate.generation, outcome, estimate, sink, deliver = outcome != PoseMetricOutcome.STALE_DROP)
+        finishToken(token, outcome, estimate, sink, deliver = outcome != PoseMetricOutcome.STALE_DROP)
     }
 
-    private fun onTimeout(frameId: Long, generation: Long, sink: (PoseEstimate) -> Unit) {
-        val current = synchronized(lock) { pending[frameId] } ?: return
+    private fun onTimeout(token: Long, generation: Long, sink: (PoseEstimate) -> Unit) {
+        val current = synchronized(lock) { pending[token] } ?: return
+        if (current.generation != generation) return
         val estimate = errorEstimate(
             frameId = current.frameId,
             generation = current.generation,
-            timestampNs = current.timestampNs,
+            timestampNs = current.acceptedAtNs,
             message = "pose inference timeout",
         )
-        finish(frameId, generation, PoseMetricOutcome.ERROR, estimate, sink, deliver = true)
+        finishToken(token, PoseMetricOutcome.ERROR, estimate, sink, deliver = true)
     }
 
-    private fun finish(
-        frameId: Long,
-        generation: Long,
+    private fun failBeforeEngineSubmit(current: Pending, sink: (PoseEstimate) -> Unit, message: String) {
+        val estimate = errorEstimate(current.frameId, current.generation, current.acceptedAtNs, message)
+        finishToken(current.requestToken, PoseMetricOutcome.ERROR, estimate, sink, deliver = true)
+    }
+
+    private fun finishToken(
+        token: Long,
         outcome: PoseMetricOutcome,
         estimate: PoseEstimate?,
-        sink: (PoseEstimate) -> Unit,
+        sink: ((PoseEstimate) -> Unit)?,
         deliver: Boolean,
-    ) {
+    ): Boolean {
         val current = synchronized(lock) {
-            val candidate = pending[frameId]
-            if (candidate == null || candidate.generation != generation || candidate.terminal || generation < activeGeneration) {
-                null
-            } else {
-                candidate.terminal = true
-                pending.remove(frameId)
-                candidate
-            }
-        } ?: return
+            pending[token]?.takeUnless { it.terminal }?.also { removeTerminalLocked(it) }
+        } ?: return false
         finalize(current, outcome, estimate, sink, deliver)
+        return true
     }
 
     private fun finalize(
@@ -204,24 +245,28 @@ class PoseAnalysisCoordinator(
         deliver: Boolean,
     ) {
         current.timeout?.cancel(false)
-        if (outcome != PoseMetricOutcome.SUCCESS && outcome != PoseMetricOutcome.NO_PERSON) {
+        if (outcome != PoseMetricOutcome.SUCCESS && outcome != PoseMetricOutcome.NO_PERSON &&
+            outcome != PoseMetricOutcome.MULTI_PERSON_UNKNOWN
+        ) {
             current.submission?.cancel()
         }
-        closeLease(current.lease)
-        val latencyMs = ((clockNs() - current.timestampNs).coerceAtLeast(0L)).toDouble() / 1_000_000.0
-        metrics.recordOutcome(outcome, latencyMs = latencyMs, timestampNs = clockNs())
-        if (deliver && estimate != null && sink != null) {
-            runCatching { sink(estimate) }
-        }
+        val releaseResult = current.lease.releaseOnce()
+        metrics.recordFrameRelease(releaseResult)
+        if (releaseResult.status == FrameReleaseStatus.RELEASE_FAILED) metrics.recordInfrastructureError()
+        val completionNs = clockNs().coerceAtLeast(current.acceptedAtNs)
+        val latencyMs = (completionNs - current.acceptedAtNs).toDouble() / 1_000_000.0
+        metrics.recordOutcome(outcome, latencyMs = latencyMs, timestampNs = completionNs)
+        if (deliver && estimate != null && sink != null) runCatching { sink(estimate) }
     }
 
-    private fun closeLease(frame: PoseInputFrame) = closeLease(frame.lease)
+    private fun releaseRejected(lease: FrameLease<*>) {
+        metrics.recordFrameRelease(lease.releaseOnce())
+    }
 
-    private fun closeLease(lease: com.jovi.photoai.pose.FrameLease<*>) {
-        val closeOnce = lease as? CloseOnceFrameLease<*>
-        if (closeOnce != null && closeOnce.closeCallCount > 0) metrics.recordDoubleClose()
-        runCatching { lease.close() }
-        metrics.recordFrameClosed()
+    private fun removeTerminalLocked(current: Pending) {
+        current.terminal = true
+        pending.remove(current.requestToken)
+        if (activeFrameTokens[current.frameId] == current.requestToken) activeFrameTokens.remove(current.frameId)
     }
 
     private fun errorEstimate(frame: PoseInputFrame, message: String): PoseEstimate =
@@ -238,10 +283,11 @@ class PoseAnalysisCoordinator(
         )
 
     private class Pending(
+        val requestToken: Long,
         val frameId: Long,
         val generation: Long,
-        val timestampNs: Long,
-        val lease: com.jovi.photoai.pose.FrameLease<*>,
+        val acceptedAtNs: Long,
+        val lease: FrameLease<*>,
     ) {
         var submission: PoseSubmission? = null
         var timeout: ScheduledFuture<*>? = null
