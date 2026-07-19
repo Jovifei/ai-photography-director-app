@@ -1,52 +1,41 @@
 # AA0-P0 Pose Contract and Lifecycle Foundation
 
-Status: implementation foundation only; real Pose engines and model assets are not authorized in P0.
+Status: remediation candidate; engine-neutral contract only. No production pose SDK, model, adapter, CameraX wiring, or UI integration is authorized in P0.
 
 ## Scope and ownership
 
-AA0-P0 defines an engine-neutral contract for a future pose adapter. The canonical domain lives under `domain/pose`, the adapter boundary under `pose`, and the coordinator under `camera/PoseAnalysisCoordinator.kt`. The coordinator is not wired into `CameraXManager`, `CameraScreen`, or UI0.
+The canonical domain is under `domain/pose`, the engine boundary under `pose`, and the lifecycle owner is `camera/PoseAnalysisCoordinator.kt`. The coordinator is not wired into `CameraXManager`, `CameraScreen`, UI0, Pipeline, iOS, AA1, or any production pose runtime.
 
-The current UI0 `DemoOverlay` remains a product-demo artifact. `PoseDebugOverlay` is an independent diagnostic component with the explicit label `Pose Debug / 非产品功能`; it consumes only `PoseEstimate` and is not enabled by any production screen.
+## B1: canonical state invariant
 
-## Canonical 33 points
+`PoseKeypoint33` has exactly 33 app-owned names and explicit indices. `TRACKED` and `PARTIAL_OR_LOW_CONFIDENCE` require a non-null `PosePerson` with at least one point, and `PoseDiagnostics.pointCount` must equal `person.presentPointCount`. `NO_PERSON`, `MULTI_PERSON_UNKNOWN`, `ENGINE_ERROR`, `STALE_RESULT_DROPPED`, and `CANCELLED` require a null person and zero diagnostic points. Constructor failures have state-specific messages and are covered by the state matrix tests.
 
-`PoseKeypoint33` is an app-owned enum with explicit `canonicalIndex` and `sdkName` values. Adapters must map their SDK names explicitly; SDK array ordinals are not part of the contract. The order is:
+## B2-B4: request identity, timeout, and scheduler failure
 
-`NOSE`, `LEFT_EYE_INNER`, `RIGHT_EYE_INNER`, `LEFT_EYE`, `RIGHT_EYE`, `LEFT_EYE_OUTER`, `RIGHT_EYE_OUTER`, `LEFT_EAR`, `RIGHT_EAR`, `LEFT_MOUTH`, `RIGHT_MOUTH`, `LEFT_SHOULDER`, `RIGHT_SHOULDER`, `LEFT_ELBOW`, `RIGHT_ELBOW`, `LEFT_WRIST`, `RIGHT_WRIST`, `LEFT_PINKY`, `RIGHT_PINKY`, `LEFT_INDEX`, `RIGHT_INDEX`, `LEFT_THUMB`, `RIGHT_THUMB`, `LEFT_HIP`, `RIGHT_HIP`, `LEFT_KNEE`, `RIGHT_KNEE`, `LEFT_ANKLE`, `RIGHT_ANKLE`, `LEFT_HEEL`, `RIGHT_HEEL`, `LEFT_FOOT_INDEX`, `RIGHT_FOOT_INDEX`.
+Every accepted submit receives an opaque monotonic request token. The pending map and both callback/timeout closures use that token as the primary identity; frame id and generation remain metadata validation only. A duplicate in-flight frame id is rejected while the original remains active, but the id can be reused after terminal cleanup. Old callbacks and old timeout tasks therefore cannot affect a newer request.
 
-`PosePoint` preserves normalized x/y, optional z/world coordinates, and each engine-provided visibility/presence/in-frame likelihood separately. No cross-engine confidence is invented. Missing points are absent from `PosePerson.points` and return `null`; they are never interpolated.
+Pending ownership is inserted before scheduling. The timeout future is bound under the lifecycle lock; if a synchronous callback, cancellation, invalidation, or `close()` terminalizes the request first, the newly returned future is cancelled immediately. The engine submission is then attempted only while the request remains active. Scheduler rejection or any other scheduler runtime failure removes the token, closes the lease, records infrastructure/scheduler metrics, delivers one `ENGINE_ERROR`, and returns `true` because ownership had already been accepted. A rejected input returns `false` and is released immediately.
 
-## Pose states and engine boundary
+## B5: frame release result
 
-`PoseState` distinguishes `NO_PERSON` from `ENGINE_ERROR`, represents uncertain/partial output, and uses `MULTI_PERSON_UNKNOWN` without selecting a target person. `STALE_RESULT_DROPPED` and `CANCELLED` are terminal lifecycle states. `PoseEstimating` has no MediaPipe, ML Kit, MoveNet, Compose, Activity, or CameraX types and returns a cancellable `PoseSubmission`.
+`FrameLease.releaseOnce()` returns `RELEASED`, `ALREADY_RELEASED`, or `RELEASE_FAILED`. The underlying release is attempted once; a throwing release is terminal, closed, never retried, and carries the exception class name. `close()` delegates to `releaseOnce()` without rethrowing. The coordinator records the returned result directly, including distinct success, already-released, failure, and total close-attempt counters. Callback, timeout, cancellation, generation invalidation, scheduler failure, duplicate rejection, and dispose paths all converge on this result.
 
-## Frame ownership and lifecycle
+## B6: bounded metrics and one clock domain
 
-`FrameLease` is the only owner-facing resource contract. `CloseOnceFrameLease` uses an atomic compare-and-set; repeated and concurrent `close()` calls may be observed, but the underlying release lambda executes once. `PoseAnalysisCoordinator` owns each submitted lease and closes it on success, no-person, engine error, callback exception, timeout, cancellation, stale generation, duplicate frame rejection, and dispose.
+`PoseMetricsAccumulator` has a constructor-fixed latency ring (default capacity 2048). It reports the retained `latencySampleCount`, `latencyWindowCapacity`, and total valid `latencyTotalObserved`; P50/P95 use nearest-rank over the retained window, so high volume cannot grow memory. Coordinator acceptance and completion use the same injected monotonic clock; external frame timestamps are metadata only. Effective Pose FPS is `SUCCESS / valid success-completion wall-clock`; `NO_PERSON`, multi-person-unknown, errors, stale drops, and cancellations are excluded. Metrics contain no frame ids, points, raw frames, paths, device identifiers, or account data.
 
-Coordinator terminal transitions are serialized under a lock. A pending token is removed before a terminal callback is delivered, so duplicate or late callbacks cannot update the sink. `invalidateGeneration(generation)` monotonically invalidates older generations; old callbacks are dropped and never reach the result sink. `close()` invalidates all pending work, closes the engine once, and ignores late callbacks. The timeout scheduler is injectable and the coordinator never waits for inference results.
+## B7: deterministic fake and geometry
+
+`FakePoseEstimator` creates an independent request record/token per submit, retains only bounded metadata/callback history, supports clear/drain, and can manually trigger a specific old/new request in forward or reverse order, including after cancellation/close. No sleeps are needed for lifecycle tests. Geometry tests include a hand-calculated composition of non-full crop, 90°/270° rotation, portrait/wide center-crop viewport, and front-display mirror. The resulting claim is only `GEOMETRY_PURE_CONTRACT_VERIFIED`; it is not a CameraX/ViewPort runtime claim.
+
+## B8: evidence boundary
+
+JVM tests, Android compilation, and direct instrumentation validate the contract and lifecycle harness, not a real pose engine. `connectedDebugAndroidTest` is reported separately and may be blocked by Gradle UTP gRPC startup. P0 physical evidence requires direct `am instrument` on an available physical device after installing the exact current APK and test APK, hashing pulled copies outside Git, and recording a redacted run id. Emulator-only or historical device results never substitute for current physical evidence.
 
 ## Coordinate contract
 
-The canonical point space is:
-
-- normalized x/y, top-left origin, x right, y down;
-- already cropped and rotated upright;
-- never mirrored;
-- out-of-frame values are preserved and marked, not clamped;
-- front-camera mirroring occurs only at display projection;
-- mirroring never swaps LEFT/RIGHT semantic labels.
-
-`PoseCoordinateTransform` owns sensor-space rotation (clockwise 0/90/180/270) and applies a normalized upright crop. `PoseCoordinateMapper` then projects canonical points into the resolved `PreviewGeometry`; it does not re-apply sensor rotation or crop. This separation prevents double transforms.
-
-`PreviewGeometry` resolves either center-crop (`max(viewport/source)`) or letterbox (`min(viewport/source)`) into one scale and one x/y offset. The future runtime decision is `UseCaseGroup + shared ViewPort`; runtime wiring is deferred to AA0-P1 and current UI0 does not claim shared ViewPort proof.
-
-## Fake engine and metrics
-
-`FakePoseEstimator` supports complete single-person, no-person, partial, low-confidence, multi-person-unknown, engine error, delay, never-callback, cancellation, late callback, reversed emission, and close scenarios. It stores only frame metadata and callbacks for tests; it is not a product result and is not connected to Camera Director.
-
-`PoseMetricsAccumulator` stores only aggregate counters and bounded latency samples. It reports count, success, no-person, error, stale drop, cancelled, nearest-rank P50/P95 latency, effective FPS, error rate, frame close count, double-close count, and dropped-frame count. It has no raw frames, point sequences, device identifiers, paths, or account data.
+Canonical points are normalized, top-left, upright, cropped, and never mirrored. Out-of-frame values are preserved and marked rather than clamped. `PoseCoordinateTransform` owns sensor rotation and crop; `PoseCoordinateMapper` owns display projection and optional front-camera mirroring without swapping semantic LEFT/RIGHT labels. `PreviewGeometry` resolves center-crop or letterbox scale/offset. Shared CameraX `ViewPort` wiring is deferred to AA0-P1.
 
 ## Explicit non-goals
 
-P0 does not add MediaPipe, ML Kit, MoveNet, LiteRT, TFLite, or TensorFlow; does not download `pose_landmarker_lite.task` or any model; does not create adapters; does not modify CameraX/UI0/Pipeline/iOS; and does not enter AA1.
+P0 does not add MediaPipe, ML Kit, MoveNet, LiteRT, TFLite, TensorFlow, model assets, or downloads; does not modify CameraX/UI0/Pipeline; does not create iOS; and does not enter AA1.
