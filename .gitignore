@@ -63,6 +63,14 @@ model-cache/
 *.mlmodel
 *.mlpackage
 *.mlmodelc
+*.task
+
+# Pose benchmark and local debug evidence (never commit raw frames or landmarks)
+benchmark-outputs/
+landmark-sequences/
+landmark-frames/
+_device-evidence/
+device-evidence/
 
 # Third-party reference clones (read locally, never commit)
 docs/references/repos/
