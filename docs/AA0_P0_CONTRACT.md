@@ -1,6 +1,6 @@
 # AA0-P0 Pose Contract and Lifecycle Foundation
 
-Status: remediation candidate; engine-neutral contract only. No production pose SDK, model, adapter, CameraX wiring, or UI integration is authorized in P0.
+Status: final remediation candidate; engine-neutral contract only. No production pose SDK, model, adapter, CameraX wiring, or UI integration is authorized in P0.
 
 ## Scope and ownership
 
@@ -22,15 +22,17 @@ Pending ownership is inserted before scheduling. The timeout future is bound und
 
 ## B6: bounded metrics and one clock domain
 
-`PoseMetricsAccumulator` has a constructor-fixed latency ring (default capacity 2048). It reports the retained `latencySampleCount`, `latencyWindowCapacity`, and total valid `latencyTotalObserved`; P50/P95 use nearest-rank over the retained window, so high volume cannot grow memory. Coordinator acceptance and completion use the same injected monotonic clock; external frame timestamps are metadata only. Effective Pose FPS is `SUCCESS / valid success-completion wall-clock`; `NO_PERSON`, multi-person-unknown, errors, stale drops, and cancellations are excluded. Metrics contain no frame ids, points, raw frames, paths, device identifiers, or account data.
+`PoseMetricsAccumulator` has a constructor-fixed latency ring (default capacity 2048). It reports the retained `latencySampleCount`, `latencyWindowCapacity`, and total valid `latencyTotalObserved`; P50/P95 use nearest-rank over the retained window, so high volume cannot grow memory. Coordinator acceptance and completion use the same injected monotonic clock; external frame timestamps are metadata only.
+
+The SUCCESS contract is fail-fast: every SUCCESS must provide a non-null, non-negative, non-decreasing completion timestamp before any SUCCESS counter or latency/FPS state changes. `timedSuccessCount` is explicit and equals the valid SUCCESS count; there is no ambiguous untimed-success numerator. Effective Pose FPS is `(timedSuccessCount - 1) / (lastTimedSuccessNs - firstTimedSuccessNs) * 1e9` when at least two valid timed successes have a positive interval, otherwise null. `NO_PERSON`, multi-person-unknown, errors, stale drops, and cancellations are excluded. Metrics contain no frame ids, points, raw frames, paths, device identifiers, or account data.
 
 ## B7: deterministic fake and geometry
 
-`FakePoseEstimator` creates an independent request record/token per submit, retains only bounded metadata/callback history, supports clear/drain, and can manually trigger a specific old/new request in forward or reverse order, including after cancellation/close. No sleeps are needed for lifecycle tests. Geometry tests include a hand-calculated composition of non-full crop, 90°/270° rotation, portrait/wide center-crop viewport, and front-display mirror. The resulting claim is only `GEOMETRY_PURE_CONTRACT_VERIFIED`; it is not a CameraX/ViewPort runtime claim.
+`FakePoseEstimator` creates an independent request record/token per submit, retains only bounded metadata/callback history, supports clear/drain, and can manually trigger a specific old/new request in forward or reverse order, including after cancellation/close. `submit` checks closed state, allocates the request, stores history, and registers active state under one lock. `close` atomically marks closed, cancels and removes every active submission, shuts down its owned scheduler, and deliberately retains bounded history until explicit `clearHistory()` or `drainHistory()`; historical callbacks after close cannot re-add active work. No sleeps are needed for lifecycle tests. Geometry tests include a hand-calculated composition of non-full crop, 90°/270° rotation, portrait/wide center-crop viewport, and front-display mirror. The resulting claim is only `GEOMETRY_PURE_CONTRACT_VERIFIED`; it is not a CameraX/ViewPort runtime claim.
 
 ## B8: evidence boundary
 
-JVM tests, Android compilation, and direct instrumentation validate the contract and lifecycle harness, not a real pose engine. `connectedDebugAndroidTest` is reported separately and may be blocked by Gradle UTP gRPC startup. P0 physical evidence requires direct `am instrument` on an available physical device after installing the exact current APK and test APK, hashing pulled copies outside Git, and recording a redacted run id. Emulator-only or historical device results never substitute for current physical evidence.
+JVM tests, Android compilation, and direct instrumentation validate the contract and lifecycle harness, not a real pose engine. Before every physical direct round, the device must be a non-emulator `device` target with `isKeyguardShowing=false`, `mDreamingLockscreen=false`, `deviceLocked=0`, screen on, and a resumed activity. No ADB PIN/password/pattern or automatic unlock is permitted. `connectedDebugAndroidTest` is reported separately and may be blocked by Gradle UTP gRPC startup. P0 physical evidence requires direct `am instrument` on the unlocked physical device after installing the exact current APK and test APK, hashing local copies outside Git, and recording a redacted run id. Emulator-only or historical device results never substitute for current physical evidence.
 
 ## Coordinate contract
 
