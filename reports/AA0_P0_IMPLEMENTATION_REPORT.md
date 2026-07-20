@@ -8,7 +8,8 @@
 - Main baseline: `2a7605f5ba85803b721741027f0d73c517ca578b`
 - Historical AA0 candidate under review: `2d4f13a56f6e584cef8f0ec533a4da7440d64fad`
 - Current remediation implementation candidate: `e4bbdfa` (`fix(aa0): harden pose lifecycle and bounded metrics`)
-- Final branch tip: the exact `git rev-parse HEAD` value is recorded in the owner handoff after the documentation commit; no reset, rebase, amend, squash, merge, or force push was used.
+- Frozen evidence candidate: `ddbbe17342a779716db4668db5eab3d798ddfb62`
+- Physical-evidence documentation commit: recorded in the owner handoff after this report-only commit; no reset, rebase, amend, squash, merge, or force push was used.
 
 ## Authorized remediation matrix
 
@@ -21,7 +22,7 @@
 | B5 frame release | `FrameReleaseResult` distinguishes `RELEASED`, `ALREADY_RELEASED`, and `RELEASE_FAILED`; release failures are terminal and never retried. Coordinator records the returned result, not a cast or guess. |
 | B6 bounded metrics | Fixed latency ring (default 2048; constructor-tested capacity 1/3), nearest-rank P50/P95, total-observed/window counts, one injected clock domain, and SUCCESS-only completion FPS. |
 | B7 fake/geometry | Fake requests have independent tokens, bounded clearable/drainable history, and manual old/new/reverse triggers. Geometry composition covers non-full crop, 90°/270°, portrait/wide center-crop, and front mirror with hand-calculated values. Claim is only `GEOMETRY_PURE_CONTRACT_VERIFIED`. |
-| B8 device evidence | Current preflight exposed only an emulator. Direct emulator instrumentation passed 3/3, but no physical-device P0 evidence is claimed. |
+| B8 device evidence | Physical OnePlus GM1910, Android 11/API 30, `ro.kernel.qemu` not `1`; three independent direct rounds passed 3/3 each with zero failures/errors. |
 
 ## Verification results
 
@@ -33,9 +34,11 @@
 | `testDebugUnitTest --rerun-tasks` | PASS; 75 tests, 0 failures, 0 errors, 0 skipped |
 | `assembleDebugAndroidTest` | PASS |
 | `lintDebug --rerun-tasks` | PASS; 0 errors, 12 warnings |
-| `connectedDebugAndroidTest --stacktrace` | `BLOCKED_INFRA_UTP_GRPC`; listener failed before assertions. A retry was captured outside Git under an opaque run directory. |
-| Direct emulator `am instrument` | PASS; exact `PoseContractAndroidTest`, 3/3. This is not physical-device P0 evidence. |
-| Physical direct instrumentation | NOT_AVAILABLE; current device preflight had no physical device. Historical device results were not reused. |
+| `connectedDebugAndroidTest --stacktrace` | `BLOCKED_INFRA_UTP_GRPC`; listener failed before assertions. The retry is recorded outside Git under opaque run ID `20260720-215740-96910bff`. |
+| Direct physical `am instrument` | PASS; exact `PoseContractAndroidTest`, 3 rounds × 3 tests, 0 failures, 0 errors, runner completed normally. |
+| Physical device identity | OnePlus GM1910, Android 11/API 30; serial, IMEI, Android ID, fingerprint, account and location omitted. |
+| Package/version/runner | `com.jovi.photoai` versionName `0.1.0`, versionCode `1`; test package `com.jovi.photoai.test`; `androidx.test.runner.AndroidJUnitRunner`. |
+| Signature | Both APKs verified with APK Signature Scheme v2; debug certificate SHA-256 `9ab144e824abf26a5941819abb06831288c36a8bfe622657e3dc9d88281fc774`. |
 | `python scripts/prepush_privacy_audit.py` | PASS |
 | Banned SDK/model source audit | PASS; no production dependency/import/model asset |
 | `git diff --check` and tracked-artifact audit | PASS |
@@ -50,8 +53,9 @@ Built after remediation and recorded outside Git:
 
 - `app-debug.apk`: 11,797,449 bytes; SHA-256 `D3B491876D686426D19F79A89A524AF6989C3A8A40B04A840D02239DF70F8297`
 - `app-debug-androidTest.apk`: 583,017 bytes; SHA-256 `7D667C843953FC22EC4F7D26BB1D7EFAA7BEE98FC65FAD200642C4E7D1CFCD4E`
+- Both exact local APKs were installed successfully on the physical device; install exit code was 0 for each.
 
-No APK, test APK, model, image, logcat, UTP stacktrace, device serial, account data, or private path was added to Git. The direct-run material is outside the repository at `E:\project\_device-evidence\aa0-p0-remediation\20260720-000216-ee0b17a3`.
+No APK, test APK, model, image, logcat, UTP stacktrace, device serial, account data, or private device identifier was added to Git. Rebuild, package verification, installation, and three direct-run outputs are outside the repository under opaque run ID `20260720-215740-96910bff`.
 
 ## Boundary declaration
 
@@ -59,6 +63,6 @@ No changes were made to `CameraXManager`, `CameraScreen`, `CameraDirectorChrome`
 
 ## Final disposition
 
-Code and repository quality gates are complete. Physical P0 evidence is the remaining required gate; therefore the correct stop status is:
+The frozen code candidate is unchanged and physical P0 evidence closure is complete. Connected Gradle remains an infrastructure-only UTP gRPC block; it does not replace the passing physical direct instrumentation. The correct stop status is:
 
-`AA0_P0_REMEDIATION_CODE_COMPLETE_BLOCKED_PHYSICAL_DEVICE`
+`AA0_P0_PHYSICAL_DEVICE_EVIDENCE_COMPLETE_AWAITING_FINAL_DELTA_REVIEW`
