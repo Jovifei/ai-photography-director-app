@@ -27,6 +27,7 @@ data class PoseMetricsSnapshot(
     val latencySampleCount: Long,
     val latencyWindowCapacity: Int,
     val latencyTotalObserved: Long,
+    val timedSuccessCount: Long,
     val effectiveFps: Double?,
     val errorRate: Double,
     val frameReleaseSuccessCount: Long,
@@ -73,6 +74,7 @@ class PoseMetricsAccumulator(
     private val latencyWindow = ArrayDeque<Double>(latencyWindowCapacity)
     private var firstSuccessCompletionNs: Long? = null
     private var lastSuccessCompletionNs: Long? = null
+    private var timedSuccessCount = 0L
 
     /** [acceptedAtNs] is validated for clock-domain consistency but not used for FPS. */
     fun recordSubmitted(acceptedAtNs: Long) = synchronized(lock) {
@@ -88,12 +90,19 @@ class PoseMetricsAccumulator(
     ) = synchronized(lock) {
         when (outcome) {
             PoseMetricOutcome.SUCCESS -> {
-                success++
-                if (timestampNs != null) {
-                    require(timestampNs >= 0L) { "completion timestamp must be non-negative" }
-                    firstSuccessCompletionNs = minOf(firstSuccessCompletionNs ?: timestampNs, timestampNs)
-                    lastSuccessCompletionNs = maxOf(lastSuccessCompletionNs ?: timestampNs, timestampNs)
+                val completionNs = requireNotNull(timestampNs) {
+                    "SUCCESS requires a non-null completion timestamp"
                 }
+                require(completionNs >= 0L) {
+                    "SUCCESS completion timestamp must be non-negative"
+                }
+                require(lastSuccessCompletionNs == null || completionNs >= lastSuccessCompletionNs!!) {
+                    "SUCCESS completion timestamps must be non-decreasing"
+                }
+                success++
+                timedSuccessCount++
+                firstSuccessCompletionNs = firstSuccessCompletionNs ?: completionNs
+                lastSuccessCompletionNs = completionNs
             }
             PoseMetricOutcome.NO_PERSON -> noPerson++
             PoseMetricOutcome.MULTI_PERSON_UNKNOWN -> multiPersonUnknown++
@@ -141,6 +150,7 @@ class PoseMetricsAccumulator(
             latencySampleCount = latencyWindow.size.toLong(),
             latencyWindowCapacity = latencyWindowCapacity,
             latencyTotalObserved = latencyTotalObserved,
+            timedSuccessCount = timedSuccessCount,
             effectiveFps = effectiveFps(),
             errorRate = if (count == 0L) 0.0 else error.toDouble() / count.toDouble(),
             frameReleaseSuccessCount = frameReleaseSuccessCount,
@@ -164,7 +174,11 @@ class PoseMetricsAccumulator(
         val first = firstSuccessCompletionNs ?: return null
         val last = lastSuccessCompletionNs ?: return null
         val elapsedSeconds = (last - first).toDouble() / 1_000_000_000.0
-        return if (elapsedSeconds <= 0.0) null else success.toDouble() / elapsedSeconds
+        return if (timedSuccessCount < 2L || elapsedSeconds <= 0.0) {
+            null
+        } else {
+            (timedSuccessCount - 1L).toDouble() / elapsedSeconds
+        }
     }
 
     private companion object {

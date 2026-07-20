@@ -1,6 +1,7 @@
 package com.jovi.photoai.pose
 
 import java.util.concurrent.CountDownLatch
+import java.util.concurrent.ConcurrentLinkedQueue
 import java.util.concurrent.Executors
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
@@ -75,9 +76,10 @@ class FrameLeaseTest {
         val concurrent = CloseOnceFrameLease(Unit) {}
         val executor = Executors.newFixedThreadPool(8)
         val done = CountDownLatch(100)
+        val statuses = ConcurrentLinkedQueue<FrameReleaseStatus>()
         repeat(100) {
             executor.execute {
-                concurrent.releaseOnce()
+                statuses += concurrent.releaseOnce().status
                 done.countDown()
             }
         }
@@ -85,5 +87,7 @@ class FrameLeaseTest {
         executor.shutdownNow()
         assertEquals(1, concurrent.successfulReleaseCount)
         assertEquals(100, concurrent.closeAttemptCount)
+        assertEquals(1, statuses.count { it == FrameReleaseStatus.RELEASED })
+        assertEquals(99, statuses.count { it == FrameReleaseStatus.ALREADY_RELEASED })
     }
 }

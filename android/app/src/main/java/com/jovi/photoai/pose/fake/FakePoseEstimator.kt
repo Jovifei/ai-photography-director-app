@@ -63,9 +63,10 @@ class FakePoseEstimator(
         get() = synchronized(lock) { active.keys.toList().sorted() }
 
     override fun submit(frame: PoseInputFrame, callback: (PoseEstimate) -> Unit): PoseSubmission {
-        check(!closed.get()) { "fake engine is closed" }
         val pending = synchronized(lock) {
+            check(!closed.get()) { "fake engine is closed" }
             val request = Pending(nextToken.getAndIncrement(), frame.frameId, frame.generation, frame.timestampNs, callback)
+            request.submission = Submission(request)
             active[request.requestToken] = request
             if (history.size == historyCapacity) history.removeFirst()
             history.addLast(request)
@@ -82,14 +83,18 @@ class FakePoseEstimator(
                 synchronized(lock) { active.remove(pending.requestToken) }
                 throw IllegalStateException(selected.message)
             }
-            is FakePoseScenario.Delayed -> scheduler.schedule(
-                { emitRequest(pending.requestToken) },
-                selected.delayMs,
-                TimeUnit.MILLISECONDS,
-            )
+            is FakePoseScenario.Delayed -> runCatching {
+                scheduler.schedule(
+                    { emitRequest(pending.requestToken) },
+                    selected.delayMs,
+                    TimeUnit.MILLISECONDS,
+                )
+            }.onFailure {
+                synchronized(lock) { active.remove(pending.requestToken) }
+            }
             FakePoseScenario.NeverCallback -> Unit
         }
-        return Submission(pending)
+        return pending.submission!!
     }
 
     /** Emits the newest retained request for [frameId], including after cancel. */
@@ -105,6 +110,9 @@ class FakePoseEstimator(
         } ?: return
         pending.callback(estimate(pending))
     }
+
+    /** Explicit name for tests that model a callback arriving after close(). */
+    fun emitHistoricalRequest(requestToken: Long) = emitRequest(requestToken)
 
     fun requestTokens(frameId: Long): List<Long> = synchronized(lock) {
         history.filter { it.frameId == frameId }.map { it.requestToken }
@@ -125,8 +133,8 @@ class FakePoseEstimator(
         if (!closed.compareAndSet(false, true)) return
         closeCount.incrementAndGet()
         synchronized(lock) {
+            active.values.toList().forEach { it.submission?.cancel() }
             active.clear()
-            history.clear()
         }
         if (ownsScheduler) scheduler.shutdownNow()
     }
@@ -198,7 +206,9 @@ class FakePoseEstimator(
         val generation: Long,
         val timestampNs: Long,
         val callback: (PoseEstimate) -> Unit,
-    )
+    ) {
+        var submission: PoseSubmission? = null
+    }
 
     private companion object {
         const val DEFAULT_HISTORY_CAPACITY = 128

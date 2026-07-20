@@ -3,8 +3,13 @@ package com.jovi.photoai.pose.fake
 import com.jovi.photoai.domain.pose.PoseState
 import com.jovi.photoai.pose.PoseTestFixtures
 import java.util.concurrent.CountDownLatch
+import java.util.concurrent.CyclicBarrier
+import java.util.concurrent.ExecutorService
+import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
+import java.util.concurrent.atomic.AtomicInteger
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Test
 
@@ -43,13 +48,21 @@ class FakePoseEstimatorTest {
     @Test
     fun close_isIdempotentAndDelayedScenarioDoesNotRetainRawFrame() {
         val engine = FakePoseEstimator(FakePoseScenario.Delayed(10L))
-        engine.submit(PoseTestFixtures.frame()) {}
+        val token = engine.run {
+            submit(PoseTestFixtures.frame()) {}
+            requestTokens(1L).single()
+        }
 
         engine.close()
         engine.close()
 
         assertEquals(1, engine.engineCloseCount)
         assertTrue(engine.isClosed)
+        assertEquals(0, engine.pendingCount)
+        assertEquals(1, engine.historySize)
+        engine.emitHistoricalRequest(token)
+        engine.clearHistory()
+        assertEquals(0, engine.historySize)
     }
 
     @Test
@@ -72,5 +85,69 @@ class FakePoseEstimatorTest {
         assertEquals(3, engine.drainHistory().size)
         assertEquals(0, engine.historySize)
         engine.close()
+    }
+
+    @Test
+    fun submitAndClose_areAtomicAndCloseRetainsOnlyExplicitlyClearableHistory() {
+        val engine = FakePoseEstimator(FakePoseScenario.NeverCallback, historyCapacity = 16)
+        val firstSubmission = engine.submit(PoseTestFixtures.frame(id = 10L)) {}
+        val firstToken = engine.requestTokens(10L).single()
+        engine.close()
+
+        assertTrue(firstSubmission.isCancelled)
+        assertEquals(0, engine.pendingCount)
+        assertTrue(engine.isClosed)
+        engine.emitHistoricalRequest(firstToken)
+        assertEquals(0, engine.pendingCount)
+
+        try {
+            engine.submit(PoseTestFixtures.frame(id = 11L)) {}
+            throw AssertionError("closed Fake accepted a new request")
+        } catch (error: IllegalStateException) {
+            assertEquals("fake engine is closed", error.message)
+        }
+        assertEquals(0, engine.pendingCount)
+        assertEquals(1, engine.historySize)
+        assertEquals(1, engine.drainHistory().size)
+        assertEquals(0, engine.historySize)
+    }
+
+    @Test
+    fun oneHundredSubmitCloseRaces_leaveNoActiveRequestsWithoutSleep() {
+        val engine = FakePoseEstimator(FakePoseScenario.NeverCallback, historyCapacity = 32)
+        val parties = 101
+        val barrier = CyclicBarrier(parties)
+        val done = CountDownLatch(parties)
+        val accepted = AtomicInteger(0)
+        val rejected = AtomicInteger(0)
+        val executor: ExecutorService = Executors.newFixedThreadPool(parties)
+
+        repeat(100) { index ->
+            executor.execute {
+                barrier.await()
+                try {
+                    engine.submit(PoseTestFixtures.frame(id = index.toLong())) {}
+                    accepted.incrementAndGet()
+                } catch (error: IllegalStateException) {
+                    assertEquals("fake engine is closed", error.message)
+                    rejected.incrementAndGet()
+                } finally {
+                    done.countDown()
+                }
+            }
+        }
+        executor.execute {
+            barrier.await()
+            engine.close()
+            done.countDown()
+        }
+
+        assertTrue(done.await(5, TimeUnit.SECONDS))
+        executor.shutdown()
+        assertTrue(executor.awaitTermination(5, TimeUnit.SECONDS))
+        assertEquals(0, engine.pendingCount)
+        assertTrue(engine.historySize <= 32)
+        assertEquals(100, accepted.get() + rejected.get())
+        assertFalse(engine.activeRequestTokens.isNotEmpty())
     }
 }

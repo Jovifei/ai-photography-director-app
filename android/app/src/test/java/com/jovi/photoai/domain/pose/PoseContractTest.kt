@@ -64,6 +64,22 @@ class PoseContractTest {
     }
 
     @Test
+    fun staleAndCancelledTerminalEstimates_areValidNoPersonStates() {
+        listOf(PoseState.STALE_RESULT_DROPPED, PoseState.CANCELLED).forEach { state ->
+            val estimate = PoseEstimate(
+                frameId = 1L,
+                generation = 0L,
+                timestampNs = 1L,
+                engineId = PoseEngineId.FAKE,
+                state = state,
+            )
+            assertEquals(state, estimate.state)
+            assertNull(estimate.person)
+            assertEquals(0, estimate.diagnostics.pointCount)
+        }
+    }
+
+    @Test
     fun estimateStateInvariant_matrixRejectsInvalidAndAcceptsCanonicalTrackedPartial() {
         val point = PosePoint(PoseKeypoint33.NOSE, 0.5, 0.5)
         val person = PosePerson(mapOf(PoseKeypoint33.NOSE to point))
