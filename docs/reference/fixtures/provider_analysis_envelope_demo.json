@@ -1,0 +1,28 @@
+{
+  "envelope_version": "1.0",
+  "request_id": "phase1-5-demo-envelope-001",
+  "reference_id": "demo-reference-1",
+  "provider_id": "nightly-photo-intelligence-pipeline",
+  "provider_type": "PIPELINE",
+  "model_id": "CANDIDATE_UNSELECTED",
+  "model_revision": "NOT_APPLICABLE_P0",
+  "model_artifact_sha256": null,
+  "runtime_id": "offline-producer-planning-only",
+  "started_at_utc": "2026-07-26T00:00:00Z",
+  "completed_at_utc": "2026-07-26T00:00:00Z",
+  "latency_ms": 0,
+  "status": "SUCCESS",
+  "output_schema_version": "1.0",
+  "bundle": { "reference_id": "demo-reference-1", "scene": "城市夜景玻璃幕墙", "background_story": "利用反射形成未来感和孤独氛围", "lighting": "侧后方冷色光", "composition": "三分法，人物位于右侧", "subject_intent": "身体微侧，肩膀放松", "emotion": "安静等待", "pose_template": "文字参考：身体微侧，视线越过镜头，不进行实时骨架检测。", "camera_position": "略低机位，45 度侧向取景。", "director_prompt": "先确认玻璃反射与人物错开，再把人物放在右侧三分线并保留左侧留白。", "version": "1.0" },
+  "confidence_summary": { "direct_observation_fields": ["scene", "lighting", "composition"], "photographic_interpretation_fields": ["background_story", "subject_intent", "emotion"], "creative_recommendation_fields": ["pose_template", "camera_position", "director_prompt"] },
+  "uncertainty_flags": {
+    "scene": { "level": "LOW", "basis": "DIRECT_OBSERVATION" }, "background_story": { "level": "MEDIUM", "basis": "PHOTOGRAPHIC_INTERPRETATION" }, "lighting": { "level": "LOW", "basis": "DIRECT_OBSERVATION" },
+    "composition": { "level": "LOW", "basis": "DIRECT_OBSERVATION" }, "subject_intent": { "level": "MEDIUM", "basis": "PHOTOGRAPHIC_INTERPRETATION" }, "emotion": { "level": "HIGH", "basis": "PHOTOGRAPHIC_INTERPRETATION" },
+    "pose_template": { "level": "MEDIUM", "basis": "CREATIVE_RECOMMENDATION" }, "camera_position": { "level": "MEDIUM", "basis": "CREATIVE_RECOMMENDATION" }, "director_prompt": { "level": "MEDIUM", "basis": "CREATIVE_RECOMMENDATION" }
+  },
+  "warnings": ["PLANNING_FIXTURE_NO_MODEL_EXECUTED"],
+  "provenance": { "result_origin": "PIPELINE", "producer_release": null, "input_media_retained": false, "raw_image_available": false, "direct_observation_fields": ["scene", "lighting", "composition"], "photographic_interpretation_fields": ["background_story", "subject_intent", "emotion"], "creative_recommendation_fields": ["pose_template", "camera_position", "director_prompt"] },
+  "safety_flags": ["NO_SAFETY_FLAGS"],
+  "retryable": false,
+  "error": null
+}

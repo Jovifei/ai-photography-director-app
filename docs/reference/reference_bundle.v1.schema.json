@@ -1,0 +1,28 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://photoai.local/drafts/reference_bundle.v1.schema.json",
+  "title": "ReferenceBundle v1",
+  "description": "Frozen app-consumer contract. It contains user-consumable guidance only: no image data, URI, path, provider metadata, credentials, keypoints, or live Pose data.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["reference_id", "scene", "background_story", "lighting", "composition", "subject_intent", "emotion", "pose_template", "camera_position", "director_prompt", "version"],
+  "properties": {
+    "reference_id": { "type": "string", "minLength": 1, "maxLength": 128, "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$", "description": "Opaque identifier only; never a URI, image path, account, device, or location identifier." },
+    "scene": { "$ref": "#/$defs/plainText240" },
+    "background_story": { "$ref": "#/$defs/plainText480" },
+    "lighting": { "$ref": "#/$defs/plainText240" },
+    "composition": { "$ref": "#/$defs/plainText360" },
+    "subject_intent": { "$ref": "#/$defs/plainText360" },
+    "emotion": { "$ref": "#/$defs/plainText240" },
+    "pose_template": { "$ref": "#/$defs/plainText480", "description": "Textual reference-derived pose intent only. It is not a keypoint set, skeleton coordinate payload, biometric result, or Pose-provider output." },
+    "camera_position": { "$ref": "#/$defs/plainText360" },
+    "director_prompt": { "$ref": "#/$defs/plainText720" },
+    "version": { "const": "1.0", "description": "Frozen payload version. Unknown versions must be rejected rather than guessed or partially rendered." }
+  },
+  "$defs": {
+    "plainText240": { "type": "string", "minLength": 1, "maxLength": 240, "pattern": "^[^\\r\\n]+$", "description": "Plain single-line text. Markdown and newlines are not part of the v1 wire contract." },
+    "plainText360": { "type": "string", "minLength": 1, "maxLength": 360, "pattern": "^[^\\r\\n]+$", "description": "Plain single-line text. Markdown and newlines are not part of the v1 wire contract." },
+    "plainText480": { "type": "string", "minLength": 1, "maxLength": 480, "pattern": "^[^\\r\\n]+$", "description": "Plain single-line text. Markdown and newlines are not part of the v1 wire contract." },
+    "plainText720": { "type": "string", "minLength": 1, "maxLength": 720, "pattern": "^[^\\r\\n]+$", "description": "Plain single-line text. Markdown and newlines are not part of the v1 wire contract." }
+  }
+}
