@@ -44,7 +44,7 @@ Home → Import Reference → Reference Analysis → Director Card → Camera Di
 | `./gradlew.bat assembleDebug lintDebug testDebugUnitTest` | PASS |
 | JVM 单元测试 | **91 passed**, 0 failures, 0 errors, 0 skipped |
 | `./gradlew.bat connectedDebugAndroidTest` | **3/3 passed**，真实 Android 设备（脱敏） |
-| Debug APK | PASS，11,838,668 bytes; SHA-256 `FE773BF0B203E15181A9382EEB02DC81F38E820DCBA4DA4933764D4828F234D4` |
+| Debug APK | PASS，11,830,217 bytes; SHA-256 `C7ADC41A59F8CAC068A7E830BDF640778E022E192E914C7C984DA95EACC4903E` |
 | Manifest / 源码禁止项扫描 | PASS |
 
 真实用户照片的 Picker 选择没有在本轮自动化中执行：本实现不读取或测试私人图库。该限制不影响系统 Picker、纯导航、Demo Bundle、Director Card 和既有 Camera instrumentation 的编译/测试证明，但真实用户选择体验应在独立人工验收中观察。
