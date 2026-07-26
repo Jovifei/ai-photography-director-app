@@ -4,10 +4,10 @@
   "reference_id": "demo-reference-1",
   "provider_id": "nightly-photo-intelligence-pipeline",
   "provider_type": "PIPELINE",
-  "model_id": "CANDIDATE_UNSELECTED",
-  "model_revision": "NOT_APPLICABLE_P0",
-  "model_artifact_sha256": null,
-  "runtime_id": "offline-producer-planning-only",
+  "model_id": "contract-fixture-model",
+  "model_revision": "contract-fixture-revision-1",
+  "model_artifact_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  "runtime_id": "contract-fixture-runtime",
   "started_at_utc": "2026-07-26T00:00:00Z",
   "completed_at_utc": "2026-07-26T00:00:00Z",
   "latency_ms": 0,
@@ -21,7 +21,7 @@
     "pose_template": { "level": "MEDIUM", "basis": "CREATIVE_RECOMMENDATION" }, "camera_position": { "level": "MEDIUM", "basis": "CREATIVE_RECOMMENDATION" }, "director_prompt": { "level": "MEDIUM", "basis": "CREATIVE_RECOMMENDATION" }
   },
   "warnings": ["PLANNING_FIXTURE_NO_MODEL_EXECUTED"],
-  "provenance": { "result_origin": "PIPELINE", "producer_release": null, "input_media_retained": false, "raw_image_available": false, "direct_observation_fields": ["scene", "lighting", "composition"], "photographic_interpretation_fields": ["background_story", "subject_intent", "emotion"], "creative_recommendation_fields": ["pose_template", "camera_position", "director_prompt"] },
+  "provenance": { "result_origin": "PIPELINE", "producer_release": "contract-fixture-release-1", "input_media_retained": false, "raw_image_available": false, "direct_observation_fields": ["scene", "lighting", "composition"], "photographic_interpretation_fields": ["background_story", "subject_intent", "emotion"], "creative_recommendation_fields": ["pose_template", "camera_position", "director_prompt"] },
   "safety_flags": ["NO_SAFETY_FLAGS"],
   "retryable": false,
   "error": null

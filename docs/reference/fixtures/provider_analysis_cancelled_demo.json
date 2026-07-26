@@ -1,0 +1,28 @@
+{
+  "envelope_version": "1.0",
+  "request_id": "phase1-5-cancelled-envelope-001",
+  "reference_id": "demo-reference-1",
+  "provider_id": "contract-fixture-provider",
+  "provider_type": "LOCAL_SERVICE",
+  "model_id": null,
+  "model_revision": null,
+  "model_artifact_sha256": null,
+  "runtime_id": null,
+  "started_at_utc": "2026-07-26T00:00:00Z",
+  "completed_at_utc": "2026-07-26T00:00:00Z",
+  "latency_ms": 0,
+  "status": "CANCELLED",
+  "output_schema_version": null,
+  "bundle": null,
+  "confidence_summary": { "direct_observation_fields": [], "photographic_interpretation_fields": [], "creative_recommendation_fields": [] },
+  "uncertainty_flags": {
+    "scene": { "level": "NOT_ASSESSED", "basis": "INSUFFICIENT_EVIDENCE" }, "background_story": { "level": "NOT_ASSESSED", "basis": "INSUFFICIENT_EVIDENCE" }, "lighting": { "level": "NOT_ASSESSED", "basis": "INSUFFICIENT_EVIDENCE" },
+    "composition": { "level": "NOT_ASSESSED", "basis": "INSUFFICIENT_EVIDENCE" }, "subject_intent": { "level": "NOT_ASSESSED", "basis": "INSUFFICIENT_EVIDENCE" }, "emotion": { "level": "NOT_ASSESSED", "basis": "INSUFFICIENT_EVIDENCE" },
+    "pose_template": { "level": "NOT_ASSESSED", "basis": "INSUFFICIENT_EVIDENCE" }, "camera_position": { "level": "NOT_ASSESSED", "basis": "INSUFFICIENT_EVIDENCE" }, "director_prompt": { "level": "NOT_ASSESSED", "basis": "INSUFFICIENT_EVIDENCE" }
+  },
+  "warnings": ["USER_CANCELLED_BEFORE_PROVIDER_RESULT"],
+  "provenance": { "result_origin": "UNAVAILABLE", "producer_release": null, "input_media_retained": false, "raw_image_available": false, "direct_observation_fields": [], "photographic_interpretation_fields": [], "creative_recommendation_fields": [] },
+  "safety_flags": ["NO_SAFETY_FLAGS"],
+  "retryable": false,
+  "error": { "code": "USER_CANCELLED", "user_message": "已取消分析。", "preserve_reference": false, "allow_safe_event_log": false, "allow_diagnostic_upload": false, "product_action": "STOP" }
+}
