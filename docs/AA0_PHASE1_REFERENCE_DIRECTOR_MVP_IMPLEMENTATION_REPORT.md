@@ -1,6 +1,6 @@
 # AA0 Phase 1：Reference → Director MVP 实现报告
 
-**状态：** `IMPLEMENTED — AWAITING_INDEPENDENT_REVIEW`
+**状态：** `EVIDENCE_REMEDIATED — AWAITING_DELTA_REVIEW`
 **分支：** `codex/phase1-reference-director-mvp`
 **起点基线：** `8a4006b0266d371b3e05d69fbec08642b5ad4518`
 
@@ -51,8 +51,13 @@ Home → Import Reference → Reference Analysis → Director Card → Camera Di
 
 ## Evidence remediation (exact review identity)
 
-- **Base SHA:** `8a4006b0266d371b3e05d69fbec08642b5ad4518`
-- **Reviewed implementation candidate SHA:** `2bbe3c42879e5c2d0d43cded8104d2c78edf1e4d`
+| Lineage point | Full SHA | Meaning |
+| --- | --- | --- |
+| Base | `8a4006b0266d371b3e05d69fbec08642b5ad4518` | `main` merge-base used for the original Phase 1 review. |
+| Original reviewed candidate | `2bbe3c42879e5c2d0d43cded8104d2c78edf1e4d` | Immutable original implementation candidate; it is not relabeled by later evidence work. |
+| Instrumentation remediation | `2c86c5e68551135ee30cd1ec0690a9766c6e1258` | Phase 1-specific instrumentation and debug-test support evidence. |
+| Documentation/evidence remediation | `059be675c149fcfe195a8702044b987574e14002` | Evidence baseline and verification-record correction; this was the remediation HEAD before this finalization task. |
+
 - **Branch:** `codex/phase1-reference-director-mvp`
 - **Candidate scope:** `Reference Photo Import -> Demo Analysis -> Director Card -> Camera Director`.
 - **Demo Analysis != Real AI.** It returns fixed local demo data, performs no model inference, and never uploads the selected URI or image.
@@ -81,6 +86,8 @@ The two Phase 1 methods are:
 They confirm MainActivity/Home reachability, the Import surface, the image-only `PickVisualMedia` Intent contract, fake-URI continuation in inspection mode without a media read, Demo Analysis presentation, Director Card presentation, Camera Director entry, and the Camera Director back path. Camera permission is granted only to stabilize the existing entry route. This is not a new Camera Preview or capture acceptance claim.
 
 The remediation delta adds Android-test and debug-test-support dependencies only. It changes no production feature source, UI0 design system, `CameraXManager`, `CameraUiState`, Manifest permissions, formal Pose Domain, or release runtime dependency graph. The original candidate did touch `CameraScreen` and `CameraDirectorChrome` for reference-guidance presentation; that fact is not hidden by this evidence-only remediation.
+
+`059be675c149fcfe195a8702044b987574e14002` is documentation/evidence remediation, not a functional product change and not a replacement identity for `2bbe3c42879e5c2d0d43cded8104d2c78edf1e4d`. The exact full remediation lineage and range statistics are recorded in `reports/PHASE1_GIT_SCOPE_EVIDENCE.md`.
 
 ## Reviewer 关注点
 
