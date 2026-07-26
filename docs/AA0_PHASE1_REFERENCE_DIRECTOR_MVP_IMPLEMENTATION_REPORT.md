@@ -43,11 +43,44 @@ Home → Import Reference → Reference Analysis → Director Card → Camera Di
 | --- | --- |
 | `./gradlew.bat assembleDebug lintDebug testDebugUnitTest` | PASS |
 | JVM 单元测试 | **91 passed**, 0 failures, 0 errors, 0 skipped |
-| `./gradlew.bat connectedDebugAndroidTest` | **3/3 passed**，真实 Android 设备（脱敏） |
-| Debug APK | PASS，11,830,217 bytes; SHA-256 `C7ADC41A59F8CAC068A7E830BDF640778E022E192E914C7C984DA95EACC4903E` |
+| `./gradlew.bat connectedDebugAndroidTest` | Superseded: legacy AA0/P0 contract coverage only; it is not Phase 1 flow evidence. |
+| Debug APK | Superseded by the Phase 1 evidence-remediation artifact record below. |
 | Manifest / 源码禁止项扫描 | PASS |
 
 真实用户照片的 Picker 选择没有在本轮自动化中执行：本实现不读取或测试私人图库。该限制不影响系统 Picker、纯导航、Demo Bundle、Director Card 和既有 Camera instrumentation 的编译/测试证明，但真实用户选择体验应在独立人工验收中观察。
+
+## Evidence remediation (exact review identity)
+
+- **Base SHA:** `8a4006b0266d371b3e05d69fbec08642b5ad4518`
+- **Reviewed implementation candidate SHA:** `2bbe3c42879e5c2d0d43cded8104d2c78edf1e4d`
+- **Branch:** `codex/phase1-reference-director-mvp`
+- **Candidate scope:** `Reference Photo Import -> Demo Analysis -> Director Card -> Camera Director`.
+- **Demo Analysis != Real AI.** It returns fixed local demo data, performs no model inference, and never uploads the selected URI or image.
+- **Pose Runtime = Phase 2.** This phase has no real-time pose runtime.
+- **Not integrated:** MediaPipe, ML Kit Pose, MoveNet, RTMPose, model download, cloud AI API, GPU inference, or network analysis.
+- **Real Picker selection:** `NOT_VERIFIED`. The device evidence verifies the Android image-only Picker Intent contract and a test-only fake-URI continuation without reading a gallery or private image; it does not assert a user-owned photo selection.
+
+### Corrected device verification record
+
+The former `3/3` connected-test statement is retained only as historical AA0/P0 contract coverage and is **not** Phase 1 evidence. Evidence remediation added two Phase 1 instrumentation methods and ran them with the retained three legacy methods on a physical `DEVICE_PRIMARY_01` (OnePlus GM1910, Android 11 / API 30, arm64-v8a):
+
+| Layer | Result |
+| --- | --- |
+| Phase 1 instrumentation | **2/2 passed**, 0 failures, 0 errors |
+| All connected instrumentation | **5/5 passed**, 0 failures, 0 errors |
+| JVM unit tests | **91/91 passed**, 0 failures, 0 errors |
+| `clean`, `assembleDebug`, `testDebugUnitTest`, `connectedDebugAndroidTest` | PASS |
+| Debug APK | 11,830,440 bytes; SHA-256 `50A3130D4AEE171BBD064F6CDE1419090D880A6461627F9C215B269D7ED20A41` |
+| Debug AndroidTest APK | 1,015,808 bytes; SHA-256 `BC0AC3F8A0AA660D36F68483D49FBC3EC010275137AA68912B8E04912DF712F6` |
+
+The two Phase 1 methods are:
+
+1. `ImportReferenceFakeUriAndroidTest#fakeUri_enablesDemoAnalysisContinuation_withoutMediaRead`
+2. `ReferenceDirectorFlowAndroidTest#mainActivity_importSurface_andDemoDirectorNavigation_areReachable`
+
+They confirm MainActivity/Home reachability, the Import surface, the image-only `PickVisualMedia` Intent contract, fake-URI continuation in inspection mode without a media read, Demo Analysis presentation, Director Card presentation, Camera Director entry, and the Camera Director back path. Camera permission is granted only to stabilize the existing entry route. This is not a new Camera Preview or capture acceptance claim.
+
+The remediation delta adds Android-test and debug-test-support dependencies only. It changes no production feature source, UI0 design system, `CameraXManager`, `CameraUiState`, Manifest permissions, formal Pose Domain, or release runtime dependency graph. The original candidate did touch `CameraScreen` and `CameraDirectorChrome` for reference-guidance presentation; that fact is not hidden by this evidence-only remediation.
 
 ## Reviewer 关注点
 
