@@ -1,7 +1,7 @@
 # AA0 Phase 1：Reference → Director MVP 实现报告
 
-**状态：** `IMPLEMENTED — AWAITING_INDEPENDENT_REVIEW`  
-**分支：** `codex/phase1-reference-director-mvp`  
+**状态：** `IMPLEMENTED — AWAITING_INDEPENDENT_REVIEW`
+**分支：** `codex/phase1-reference-director-mvp`
 **起点基线：** `8a4006b0266d371b3e05d69fbec08642b5ad4518`
 
 ## 交付内容
