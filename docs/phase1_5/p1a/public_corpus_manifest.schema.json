@@ -1,0 +1,90 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "phase1_5_p1a_public_corpus.schema.json",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "corpus_id",
+    "status",
+    "external_evidence_root_id",
+    "target_count",
+    "approved_count",
+    "quarantine_count",
+    "minimum_required_count",
+    "allowed_licenses",
+    "samples"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "1.0.0"
+    },
+    "status": {
+      "const": "CORPUS_ACQUIRED_AND_VERIFIED"
+    },
+    "approved_count": {
+      "type": "integer",
+      "minimum": 20
+    },
+    "minimum_required_count": {
+      "const": 20
+    },
+    "samples": {
+      "type": "array",
+      "minItems": 20,
+      "items": {
+        "type": "object",
+        "required": [
+          "sample_id",
+          "license",
+          "source",
+          "sanitized",
+          "tags",
+          "manual_review"
+        ],
+        "properties": {
+          "sample_id": {
+            "pattern": "^p1a-[0-9]{3}$"
+          },
+          "license": {
+            "type": "object",
+            "required": [
+              "id",
+              "url"
+            ]
+          },
+          "source": {
+            "type": "object",
+            "required": [
+              "page_url",
+              "download_url",
+              "source_relative_path",
+              "sha256",
+              "bytes",
+              "mime",
+              "width",
+              "height"
+            ]
+          },
+          "sanitized": {
+            "type": "object",
+            "required": [
+              "relative_path",
+              "sha256",
+              "bytes",
+              "mime",
+              "exif_removed",
+              "gps_removed"
+            ]
+          },
+          "manual_review": {
+            "type": "object",
+            "required": [
+              "status",
+              "note"
+            ]
+          }
+        }
+      }
+    }
+  }
+}

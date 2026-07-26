@@ -1,0 +1,958 @@
+{
+  "schema_version": "1.0.0",
+  "corpus_id": "phase1-5-p1a-public-corpus-20260726T121500Z",
+  "status": "CORPUS_ACQUIRED_AND_VERIFIED",
+  "external_evidence_root_id": "public-corpus-20260726T121500Z",
+  "source_repository": "Wikimedia Commons",
+  "network_download_staging_policy": "Network bytes were first written only in the host-approved download staging area, then verified and copied into the external evidence root. This Git manifest stores only relative evidence paths.",
+  "target_count": 24,
+  "approved_count": 20,
+  "quarantine_count": 4,
+  "minimum_required_count": 20,
+  "allowed_licenses": [
+    "CC0",
+    "Public-Domain",
+    "CC-BY-4.0"
+  ],
+  "artifact_storage": "External evidence only; no image bytes are tracked by Git.",
+  "samples": [
+    {
+      "sample_id": "p1a-001",
+      "title": "City at Night (Unsplash)",
+      "license": {
+        "id": "CC0",
+        "name": "CC0",
+        "url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+        "attribution": "https://unsplash.com/photos/Wn1VBR6CMKo Image at the Wayback Machine Gallery at the Wayback Machine"
+      },
+      "source": {
+        "page_url": "https://commons.wikimedia.org/wiki/File%3ACity_at_Night_(Unsplash).jpg",
+        "download_url": "https://upload.wikimedia.org/wikipedia/commons/4/46/City_at_Night_%28Unsplash%29.jpg",
+        "downloaded_url": "https://upload.wikimedia.org/wikipedia/commons/4/46/City_at_Night_%28Unsplash%29.jpg",
+        "source_domain": "upload.wikimedia.org",
+        "representation": "official_original",
+        "source_relative_path": "source/p1a-001.jpg",
+        "sha256": "b47a5deb172066a56b68e73fb34a75f08b616bfc58b648155c548bf22c9b2d08",
+        "bytes": 11294146,
+        "mime": "image/jpeg",
+        "width": 5443,
+        "height": 3629
+      },
+      "sanitized": {
+        "relative_path": "sanitized/p1a-001.jpg",
+        "sha256": "bfe997c149457eabd49bedc409ad41d203359a442201e52daa7ade513aab5943",
+        "bytes": 5604314,
+        "mime": "image/jpeg",
+        "exif_removed": true,
+        "gps_removed": true
+      },
+      "tags": [
+        "city_night",
+        "no_person",
+        "complex_background",
+        "strong_color",
+        "cool_color"
+      ],
+      "lighting_tags": [
+        "low_light"
+      ],
+      "composition_tags": [
+        "long_exposure"
+      ],
+      "manual_review": {
+        "status": "APPROVED",
+        "note": "Manual visual privacy and safety review passed: public non-private scene, no suspected minor, no sensitive subject, and no identifier, plate, or address observed."
+      }
+    },
+    {
+      "sample_id": "p1a-002",
+      "title": "Kolkata City at night",
+      "license": {
+        "id": "CC0",
+        "name": "CC0",
+        "url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+        "attribution": "Own work"
+      },
+      "source": {
+        "page_url": "https://commons.wikimedia.org/wiki/File%3AKolkata_City_at_night.jpg",
+        "download_url": "https://upload.wikimedia.org/wikipedia/commons/b/b2/Kolkata_City_at_night.jpg",
+        "downloaded_url": "https://upload.wikimedia.org/wikipedia/commons/b/b2/Kolkata_City_at_night.jpg",
+        "source_domain": "upload.wikimedia.org",
+        "representation": "official_original",
+        "source_relative_path": "source/p1a-002.jpg",
+        "sha256": "5e2aa816f5bd49ab13a45d6afab3a9c9b9e2584a8aabf5b49e99872fe06f3926",
+        "bytes": 3812269,
+        "mime": "image/jpeg",
+        "width": 4160,
+        "height": 3120
+      },
+      "sanitized": {
+        "relative_path": "sanitized/p1a-002.jpg",
+        "sha256": "67fc938c5a1e084e548fc634cb642c64c899d7afc42259fcd3865388f71be4b3",
+        "bytes": 3540987,
+        "mime": "image/jpeg",
+        "exif_removed": true,
+        "gps_removed": true
+      },
+      "tags": [
+        "city_night",
+        "no_person",
+        "complex_background",
+        "strong_color"
+      ],
+      "lighting_tags": [
+        "low_light"
+      ],
+      "composition_tags": [
+        "cityscape"
+      ],
+      "manual_review": {
+        "status": "APPROVED",
+        "note": "Manual visual privacy and safety review passed: public non-private scene, no suspected minor, no sensitive subject, and no identifier, plate, or address observed."
+      }
+    },
+    {
+      "sample_id": "p1a-003",
+      "title": "Ch芒teau Frontenac at night, Quebec City, Canada 2",
+      "license": {
+        "id": "CC0",
+        "name": "CC0",
+        "url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+        "attribution": "Own work"
+      },
+      "source": {
+        "page_url": "https://commons.wikimedia.org/wiki/File%3ACh%C3%A2teau_Frontenac_at_night,_Quebec_City,_Canada_2.jpg",
+        "download_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/9/94/Ch%C3%A2teau_Frontenac_at_night%2C_Quebec_City%2C_Canada_2.jpg/1920px-Ch%C3%A2teau_Frontenac_at_night%2C_Quebec_City%2C_Canada_2.jpg",
+        "downloaded_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/9/94/Ch%C3%A2teau_Frontenac_at_night%2C_Quebec_City%2C_Canada_2.jpg/1920px-Ch%C3%A2teau_Frontenac_at_night%2C_Quebec_City%2C_Canada_2.jpg",
+        "source_domain": "upload.wikimedia.org",
+        "representation": "official_wikimedia_thumbnail",
+        "source_relative_path": "source/p1a-003.jpg",
+        "sha256": "b9e83c5ea1395ca94c8789e51e4bd1aa0cbe136bfa58b9d724191b6c355b3870",
+        "bytes": 482076,
+        "mime": "image/jpeg",
+        "width": 1920,
+        "height": 1296
+      },
+      "sanitized": {
+        "relative_path": "sanitized/p1a-003.jpg",
+        "sha256": "94c6bfa2d249f8f8572b9da639d74c2f759c7d1b4410667f3a9db15025806d43",
+        "bytes": 616160,
+        "mime": "image/jpeg",
+        "exif_removed": true,
+        "gps_removed": true
+      },
+      "tags": [
+        "city_night",
+        "architecture",
+        "no_person",
+        "warm_color"
+      ],
+      "lighting_tags": [
+        "low_light"
+      ],
+      "composition_tags": [
+        "vertical_architecture"
+      ],
+      "manual_review": {
+        "status": "APPROVED",
+        "note": "Manual visual privacy and safety review passed: public non-private scene, no suspected minor, no sensitive subject, and no identifier, plate, or address observed."
+      }
+    },
+    {
+      "sample_id": "p1a-004",
+      "title": "Petit Champlain at night, Quebec city",
+      "license": {
+        "id": "CC0",
+        "name": "CC0",
+        "url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+        "attribution": "Own work"
+      },
+      "source": {
+        "page_url": "https://commons.wikimedia.org/wiki/File%3APetit_Champlain_at_night,_Quebec_city.jpg",
+        "download_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/6/6b/Petit_Champlain_at_night%2C_Quebec_city.jpg/1920px-Petit_Champlain_at_night%2C_Quebec_city.jpg",
+        "downloaded_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/6/6b/Petit_Champlain_at_night%2C_Quebec_city.jpg/1920px-Petit_Champlain_at_night%2C_Quebec_city.jpg",
+        "source_domain": "upload.wikimedia.org",
+        "representation": "official_wikimedia_thumbnail",
+        "source_relative_path": "source/p1a-004.jpg",
+        "sha256": "63c483128bc775fe1706900c83816869ad06b0e29e35ea1d26db77d8ee69a978",
+        "bytes": 1246508,
+        "mime": "image/jpeg",
+        "width": 1920,
+        "height": 1754
+      },
+      "sanitized": {
+        "relative_path": "sanitized/p1a-004.jpg",
+        "sha256": "be20da0c5e2c9c7846af7b3cd451ff85e7a29a88b4cc169dbd4694581d933690",
+        "bytes": 1565049,
+        "mime": "image/jpeg",
+        "exif_removed": true,
+        "gps_removed": true
+      },
+      "tags": [
+        "street_environment",
+        "complex_background",
+        "strong_color",
+        "warm_color"
+      ],
+      "lighting_tags": [
+        "low_light"
+      ],
+      "composition_tags": [
+        "leading_lines"
+      ],
+      "manual_review": {
+        "status": "APPROVED",
+        "note": "Manual visual privacy and safety review passed: public non-private scene, no suspected minor, no sensitive subject, and no identifier, plate, or address observed."
+      }
+    },
+    {
+      "sample_id": "p1a-005",
+      "title": "脡difice Price at night, Quebec city, Canada",
+      "license": {
+        "id": "CC0",
+        "name": "CC0",
+        "url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+        "attribution": "Own work"
+      },
+      "source": {
+        "page_url": "https://commons.wikimedia.org/wiki/File%3A%C3%89difice_Price_at_night,_Quebec_city,_Canada.jpg",
+        "download_url": "https://upload.wikimedia.org/wikipedia/commons/d/dc/%C3%89difice_Price_at_night%2C_Quebec_city%2C_Canada.jpg",
+        "downloaded_url": "https://upload.wikimedia.org/wikipedia/commons/d/dc/%C3%89difice_Price_at_night%2C_Quebec_city%2C_Canada.jpg",
+        "source_domain": "upload.wikimedia.org",
+        "representation": "official_original",
+        "source_relative_path": "source/p1a-005.jpg",
+        "sha256": "a0dd01dc5dc480417c4c4072de9e979ea748f310fc46f3d8232fe4737665ca74",
+        "bytes": 8723340,
+        "mime": "image/jpeg",
+        "width": 4524,
+        "height": 2940
+      },
+      "sanitized": {
+        "relative_path": "sanitized/p1a-005.jpg",
+        "sha256": "8588637670df8715abfad4eb639210f2525909740b4f027ceac40b2207aecc5a",
+        "bytes": 3665425,
+        "mime": "image/jpeg",
+        "exif_removed": true,
+        "gps_removed": true
+      },
+      "tags": [
+        "architecture",
+        "no_person",
+        "cool_color",
+        "warm_color"
+      ],
+      "lighting_tags": [
+        "low_light"
+      ],
+      "composition_tags": [
+        "symmetry"
+      ],
+      "manual_review": {
+        "status": "APPROVED",
+        "note": "Manual visual privacy and safety review passed: public non-private scene, no suspected minor, no sensitive subject, and no identifier, plate, or address observed."
+      }
+    },
+    {
+      "sample_id": "p1a-007",
+      "title": "Parasols, Evening, Beach, Rincon de la Victoria, Andalusia, Spain",
+      "license": {
+        "id": "CC0",
+        "name": "CC0",
+        "url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+        "attribution": "Own work"
+      },
+      "source": {
+        "page_url": "https://commons.wikimedia.org/wiki/File%3AParasols,_Evening,_Beach,_Rincon_de_la_Victoria,_Andalusia,_Spain.jpg",
+        "download_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/9/98/Parasols%2C_Evening%2C_Beach%2C_Rincon_de_la_Victoria%2C_Andalusia%2C_Spain.jpg/1920px-Parasols%2C_Evening%2C_Beach%2C_Rincon_de_la_Victoria%2C_Andalusia%2C_Spain.jpg",
+        "downloaded_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/9/98/Parasols%2C_Evening%2C_Beach%2C_Rincon_de_la_Victoria%2C_Andalusia%2C_Spain.jpg/1920px-Parasols%2C_Evening%2C_Beach%2C_Rincon_de_la_Victoria%2C_Andalusia%2C_Spain.jpg",
+        "source_domain": "upload.wikimedia.org",
+        "representation": "official_wikimedia_thumbnail",
+        "source_relative_path": "source/p1a-007.jpg",
+        "sha256": "13c64ecc43c5a8176972f19793a2375030c8ec49fd787849ae257653001fe0b8",
+        "bytes": 949662,
+        "mime": "image/jpeg",
+        "width": 1920,
+        "height": 1278
+      },
+      "sanitized": {
+        "relative_path": "sanitized/p1a-007.jpg",
+        "sha256": "e0701665ae6e094239562f0b01d534e514a0d9d69443be8ff42660bb3535befb",
+        "bytes": 1146509,
+        "mime": "image/jpeg",
+        "exif_removed": true,
+        "gps_removed": true
+      },
+      "tags": [
+        "beach",
+        "no_person",
+        "warm_color"
+      ],
+      "lighting_tags": [
+        "golden_hour"
+      ],
+      "composition_tags": [
+        "negative_space"
+      ],
+      "manual_review": {
+        "status": "APPROVED",
+        "note": "Manual visual privacy and safety review passed: public non-private scene, no suspected minor, no sensitive subject, and no identifier, plate, or address observed."
+      }
+    },
+    {
+      "sample_id": "p1a-008",
+      "title": "Havelock Island, Mangrove tree on the beach, Andaman Islands",
+      "license": {
+        "id": "CC-BY-4.0",
+        "name": "CC BY 4.0",
+        "url": "https://creativecommons.org/licenses/by/4.0",
+        "attribution": "漏 Vyacheslav Argenberg"
+      },
+      "source": {
+        "page_url": "https://commons.wikimedia.org/wiki/File%3AHavelock_Island,_Mangrove_tree_on_the_beach,_Andaman_Islands.jpg",
+        "download_url": "https://upload.wikimedia.org/wikipedia/commons/5/51/Havelock_Island%2C_Mangrove_tree_on_the_beach%2C_Andaman_Islands.jpg",
+        "downloaded_url": "https://upload.wikimedia.org/wikipedia/commons/5/51/Havelock_Island%2C_Mangrove_tree_on_the_beach%2C_Andaman_Islands.jpg",
+        "source_domain": "upload.wikimedia.org",
+        "representation": "official_original",
+        "source_relative_path": "source/p1a-008.jpg",
+        "sha256": "7f9293cfef0388857cbacf12aae4a28ce2ac5421d49cf44817bb6628e71aa64f",
+        "bytes": 6521975,
+        "mime": "image/jpeg",
+        "width": 4032,
+        "height": 2688
+      },
+      "sanitized": {
+        "relative_path": "sanitized/p1a-008.jpg",
+        "sha256": "ec9d0f8fd8fd0f439b386d0c4963ddaa7fe9150dbf30e0f3d05af585aeb64110",
+        "bytes": 3449178,
+        "mime": "image/jpeg",
+        "exif_removed": true,
+        "gps_removed": true
+      },
+      "tags": [
+        "beach",
+        "no_person",
+        "strong_color",
+        "backlit_scene"
+      ],
+      "lighting_tags": [
+        "daylight"
+      ],
+      "composition_tags": [
+        "landscape"
+      ],
+      "manual_review": {
+        "status": "APPROVED",
+        "note": "Landscape review passed. Only any extremely distant, non-discernible figures are incidental and not treated as human subjects."
+      }
+    },
+    {
+      "sample_id": "p1a-009",
+      "title": "Spruce forest at Holma",
+      "license": {
+        "id": "CC0",
+        "name": "CC0",
+        "url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+        "attribution": "Own work"
+      },
+      "source": {
+        "page_url": "https://commons.wikimedia.org/wiki/File%3ASpruce_forest_at_Holma.jpg",
+        "download_url": "https://upload.wikimedia.org/wikipedia/commons/3/34/Spruce_forest_at_Holma.jpg",
+        "downloaded_url": "https://upload.wikimedia.org/wikipedia/commons/3/34/Spruce_forest_at_Holma.jpg",
+        "source_domain": "upload.wikimedia.org",
+        "representation": "official_original",
+        "source_relative_path": "source/p1a-009.jpg",
+        "sha256": "378db84c70a3abcb9476fd20ba325c30be377cc0a51af7b72cb3deaedf3975ee",
+        "bytes": 15511423,
+        "mime": "image/jpeg",
+        "width": 4864,
+        "height": 3648
+      },
+      "sanitized": {
+        "relative_path": "sanitized/p1a-009.jpg",
+        "sha256": "c165f490813141c0c3437531f61706362819935e026b89e041d5fab5351f8374",
+        "bytes": 7686515,
+        "mime": "image/jpeg",
+        "exif_removed": true,
+        "gps_removed": true
+      },
+      "tags": [
+        "forest",
+        "no_person",
+        "complex_background",
+        "cool_color"
+      ],
+      "lighting_tags": [
+        "daylight"
+      ],
+      "composition_tags": [
+        "texture"
+      ],
+      "manual_review": {
+        "status": "APPROVED",
+        "note": "Manual visual privacy and safety review passed: public non-private scene, no suspected minor, no sensitive subject, and no identifier, plate, or address observed."
+      }
+    },
+    {
+      "sample_id": "p1a-010",
+      "title": "Man walking through the Saint Roch neighborhood, Quebec City, Province of Quebec, Canada",
+      "license": {
+        "id": "CC0",
+        "name": "CC0",
+        "url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+        "attribution": "Own work"
+      },
+      "source": {
+        "page_url": "https://commons.wikimedia.org/wiki/File%3AMan_walking_through_the_Saint_Roch_neighborhood,_Quebec_City,_Province_of_Quebec,_Canada.jpg",
+        "download_url": "https://upload.wikimedia.org/wikipedia/commons/b/bc/Man_walking_through_the_Saint_Roch_neighborhood%2C_Quebec_City%2C_Province_of_Quebec%2C_Canada.jpg",
+        "downloaded_url": "https://upload.wikimedia.org/wikipedia/commons/b/bc/Man_walking_through_the_Saint_Roch_neighborhood%2C_Quebec_City%2C_Province_of_Quebec%2C_Canada.jpg",
+        "source_domain": "upload.wikimedia.org",
+        "representation": "official_original",
+        "source_relative_path": "source/p1a-010.jpg",
+        "sha256": "b9d8e26531d76ccdd6dae0409e33906ff4a039d20e4d2c1daf258e2c1437364f",
+        "bytes": 5118180,
+        "mime": "image/jpeg",
+        "width": 2300,
+        "height": 3138
+      },
+      "sanitized": {
+        "relative_path": "sanitized/p1a-010.jpg",
+        "sha256": "6bf37ea963be87c10e468ee7ae82a770ae1c9583780096a8091b0724a59ff730",
+        "bytes": 3206437,
+        "mime": "image/jpeg",
+        "exif_removed": true,
+        "gps_removed": true
+      },
+      "tags": [
+        "street_environment",
+        "single_adult_closeup",
+        "adult_present",
+        "complex_background",
+        "occlusion"
+      ],
+      "lighting_tags": [
+        "daylight"
+      ],
+      "composition_tags": [
+        "environmental_portrait"
+      ],
+      "manual_review": {
+        "status": "APPROVED",
+        "note": "Single clearly adult subject; source title calls the subject a man. Manual review uses age and safety only and does not infer identity."
+      }
+    },
+    {
+      "sample_id": "p1a-012",
+      "title": "World War II woman aircraft worker, Vega Aircraft Corporation, Burbank, California 1942",
+      "license": {
+        "id": "Public-Domain",
+        "name": "Public domain",
+        "url": "",
+        "attribution": "This image is available from the United States Library of Congress's Prints and Photographs division under the digital ID fsac.1a34456.This tag does not indicate the copyright status of the attached work. A normal copyright tag is still required. See Commons:Licensing."
+      },
+      "source": {
+        "page_url": "https://commons.wikimedia.org/wiki/File%3AWorld_War_II_woman_aircraft_worker,_Vega_Aircraft_Corporation,_Burbank,_California_1942.jpg",
+        "download_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d1/World_War_II_woman_aircraft_worker%2C_Vega_Aircraft_Corporation%2C_Burbank%2C_California_1942.jpg/1920px-World_War_II_woman_aircraft_worker%2C_Vega_Aircraft_Corporation%2C_Burbank%2C_California_1942.jpg",
+        "downloaded_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d1/World_War_II_woman_aircraft_worker%2C_Vega_Aircraft_Corporation%2C_Burbank%2C_California_1942.jpg/1920px-World_War_II_woman_aircraft_worker%2C_Vega_Aircraft_Corporation%2C_Burbank%2C_California_1942.jpg",
+        "source_domain": "upload.wikimedia.org",
+        "representation": "official_wikimedia_thumbnail",
+        "source_relative_path": "source/p1a-012.jpg",
+        "sha256": "f11bfa9d3a25f810cb18b4866f5b345ab8f1ed62c971e1650cf4a3aac01810fb",
+        "bytes": 445354,
+        "mime": "image/jpeg",
+        "width": 1920,
+        "height": 1479
+      },
+      "sanitized": {
+        "relative_path": "sanitized/p1a-012.jpg",
+        "sha256": "a725fae363278e63d6efab9001530adae555b326c96eaa030b8b4fb948b911b1",
+        "bytes": 492583,
+        "mime": "image/jpeg",
+        "exif_removed": true,
+        "gps_removed": true
+      },
+      "tags": [
+        "single_adult_half_body",
+        "adult_present",
+        "dynamic_action",
+        "complex_background"
+      ],
+      "lighting_tags": [
+        "side_light"
+      ],
+      "composition_tags": [
+        "environmental_portrait"
+      ],
+      "manual_review": {
+        "status": "APPROVED",
+        "note": "Public-domain historical worker image; title identifies an adult woman. No medical, political, or sensitive activity."
+      }
+    },
+    {
+      "sample_id": "p1a-015",
+      "title": "Colonel Lowe, (i.e., Low) 4th Light Dragoons & servant in winter dress LCCN2001699577",
+      "license": {
+        "id": "Public-Domain",
+        "name": "Public domain",
+        "url": "",
+        "attribution": "Library of Congress Catalog: https://lccn.loc.gov/2001699577 Image download: https://cdn.loc.gov/service/pnp/cph/3g00000/3g09000/3g09300/3g09310v.jpg Original url: https://www.loc.gov/pictures/item/2001699577/"
+      },
+      "source": {
+        "page_url": "https://commons.wikimedia.org/wiki/File%3AColonel_Lowe,_(i.e.,_Low)_4th_Light_Dragoons_%26_servant_in_winter_dress_LCCN2001699577.jpg",
+        "download_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3e/Colonel_Lowe%2C_%28i.e.%2C_Low%29_4th_Light_Dragoons_%26_servant_in_winter_dress_LCCN2001699577.jpg/1920px-Colonel_Lowe%2C_%28i.e.%2C_Low%29_4th_Light_Dragoons_%26_servant_in_winter_dress_LCCN2001699577.jpg",
+        "downloaded_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3e/Colonel_Lowe%2C_%28i.e.%2C_Low%29_4th_Light_Dragoons_%26_servant_in_winter_dress_LCCN2001699577.jpg/1920px-Colonel_Lowe%2C_%28i.e.%2C_Low%29_4th_Light_Dragoons_%26_servant_in_winter_dress_LCCN2001699577.jpg",
+        "source_domain": "upload.wikimedia.org",
+        "representation": "official_wikimedia_thumbnail",
+        "source_relative_path": "source/p1a-015.jpg",
+        "sha256": "623381bbe61258719af839393d7e47f795705b3a128c545545ef8d571a51c831",
+        "bytes": 629464,
+        "mime": "image/jpeg",
+        "width": 1920,
+        "height": 2355
+      },
+      "sanitized": {
+        "relative_path": "sanitized/p1a-015.jpg",
+        "sha256": "57d73f33f9cfb2ec57eb68d36c274853fed36fddb9245d78d9edfad4c7528ab9",
+        "bytes": 826743,
+        "mime": "image/jpeg",
+        "exif_removed": true,
+        "gps_removed": true
+      },
+      "tags": [
+        "two_adults",
+        "adult_present",
+        "full_body",
+        "historical_documentary"
+      ],
+      "lighting_tags": [
+        "daylight"
+      ],
+      "composition_tags": [
+        "formal_portrait"
+      ],
+      "manual_review": {
+        "status": "APPROVED",
+        "note": "Public-domain historical documentary image; title identifies two adult roles. No violence or political activity is depicted."
+      }
+    },
+    {
+      "sample_id": "p1a-016",
+      "title": "Cafe Interior with Coffee",
+      "license": {
+        "id": "CC0",
+        "name": "CC0",
+        "url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+        "attribution": "Own work"
+      },
+      "source": {
+        "page_url": "https://commons.wikimedia.org/wiki/File%3ACafe_Interior_with_Coffee.jpg",
+        "download_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/38/Cafe_Interior_with_Coffee.jpg/1920px-Cafe_Interior_with_Coffee.jpg",
+        "downloaded_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/38/Cafe_Interior_with_Coffee.jpg/1920px-Cafe_Interior_with_Coffee.jpg",
+        "source_domain": "upload.wikimedia.org",
+        "representation": "official_wikimedia_thumbnail",
+        "source_relative_path": "source/p1a-016.jpg",
+        "sha256": "199997b8f9e5bd41c501bd992affd379adc11dbb69021fd9bfec89285959dbb0",
+        "bytes": 1171121,
+        "mime": "image/jpeg",
+        "width": 1920,
+        "height": 3413
+      },
+      "sanitized": {
+        "relative_path": "sanitized/p1a-016.jpg",
+        "sha256": "4ba38559e77fe8a7fb443f4e730eb0e03199b60477888ef8e85d8951315c1b6d",
+        "bytes": 1518302,
+        "mime": "image/jpeg",
+        "exif_removed": true,
+        "gps_removed": true
+      },
+      "tags": [
+        "cafe_interior",
+        "no_person",
+        "warm_color"
+      ],
+      "lighting_tags": [
+        "interior_light"
+      ],
+      "composition_tags": [
+        "environment"
+      ],
+      "manual_review": {
+        "status": "APPROVED",
+        "note": "Manual visual privacy and safety review passed: public non-private scene, no suspected minor, no sensitive subject, and no identifier, plate, or address observed."
+      }
+    },
+    {
+      "sample_id": "p1a-017",
+      "title": "Interior of 1UP Cafe 2024-02-18",
+      "license": {
+        "id": "CC0",
+        "name": "CC0",
+        "url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+        "attribution": "Own work"
+      },
+      "source": {
+        "page_url": "https://commons.wikimedia.org/wiki/File%3AInterior_of_1UP_Cafe_2024-02-18.jpg",
+        "download_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/1/14/Interior_of_1UP_Cafe_2024-02-18.jpg/1920px-Interior_of_1UP_Cafe_2024-02-18.jpg",
+        "downloaded_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/1/14/Interior_of_1UP_Cafe_2024-02-18.jpg/1920px-Interior_of_1UP_Cafe_2024-02-18.jpg",
+        "source_domain": "upload.wikimedia.org",
+        "representation": "official_wikimedia_thumbnail",
+        "source_relative_path": "source/p1a-017.jpg",
+        "sha256": "fe36718957be42aaa5c8777cda05053745381f300d213c64d55bf08af9a996f7",
+        "bytes": 800050,
+        "mime": "image/jpeg",
+        "width": 1920,
+        "height": 1440
+      },
+      "sanitized": {
+        "relative_path": "sanitized/p1a-017.jpg",
+        "sha256": "efd91f803d53f136451498c1082ff78c751f0c830b423165b388b61907de7328",
+        "bytes": 1009993,
+        "mime": "image/jpeg",
+        "exif_removed": true,
+        "gps_removed": true
+      },
+      "tags": [
+        "cafe_interior",
+        "no_person",
+        "complex_background",
+        "strong_color"
+      ],
+      "lighting_tags": [
+        "interior_light"
+      ],
+      "composition_tags": [
+        "environment"
+      ],
+      "manual_review": {
+        "status": "APPROVED",
+        "note": "Manual visual privacy and safety review passed: public non-private scene, no suspected minor, no sensitive subject, and no identifier, plate, or address observed."
+      }
+    },
+    {
+      "sample_id": "p1a-018",
+      "title": "Interior of Floral Cafe 2026-02-25",
+      "license": {
+        "id": "CC0",
+        "name": "CC0",
+        "url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+        "attribution": "Own work"
+      },
+      "source": {
+        "page_url": "https://commons.wikimedia.org/wiki/File%3AInterior_of_Floral_Cafe_2026-02-25.jpg",
+        "download_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/1/18/Interior_of_Floral_Cafe_2026-02-25.jpg/1920px-Interior_of_Floral_Cafe_2026-02-25.jpg",
+        "downloaded_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/1/18/Interior_of_Floral_Cafe_2026-02-25.jpg/1920px-Interior_of_Floral_Cafe_2026-02-25.jpg",
+        "source_domain": "upload.wikimedia.org",
+        "representation": "official_wikimedia_thumbnail",
+        "source_relative_path": "source/p1a-018.jpg",
+        "sha256": "6e24d02e13683d647ca8b439b0e4b1ce0d2d67931f274bc81a7207fa98fe6e57",
+        "bytes": 476595,
+        "mime": "image/jpeg",
+        "width": 1920,
+        "height": 1446
+      },
+      "sanitized": {
+        "relative_path": "sanitized/p1a-018.jpg",
+        "sha256": "4152b8f7e09bdb2aafc6ff4fcc62d8d676e95eb657bf69a6f259b0a05d267144",
+        "bytes": 609367,
+        "mime": "image/jpeg",
+        "exif_removed": true,
+        "gps_removed": true
+      },
+      "tags": [
+        "cafe_interior",
+        "no_person",
+        "complex_background",
+        "warm_color"
+      ],
+      "lighting_tags": [
+        "interior_light"
+      ],
+      "composition_tags": [
+        "environment"
+      ],
+      "manual_review": {
+        "status": "APPROVED",
+        "note": "Manual visual privacy and safety review passed: public non-private scene, no suspected minor, no sensitive subject, and no identifier, plate, or address observed."
+      }
+    },
+    {
+      "sample_id": "p1a-019",
+      "title": "Cafe interior - San Francisco, CA",
+      "license": {
+        "id": "CC0",
+        "name": "CC0",
+        "url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+        "attribution": "Own work"
+      },
+      "source": {
+        "page_url": "https://commons.wikimedia.org/wiki/File%3ACafe_interior_-_San_Francisco,_CA.jpg",
+        "download_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/b/bc/Cafe_interior_-_San_Francisco%2C_CA.jpg/1920px-Cafe_interior_-_San_Francisco%2C_CA.jpg",
+        "downloaded_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/b/bc/Cafe_interior_-_San_Francisco%2C_CA.jpg/1920px-Cafe_interior_-_San_Francisco%2C_CA.jpg",
+        "source_domain": "upload.wikimedia.org",
+        "representation": "official_wikimedia_thumbnail",
+        "source_relative_path": "source/p1a-019.jpg",
+        "sha256": "5dd0e87095da62744caeaa5b4c5ed317f617a27e31a91a2f33e09a260e3105ed",
+        "bytes": 640868,
+        "mime": "image/jpeg",
+        "width": 1920,
+        "height": 1080
+      },
+      "sanitized": {
+        "relative_path": "sanitized/p1a-019.jpg",
+        "sha256": "f2f81054691335f924ddcc4eafe4ecad38030494eff09285a7546c60e72a8b79",
+        "bytes": 800295,
+        "mime": "image/jpeg",
+        "exif_removed": true,
+        "gps_removed": true
+      },
+      "tags": [
+        "cafe_interior",
+        "adult_incidental_public_setting",
+        "complex_background"
+      ],
+      "lighting_tags": [
+        "interior_light"
+      ],
+      "composition_tags": [
+        "wide_environment"
+      ],
+      "manual_review": {
+        "status": "APPROVED",
+        "note": "Commercial cafe interior. The three visible patrons appear adult; no child or private-space content was observed."
+      }
+    },
+    {
+      "sample_id": "p1a-020",
+      "title": "Brutalist architecture, Ashford, Kent",
+      "license": {
+        "id": "CC0",
+        "name": "CC0",
+        "url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+        "attribution": "https://www.flickr.com/photos/seattlecamera/51588765846/"
+      },
+      "source": {
+        "page_url": "https://commons.wikimedia.org/wiki/File%3ABrutalist_architecture,_Ashford,_Kent.jpg",
+        "download_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/ca/Brutalist_architecture%2C_Ashford%2C_Kent.jpg/1920px-Brutalist_architecture%2C_Ashford%2C_Kent.jpg",
+        "downloaded_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/ca/Brutalist_architecture%2C_Ashford%2C_Kent.jpg/1920px-Brutalist_architecture%2C_Ashford%2C_Kent.jpg",
+        "source_domain": "upload.wikimedia.org",
+        "representation": "official_wikimedia_thumbnail",
+        "source_relative_path": "source/p1a-020.jpg",
+        "sha256": "de9bf90b3b3394bff3314403bbf3ac9bc528859ac1af8d4f430ae5b2d9a2d73f",
+        "bytes": 973856,
+        "mime": "image/jpeg",
+        "width": 1920,
+        "height": 1280
+      },
+      "sanitized": {
+        "relative_path": "sanitized/p1a-020.jpg",
+        "sha256": "426c1c02e1f8cecacde47ff326a6cd438baa7788d76b672038cd1c7e68583431",
+        "bytes": 1240343,
+        "mime": "image/jpeg",
+        "exif_removed": true,
+        "gps_removed": true
+      },
+      "tags": [
+        "architecture",
+        "no_person",
+        "minimal_background",
+        "cool_color"
+      ],
+      "lighting_tags": [
+        "daylight"
+      ],
+      "composition_tags": [
+        "geometry"
+      ],
+      "manual_review": {
+        "status": "APPROVED",
+        "note": "Manual visual privacy and safety review passed: public non-private scene, no suspected minor, no sensitive subject, and no identifier, plate, or address observed."
+      }
+    },
+    {
+      "sample_id": "p1a-021",
+      "title": "A example of symmetry in a building",
+      "license": {
+        "id": "CC0",
+        "name": "CC0",
+        "url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+        "attribution": "Own work"
+      },
+      "source": {
+        "page_url": "https://commons.wikimedia.org/wiki/File%3AA_example_of_symmetry_in_a_building.jpg",
+        "download_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f5/A_example_of_symmetry_in_a_building.jpg/1920px-A_example_of_symmetry_in_a_building.jpg",
+        "downloaded_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f5/A_example_of_symmetry_in_a_building.jpg/1920px-A_example_of_symmetry_in_a_building.jpg",
+        "source_domain": "upload.wikimedia.org",
+        "representation": "official_wikimedia_thumbnail",
+        "source_relative_path": "source/p1a-021.jpg",
+        "sha256": "301a9a7b60774008c50014b52bc8904ee0e4222a826e668c44c701101c0b76c3",
+        "bytes": 649097,
+        "mime": "image/jpeg",
+        "width": 1920,
+        "height": 1440
+      },
+      "sanitized": {
+        "relative_path": "sanitized/p1a-021.jpg",
+        "sha256": "0ed6a2d37e46be594ced70ea3e4ed2ef0e0c5b67fc3d7822dcd5d88ed560d7cb",
+        "bytes": 819594,
+        "mime": "image/jpeg",
+        "exif_removed": true,
+        "gps_removed": true
+      },
+      "tags": [
+        "architecture",
+        "no_person",
+        "symmetry"
+      ],
+      "lighting_tags": [
+        "daylight"
+      ],
+      "composition_tags": [
+        "symmetry"
+      ],
+      "manual_review": {
+        "status": "APPROVED",
+        "note": "Manual visual privacy and safety review passed: public non-private scene, no suspected minor, no sensitive subject, and no identifier, plate, or address observed."
+      }
+    },
+    {
+      "sample_id": "p1a-022",
+      "title": "Symmetry (Unsplash)",
+      "license": {
+        "id": "CC0",
+        "name": "CC0",
+        "url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+        "attribution": "http://unsplash.com/photos/Sfn8f32ZIj0 archive copy at the Wayback Machine Image at the Wayback Machine"
+      },
+      "source": {
+        "page_url": "https://commons.wikimedia.org/wiki/File%3ASymmetry_(Unsplash).jpg",
+        "download_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/6/6c/Symmetry_%28Unsplash%29.jpg/1920px-Symmetry_%28Unsplash%29.jpg",
+        "downloaded_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/6/6c/Symmetry_%28Unsplash%29.jpg/1920px-Symmetry_%28Unsplash%29.jpg",
+        "source_domain": "upload.wikimedia.org",
+        "representation": "official_wikimedia_thumbnail",
+        "source_relative_path": "source/p1a-022.jpg",
+        "sha256": "941a6f00d760a29d186e9096829bceb2cdb38a07a29fcc3c22899375bcb0a703",
+        "bytes": 300990,
+        "mime": "image/jpeg",
+        "width": 1920,
+        "height": 1280
+      },
+      "sanitized": {
+        "relative_path": "sanitized/p1a-022.jpg",
+        "sha256": "e110883fb76f1540015b717afd00f5f37378394be39e76094ca3d6c48bcdc2b0",
+        "bytes": 374369,
+        "mime": "image/jpeg",
+        "exif_removed": true,
+        "gps_removed": true
+      },
+      "tags": [
+        "architecture",
+        "no_person",
+        "symmetry",
+        "minimal_background"
+      ],
+      "lighting_tags": [
+        "daylight"
+      ],
+      "composition_tags": [
+        "symmetry"
+      ],
+      "manual_review": {
+        "status": "APPROVED",
+        "note": "Manual visual privacy and safety review passed: public non-private scene, no suspected minor, no sensitive subject, and no identifier, plate, or address observed."
+      }
+    },
+    {
+      "sample_id": "p1a-023",
+      "title": "Beach of Cape Fiolent, Crimea",
+      "license": {
+        "id": "CC-BY-4.0",
+        "name": "CC BY 4.0",
+        "url": "https://creativecommons.org/licenses/by/4.0",
+        "attribution": "漏 Vyacheslav Argenberg"
+      },
+      "source": {
+        "page_url": "https://commons.wikimedia.org/wiki/File%3ABeach_of_Cape_Fiolent,_Crimea.jpg",
+        "download_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/45/Beach_of_Cape_Fiolent%2C_Crimea.jpg/1920px-Beach_of_Cape_Fiolent%2C_Crimea.jpg",
+        "downloaded_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/45/Beach_of_Cape_Fiolent%2C_Crimea.jpg/1920px-Beach_of_Cape_Fiolent%2C_Crimea.jpg",
+        "source_domain": "upload.wikimedia.org",
+        "representation": "official_wikimedia_thumbnail",
+        "source_relative_path": "source/p1a-023.jpg",
+        "sha256": "ecc98a614482b23907a054f72d433c8805c0fc1848e679bfd61fb3a3a93ba0bd",
+        "bytes": 730678,
+        "mime": "image/jpeg",
+        "width": 1920,
+        "height": 1276
+      },
+      "sanitized": {
+        "relative_path": "sanitized/p1a-023.jpg",
+        "sha256": "9224745bb45f256078467a0a5cd6e9a3dd255eba3052b97ad34ee7688d0141ca",
+        "bytes": 925388,
+        "mime": "image/jpeg",
+        "exif_removed": true,
+        "gps_removed": true
+      },
+      "tags": [
+        "beach",
+        "no_person",
+        "cool_color",
+        "landscape"
+      ],
+      "lighting_tags": [
+        "daylight"
+      ],
+      "composition_tags": [
+        "landscape"
+      ],
+      "manual_review": {
+        "status": "APPROVED",
+        "note": "Landscape review passed. Any distant beach figures are below individual-identification resolution and no suspected minor is discernible."
+      }
+    },
+    {
+      "sample_id": "p1a-024",
+      "title": "Ch芒teau Frontenac in Quebec city, Canada colorfull",
+      "license": {
+        "id": "CC0",
+        "name": "CC0",
+        "url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+        "attribution": "Own work"
+      },
+      "source": {
+        "page_url": "https://commons.wikimedia.org/wiki/File%3ACh%C3%A2teau_Frontenac_in_Quebec_city,_Canada_colorfull.jpg",
+        "download_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/0/0c/Ch%C3%A2teau_Frontenac_in_Quebec_city%2C_Canada_colorfull.jpg/1920px-Ch%C3%A2teau_Frontenac_in_Quebec_city%2C_Canada_colorfull.jpg",
+        "downloaded_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/0/0c/Ch%C3%A2teau_Frontenac_in_Quebec_city%2C_Canada_colorfull.jpg/1920px-Ch%C3%A2teau_Frontenac_in_Quebec_city%2C_Canada_colorfull.jpg",
+        "source_domain": "upload.wikimedia.org",
+        "representation": "official_wikimedia_thumbnail",
+        "source_relative_path": "source/p1a-024.jpg",
+        "sha256": "f0f7d69c382276abc8fe43da5e9930f5fe3f84657d392a5964948ca366cd006a",
+        "bytes": 1716326,
+        "mime": "image/jpeg",
+        "width": 1920,
+        "height": 2731
+      },
+      "sanitized": {
+        "relative_path": "sanitized/p1a-024.jpg",
+        "sha256": "eee19eba237b44aace6b5563c33d3af12e934aebab4dc60191ce1f898ef5925c",
+        "bytes": 2152638,
+        "mime": "image/jpeg",
+        "exif_removed": true,
+        "gps_removed": true
+      },
+      "tags": [
+        "architecture",
+        "no_person",
+        "strong_color",
+        "warm_color"
+      ],
+      "lighting_tags": [
+        "low_light"
+      ],
+      "composition_tags": [
+        "vertical_architecture"
+      ],
+      "manual_review": {
+        "status": "APPROVED",
+        "note": "Manual visual privacy and safety review passed: public non-private scene, no suspected minor, no sensitive subject, and no identifier, plate, or address observed."
+      }
+    }
+  ]
+}
