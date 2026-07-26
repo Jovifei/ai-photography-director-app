@@ -1,0 +1,34 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "primary_artifact_authorization_draft.v1.schema.json",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "authorization_id",
+    "status",
+    "download_authorized",
+    "runtime_authorized",
+    "inference_authorized",
+    "model_id",
+    "immutable_revision",
+    "expected_weight",
+    "source_domains",
+    "required_preconditions",
+    "stop_conditions"
+  ],
+  "properties": {
+    "schema_version": { "const": "1.0.0" },
+    "status": { "const": "READY_FOR_OWNER_DOWNLOAD_DECISION" },
+    "download_authorized": { "const": false },
+    "runtime_authorized": { "const": false },
+    "inference_authorized": { "const": false },
+    "model_id": { "const": "Qwen/Qwen3-VL-2B-Instruct" },
+    "immutable_revision": {
+      "const": "89644892e4d85e24eaac8bacfd4f463576704203"
+    },
+    "expected_weight": {
+      "type": "object",
+      "required": [ "name", "bytes", "lfs_oid_sha256" ]
+    }
+  }
+}

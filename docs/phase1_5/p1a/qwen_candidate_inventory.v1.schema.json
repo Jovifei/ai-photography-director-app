@@ -1,0 +1,47 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "qwen_candidate_inventory.v1.schema.json",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "evidence_class",
+    "artifact_bytes_downloaded",
+    "model_weights_downloaded",
+    "publisher",
+    "primary",
+    "backup",
+    "observed_transport"
+  ],
+  "properties": {
+    "schema_version": { "const": "1.0.0" },
+    "evidence_class": { "const": "OFFICIAL_METADATA_ONLY" },
+    "artifact_bytes_downloaded": { "const": false },
+    "model_weights_downloaded": { "const": false },
+    "primary": {
+      "type": "object",
+      "required": [
+        "model_id",
+        "immutable_revision",
+        "state",
+        "repository_file_count",
+        "repository_total_bytes",
+        "weight_artifacts"
+      ],
+      "properties": {
+        "model_id": { "const": "Qwen/Qwen3-VL-2B-Instruct" },
+        "immutable_revision": {
+          "const": "89644892e4d85e24eaac8bacfd4f463576704203"
+        },
+        "state": { "const": "READY_FOR_OWNER_DOWNLOAD_DECISION" },
+        "weight_artifacts": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "required": [ "name", "bytes", "lfs_oid_sha256" ]
+          }
+        }
+      }
+    }
+  }
+}
