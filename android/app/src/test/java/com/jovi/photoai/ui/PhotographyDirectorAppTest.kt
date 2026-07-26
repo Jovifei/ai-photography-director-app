@@ -5,15 +5,26 @@ import org.junit.Test
 
 class PhotographyDirectorAppTest {
     @Test
-    fun homeCameraBack_returnsHome() {
+    fun cameraDirectorBack_returnsDirectorCard() {
+        assertEquals(
+            AppDestination.DIRECTOR_CARD,
+            cameraReturnDestination(AppDestination.CAMERA_DIRECTOR),
+        )
+    }
+
+    @Test
+    fun directHomeCameraFallback_returnsHome() {
         assertEquals(AppDestination.HOME, cameraReturnDestination(AppDestination.HOME))
     }
 
     @Test
-    fun analysisCameraBack_returnsAnalysis() {
-        assertEquals(
-            AppDestination.ANALYSIS_DETAIL,
-            cameraReturnDestination(AppDestination.ANALYSIS_DETAIL),
-        )
+    fun appDestinations_followImportAnalysisDirectorCardAndCamera() {
+        val analysis = referenceNextDestination(AppDestination.IMPORT_REFERENCE)
+        val card = referenceNextDestination(analysis)
+        val camera = referenceNextDestination(card)
+
+        assertEquals(AppDestination.ANALYSIS_DETAIL, analysis)
+        assertEquals(AppDestination.DIRECTOR_CARD, card)
+        assertEquals(AppDestination.CAMERA_DIRECTOR, camera)
     }
 }

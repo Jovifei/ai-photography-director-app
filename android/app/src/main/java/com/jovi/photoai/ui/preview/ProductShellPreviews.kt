@@ -6,6 +6,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import com.jovi.photoai.data.demo.DemoReferenceAnalyzer
+import com.jovi.photoai.reference.toDirectorCard
 import com.jovi.photoai.ui.CameraPermissionPreviewContent
 import com.jovi.photoai.ui.analysis.AnalysisDetailScreen
 import com.jovi.photoai.ui.camera.CameraDirectorChrome
@@ -16,11 +18,18 @@ import com.jovi.photoai.ui.components.CameraPreviewPlaceholder
 import com.jovi.photoai.ui.design.PhotographyDirectorTheme
 import com.jovi.photoai.ui.home.HomeScreen
 import com.jovi.photoai.ui.importphoto.ImportReferenceScreen
+import com.jovi.photoai.ui.reference.DirectorCardScreen
 
 @Preview(name = "Home", showSystemUi = true, widthDp = 390, heightDp = 844)
 @Composable
 private fun HomePreview() = PreviewTheme {
-    HomeScreen(onImportReference = {}, onOpenDemoAnalysis = {}, onStartCamera = {})
+    HomeScreen(
+        referenceCount = 0,
+        onImportReference = {},
+        onOpenReferenceLibrary = {},
+        onOpenDemoAnalysis = {},
+        onStartCamera = {},
+    )
 }
 
 @Preview(name = "Import · Empty", showSystemUi = true, widthDp = 390, heightDp = 844)
@@ -48,7 +57,24 @@ private fun ImportSelectedPreview() = PreviewTheme {
 @Preview(name = "Analysis · Demo", showSystemUi = true, widthDp = 390, heightDp = 844)
 @Composable
 private fun AnalysisPreview() = PreviewTheme {
-    AnalysisDetailScreen(selectedUri = null, onBack = {}, onStartCamera = {})
+    AnalysisDetailScreen(
+        selectedUri = null,
+        bundle = DemoReferenceAnalyzer.analyze("preview-reference", "demo://preview"),
+        onBack = {},
+        onOpenDirectorCard = {},
+    )
+}
+
+@Preview(name = "Director Card · Demo", showSystemUi = true, widthDp = 390, heightDp = 844)
+@Composable
+private fun DirectorCardPreview() = PreviewTheme {
+    val bundle = DemoReferenceAnalyzer.analyze("preview-reference", "demo://preview")
+    DirectorCardScreen(
+        card = bundle.toDirectorCard(),
+        sourceLabel = DemoReferenceAnalyzer.SOURCE_LABEL,
+        onBack = {},
+        onEnterCameraDirector = {},
+    )
 }
 
 @Preview(name = "Camera · Placeholder", widthDp = 390, heightDp = 844)

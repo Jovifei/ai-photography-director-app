@@ -33,12 +33,12 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
-import com.jovi.photoai.data.demo.DemoContentRepository
+import com.jovi.photoai.reference.ReferenceBundle
+import com.jovi.photoai.reference.toReferenceAnalysis
 import com.jovi.photoai.ui.components.AnalysisSection
 import com.jovi.photoai.ui.components.GlassPill
 import com.jovi.photoai.ui.components.GlassSurface
 import com.jovi.photoai.ui.components.PrimaryActionButton
-import com.jovi.photoai.ui.components.SecondaryActionButton
 import com.jovi.photoai.ui.design.AppColors
 import com.jovi.photoai.ui.design.AppDimensions
 import com.jovi.photoai.ui.importphoto.ReferencePreviewState
@@ -47,12 +47,11 @@ import com.jovi.photoai.ui.importphoto.decodeSampledBitmap
 @Composable
 fun AnalysisDetailScreen(
     selectedUri: Uri?,
+    bundle: ReferenceBundle,
     onBack: () -> Unit,
-    onStartCamera: () -> Unit,
+    onOpenDirectorCard: () -> Unit,
 ) {
-    val plan = DemoContentRepository.defaultShootingPlan
-    val analysis = plan.analysis
-
+    val analysis = bundle.toReferenceAnalysis()
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -69,14 +68,14 @@ fun AnalysisDetailScreen(
             verticalAlignment = Alignment.CenterVertically,
         ) {
             TextButton(onClick = onBack) { Text("返回") }
-            GlassPill(text = "示例 · Demo")
+            GlassPill(text = "Demo Analysis")
         }
 
         Spacer(Modifier.height(AppDimensions.Space16))
         Text("参考图分析", style = MaterialTheme.typography.displaySmall, color = AppColors.TextPrimary)
         Spacer(Modifier.height(AppDimensions.Space8))
         Text(
-            "示例分析，尚未连接 AI",
+            "固定 Demo Analysis：不连接 AI、不上传图片、不生成实时 Pose。",
             style = MaterialTheme.typography.titleMedium,
             color = AppColors.AccentBlue,
         )
@@ -92,57 +91,22 @@ fun AnalysisDetailScreen(
         }
 
         Spacer(Modifier.height(AppDimensions.Space20))
-        GlassSurface(
-            modifier = Modifier.fillMaxWidth(),
-            shape = RoundedCornerShape(AppDimensions.RadiusLarge),
-            contentPadding = PaddingValues(AppDimensions.CardPadding),
-        ) {
-            Column(verticalArrangement = Arrangement.spacedBy(AppDimensions.Space8)) {
-                Text("这张照片为什么成立", style = MaterialTheme.typography.titleLarge, color = AppColors.TextPrimary)
-                Text(
-                    "简洁的窗边环境、柔和侧光和人物左侧留白，共同形成安静且有故事感的观看节奏。",
-                    style = MaterialTheme.typography.bodyLarge,
-                    color = AppColors.TextSecondary,
-                )
-            }
-        }
-
-        Spacer(Modifier.height(AppDimensions.Space16))
         listOf(
-            Triple("环境分析", "室内窗边", analysis.environment),
-            Triple("构图分析", "人物偏右", "左侧保留呼吸空间，视线有明确去向。"),
-            Triple("光线分析", "柔和侧光", analysis.lighting),
-            Triple("人物姿势分析", "自然微侧", "身体微侧、肩膀放松、下巴微收、视线看向窗外。"),
-            Triple("情绪和故事", "等待与独处", analysis.story),
-            Triple("调色方向", "低饱和轻冷调", analysis.colorGrading),
+            Triple("背景", analysis.scene, analysis.backgroundValue),
+            Triple("光线", "Demo Analysis", analysis.lighting),
+            Triple("构图", "Demo Analysis", analysis.composition),
+            Triple("人物", "参考姿态意图", analysis.subjectIntent),
+            Triple("情绪", "Demo Analysis", analysis.emotion),
+            Triple("拍摄建议", "建议机位", analysis.cameraSuggestion),
         ).forEach { (title, label, body) ->
             AnalysisSection(title = title, body = body, label = label)
             Spacer(Modifier.height(AppDimensions.Space12))
         }
 
-        GlassSurface(
-            modifier = Modifier.fillMaxWidth(),
-            shape = RoundedCornerShape(AppDimensions.RadiusLarge),
-            contentPadding = PaddingValues(AppDimensions.CardPadding),
-        ) {
-            Column(verticalArrangement = Arrangement.spacedBy(AppDimensions.Space8)) {
-                Text("现场怎么拍", style = MaterialTheme.typography.titleLarge, color = AppColors.TextPrimary)
-                Text(analysis.onsitePlan, color = AppColors.TextSecondary)
-                Text("固定 Demo 拍摄方案，不是对当前图片生成的建议。", style = MaterialTheme.typography.labelSmall, color = AppColors.TextTertiary)
-            }
-        }
-
-        Spacer(Modifier.height(AppDimensions.Space20))
-        PrimaryActionButton(
-            text = "开始复刻拍摄",
-            onClick = onStartCamera,
-            modifier = Modifier.fillMaxWidth(),
-        )
         Spacer(Modifier.height(AppDimensions.Space12))
-        SecondaryActionButton(
-            text = "收藏这套方案（UI0 占位）",
-            onClick = {},
-            enabled = false,
+        PrimaryActionButton(
+            text = "查看摄影导演卡",
+            onClick = onOpenDirectorCard,
             modifier = Modifier.fillMaxWidth(),
         )
         Spacer(Modifier.height(AppDimensions.Space12))
@@ -186,7 +150,7 @@ private fun AnalysisReferenceHero(selectedUri: Uri?) {
             )
         }
         GlassPill(
-            text = if (ready == null) "内置示例参考图" else "会话参考图 · 分析仍为示例",
+            text = if (ready == null) "内置示例参考图 · Demo Analysis" else "本次会话参考图 · Demo Analysis",
             modifier = Modifier.padding(AppDimensions.Space16),
         )
     }

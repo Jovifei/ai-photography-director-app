@@ -47,6 +47,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.jovi.photoai.domain.model.GuidePanel
 import com.jovi.photoai.domain.model.OverlayMode
+import com.jovi.photoai.reference.CameraDirectorGuidance
 import com.jovi.photoai.ui.design.AppColors
 import com.jovi.photoai.ui.design.AppDimensions
 
@@ -59,6 +60,7 @@ fun CameraDirectorChrome(
     onEvent: (CameraUiEvent) -> Unit,
     onBack: () -> Unit,
     onCapture: () -> Unit,
+    referenceGuidance: CameraDirectorGuidance? = null,
     modifier: Modifier = Modifier,
 ) {
     val closePanelOrBack = {
@@ -73,14 +75,18 @@ fun CameraDirectorChrome(
     }
 
     Box(modifier = modifier.fillMaxSize()) {
-        DemoOverlay(mode = uiState.overlayMode, showGrid = uiState.gridVisible)
+        if (referenceGuidance == null) {
+            DemoOverlay(mode = uiState.overlayMode, showGrid = uiState.gridVisible)
+        }
 
         CameraTopBar(
+            referenceGuidance = referenceGuidance,
             onBack = closePanelOrBack,
             modifier = Modifier.align(Alignment.TopCenter),
         )
         CameraHint(
             uiState = uiState,
+            referenceGuidance = referenceGuidance,
             modifier = Modifier
                 .align(Alignment.TopCenter)
                 .padding(top = 88.dp),
@@ -113,6 +119,7 @@ fun CameraDirectorChrome(
             uiState = uiState,
             onEvent = onEvent,
             onCapture = onCapture,
+            referenceGuidance = referenceGuidance,
             modifier = Modifier.align(Alignment.BottomCenter),
         )
 
@@ -121,6 +128,7 @@ fun CameraDirectorChrome(
                 uiState = uiState,
                 onEvent = onEvent,
                 onClose = { onEvent(CameraUiEvent.ClosePanel) },
+                referenceGuidance = referenceGuidance,
                 modifier = Modifier.align(
                     if (uiState.selectedGuidePanel == GuidePanel.ENVIRONMENT) {
                         Alignment.CenterStart
@@ -134,7 +142,11 @@ fun CameraDirectorChrome(
 }
 
 @Composable
-private fun CameraTopBar(onBack: () -> Unit, modifier: Modifier = Modifier) {
+private fun CameraTopBar(
+    referenceGuidance: CameraDirectorGuidance?,
+    onBack: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
     Surface(
         modifier = modifier.fillMaxWidth(),
         color = AppColors.CameraChromeSurface,
@@ -153,13 +165,14 @@ private fun CameraTopBar(onBack: () -> Unit, modifier: Modifier = Modifier) {
             }
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
                 Text(
-                    "参考图拍摄",
+                    if (referenceGuidance == null) "参考图拍摄" else "Camera Director",
                     color = AppColors.CameraChromeText,
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.SemiBold,
                 )
                 Text(
-                    "当前参考图：窗边等待感 · Demo",
+                    referenceGuidance?.let { "当前参考图：${it.referenceTitle} · ${it.sourceLabel}" }
+                        ?: "当前参考图：窗边等待感 · Demo",
                     color = AppColors.CameraChromeSecondaryText,
                     style = MaterialTheme.typography.labelSmall,
                 )
@@ -179,9 +192,14 @@ private fun CameraTopBar(onBack: () -> Unit, modifier: Modifier = Modifier) {
 }
 
 @Composable
-private fun CameraHint(uiState: CameraUiState, modifier: Modifier = Modifier) {
+private fun CameraHint(
+    uiState: CameraUiState,
+    referenceGuidance: CameraDirectorGuidance?,
+    modifier: Modifier = Modifier,
+) {
     val text = when {
         uiState.message == CameraUiMessage.CAPTURE_FAILED -> "拍摄未完成，请稍后再试 · Demo"
+        referenceGuidance != null -> "${referenceGuidance.sourceLabel}\n${referenceGuidance.centerHint}"
         uiState.currentGuidance != null -> {
             "${uiState.currentGuidance.title} · Demo\n${uiState.currentGuidance.instruction}"
         }
@@ -275,6 +293,7 @@ private fun CameraBottomControls(
     uiState: CameraUiState,
     onEvent: (CameraUiEvent) -> Unit,
     onCapture: () -> Unit,
+    referenceGuidance: CameraDirectorGuidance?,
     modifier: Modifier = Modifier,
 ) {
     Surface(
@@ -287,10 +306,18 @@ private fun CameraBottomControls(
             modifier = Modifier.padding(horizontal = AppDimensions.Space16, vertical = AppDimensions.Space12),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
-            OverlayModeControls(
-                selected = uiState.overlayMode,
-                onSelected = { onEvent(CameraUiEvent.OverlayModeSelected(it)) },
-            )
+            if (referenceGuidance == null) {
+                OverlayModeControls(
+                    selected = uiState.overlayMode,
+                    onSelected = { onEvent(CameraUiEvent.OverlayModeSelected(it)) },
+                )
+            } else {
+                Text(
+                    "Reference Guidance · Demo Analysis · 未启用实时 Pose",
+                    color = AppColors.CameraChromeText,
+                    style = MaterialTheme.typography.labelSmall,
+                )
+            }
             Spacer(Modifier.height(AppDimensions.Space8))
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -303,7 +330,7 @@ private fun CameraBottomControls(
                     border = androidx.compose.foundation.BorderStroke(1.dp, AppColors.CameraChromeBorder),
                 ) {
                     Text(
-                        "参考图 · Demo",
+                        referenceGuidance?.let { "参考图 · ${it.sourceLabel}" } ?: "参考图 · Demo",
                         modifier = Modifier.padding(horizontal = AppDimensions.Space12, vertical = AppDimensions.Space12),
                         color = AppColors.CameraChromeText,
                         style = MaterialTheme.typography.labelSmall,
@@ -397,6 +424,7 @@ private fun GuidePanelSheet(
     uiState: CameraUiState,
     onEvent: (CameraUiEvent) -> Unit,
     onClose: () -> Unit,
+    referenceGuidance: CameraDirectorGuidance?,
     modifier: Modifier = Modifier,
 ) {
     val environment = uiState.selectedGuidePanel == GuidePanel.ENVIRONMENT
@@ -438,12 +466,24 @@ private fun GuidePanelSheet(
                 style = MaterialTheme.typography.labelMedium,
             )
             Text(
-                "Demo 指引 · 尚未连接 AI",
+                referenceGuidance?.sourceLabel ?: "Demo 指引 · 尚未连接 AI",
                 color = AppColors.AccentBlue,
                 style = MaterialTheme.typography.labelSmall,
             )
             Spacer(Modifier.height(AppDimensions.Space20))
-            if (environment) {
+            val referenceItems = referenceGuidance?.let {
+                if (environment) it.environment else it.subject
+            }
+            if (referenceItems != null) {
+                referenceItems.forEach { item ->
+                    GuideItem(
+                        status = referenceGuidance.sourceLabel,
+                        title = item.title,
+                        detail = item.detail,
+                    )
+                    Spacer(Modifier.height(AppDimensions.Space12))
+                }
+            } else if (environment) {
                 listOf(
                     "当前场景" to "室内窗边",
                     "背景价值" to "窗边自然光能形成柔和层次，适合安静的人像故事",
@@ -506,6 +546,7 @@ fun CameraGuidePanelPreviewContent(
             uiState = CameraUiState(selectedGuidePanel = previewPanel),
             onEvent = {},
             onClose = {},
+            referenceGuidance = null,
             modifier = Modifier.align(
                 if (previewPanel == GuidePanel.ENVIRONMENT) Alignment.CenterStart else Alignment.CenterEnd,
             ),

@@ -42,6 +42,7 @@ import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import com.jovi.photoai.camera.CameraXManager
 import com.jovi.photoai.domain.model.GuidanceItem
+import com.jovi.photoai.reference.CameraDirectorGuidance
 import com.jovi.photoai.ui.camera.CameraDirectorChrome
 import com.jovi.photoai.ui.camera.CameraPermission
 import com.jovi.photoai.ui.camera.CameraUiEvent
@@ -92,6 +93,7 @@ private val CameraUiStateSaver = mapSaver(
 @Composable
 fun CameraScreen(
     guidanceItems: List<GuidanceItem>,
+    referenceGuidance: CameraDirectorGuidance? = null,
     onBack: () -> Unit = {},
 ) {
     val context = LocalContext.current
@@ -139,7 +141,12 @@ fun CameraScreen(
     }
 
     if (hasCameraPermission) {
-        CameraContent(uiState = uiState, dispatch = dispatch, onBack = onBack)
+        CameraContent(
+            uiState = uiState,
+            dispatch = dispatch,
+            referenceGuidance = referenceGuidance,
+            onBack = onBack,
+        )
     } else {
         PermissionContent(
             onBack = onBack,
@@ -152,6 +159,7 @@ fun CameraScreen(
 private fun CameraContent(
     uiState: CameraUiState,
     dispatch: (CameraUiEvent) -> Unit,
+    referenceGuidance: CameraDirectorGuidance?,
     onBack: () -> Unit,
 ) {
     val context = LocalContext.current
@@ -185,6 +193,7 @@ private fun CameraContent(
             uiState = uiState,
             onEvent = dispatch,
             onBack = onBack,
+            referenceGuidance = referenceGuidance,
             onCapture = {
                 if (uiState.canCapture) {
                     dispatch(CameraUiEvent.CaptureStarted)

@@ -36,10 +36,12 @@ import com.jovi.photoai.ui.design.AppDimensions
 
 private val sceneCategories = listOf("窗边", "咖啡馆", "楼梯", "街道", "草地", "夜景", "走廊", "海边")
 
-/** UI0 inspiration library. Every built-in item is visibly marked as Demo. */
+/** Phase 1 home: import is the primary action; built-in examples remain visibly marked as Demo. */
 @Composable
 fun HomeScreen(
+    referenceCount: Int,
     onImportReference: () -> Unit,
+    onOpenReferenceLibrary: () -> Unit,
     onOpenDemoAnalysis: () -> Unit,
     onStartCamera: () -> Unit,
 ) {
@@ -66,7 +68,7 @@ fun HomeScreen(
                     Text("灵感库", style = MaterialTheme.typography.headlineSmall, color = AppColors.TextPrimary)
                     Text("你的现场拍摄起点", style = MaterialTheme.typography.bodyMedium, color = AppColors.TextSecondary)
                 }
-                GlassPill(text = "UI0 · Demo")
+                GlassPill(text = "Phase 1 · Demo Analysis")
             }
         }
 
@@ -98,12 +100,12 @@ fun HomeScreen(
                 }
             }
 
-            SectionHeading("最近使用", "本地固定示例")
+            SectionHeading("最近使用", "内置固定示例")
             DemoContentRepository.referencePhotos.take(2).forEachIndexed { index, photo ->
                 ReferencePhotoCard(
                     title = photo.title,
                     subtitle = photo.description,
-                    badge = "Demo",
+                    badge = "Demo Analysis",
                     image = {
                         Box(
                             modifier = Modifier
@@ -133,14 +135,37 @@ fun HomeScreen(
                 Spacer(Modifier.height(AppDimensions.Space12))
             }
 
-            SectionHeading("我的参考图", "只显示本次会话主动选择的图片")
-            EmptyState(
-                title = "还没有参考图",
-                message = "从系统照片选择器导入一张图片。App 不会浏览或上传其他照片。",
-                actionLabel = "导入参考图",
-                onAction = onImportReference,
-            )
+            SectionHeading("参考图库", "仅本次会话")
+            if (referenceCount == 0) {
+                EmptyState(
+                    title = "导入一张参考图开始",
+                    message = "App 只接收你在系统 Photo Picker 中主动选择的一张照片；不申请照片读取权限，也不上传。",
+                    actionLabel = "导入参考图",
+                    onAction = onImportReference,
+                )
+            } else {
+                GlassSurface(
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(AppDimensions.RadiusLarge),
+                    contentPadding = PaddingValues(AppDimensions.CardPadding),
+                ) {
+                    Column(verticalArrangement = Arrangement.spacedBy(AppDimensions.Space8)) {
+                        Text("已导入 $referenceCount 张参考图", style = MaterialTheme.typography.titleMedium)
+                        Text(
+                            "这些图片仅在本次会话中显示。打开参考图库可继续查看 Demo Analysis 与导演卡。",
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = AppColors.TextSecondary,
+                        )
+                    }
+                }
+            }
 
+            Spacer(Modifier.height(AppDimensions.Space12))
+            SecondaryActionButton(
+                text = "查看参考图库",
+                onClick = onOpenReferenceLibrary,
+                modifier = Modifier.fillMaxWidth(),
+            )
             Spacer(Modifier.height(AppDimensions.Space20))
             PrimaryActionButton(
                 text = "导入参考图",
@@ -149,7 +174,7 @@ fun HomeScreen(
             )
             Spacer(Modifier.height(AppDimensions.Space12))
             SecondaryActionButton(
-                text = "开始拍摄",
+                text = "从参考图开始拍摄",
                 onClick = onStartCamera,
                 modifier = Modifier.fillMaxWidth(),
             )
