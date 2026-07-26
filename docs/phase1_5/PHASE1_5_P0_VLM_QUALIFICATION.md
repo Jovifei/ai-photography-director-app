@@ -1,6 +1,10 @@
 # Phase 1.5 P0 VLM Intelligence Qualification
 
-## Final P0 decision
+**Review state:** `SUPERSEDED_BY_PHASE1_5_P0_REMEDIATION_REPORT_FOR_DELTA_REVIEW`.
+
+This is the pre-remediation qualification record. The Reviewer subsequently identified owner-path, identifier/text, Provider Envelope, and counterexample-evidence gaps. The current delta evidence is `PHASE1_5_P0_REMEDIATION_REPORT.md`; neither document authorizes P1, a Provider, model download/inference, or Pipeline integration.
+
+## Historical P0 decision before remediation
 
 `PASS_PHASE1_5_P0_PIPELINE_FIRST_FOR_OWNER_DECISION`
 

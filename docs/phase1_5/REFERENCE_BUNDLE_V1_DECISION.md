@@ -12,14 +12,20 @@ All eleven fields are required and `additionalProperties` is false:
 
 | Field | Maximum | Rule |
 | --- | ---: | --- |
-| `reference_id` | 128 | Opaque identifier; never URI, path, account, device, or location ID. |
+| `reference_id` | 128 | `^[A-Za-z0-9][A-Za-z0-9_-]{0,127}$`; opaque-token syntax only. |
 | `scene`, `lighting`, `emotion` | 240 | Single-line plain text. |
 | `background_story`, `pose_template` | 480 | Single-line plain text. |
 | `composition`, `subject_intent`, `camera_position` | 360 | Single-line plain text. |
 | `director_prompt` | 720 | Single-line actionable suggestion. |
 | `version` | exact | String `"1.0"`. |
 
-Text cannot contain CR/LF. Markdown has no supported semantics and consumers must render it as plain text, not rich content. Enums are intentionally not used for photography language; the envelope supplies the constrained operational fields.
+All user-visible text has `minLength >= 1`, its stated maximum, no CR/LF, and at least one non-whitespace character. The schema permits neither empty nor whitespace-only text; the semantic validator additionally rejects leading/trailing whitespace rather than silently trimming provider output. Markdown has no supported semantics and consumers must render it as plain text, not rich content. Enums are intentionally not used for photography language; the envelope supplies the constrained operational fields.
+
+### Identifier boundary
+
+**SCHEMA_ENFORCED:** `reference_id` is a bounded opaque-token syntax. It has no colon, slash, backslash, `@`, whitespace, CR/LF, URI separator, Windows-path, Unix-path, or email syntax.
+
+**PRODUCER_POLICY_ONLY:** syntax alone cannot prove that a token was not derived from an account, device, location, file name, URI, or media hash. An approved producer must generate it from a random/opaque ID generator and retain evidence of that policy. The schema does not make provenance claims it cannot prove.
 
 `pose_template` remains a textual intent derived from the reference. It must never be changed into keypoints, skeleton coordinates, biometric classification, real-time Pose data, or a Pose-provider payload. The similarly named program-level `shared-contract` Pose schema is not semantically compatible and is not imported here.
 

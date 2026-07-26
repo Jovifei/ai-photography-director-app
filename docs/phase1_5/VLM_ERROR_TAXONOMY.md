@@ -1,6 +1,6 @@
 # VLM Error Taxonomy
 
-**Decision:** `RECOMMEND_APPROVE` for a uniform fail-closed contract. Event logging means a redacted code/timing event only; diagnostic upload is always `false` in Phase 1.5.
+**Decision:** `RECOMMEND_APPROVE` for a uniform fail-closed contract. `error_policy.v1.json` is the sole machine-readable source for retry, preservation, logging, action, cleanup, and Demo-fallback fields. Event logging means a redacted code/timing event only; diagnostic upload is always `false` in Phase 1.5.
 
 | Code | Retryable | Preserve in-session reference | Safe event log | Product action |
 | --- | --- | --- | --- | --- |
@@ -17,6 +17,27 @@
 
 Every error object contains a code, user-safe message, reference-preservation decision, safe-event-log flag, `allow_diagnostic_upload=false`, and a constrained product action. It intentionally excludes arbitrary exception text.
 
+<!-- MACHINE_READABLE_ERROR_CODES_BEGIN -->
+- `USER_CANCELLED`
+- `REFERENCE_URI_UNAVAILABLE`
+- `REFERENCE_PERMISSION_EXPIRED`
+- `IMAGE_DECODE_FAILED`
+- `IMAGE_UNSUPPORTED`
+- `IMAGE_TOO_LARGE`
+- `IMAGE_PRIVACY_BLOCKED`
+- `PROVIDER_NOT_CONFIGURED`
+- `PROVIDER_UNAVAILABLE`
+- `PROVIDER_TIMEOUT`
+- `PROVIDER_OOM`
+- `PROVIDER_OUTPUT_EMPTY`
+- `PROVIDER_OUTPUT_MALFORMED`
+- `PROVIDER_OUTPUT_SCHEMA_INVALID`
+- `PROVIDER_SAFETY_REJECTED`
+- `PROVIDER_LICENSE_BLOCKED`
+- `PIPELINE_BUNDLE_INCOMPATIBLE`
+- `UNKNOWN_FAILURE`
+<!-- MACHINE_READABLE_ERROR_CODES_END -->
+
 ## Demo truth rule
 
-An analysis error never silently becomes fixed Demo output. A future UI may offer `EXPLICIT_DEMO_FALLBACK` only after an unmistakable user choice and a visible `Demo` source label. It must not label that fallback as real, local, Pipeline, or cloud analysis.
+An analysis error never silently becomes fixed Demo output. `EXPLICIT_DEMO_FALLBACK` is outside a Provider Envelope and requires an unmistakable user choice plus a visible `Demo Analysis` source label. It must not label that fallback as real, local, Pipeline, or cloud analysis, and it must never become a SUCCESS Provider result.

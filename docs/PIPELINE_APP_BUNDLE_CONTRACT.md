@@ -1,6 +1,8 @@
 # Pipeline ↔ App Bundle Contract Plan
 
-**Status:** `PROPOSED — NO_CROSS-REPOSITORY_CONTRACT_CHANGE_AUTHORIZED`
+**Status:** `SUPERSEDED_PLANNING_DRAFT — NO_CROSS-REPOSITORY_CONTRACT_CHANGE_AUTHORIZED`
+
+This historical product-planning draft is not the v1 contract entry point. Use `docs/reference/reference_bundle.v1.schema.json` and `docs/phase1_5/PIPELINE_APP_FIELD_MAPPING.md` for the current app-local contract and mapping boundary. `PIPELINE_DIRECT_INTEGRATION = BLOCKED_BY_CONTRACT_AND_STAGE_EVIDENCE`; this document does not authorize a Pipeline connection.
 
 ## 1. Product boundary
 
