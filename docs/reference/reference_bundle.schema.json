@@ -1,0 +1,38 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://photoai.local/drafts/reference_bundle.schema.json",
+  "title": "Phase 1 Reference Bundle Draft",
+  "description": "App-local draft only. It is not the program-level shared Bundle Contract and contains no image Uri, media bytes, keypoints, or real-time Pose data.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "reference_id",
+    "scene",
+    "background_story",
+    "lighting",
+    "composition",
+    "subject_intent",
+    "emotion",
+    "pose_template",
+    "camera_position",
+    "director_prompt",
+    "version"
+  ],
+  "properties": {
+    "reference_id": { "type": "string", "minLength": 1 },
+    "scene": { "type": "string", "minLength": 1 },
+    "background_story": { "type": "string", "minLength": 1 },
+    "lighting": { "type": "string", "minLength": 1 },
+    "composition": { "type": "string", "minLength": 1 },
+    "subject_intent": { "type": "string", "minLength": 1 },
+    "emotion": { "type": "string", "minLength": 1 },
+    "pose_template": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Textual reference intent only; not a keypoint, skeleton, or live Pose payload."
+    },
+    "camera_position": { "type": "string", "minLength": 1 },
+    "director_prompt": { "type": "string", "minLength": 1 },
+    "version": { "type": "string", "pattern": "^1\\." }
+  }
+}
