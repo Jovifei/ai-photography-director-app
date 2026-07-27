@@ -1,0 +1,2520 @@
+{
+  "schema_version": "2.0.0",
+  "corpus_id": "phase1-5-p1a-public-corpus-20260727T150809Z-r2",
+  "parent_corpus_id": "phase1-5-p1a-public-corpus-20260726T121500Z",
+  "supersedes_reason": "Rebuilds the public corpus evidence after independent-review B1-B5 findings; old evidence remains immutable.",
+  "status": "CORPUS_R2_VALIDATED",
+  "external_evidence_root_id": "public-corpus-20260727T150809Z-r2",
+  "source_repository": "Wikimedia Commons",
+  "approved_count": 20,
+  "quarantine_count": 6,
+  "minimum_required_count": 20,
+  "allowed_license_ids": [
+    "CC0",
+    "Public-Domain",
+    "CC-BY-4.0"
+  ],
+  "privacy_policy": {
+    "owner_media": "prohibited",
+    "private_sources": "prohibited",
+    "sensitive_subjects": "prohibited",
+    "no_person_requires_human_presence": "NONE"
+  },
+  "age_policy": {
+    "approved_human_presence": [
+      "NONE",
+      "VISIBLE_DOCUMENTED_ADULT"
+    ],
+    "rejected_human_presence": [
+      "VISIBLE_AGE_UNCERTAIN"
+    ],
+    "adult_evidence_required": true
+  },
+  "required_categories": [
+    "city_night",
+    "indoor_window",
+    "seaside",
+    "forest",
+    "street",
+    "cafe_or_lifestyle_interior",
+    "architecture",
+    "backlight",
+    "side_light",
+    "low_light",
+    "single_person_full_body",
+    "single_person_half_body",
+    "portrait_close_up",
+    "two_people",
+    "no_person",
+    "dynamic_action",
+    "occlusion",
+    "complex_background",
+    "minimal_background",
+    "strong_color",
+    "cool_color",
+    "warm_color",
+    "symmetry",
+    "negative_space"
+  ],
+  "samples": [
+    {
+      "sample_id": "p1a-001",
+      "title": "File:City at Night (Unsplash).jpg",
+      "status": "APPROVED",
+      "category_tags": [
+        "city_night",
+        "complex_background",
+        "cool_color",
+        "low_light",
+        "no_person",
+        "street",
+        "strong_color"
+      ],
+      "source": {
+        "relative_path": "source/p1a-001.jpg",
+        "sha256": "b47a5deb172066a56b68e73fb34a75f08b616bfc58b648155c548bf22c9b2d08",
+        "bytes": 11294146,
+        "mime": "image/jpeg",
+        "representation": "parent_verified_copy",
+        "original_url": "https://upload.wikimedia.org/wikipedia/commons/4/46/City_at_Night_%28Unsplash%29.jpg",
+        "parent_corpus_id": "phase1-5-p1a-public-corpus-20260726T121500Z",
+        "width": 5443,
+        "height": 3629
+      },
+      "sanitized": {
+        "relative_path": "sanitized/p1a-001.jpg",
+        "format": "JPEG",
+        "mime": "image/jpeg",
+        "bytes": 5604314,
+        "sha256": "bfe997c149457eabd49bedc409ad41d203359a442201e52daa7ade513aab5943",
+        "dimensions": [
+          5443,
+          3629
+        ],
+        "source_dimensions": [
+          5443,
+          3629
+        ],
+        "source_orientation": 1,
+        "orientation_normalized": false,
+        "crop_applied": false,
+        "exif_removed": true,
+        "gps_removed": true,
+        "device_metadata_removed": true,
+        "software_metadata_removed": true
+      },
+      "source_page": {
+        "pageid": 61755081,
+        "title": "File:City at Night (Unsplash).jpg",
+        "revision_id": 1126197116,
+        "revision_timestamp": "2025-12-05T19:20:10Z",
+        "canonical_url": "https://commons.wikimedia.org/wiki/File:City%20at%20Night%20(Unsplash).jpg",
+        "original_url": "https://upload.wikimedia.org/wikipedia/commons/4/46/City_at_Night_%28Unsplash%29.jpg",
+        "mime": "image/jpeg",
+        "width": 5443,
+        "height": 3629,
+        "artist": "Kyle Sudu ksudu94",
+        "credit": "https://unsplash.com/photos/Wn1VBR6CMKo Image at the Wayback Machine Gallery at the Wayback Machine",
+        "attribution": "",
+        "commons_api_sha256": "0d65e69b6dc86c9c0bc879bcd8111014af1f1b1ad2eb2a2e906a89008f9ee155",
+        "retrieved_utc": "2026-07-27T15:08:09Z"
+      },
+      "license": {
+        "id": "CC0",
+        "name": "CC0 1.0 Universal",
+        "url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+        "attribution": {
+          "author": "Kyle Sudu ksudu94",
+          "title": "City at Night (Unsplash)",
+          "page_url": "https://commons.wikimedia.org/wiki/File:City%20at%20Night%20(Unsplash).jpg",
+          "license_name": "CC0 1.0 Universal",
+          "license_url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+          "modified": "Sanitized derivative created by removal of embedded metadata; visual content not cropped.",
+          "recommended_attribution": "Kyle Sudu ksudu94 — File:City at Night (Unsplash).jpg — CC0 1.0 Universal (http://creativecommons.org/publicdomain/zero/1.0/deed.en)"
+        }
+      },
+      "license_evidence_relative_path": "metadata/p1a-001/license_evidence.json",
+      "license_evidence_sha256": "a2d5f6ff31d34afcb3401f1d1a5caa0b37a45536ec17fd25c332ef00b075e3c7",
+      "human_review": {
+        "status": "APPROVED",
+        "review_scope": "public-corpus suitability, human presence, age evidence, privacy and category match",
+        "human_presence": "NONE",
+        "person_count": 0,
+        "full_body_count": 0,
+        "age_evidence_basis": "NOT_APPLICABLE",
+        "age_evidence": "No human subject is present after visual review.",
+        "nonvisual_source": "https://commons.wikimedia.org/wiki/File:City%20at%20Night%20(Unsplash).jpg",
+        "no_person": true,
+        "note": "No human, minor, private-space content, readable identifier, plate, or address observed."
+      },
+      "metadata_relative_paths": [
+        "metadata/p1a-001/commons_api.json",
+        "metadata/p1a-001/source_page_record.json",
+        "metadata/p1a-001/license_evidence.json",
+        "metadata/p1a-001/transport.json",
+        "metadata/p1a-001/manual_visual_review.json"
+      ]
+    },
+    {
+      "sample_id": "p1a-002",
+      "title": "File:Kolkata City at night.jpg",
+      "status": "APPROVED",
+      "category_tags": [
+        "city_night",
+        "complex_background",
+        "low_light",
+        "no_person",
+        "strong_color"
+      ],
+      "source": {
+        "relative_path": "source/p1a-002.jpg",
+        "sha256": "5e2aa816f5bd49ab13a45d6afab3a9c9b9e2584a8aabf5b49e99872fe06f3926",
+        "bytes": 3812269,
+        "mime": "image/jpeg",
+        "representation": "parent_verified_copy",
+        "original_url": "https://upload.wikimedia.org/wikipedia/commons/b/b2/Kolkata_City_at_night.jpg",
+        "parent_corpus_id": "phase1-5-p1a-public-corpus-20260726T121500Z",
+        "width": 4160,
+        "height": 3120
+      },
+      "sanitized": {
+        "relative_path": "sanitized/p1a-002.jpg",
+        "format": "JPEG",
+        "mime": "image/jpeg",
+        "bytes": 3540987,
+        "sha256": "67fc938c5a1e084e548fc634cb642c64c899d7afc42259fcd3865388f71be4b3",
+        "dimensions": [
+          4160,
+          3120
+        ],
+        "source_dimensions": [
+          4160,
+          3120
+        ],
+        "source_orientation": 1,
+        "orientation_normalized": false,
+        "crop_applied": false,
+        "exif_removed": true,
+        "gps_removed": true,
+        "device_metadata_removed": true,
+        "software_metadata_removed": true
+      },
+      "source_page": {
+        "pageid": 147037152,
+        "title": "File:Kolkata City at night.jpg",
+        "revision_id": 953285201,
+        "revision_timestamp": "2024-11-06T02:58:17Z",
+        "canonical_url": "https://commons.wikimedia.org/wiki/File:Kolkata%20City%20at%20night.jpg",
+        "original_url": "https://upload.wikimedia.org/wikipedia/commons/b/b2/Kolkata_City_at_night.jpg",
+        "mime": "image/jpeg",
+        "width": 4160,
+        "height": 3120,
+        "artist": "XYZ 91973",
+        "credit": "Own work",
+        "attribution": "",
+        "commons_api_sha256": "e57fff6a06f125832b1edc3fb7ad8d59b44ffd505208a6833a2655ec9f062548",
+        "retrieved_utc": "2026-07-27T15:08:09Z"
+      },
+      "license": {
+        "id": "CC0",
+        "name": "CC0 1.0 Universal",
+        "url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+        "attribution": {
+          "author": "XYZ 91973",
+          "title": "Kolkata City at night",
+          "page_url": "https://commons.wikimedia.org/wiki/File:Kolkata%20City%20at%20night.jpg",
+          "license_name": "CC0 1.0 Universal",
+          "license_url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+          "modified": "Sanitized derivative created by removal of embedded metadata; visual content not cropped.",
+          "recommended_attribution": "XYZ 91973 — File:Kolkata City at night.jpg — CC0 1.0 Universal (http://creativecommons.org/publicdomain/zero/1.0/deed.en)"
+        }
+      },
+      "license_evidence_relative_path": "metadata/p1a-002/license_evidence.json",
+      "license_evidence_sha256": "4c379791d0a6b03191597ddb8ddcdce760abcb798b733a8d82d1d56c60ee1c5e",
+      "human_review": {
+        "status": "APPROVED",
+        "review_scope": "public-corpus suitability, human presence, age evidence, privacy and category match",
+        "human_presence": "NONE",
+        "person_count": 0,
+        "full_body_count": 0,
+        "age_evidence_basis": "NOT_APPLICABLE",
+        "age_evidence": "No human subject is present after visual review.",
+        "nonvisual_source": "https://commons.wikimedia.org/wiki/File:Kolkata%20City%20at%20night.jpg",
+        "no_person": true,
+        "note": "No human, minor, private-space content, readable identifier, plate, or address observed."
+      },
+      "metadata_relative_paths": [
+        "metadata/p1a-002/commons_api.json",
+        "metadata/p1a-002/source_page_record.json",
+        "metadata/p1a-002/license_evidence.json",
+        "metadata/p1a-002/transport.json",
+        "metadata/p1a-002/manual_visual_review.json"
+      ]
+    },
+    {
+      "sample_id": "p1a-003",
+      "title": "File:Château Frontenac at night, Quebec City, Canada 2.jpg",
+      "status": "APPROVED",
+      "category_tags": [
+        "architecture",
+        "city_night",
+        "low_light",
+        "no_person",
+        "warm_color"
+      ],
+      "source": {
+        "relative_path": "source/p1a-003.jpg",
+        "sha256": "b9e83c5ea1395ca94c8789e51e4bd1aa0cbe136bfa58b9d724191b6c355b3870",
+        "bytes": 482076,
+        "mime": "image/jpeg",
+        "representation": "parent_verified_copy",
+        "original_url": "https://upload.wikimedia.org/wikipedia/commons/9/94/Ch%C3%A2teau_Frontenac_at_night%2C_Quebec_City%2C_Canada_2.jpg",
+        "parent_corpus_id": "phase1-5-p1a-public-corpus-20260726T121500Z",
+        "width": 1920,
+        "height": 1296
+      },
+      "sanitized": {
+        "relative_path": "sanitized/p1a-003.jpg",
+        "format": "JPEG",
+        "mime": "image/jpeg",
+        "bytes": 616160,
+        "sha256": "94c6bfa2d249f8f8572b9da639d74c2f759c7d1b4410667f3a9db15025806d43",
+        "dimensions": [
+          1920,
+          1296
+        ],
+        "source_dimensions": [
+          1920,
+          1296
+        ],
+        "source_orientation": 1,
+        "orientation_normalized": false,
+        "crop_applied": false,
+        "exif_removed": true,
+        "gps_removed": true,
+        "device_metadata_removed": true,
+        "software_metadata_removed": true
+      },
+      "source_page": {
+        "pageid": 123000622,
+        "title": "File:Château Frontenac at night, Quebec City, Canada 2.jpg",
+        "revision_id": 1222578020,
+        "revision_timestamp": "2026-05-30T01:27:28Z",
+        "canonical_url": "https://commons.wikimedia.org/wiki/File:Ch%C3%A2teau%20Frontenac%20at%20night%2C%20Quebec%20City%2C%20Canada%202.jpg",
+        "original_url": "https://upload.wikimedia.org/wikipedia/commons/9/94/Ch%C3%A2teau_Frontenac_at_night%2C_Quebec_City%2C_Canada_2.jpg",
+        "mime": "image/jpeg",
+        "width": 7541,
+        "height": 5091,
+        "artist": "Wilfredor",
+        "credit": "Own work",
+        "attribution": "",
+        "commons_api_sha256": "69cf6ed08f66d10df5f2bfe1ea63d4bd83902f370a140d6d65ae26f162d7c13f",
+        "retrieved_utc": "2026-07-27T15:08:09Z"
+      },
+      "license": {
+        "id": "CC0",
+        "name": "CC0 1.0 Universal",
+        "url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+        "attribution": {
+          "author": "Wilfredor",
+          "title": "Château Frontenac at night, Quebec City, Canada 2",
+          "page_url": "https://commons.wikimedia.org/wiki/File:Ch%C3%A2teau%20Frontenac%20at%20night%2C%20Quebec%20City%2C%20Canada%202.jpg",
+          "license_name": "CC0 1.0 Universal",
+          "license_url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+          "modified": "Sanitized derivative created by removal of embedded metadata; visual content not cropped.",
+          "recommended_attribution": "Wilfredor — File:Château Frontenac at night, Quebec City, Canada 2.jpg — CC0 1.0 Universal (http://creativecommons.org/publicdomain/zero/1.0/deed.en)"
+        }
+      },
+      "license_evidence_relative_path": "metadata/p1a-003/license_evidence.json",
+      "license_evidence_sha256": "74ab9d1c39d2af046eff28eeb7de7dc4586b52055bd7d23a2b3996347362be70",
+      "human_review": {
+        "status": "APPROVED",
+        "review_scope": "public-corpus suitability, human presence, age evidence, privacy and category match",
+        "human_presence": "NONE",
+        "person_count": 0,
+        "full_body_count": 0,
+        "age_evidence_basis": "NOT_APPLICABLE",
+        "age_evidence": "No human subject is present after visual review.",
+        "nonvisual_source": "https://commons.wikimedia.org/wiki/File:Ch%C3%A2teau%20Frontenac%20at%20night%2C%20Quebec%20City%2C%20Canada%202.jpg",
+        "no_person": true,
+        "note": "No human, minor, private-space content, readable identifier, plate, or address observed."
+      },
+      "metadata_relative_paths": [
+        "metadata/p1a-003/commons_api.json",
+        "metadata/p1a-003/source_page_record.json",
+        "metadata/p1a-003/license_evidence.json",
+        "metadata/p1a-003/transport.json",
+        "metadata/p1a-003/manual_visual_review.json"
+      ]
+    },
+    {
+      "sample_id": "p1a-004",
+      "title": "File:Petit Champlain at night, Quebec city.jpg",
+      "status": "APPROVED",
+      "category_tags": [
+        "complex_background",
+        "low_light",
+        "no_person",
+        "street",
+        "warm_color"
+      ],
+      "source": {
+        "relative_path": "source/p1a-004.jpg",
+        "sha256": "63c483128bc775fe1706900c83816869ad06b0e29e35ea1d26db77d8ee69a978",
+        "bytes": 1246508,
+        "mime": "image/jpeg",
+        "representation": "parent_verified_copy",
+        "original_url": "https://upload.wikimedia.org/wikipedia/commons/6/6b/Petit_Champlain_at_night%2C_Quebec_city.jpg",
+        "parent_corpus_id": "phase1-5-p1a-public-corpus-20260726T121500Z",
+        "width": 1920,
+        "height": 1754
+      },
+      "sanitized": {
+        "relative_path": "sanitized/p1a-004.jpg",
+        "format": "JPEG",
+        "mime": "image/jpeg",
+        "bytes": 1565049,
+        "sha256": "be20da0c5e2c9c7846af7b3cd451ff85e7a29a88b4cc169dbd4694581d933690",
+        "dimensions": [
+          1920,
+          1754
+        ],
+        "source_dimensions": [
+          1920,
+          1754
+        ],
+        "source_orientation": 1,
+        "orientation_normalized": false,
+        "crop_applied": false,
+        "exif_removed": true,
+        "gps_removed": true,
+        "device_metadata_removed": true,
+        "software_metadata_removed": true
+      },
+      "source_page": {
+        "pageid": 95232809,
+        "title": "File:Petit Champlain at night, Quebec city.jpg",
+        "revision_id": 1222611511,
+        "revision_timestamp": "2026-05-30T02:47:17Z",
+        "canonical_url": "https://commons.wikimedia.org/wiki/File:Petit%20Champlain%20at%20night%2C%20Quebec%20city.jpg",
+        "original_url": "https://upload.wikimedia.org/wikipedia/commons/6/6b/Petit_Champlain_at_night%2C_Quebec_city.jpg",
+        "mime": "image/jpeg",
+        "width": 6400,
+        "height": 5846,
+        "artist": "Wilfredor",
+        "credit": "Own work",
+        "attribution": "",
+        "commons_api_sha256": "b29854c7f970f5f447ac45b03cf225b99fcbca201cd675138ceb92db1632c15f",
+        "retrieved_utc": "2026-07-27T15:08:09Z"
+      },
+      "license": {
+        "id": "CC0",
+        "name": "CC0 1.0 Universal",
+        "url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+        "attribution": {
+          "author": "Wilfredor",
+          "title": "Petit Champlain at night, Quebec city",
+          "page_url": "https://commons.wikimedia.org/wiki/File:Petit%20Champlain%20at%20night%2C%20Quebec%20city.jpg",
+          "license_name": "CC0 1.0 Universal",
+          "license_url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+          "modified": "Sanitized derivative created by removal of embedded metadata; visual content not cropped.",
+          "recommended_attribution": "Wilfredor — File:Petit Champlain at night, Quebec city.jpg — CC0 1.0 Universal (http://creativecommons.org/publicdomain/zero/1.0/deed.en)"
+        }
+      },
+      "license_evidence_relative_path": "metadata/p1a-004/license_evidence.json",
+      "license_evidence_sha256": "959627a6de995c0b47d7697be9c93cc98b83ba871fdbd26f744a93bfc777815c",
+      "human_review": {
+        "status": "APPROVED",
+        "review_scope": "public-corpus suitability, human presence, age evidence, privacy and category match",
+        "human_presence": "NONE",
+        "person_count": 0,
+        "full_body_count": 0,
+        "age_evidence_basis": "NOT_APPLICABLE",
+        "age_evidence": "No human subject is present after visual review.",
+        "nonvisual_source": "https://commons.wikimedia.org/wiki/File:Petit%20Champlain%20at%20night%2C%20Quebec%20city.jpg",
+        "no_person": true,
+        "note": "No human, minor, private-space content, readable identifier, plate, or address observed."
+      },
+      "metadata_relative_paths": [
+        "metadata/p1a-004/commons_api.json",
+        "metadata/p1a-004/source_page_record.json",
+        "metadata/p1a-004/license_evidence.json",
+        "metadata/p1a-004/transport.json",
+        "metadata/p1a-004/manual_visual_review.json"
+      ]
+    },
+    {
+      "sample_id": "p1a-005",
+      "title": "File:Édifice Price at night, Quebec city, Canada.jpg",
+      "status": "APPROVED",
+      "category_tags": [
+        "architecture",
+        "cool_color",
+        "low_light",
+        "no_person",
+        "symmetry",
+        "warm_color"
+      ],
+      "source": {
+        "relative_path": "source/p1a-005.jpg",
+        "sha256": "a0dd01dc5dc480417c4c4072de9e979ea748f310fc46f3d8232fe4737665ca74",
+        "bytes": 8723340,
+        "mime": "image/jpeg",
+        "representation": "parent_verified_copy",
+        "original_url": "https://upload.wikimedia.org/wikipedia/commons/d/dc/%C3%89difice_Price_at_night%2C_Quebec_city%2C_Canada.jpg",
+        "parent_corpus_id": "phase1-5-p1a-public-corpus-20260726T121500Z",
+        "width": 4524,
+        "height": 2940
+      },
+      "sanitized": {
+        "relative_path": "sanitized/p1a-005.jpg",
+        "format": "JPEG",
+        "mime": "image/jpeg",
+        "bytes": 3665425,
+        "sha256": "8588637670df8715abfad4eb639210f2525909740b4f027ceac40b2207aecc5a",
+        "dimensions": [
+          4524,
+          2940
+        ],
+        "source_dimensions": [
+          4524,
+          2940
+        ],
+        "source_orientation": 1,
+        "orientation_normalized": false,
+        "crop_applied": false,
+        "exif_removed": true,
+        "gps_removed": true,
+        "device_metadata_removed": true,
+        "software_metadata_removed": true
+      },
+      "source_page": {
+        "pageid": 95206524,
+        "title": "File:Édifice Price at night, Quebec city, Canada.jpg",
+        "revision_id": 1222284467,
+        "revision_timestamp": "2026-05-29T14:17:06Z",
+        "canonical_url": "https://commons.wikimedia.org/wiki/File:%C3%89difice%20Price%20at%20night%2C%20Quebec%20city%2C%20Canada.jpg",
+        "original_url": "https://upload.wikimedia.org/wikipedia/commons/d/dc/%C3%89difice_Price_at_night%2C_Quebec_city%2C_Canada.jpg",
+        "mime": "image/jpeg",
+        "width": 4524,
+        "height": 2940,
+        "artist": "Wilfredor",
+        "credit": "Own work",
+        "attribution": "",
+        "commons_api_sha256": "1fa8cd4e052268660f9348da4f3fdadfca674f8afabbfc7be7edeff88ea523a2",
+        "retrieved_utc": "2026-07-27T15:08:09Z"
+      },
+      "license": {
+        "id": "CC0",
+        "name": "CC0 1.0 Universal",
+        "url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+        "attribution": {
+          "author": "Wilfredor",
+          "title": "Édifice Price at night, Quebec city, Canada",
+          "page_url": "https://commons.wikimedia.org/wiki/File:%C3%89difice%20Price%20at%20night%2C%20Quebec%20city%2C%20Canada.jpg",
+          "license_name": "CC0 1.0 Universal",
+          "license_url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+          "modified": "Sanitized derivative created by removal of embedded metadata; visual content not cropped.",
+          "recommended_attribution": "Wilfredor — File:Édifice Price at night, Quebec city, Canada.jpg — CC0 1.0 Universal (http://creativecommons.org/publicdomain/zero/1.0/deed.en)"
+        }
+      },
+      "license_evidence_relative_path": "metadata/p1a-005/license_evidence.json",
+      "license_evidence_sha256": "90286718f853be0ea8f19c2e72103249bbe662b4dcc3c535dece0dc7887b6777",
+      "human_review": {
+        "status": "APPROVED",
+        "review_scope": "public-corpus suitability, human presence, age evidence, privacy and category match",
+        "human_presence": "NONE",
+        "person_count": 0,
+        "full_body_count": 0,
+        "age_evidence_basis": "NOT_APPLICABLE",
+        "age_evidence": "No human subject is present after visual review.",
+        "nonvisual_source": "https://commons.wikimedia.org/wiki/File:%C3%89difice%20Price%20at%20night%2C%20Quebec%20city%2C%20Canada.jpg",
+        "no_person": true,
+        "note": "No human, minor, private-space content, readable identifier, plate, or address observed."
+      },
+      "metadata_relative_paths": [
+        "metadata/p1a-005/commons_api.json",
+        "metadata/p1a-005/source_page_record.json",
+        "metadata/p1a-005/license_evidence.json",
+        "metadata/p1a-005/transport.json",
+        "metadata/p1a-005/manual_visual_review.json"
+      ]
+    },
+    {
+      "sample_id": "p1a-007",
+      "title": "File:Parasols, Evening, Beach, Rincon de la Victoria, Andalusia, Spain.jpg",
+      "status": "APPROVED",
+      "category_tags": [
+        "negative_space",
+        "no_person",
+        "seaside",
+        "warm_color"
+      ],
+      "source": {
+        "relative_path": "source/p1a-007.jpg",
+        "sha256": "13c64ecc43c5a8176972f19793a2375030c8ec49fd787849ae257653001fe0b8",
+        "bytes": 949662,
+        "mime": "image/jpeg",
+        "representation": "parent_verified_copy",
+        "original_url": "https://upload.wikimedia.org/wikipedia/commons/9/98/Parasols%2C_Evening%2C_Beach%2C_Rincon_de_la_Victoria%2C_Andalusia%2C_Spain.jpg",
+        "parent_corpus_id": "phase1-5-p1a-public-corpus-20260726T121500Z",
+        "width": 1920,
+        "height": 1278
+      },
+      "sanitized": {
+        "relative_path": "sanitized/p1a-007.jpg",
+        "format": "JPEG",
+        "mime": "image/jpeg",
+        "bytes": 1146509,
+        "sha256": "e0701665ae6e094239562f0b01d534e514a0d9d69443be8ff42660bb3535befb",
+        "dimensions": [
+          1920,
+          1278
+        ],
+        "source_dimensions": [
+          1920,
+          1278
+        ],
+        "source_orientation": 1,
+        "orientation_normalized": false,
+        "crop_applied": false,
+        "exif_removed": true,
+        "gps_removed": true,
+        "device_metadata_removed": true,
+        "software_metadata_removed": true
+      },
+      "source_page": {
+        "pageid": 36289052,
+        "title": "File:Parasols, Evening, Beach, Rincon de la Victoria, Andalusia, Spain.jpg",
+        "revision_id": 1250097053,
+        "revision_timestamp": "2026-07-21T07:41:40Z",
+        "canonical_url": "https://commons.wikimedia.org/wiki/File:Parasols%2C%20Evening%2C%20Beach%2C%20Rincon%20de%20la%20Victoria%2C%20Andalusia%2C%20Spain.jpg",
+        "original_url": "https://upload.wikimedia.org/wikipedia/commons/9/98/Parasols%2C_Evening%2C_Beach%2C_Rincon_de_la_Victoria%2C_Andalusia%2C_Spain.jpg",
+        "mime": "image/jpeg",
+        "width": 4592,
+        "height": 3056,
+        "artist": "Jebulon",
+        "credit": "Own work",
+        "attribution": "",
+        "commons_api_sha256": "ddcd0892e3bb3163b9ed26615ccc96cd2c6eefef9b18c70a83830c34cce7d2bb",
+        "retrieved_utc": "2026-07-27T15:08:09Z"
+      },
+      "license": {
+        "id": "CC0",
+        "name": "CC0 1.0 Universal",
+        "url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+        "attribution": {
+          "author": "Jebulon",
+          "title": "Parasols, Evening, Beach, Rincon de la Victoria, Andalusia, Spain",
+          "page_url": "https://commons.wikimedia.org/wiki/File:Parasols%2C%20Evening%2C%20Beach%2C%20Rincon%20de%20la%20Victoria%2C%20Andalusia%2C%20Spain.jpg",
+          "license_name": "CC0 1.0 Universal",
+          "license_url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+          "modified": "Sanitized derivative created by removal of embedded metadata; visual content not cropped.",
+          "recommended_attribution": "Jebulon — File:Parasols, Evening, Beach, Rincon de la Victoria, Andalusia, Spain.jpg — CC0 1.0 Universal (http://creativecommons.org/publicdomain/zero/1.0/deed.en)"
+        }
+      },
+      "license_evidence_relative_path": "metadata/p1a-007/license_evidence.json",
+      "license_evidence_sha256": "d9e7cf718c8d12380a291b38d213495a06f88d45ef9bf7660bdb608c2ec33f39",
+      "human_review": {
+        "status": "APPROVED",
+        "review_scope": "public-corpus suitability, human presence, age evidence, privacy and category match",
+        "human_presence": "NONE",
+        "person_count": 0,
+        "full_body_count": 0,
+        "age_evidence_basis": "NOT_APPLICABLE",
+        "age_evidence": "No human subject is present after visual review.",
+        "nonvisual_source": "https://commons.wikimedia.org/wiki/File:Parasols%2C%20Evening%2C%20Beach%2C%20Rincon%20de%20la%20Victoria%2C%20Andalusia%2C%20Spain.jpg",
+        "no_person": true,
+        "note": "No human, minor, private-space content, readable identifier, plate, or address observed."
+      },
+      "metadata_relative_paths": [
+        "metadata/p1a-007/commons_api.json",
+        "metadata/p1a-007/source_page_record.json",
+        "metadata/p1a-007/license_evidence.json",
+        "metadata/p1a-007/transport.json",
+        "metadata/p1a-007/manual_visual_review.json"
+      ]
+    },
+    {
+      "sample_id": "p1a-006",
+      "title": "File:Bedroom window (Unsplash).jpg",
+      "status": "APPROVED",
+      "category_tags": [
+        "backlight",
+        "indoor_window",
+        "minimal_background",
+        "negative_space",
+        "no_person",
+        "side_light"
+      ],
+      "source": {
+        "relative_path": "source/p1a-006.jpg",
+        "sha256": "6e21089bb2ec13ee79edf0b3e5be21a6400d72ce31d867914df6770e39e6c854",
+        "bytes": 815731,
+        "mime": "image/jpeg",
+        "representation": "parent_verified_copy",
+        "original_url": "https://upload.wikimedia.org/wikipedia/commons/f/f7/Bedroom_window_%28Unsplash%29.jpg",
+        "parent_corpus_id": "phase1-5-p1a-public-corpus-20260726T121500Z",
+        "width": 1920,
+        "height": 2557
+      },
+      "sanitized": {
+        "relative_path": "sanitized/p1a-006.jpg",
+        "format": "JPEG",
+        "mime": "image/jpeg",
+        "bytes": 1045029,
+        "sha256": "4b2ab06f68967c74f8911852483ceaf053f3ab25ddc931998549f9fa0fe71763",
+        "dimensions": [
+          1920,
+          2557
+        ],
+        "source_dimensions": [
+          1920,
+          2557
+        ],
+        "source_orientation": 1,
+        "orientation_normalized": false,
+        "crop_applied": false,
+        "exif_removed": true,
+        "gps_removed": true,
+        "device_metadata_removed": true,
+        "software_metadata_removed": true
+      },
+      "source_page": {
+        "pageid": 61777357,
+        "title": "File:Bedroom window (Unsplash).jpg",
+        "revision_id": 938381076,
+        "revision_timestamp": "2024-10-11T10:16:40Z",
+        "canonical_url": "https://commons.wikimedia.org/wiki/File:Bedroom%20window%20(Unsplash).jpg",
+        "original_url": "https://upload.wikimedia.org/wikipedia/commons/f/f7/Bedroom_window_%28Unsplash%29.jpg",
+        "mime": "image/jpeg",
+        "width": 2373,
+        "height": 3160,
+        "artist": "Viktoria Hall-Waldhauser viktorialuise",
+        "credit": "https://unsplash.com/photos/nVPuHMDwMJA Image at the Wayback Machine Gallery at the Wayback Machine",
+        "attribution": "",
+        "commons_api_sha256": "a4dfae1b57250f2082d3a97d6ed13cd6fccb20c0ece0d84f9c125802e2979fa0",
+        "retrieved_utc": "2026-07-27T15:24:54Z"
+      },
+      "license": {
+        "id": "CC0",
+        "name": "CC0 1.0 Universal",
+        "url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+        "attribution": {
+          "author": "Viktoria Hall-Waldhauser viktorialuise",
+          "title": "Bedroom window (Unsplash)",
+          "page_url": "https://commons.wikimedia.org/wiki/File:Bedroom%20window%20(Unsplash).jpg",
+          "license_name": "CC0 1.0 Universal",
+          "license_url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+          "modified": "Sanitized derivative created by removal of embedded metadata; visual content not cropped.",
+          "recommended_attribution": "Viktoria Hall-Waldhauser viktorialuise — File:Bedroom window (Unsplash).jpg — CC0 1.0 Universal (http://creativecommons.org/publicdomain/zero/1.0/deed.en)"
+        }
+      },
+      "license_evidence_relative_path": "metadata/p1a-006/license_evidence.json",
+      "license_evidence_sha256": "a9db14f1b28ddca3a66f1635e5cb3b24880ddbcdb78ada1f0cd429779e57c95f",
+      "human_review": {
+        "status": "APPROVED",
+        "review_scope": "public-corpus suitability, human presence, age evidence, privacy and category match",
+        "human_presence": "NONE",
+        "person_count": 0,
+        "full_body_count": 0,
+        "age_evidence_basis": "NOT_APPLICABLE",
+        "age_evidence": "No human subject is present after visual review.",
+        "nonvisual_source": "https://commons.wikimedia.org/wiki/File:Bedroom%20window%20(Unsplash).jpg",
+        "no_person": true,
+        "note": "No human, minor, private-space content, readable identifier, plate, or address observed."
+      },
+      "metadata_relative_paths": [
+        "metadata/p1a-006/commons_api.json",
+        "metadata/p1a-006/source_page_record.json",
+        "metadata/p1a-006/license_evidence.json",
+        "metadata/p1a-006/transport.json",
+        "metadata/p1a-006/manual_visual_review.json"
+      ]
+    },
+    {
+      "sample_id": "p1a-009",
+      "title": "File:Spruce forest at Holma.jpg",
+      "status": "APPROVED",
+      "category_tags": [
+        "complex_background",
+        "cool_color",
+        "forest",
+        "no_person"
+      ],
+      "source": {
+        "relative_path": "source/p1a-009.jpg",
+        "sha256": "378db84c70a3abcb9476fd20ba325c30be377cc0a51af7b72cb3deaedf3975ee",
+        "bytes": 15511423,
+        "mime": "image/jpeg",
+        "representation": "parent_verified_copy",
+        "original_url": "https://upload.wikimedia.org/wikipedia/commons/3/34/Spruce_forest_at_Holma.jpg",
+        "parent_corpus_id": "phase1-5-p1a-public-corpus-20260726T121500Z",
+        "width": 4864,
+        "height": 3648
+      },
+      "sanitized": {
+        "relative_path": "sanitized/p1a-009.jpg",
+        "format": "JPEG",
+        "mime": "image/jpeg",
+        "bytes": 7686515,
+        "sha256": "c165f490813141c0c3437531f61706362819935e026b89e041d5fab5351f8374",
+        "dimensions": [
+          4864,
+          3648
+        ],
+        "source_dimensions": [
+          4864,
+          3648
+        ],
+        "source_orientation": 1,
+        "orientation_normalized": false,
+        "crop_applied": false,
+        "exif_removed": true,
+        "gps_removed": true,
+        "device_metadata_removed": true,
+        "software_metadata_removed": true
+      },
+      "source_page": {
+        "pageid": 59873545,
+        "title": "File:Spruce forest at Holma.jpg",
+        "revision_id": 1168708694,
+        "revision_timestamp": "2026-02-19T14:24:16Z",
+        "canonical_url": "https://commons.wikimedia.org/wiki/File:Spruce%20forest%20at%20Holma.jpg",
+        "original_url": "https://upload.wikimedia.org/wikipedia/commons/3/34/Spruce_forest_at_Holma.jpg",
+        "mime": "image/jpeg",
+        "width": 4864,
+        "height": 3648,
+        "artist": "W.carter",
+        "credit": "Own work",
+        "attribution": "",
+        "commons_api_sha256": "28291a6e3b9ffe15a39e12040979306bc54c60dac25abf65741cdb97304466ac",
+        "retrieved_utc": "2026-07-27T15:08:09Z"
+      },
+      "license": {
+        "id": "CC0",
+        "name": "CC0 1.0 Universal",
+        "url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+        "attribution": {
+          "author": "W.carter",
+          "title": "Spruce forest at Holma",
+          "page_url": "https://commons.wikimedia.org/wiki/File:Spruce%20forest%20at%20Holma.jpg",
+          "license_name": "CC0 1.0 Universal",
+          "license_url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+          "modified": "Sanitized derivative created by removal of embedded metadata; visual content not cropped.",
+          "recommended_attribution": "W.carter — File:Spruce forest at Holma.jpg — CC0 1.0 Universal (http://creativecommons.org/publicdomain/zero/1.0/deed.en)"
+        }
+      },
+      "license_evidence_relative_path": "metadata/p1a-009/license_evidence.json",
+      "license_evidence_sha256": "a24da5689301c0f4aad4203c96b978ffbb3dc91910967444302327e22a9a2bf8",
+      "human_review": {
+        "status": "APPROVED",
+        "review_scope": "public-corpus suitability, human presence, age evidence, privacy and category match",
+        "human_presence": "NONE",
+        "person_count": 0,
+        "full_body_count": 0,
+        "age_evidence_basis": "NOT_APPLICABLE",
+        "age_evidence": "No human subject is present after visual review.",
+        "nonvisual_source": "https://commons.wikimedia.org/wiki/File:Spruce%20forest%20at%20Holma.jpg",
+        "no_person": true,
+        "note": "No human, minor, private-space content, readable identifier, plate, or address observed."
+      },
+      "metadata_relative_paths": [
+        "metadata/p1a-009/commons_api.json",
+        "metadata/p1a-009/source_page_record.json",
+        "metadata/p1a-009/license_evidence.json",
+        "metadata/p1a-009/transport.json",
+        "metadata/p1a-009/manual_visual_review.json"
+      ]
+    },
+    {
+      "sample_id": "p1a-012",
+      "title": "File:World War II woman aircraft worker, Vega Aircraft Corporation, Burbank, California 1942.jpg",
+      "status": "APPROVED",
+      "category_tags": [
+        "dynamic_action",
+        "side_light",
+        "single_person_half_body",
+        "warm_color"
+      ],
+      "source": {
+        "relative_path": "source/p1a-012.jpg",
+        "sha256": "f11bfa9d3a25f810cb18b4866f5b345ab8f1ed62c971e1650cf4a3aac01810fb",
+        "bytes": 445354,
+        "mime": "image/jpeg",
+        "representation": "parent_verified_copy",
+        "original_url": "https://upload.wikimedia.org/wikipedia/commons/d/d1/World_War_II_woman_aircraft_worker%2C_Vega_Aircraft_Corporation%2C_Burbank%2C_California_1942.jpg",
+        "parent_corpus_id": "phase1-5-p1a-public-corpus-20260726T121500Z",
+        "width": 1920,
+        "height": 1479
+      },
+      "sanitized": {
+        "relative_path": "sanitized/p1a-012.jpg",
+        "format": "JPEG",
+        "mime": "image/jpeg",
+        "bytes": 492583,
+        "sha256": "a725fae363278e63d6efab9001530adae555b326c96eaa030b8b4fb948b911b1",
+        "dimensions": [
+          1920,
+          1479
+        ],
+        "source_dimensions": [
+          1920,
+          1479
+        ],
+        "source_orientation": 1,
+        "orientation_normalized": false,
+        "crop_applied": false,
+        "exif_removed": true,
+        "gps_removed": true,
+        "device_metadata_removed": true,
+        "software_metadata_removed": true
+      },
+      "source_page": {
+        "pageid": 2851215,
+        "title": "File:World War II woman aircraft worker, Vega Aircraft Corporation, Burbank, California 1942.jpg",
+        "revision_id": 1056861379,
+        "revision_timestamp": "2025-07-13T13:38:11Z",
+        "canonical_url": "https://commons.wikimedia.org/wiki/File:World%20War%20II%20woman%20aircraft%20worker%2C%20Vega%20Aircraft%20Corporation%2C%20Burbank%2C%20California%201942.jpg",
+        "original_url": "https://upload.wikimedia.org/wikipedia/commons/d/d1/World_War_II_woman_aircraft_worker%2C_Vega_Aircraft_Corporation%2C_Burbank%2C_California_1942.jpg",
+        "mime": "image/jpeg",
+        "width": 7373,
+        "height": 5679,
+        "artist": "Bransby, David, photographer.",
+        "credit": "This image is available from the United States Library of Congress's Prints and Photographs division under the digital ID fsac.1a34456.This tag does not indicate the copyright status of the attached work. A normal copyright tag is still required. See Commons:Licensing.",
+        "attribution": "",
+        "commons_api_sha256": "25bd859b755da5c4257238ba5cdeb0e8fd06a1dcc0b7996b62e374893d56b8f8",
+        "retrieved_utc": "2026-07-27T15:08:09Z"
+      },
+      "license": {
+        "id": "Public-Domain",
+        "name": "Public domain",
+        "url": "",
+        "attribution": {
+          "author": "Bransby, David, photographer.",
+          "title": "World War II woman aircraft worker, Vega Aircraft Corporation, Burbank, California 1942",
+          "page_url": "https://commons.wikimedia.org/wiki/File:World%20War%20II%20woman%20aircraft%20worker%2C%20Vega%20Aircraft%20Corporation%2C%20Burbank%2C%20California%201942.jpg",
+          "license_name": "Public domain",
+          "license_url": "",
+          "modified": "Sanitized derivative created by removal of embedded metadata; visual content not cropped.",
+          "recommended_attribution": "Bransby, David, photographer. — File:World War II woman aircraft worker, Vega Aircraft Corporation, Burbank, California 1942.jpg — Public domain (per-item public-domain basis)"
+        }
+      },
+      "license_evidence_relative_path": "metadata/p1a-012/license_evidence.json",
+      "license_evidence_sha256": "fa2d3978415296775199a2500919b7de1a61961de905476a4d91ef3e9139f359",
+      "human_review": {
+        "status": "APPROVED",
+        "review_scope": "public-corpus suitability, human presence, age evidence, privacy and category match",
+        "human_presence": "VISIBLE_DOCUMENTED_ADULT",
+        "person_count": 1,
+        "full_body_count": 0,
+        "age_evidence_basis": "OFFICIAL_SOURCE_DOCUMENTED_ADULT",
+        "age_evidence": "The official Commons title calls the subject a woman aircraft worker; this is nonvisual adult employment wording.",
+        "nonvisual_source": "https://commons.wikimedia.org/wiki/File:World%20War%20II%20woman%20aircraft%20worker%2C%20Vega%20Aircraft%20Corporation%2C%20Burbank%2C%20California%201942.jpg",
+        "no_person": false,
+        "note": "One documented adult worker in a historical public-domain image; no sensitive subject observed."
+      },
+      "metadata_relative_paths": [
+        "metadata/p1a-012/commons_api.json",
+        "metadata/p1a-012/source_page_record.json",
+        "metadata/p1a-012/license_evidence.json",
+        "metadata/p1a-012/transport.json",
+        "metadata/p1a-012/manual_visual_review.json"
+      ]
+    },
+    {
+      "sample_id": "p1a-016",
+      "title": "File:Cafe Interior with Coffee.jpg",
+      "status": "APPROVED",
+      "category_tags": [
+        "cafe_or_lifestyle_interior",
+        "no_person",
+        "warm_color"
+      ],
+      "source": {
+        "relative_path": "source/p1a-016.jpg",
+        "sha256": "199997b8f9e5bd41c501bd992affd379adc11dbb69021fd9bfec89285959dbb0",
+        "bytes": 1171121,
+        "mime": "image/jpeg",
+        "representation": "parent_verified_copy",
+        "original_url": "https://upload.wikimedia.org/wikipedia/commons/3/38/Cafe_Interior_with_Coffee.jpg",
+        "parent_corpus_id": "phase1-5-p1a-public-corpus-20260726T121500Z",
+        "width": 1920,
+        "height": 3413
+      },
+      "sanitized": {
+        "relative_path": "sanitized/p1a-016.jpg",
+        "format": "JPEG",
+        "mime": "image/jpeg",
+        "bytes": 1518302,
+        "sha256": "4ba38559e77fe8a7fb443f4e730eb0e03199b60477888ef8e85d8951315c1b6d",
+        "dimensions": [
+          1920,
+          3413
+        ],
+        "source_dimensions": [
+          1920,
+          3413
+        ],
+        "source_orientation": 1,
+        "orientation_normalized": false,
+        "crop_applied": false,
+        "exif_removed": true,
+        "gps_removed": true,
+        "device_metadata_removed": true,
+        "software_metadata_removed": true
+      },
+      "source_page": {
+        "pageid": 163789235,
+        "title": "File:Cafe Interior with Coffee.jpg",
+        "revision_id": 1110295100,
+        "revision_timestamp": "2025-11-07T00:15:48Z",
+        "canonical_url": "https://commons.wikimedia.org/wiki/File:Cafe%20Interior%20with%20Coffee.jpg",
+        "original_url": "https://upload.wikimedia.org/wikipedia/commons/3/38/Cafe_Interior_with_Coffee.jpg",
+        "mime": "image/jpeg",
+        "width": 2268,
+        "height": 4032,
+        "artist": "Kavig624",
+        "credit": "Own work",
+        "attribution": "",
+        "commons_api_sha256": "da2393f825d1b1612a755b9aef56ed7ee575b665be5e157f4b16d1abe8c832de",
+        "retrieved_utc": "2026-07-27T15:08:09Z"
+      },
+      "license": {
+        "id": "CC0",
+        "name": "CC0 1.0 Universal",
+        "url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+        "attribution": {
+          "author": "Kavig624",
+          "title": "Cafe Interior with Coffee",
+          "page_url": "https://commons.wikimedia.org/wiki/File:Cafe%20Interior%20with%20Coffee.jpg",
+          "license_name": "CC0 1.0 Universal",
+          "license_url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+          "modified": "Sanitized derivative created by removal of embedded metadata; visual content not cropped.",
+          "recommended_attribution": "Kavig624 — File:Cafe Interior with Coffee.jpg — CC0 1.0 Universal (http://creativecommons.org/publicdomain/zero/1.0/deed.en)"
+        }
+      },
+      "license_evidence_relative_path": "metadata/p1a-016/license_evidence.json",
+      "license_evidence_sha256": "0583bbdb5a5da0079387b8f693b532a6db8e9608ffd0b6862a1d825b2ae83305",
+      "human_review": {
+        "status": "APPROVED",
+        "review_scope": "public-corpus suitability, human presence, age evidence, privacy and category match",
+        "human_presence": "NONE",
+        "person_count": 0,
+        "full_body_count": 0,
+        "age_evidence_basis": "NOT_APPLICABLE",
+        "age_evidence": "No human subject is present after visual review.",
+        "nonvisual_source": "https://commons.wikimedia.org/wiki/File:Cafe%20Interior%20with%20Coffee.jpg",
+        "no_person": true,
+        "note": "No human, minor, private-space content, readable identifier, plate, or address observed."
+      },
+      "metadata_relative_paths": [
+        "metadata/p1a-016/commons_api.json",
+        "metadata/p1a-016/source_page_record.json",
+        "metadata/p1a-016/license_evidence.json",
+        "metadata/p1a-016/transport.json",
+        "metadata/p1a-016/manual_visual_review.json"
+      ]
+    },
+    {
+      "sample_id": "p1a-017",
+      "title": "File:Interior of 1UP Cafe 2024-02-18.jpg",
+      "status": "APPROVED",
+      "category_tags": [
+        "cafe_or_lifestyle_interior",
+        "complex_background",
+        "no_person",
+        "strong_color"
+      ],
+      "source": {
+        "relative_path": "source/p1a-017.jpg",
+        "sha256": "fe36718957be42aaa5c8777cda05053745381f300d213c64d55bf08af9a996f7",
+        "bytes": 800050,
+        "mime": "image/jpeg",
+        "representation": "parent_verified_copy",
+        "original_url": "https://upload.wikimedia.org/wikipedia/commons/1/14/Interior_of_1UP_Cafe_2024-02-18.jpg",
+        "parent_corpus_id": "phase1-5-p1a-public-corpus-20260726T121500Z",
+        "width": 1920,
+        "height": 1440
+      },
+      "sanitized": {
+        "relative_path": "sanitized/p1a-017.jpg",
+        "format": "JPEG",
+        "mime": "image/jpeg",
+        "bytes": 1009993,
+        "sha256": "efd91f803d53f136451498c1082ff78c751f0c830b423165b388b61907de7328",
+        "dimensions": [
+          1920,
+          1440
+        ],
+        "source_dimensions": [
+          1920,
+          1440
+        ],
+        "source_orientation": 1,
+        "orientation_normalized": false,
+        "crop_applied": false,
+        "exif_removed": true,
+        "gps_removed": true,
+        "device_metadata_removed": true,
+        "software_metadata_removed": true
+      },
+      "source_page": {
+        "pageid": 145520990,
+        "title": "File:Interior of 1UP Cafe 2024-02-18.jpg",
+        "revision_id": 1136960730,
+        "revision_timestamp": "2025-12-26T13:08:14Z",
+        "canonical_url": "https://commons.wikimedia.org/wiki/File:Interior%20of%201UP%20Cafe%202024-02-18.jpg",
+        "original_url": "https://upload.wikimedia.org/wikipedia/commons/1/14/Interior_of_1UP_Cafe_2024-02-18.jpg",
+        "mime": "image/jpeg",
+        "width": 4032,
+        "height": 3024,
+        "artist": "Andy Li",
+        "credit": "Own work",
+        "attribution": "",
+        "commons_api_sha256": "e73643416f1b057bb169b53959da12359d05817688e5353f211d6225b78a3516",
+        "retrieved_utc": "2026-07-27T15:08:09Z"
+      },
+      "license": {
+        "id": "CC0",
+        "name": "CC0 1.0 Universal",
+        "url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+        "attribution": {
+          "author": "Andy Li",
+          "title": "Interior of 1UP Cafe 2024-02-18",
+          "page_url": "https://commons.wikimedia.org/wiki/File:Interior%20of%201UP%20Cafe%202024-02-18.jpg",
+          "license_name": "CC0 1.0 Universal",
+          "license_url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+          "modified": "Sanitized derivative created by removal of embedded metadata; visual content not cropped.",
+          "recommended_attribution": "Andy Li — File:Interior of 1UP Cafe 2024-02-18.jpg — CC0 1.0 Universal (http://creativecommons.org/publicdomain/zero/1.0/deed.en)"
+        }
+      },
+      "license_evidence_relative_path": "metadata/p1a-017/license_evidence.json",
+      "license_evidence_sha256": "caa62e8b1136430c10ecfa8707c29983ff0223737d508d2ad47e21c1b4a38487",
+      "human_review": {
+        "status": "APPROVED",
+        "review_scope": "public-corpus suitability, human presence, age evidence, privacy and category match",
+        "human_presence": "NONE",
+        "person_count": 0,
+        "full_body_count": 0,
+        "age_evidence_basis": "NOT_APPLICABLE",
+        "age_evidence": "No human subject is present after visual review.",
+        "nonvisual_source": "https://commons.wikimedia.org/wiki/File:Interior%20of%201UP%20Cafe%202024-02-18.jpg",
+        "no_person": true,
+        "note": "No human, minor, private-space content, readable identifier, plate, or address observed."
+      },
+      "metadata_relative_paths": [
+        "metadata/p1a-017/commons_api.json",
+        "metadata/p1a-017/source_page_record.json",
+        "metadata/p1a-017/license_evidence.json",
+        "metadata/p1a-017/transport.json",
+        "metadata/p1a-017/manual_visual_review.json"
+      ]
+    },
+    {
+      "sample_id": "p1a-018",
+      "title": "File:Interior of Floral Cafe 2026-02-25.jpg",
+      "status": "APPROVED",
+      "category_tags": [
+        "cafe_or_lifestyle_interior",
+        "complex_background",
+        "no_person",
+        "warm_color"
+      ],
+      "source": {
+        "relative_path": "source/p1a-018.jpg",
+        "sha256": "6e24d02e13683d647ca8b439b0e4b1ce0d2d67931f274bc81a7207fa98fe6e57",
+        "bytes": 476595,
+        "mime": "image/jpeg",
+        "representation": "parent_verified_copy",
+        "original_url": "https://upload.wikimedia.org/wikipedia/commons/1/18/Interior_of_Floral_Cafe_2026-02-25.jpg",
+        "parent_corpus_id": "phase1-5-p1a-public-corpus-20260726T121500Z",
+        "width": 1920,
+        "height": 1446
+      },
+      "sanitized": {
+        "relative_path": "sanitized/p1a-018.jpg",
+        "format": "JPEG",
+        "mime": "image/jpeg",
+        "bytes": 609367,
+        "sha256": "4152b8f7e09bdb2aafc6ff4fcc62d8d676e95eb657bf69a6f259b0a05d267144",
+        "dimensions": [
+          1920,
+          1446
+        ],
+        "source_dimensions": [
+          1920,
+          1446
+        ],
+        "source_orientation": 1,
+        "orientation_normalized": false,
+        "crop_applied": false,
+        "exif_removed": true,
+        "gps_removed": true,
+        "device_metadata_removed": true,
+        "software_metadata_removed": true
+      },
+      "source_page": {
+        "pageid": 185015027,
+        "title": "File:Interior of Floral Cafe 2026-02-25.jpg",
+        "revision_id": 1200728085,
+        "revision_timestamp": "2026-04-20T14:50:58Z",
+        "canonical_url": "https://commons.wikimedia.org/wiki/File:Interior%20of%20Floral%20Cafe%202026-02-25.jpg",
+        "original_url": "https://upload.wikimedia.org/wikipedia/commons/1/18/Interior_of_Floral_Cafe_2026-02-25.jpg",
+        "mime": "image/jpeg",
+        "width": 8160,
+        "height": 6144,
+        "artist": "Andy Li",
+        "credit": "Own work",
+        "attribution": "",
+        "commons_api_sha256": "8ba7b569541d85ec8d75147387eb30983f55d548fb36d307bab99b97783a9252",
+        "retrieved_utc": "2026-07-27T15:08:09Z"
+      },
+      "license": {
+        "id": "CC0",
+        "name": "CC0 1.0 Universal",
+        "url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+        "attribution": {
+          "author": "Andy Li",
+          "title": "Interior of Floral Cafe 2026-02-25",
+          "page_url": "https://commons.wikimedia.org/wiki/File:Interior%20of%20Floral%20Cafe%202026-02-25.jpg",
+          "license_name": "CC0 1.0 Universal",
+          "license_url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+          "modified": "Sanitized derivative created by removal of embedded metadata; visual content not cropped.",
+          "recommended_attribution": "Andy Li — File:Interior of Floral Cafe 2026-02-25.jpg — CC0 1.0 Universal (http://creativecommons.org/publicdomain/zero/1.0/deed.en)"
+        }
+      },
+      "license_evidence_relative_path": "metadata/p1a-018/license_evidence.json",
+      "license_evidence_sha256": "400bc5c18e514fce63555dfcdf813d67116a8aaaecdc7bef164e2c6829dcc4ca",
+      "human_review": {
+        "status": "APPROVED",
+        "review_scope": "public-corpus suitability, human presence, age evidence, privacy and category match",
+        "human_presence": "NONE",
+        "person_count": 0,
+        "full_body_count": 0,
+        "age_evidence_basis": "NOT_APPLICABLE",
+        "age_evidence": "No human subject is present after visual review.",
+        "nonvisual_source": "https://commons.wikimedia.org/wiki/File:Interior%20of%20Floral%20Cafe%202026-02-25.jpg",
+        "no_person": true,
+        "note": "No human, minor, private-space content, readable identifier, plate, or address observed."
+      },
+      "metadata_relative_paths": [
+        "metadata/p1a-018/commons_api.json",
+        "metadata/p1a-018/source_page_record.json",
+        "metadata/p1a-018/license_evidence.json",
+        "metadata/p1a-018/transport.json",
+        "metadata/p1a-018/manual_visual_review.json"
+      ]
+    },
+    {
+      "sample_id": "p1a-020",
+      "title": "File:Brutalist architecture, Ashford, Kent.jpg",
+      "status": "APPROVED",
+      "category_tags": [
+        "architecture",
+        "cool_color",
+        "minimal_background",
+        "no_person"
+      ],
+      "source": {
+        "relative_path": "source/p1a-020.jpg",
+        "sha256": "de9bf90b3b3394bff3314403bbf3ac9bc528859ac1af8d4f430ae5b2d9a2d73f",
+        "bytes": 973856,
+        "mime": "image/jpeg",
+        "representation": "parent_verified_copy",
+        "original_url": "https://upload.wikimedia.org/wikipedia/commons/c/ca/Brutalist_architecture%2C_Ashford%2C_Kent.jpg",
+        "parent_corpus_id": "phase1-5-p1a-public-corpus-20260726T121500Z",
+        "width": 1920,
+        "height": 1280
+      },
+      "sanitized": {
+        "relative_path": "sanitized/p1a-020.jpg",
+        "format": "JPEG",
+        "mime": "image/jpeg",
+        "bytes": 1240343,
+        "sha256": "426c1c02e1f8cecacde47ff326a6cd438baa7788d76b672038cd1c7e68583431",
+        "dimensions": [
+          1920,
+          1280
+        ],
+        "source_dimensions": [
+          1920,
+          1280
+        ],
+        "source_orientation": 1,
+        "orientation_normalized": false,
+        "crop_applied": false,
+        "exif_removed": true,
+        "gps_removed": true,
+        "device_metadata_removed": true,
+        "software_metadata_removed": true
+      },
+      "source_page": {
+        "pageid": 136254545,
+        "title": "File:Brutalist architecture, Ashford, Kent.jpg",
+        "revision_id": 1118835995,
+        "revision_timestamp": "2025-11-20T09:24:09Z",
+        "canonical_url": "https://commons.wikimedia.org/wiki/File:Brutalist%20architecture%2C%20Ashford%2C%20Kent.jpg",
+        "original_url": "https://upload.wikimedia.org/wikipedia/commons/c/ca/Brutalist_architecture%2C_Ashford%2C_Kent.jpg",
+        "mime": "image/jpeg",
+        "width": 6000,
+        "height": 4000,
+        "artist": "JOHN K THORNE",
+        "credit": "https://www.flickr.com/photos/seattlecamera/51588765846/",
+        "attribution": "",
+        "commons_api_sha256": "5338c5c39196406420a33d9a44380963fe5a8d66ec99560d6a666dff3b793e5a",
+        "retrieved_utc": "2026-07-27T15:08:09Z"
+      },
+      "license": {
+        "id": "CC0",
+        "name": "CC0 1.0 Universal",
+        "url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+        "attribution": {
+          "author": "JOHN K THORNE",
+          "title": "Brutalist architecture, Ashford, Kent",
+          "page_url": "https://commons.wikimedia.org/wiki/File:Brutalist%20architecture%2C%20Ashford%2C%20Kent.jpg",
+          "license_name": "CC0 1.0 Universal",
+          "license_url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+          "modified": "Sanitized derivative created by removal of embedded metadata; visual content not cropped.",
+          "recommended_attribution": "JOHN K THORNE — File:Brutalist architecture, Ashford, Kent.jpg — CC0 1.0 Universal (http://creativecommons.org/publicdomain/zero/1.0/deed.en)"
+        }
+      },
+      "license_evidence_relative_path": "metadata/p1a-020/license_evidence.json",
+      "license_evidence_sha256": "6497a61f7466065beede3de5069678a761ecea6ea809eaf192308c650f62f9b9",
+      "human_review": {
+        "status": "APPROVED",
+        "review_scope": "public-corpus suitability, human presence, age evidence, privacy and category match",
+        "human_presence": "NONE",
+        "person_count": 0,
+        "full_body_count": 0,
+        "age_evidence_basis": "NOT_APPLICABLE",
+        "age_evidence": "No human subject is present after visual review.",
+        "nonvisual_source": "https://commons.wikimedia.org/wiki/File:Brutalist%20architecture%2C%20Ashford%2C%20Kent.jpg",
+        "no_person": true,
+        "note": "No human, minor, private-space content, readable identifier, plate, or address observed."
+      },
+      "metadata_relative_paths": [
+        "metadata/p1a-020/commons_api.json",
+        "metadata/p1a-020/source_page_record.json",
+        "metadata/p1a-020/license_evidence.json",
+        "metadata/p1a-020/transport.json",
+        "metadata/p1a-020/manual_visual_review.json"
+      ]
+    },
+    {
+      "sample_id": "p1a-021",
+      "title": "File:A example of symmetry in a building.jpg",
+      "status": "APPROVED",
+      "category_tags": [
+        "architecture",
+        "no_person",
+        "symmetry"
+      ],
+      "source": {
+        "relative_path": "source/p1a-021.jpg",
+        "sha256": "301a9a7b60774008c50014b52bc8904ee0e4222a826e668c44c701101c0b76c3",
+        "bytes": 649097,
+        "mime": "image/jpeg",
+        "representation": "parent_verified_copy",
+        "original_url": "https://upload.wikimedia.org/wikipedia/commons/f/f5/A_example_of_symmetry_in_a_building.jpg",
+        "parent_corpus_id": "phase1-5-p1a-public-corpus-20260726T121500Z",
+        "width": 1920,
+        "height": 1440
+      },
+      "sanitized": {
+        "relative_path": "sanitized/p1a-021.jpg",
+        "format": "JPEG",
+        "mime": "image/jpeg",
+        "bytes": 819594,
+        "sha256": "0ed6a2d37e46be594ced70ea3e4ed2ef0e0c5b67fc3d7822dcd5d88ed560d7cb",
+        "dimensions": [
+          1920,
+          1440
+        ],
+        "source_dimensions": [
+          1920,
+          1440
+        ],
+        "source_orientation": 1,
+        "orientation_normalized": false,
+        "crop_applied": false,
+        "exif_removed": true,
+        "gps_removed": true,
+        "device_metadata_removed": true,
+        "software_metadata_removed": true
+      },
+      "source_page": {
+        "pageid": 148091736,
+        "title": "File:A example of symmetry in a building.jpg",
+        "revision_id": 1234807202,
+        "revision_timestamp": "2026-06-20T15:10:05Z",
+        "canonical_url": "https://commons.wikimedia.org/wiki/File:A%20example%20of%20symmetry%20in%20a%20building.jpg",
+        "original_url": "https://upload.wikimedia.org/wikipedia/commons/f/f5/A_example_of_symmetry_in_a_building.jpg",
+        "mime": "image/jpeg",
+        "width": 3264,
+        "height": 2448,
+        "artist": "235x",
+        "credit": "Own work",
+        "attribution": "",
+        "commons_api_sha256": "c58f6ebc24df27b34cc7ee3a806dccfbbac252910f789dbbd692a356778b4e92",
+        "retrieved_utc": "2026-07-27T15:08:09Z"
+      },
+      "license": {
+        "id": "CC0",
+        "name": "CC0 1.0 Universal",
+        "url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+        "attribution": {
+          "author": "235x",
+          "title": "A example of symmetry in a building",
+          "page_url": "https://commons.wikimedia.org/wiki/File:A%20example%20of%20symmetry%20in%20a%20building.jpg",
+          "license_name": "CC0 1.0 Universal",
+          "license_url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+          "modified": "Sanitized derivative created by removal of embedded metadata; visual content not cropped.",
+          "recommended_attribution": "235x — File:A example of symmetry in a building.jpg — CC0 1.0 Universal (http://creativecommons.org/publicdomain/zero/1.0/deed.en)"
+        }
+      },
+      "license_evidence_relative_path": "metadata/p1a-021/license_evidence.json",
+      "license_evidence_sha256": "d2cb0f51d6f4c7efb3eddf8b529d71082d29f76928ecf5ae413072e9a44799c2",
+      "human_review": {
+        "status": "APPROVED",
+        "review_scope": "public-corpus suitability, human presence, age evidence, privacy and category match",
+        "human_presence": "NONE",
+        "person_count": 0,
+        "full_body_count": 0,
+        "age_evidence_basis": "NOT_APPLICABLE",
+        "age_evidence": "No human subject is present after visual review.",
+        "nonvisual_source": "https://commons.wikimedia.org/wiki/File:A%20example%20of%20symmetry%20in%20a%20building.jpg",
+        "no_person": true,
+        "note": "No human, minor, private-space content, readable identifier, plate, or address observed."
+      },
+      "metadata_relative_paths": [
+        "metadata/p1a-021/commons_api.json",
+        "metadata/p1a-021/source_page_record.json",
+        "metadata/p1a-021/license_evidence.json",
+        "metadata/p1a-021/transport.json",
+        "metadata/p1a-021/manual_visual_review.json"
+      ]
+    },
+    {
+      "sample_id": "p1a-022",
+      "title": "File:Symmetry (Unsplash).jpg",
+      "status": "APPROVED",
+      "category_tags": [
+        "architecture",
+        "minimal_background",
+        "no_person",
+        "symmetry"
+      ],
+      "source": {
+        "relative_path": "source/p1a-022.jpg",
+        "sha256": "941a6f00d760a29d186e9096829bceb2cdb38a07a29fcc3c22899375bcb0a703",
+        "bytes": 300990,
+        "mime": "image/jpeg",
+        "representation": "parent_verified_copy",
+        "original_url": "https://upload.wikimedia.org/wikipedia/commons/6/6c/Symmetry_%28Unsplash%29.jpg",
+        "parent_corpus_id": "phase1-5-p1a-public-corpus-20260726T121500Z",
+        "width": 1920,
+        "height": 1280
+      },
+      "sanitized": {
+        "relative_path": "sanitized/p1a-022.jpg",
+        "format": "JPEG",
+        "mime": "image/jpeg",
+        "bytes": 374369,
+        "sha256": "e110883fb76f1540015b717afd00f5f37378394be39e76094ca3d6c48bcdc2b0",
+        "dimensions": [
+          1920,
+          1280
+        ],
+        "source_dimensions": [
+          1920,
+          1280
+        ],
+        "source_orientation": 1,
+        "orientation_normalized": false,
+        "crop_applied": false,
+        "exif_removed": true,
+        "gps_removed": true,
+        "device_metadata_removed": true,
+        "software_metadata_removed": true
+      },
+      "source_page": {
+        "pageid": 58795436,
+        "title": "File:Symmetry (Unsplash).jpg",
+        "revision_id": 674457892,
+        "revision_timestamp": "2022-07-15T08:29:30Z",
+        "canonical_url": "https://commons.wikimedia.org/wiki/File:Symmetry%20(Unsplash).jpg",
+        "original_url": "https://upload.wikimedia.org/wikipedia/commons/6/6c/Symmetry_%28Unsplash%29.jpg",
+        "mime": "image/jpeg",
+        "width": 5472,
+        "height": 3648,
+        "artist": "Alec Cutter aleccutter",
+        "credit": "http://unsplash.com/photos/Sfn8f32ZIj0 archive copy at the Wayback Machine Image at the Wayback Machine",
+        "attribution": "",
+        "commons_api_sha256": "0355f446b6de827f72fb2583f74ce85534d60328f8fbdb5d746a33cb2e553cdf",
+        "retrieved_utc": "2026-07-27T15:08:09Z"
+      },
+      "license": {
+        "id": "CC0",
+        "name": "CC0 1.0 Universal",
+        "url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+        "attribution": {
+          "author": "Alec Cutter aleccutter",
+          "title": "Symmetry (Unsplash)",
+          "page_url": "https://commons.wikimedia.org/wiki/File:Symmetry%20(Unsplash).jpg",
+          "license_name": "CC0 1.0 Universal",
+          "license_url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+          "modified": "Sanitized derivative created by removal of embedded metadata; visual content not cropped.",
+          "recommended_attribution": "Alec Cutter aleccutter — File:Symmetry (Unsplash).jpg — CC0 1.0 Universal (http://creativecommons.org/publicdomain/zero/1.0/deed.en)"
+        }
+      },
+      "license_evidence_relative_path": "metadata/p1a-022/license_evidence.json",
+      "license_evidence_sha256": "b45baa372057fa29788b8a1576735bb9d255ebb9386ace53de713515db34ff71",
+      "human_review": {
+        "status": "APPROVED",
+        "review_scope": "public-corpus suitability, human presence, age evidence, privacy and category match",
+        "human_presence": "NONE",
+        "person_count": 0,
+        "full_body_count": 0,
+        "age_evidence_basis": "NOT_APPLICABLE",
+        "age_evidence": "No human subject is present after visual review.",
+        "nonvisual_source": "https://commons.wikimedia.org/wiki/File:Symmetry%20(Unsplash).jpg",
+        "no_person": true,
+        "note": "No human, minor, private-space content, readable identifier, plate, or address observed."
+      },
+      "metadata_relative_paths": [
+        "metadata/p1a-022/commons_api.json",
+        "metadata/p1a-022/source_page_record.json",
+        "metadata/p1a-022/license_evidence.json",
+        "metadata/p1a-022/transport.json",
+        "metadata/p1a-022/manual_visual_review.json"
+      ]
+    },
+    {
+      "sample_id": "p1a-025",
+      "title": "File:Jožefa Česenj, 82 let, Goče, v poročni obleki stari 55 let 1958 (3).jpg",
+      "status": "APPROVED",
+      "category_tags": [
+        "portrait_close_up",
+        "single_person_full_body",
+        "single_person_half_body",
+        "warm_color"
+      ],
+      "source": {
+        "relative_path": "source/p1a-025.jpg",
+        "sha256": "d8c14166a645f6f2790939ab14ddefcc2a87fc3f81942d0c937da69db15c8dee",
+        "bytes": 224421,
+        "mime": "image/jpeg",
+        "representation": "official_original",
+        "original_url": "https://upload.wikimedia.org/wikipedia/commons/9/94/Jo%C5%BEefa_%C4%8Cesenj%2C_82_let%2C_Go%C4%8De%2C_v_poro%C4%8Dni_obleki_stari_55_let_1958_%283%29.jpg",
+        "width": 1131,
+        "height": 726
+      },
+      "sanitized": {
+        "relative_path": "sanitized/p1a-025.jpg",
+        "format": "JPEG",
+        "mime": "image/jpeg",
+        "bytes": 263568,
+        "sha256": "9bd13a6eee7e9110e983d9230e9abf70d9aaad8258bec93e2bc6d7e947154347",
+        "dimensions": [
+          1131,
+          726
+        ],
+        "source_dimensions": [
+          1131,
+          726
+        ],
+        "source_orientation": 1,
+        "orientation_normalized": false,
+        "crop_applied": false,
+        "exif_removed": true,
+        "gps_removed": true,
+        "device_metadata_removed": true,
+        "software_metadata_removed": true
+      },
+      "source_page": {
+        "pageid": 37258237,
+        "title": "File:Jožefa Česenj, 82 let, Goče, v poročni obleki stari 55 let 1958 (3).jpg",
+        "revision_id": 1023484611,
+        "revision_timestamp": "2025-04-22T03:16:27Z",
+        "canonical_url": "https://commons.wikimedia.org/wiki/File:Jo%C5%BEefa%20%C4%8Cesenj%2C%2082%20let%2C%20Go%C4%8De%2C%20v%20poro%C4%8Dni%20obleki%20stari%2055%20let%201958%20(3).jpg",
+        "original_url": "https://upload.wikimedia.org/wikipedia/commons/9/94/Jo%C5%BEefa_%C4%8Cesenj%2C_82_let%2C_Go%C4%8De%2C_v_poro%C4%8Dni_obleki_stari_55_let_1958_%283%29.jpg",
+        "mime": "image/jpeg",
+        "width": 1131,
+        "height": 726,
+        "artist": "Fanči Šarf",
+        "credit": "This image or media is available on the Slovenian Ethnographic Museum(Slovenian)'s website under the reference number vipava/f0000015334.",
+        "attribution": "",
+        "commons_api_sha256": "3bfe591ad2408f36b6fe9236ef331169a44512a90d10107f3022f30de1acfa7d",
+        "retrieved_utc": "2026-07-27T15:08:09Z"
+      },
+      "license": {
+        "id": "Public-Domain",
+        "name": "Public domain",
+        "url": "",
+        "attribution": {
+          "author": "Fanči Šarf",
+          "title": "Jožefa Česenj, 82 let, Goče, v poročni obleki stari 55 let 1958 (3)",
+          "page_url": "https://commons.wikimedia.org/wiki/File:Jo%C5%BEefa%20%C4%8Cesenj%2C%2082%20let%2C%20Go%C4%8De%2C%20v%20poro%C4%8Dni%20obleki%20stari%2055%20let%201958%20(3).jpg",
+          "license_name": "Public domain",
+          "license_url": "",
+          "modified": "Sanitized derivative created by removal of embedded metadata; visual content not cropped.",
+          "recommended_attribution": "Fanči Šarf — File:Jožefa Česenj, 82 let, Goče, v poročni obleki stari 55 let 1958 (3).jpg — Public domain (per-item public-domain basis)"
+        }
+      },
+      "license_evidence_relative_path": "metadata/p1a-025/license_evidence.json",
+      "license_evidence_sha256": "c207369f2bb8e0bbf35da900830bf27d37e9b2d08c50fd840715850dc7b79e6c",
+      "human_review": {
+        "status": "APPROVED",
+        "review_scope": "public-corpus suitability, human presence, age evidence, privacy and category match",
+        "human_presence": "VISIBLE_DOCUMENTED_ADULT",
+        "person_count": 1,
+        "full_body_count": 1,
+        "age_evidence_basis": "OFFICIAL_SOURCE_DOCUMENTED_ADULT",
+        "age_evidence": "The Commons page title states '82 let' (82 years); it is nonvisual adult evidence from the official source record.",
+        "nonvisual_source": "https://commons.wikimedia.org/wiki/File:Jo%C5%BEefa%20%C4%8Cesenj%2C%2082%20let%2C%20Go%C4%8De%2C%20v%20poro%C4%8Dni%20obleki%20stari%2055%20let%201958%20(3).jpg",
+        "no_person": false,
+        "note": "Exactly one adult is visibly present at full length. Historical public-domain portrait; no private source, minor, or sensitive subject observed."
+      },
+      "metadata_relative_paths": [
+        "metadata/p1a-025/commons_api.json",
+        "metadata/p1a-025/source_page_record.json",
+        "metadata/p1a-025/license_evidence.json",
+        "metadata/p1a-025/transport.json",
+        "metadata/p1a-025/manual_visual_review.json"
+      ]
+    },
+    {
+      "sample_id": "p1a-026",
+      "title": "File:Fiore's Cafe interior, Ocala.jpg",
+      "status": "APPROVED",
+      "category_tags": [
+        "cafe_or_lifestyle_interior",
+        "minimal_background",
+        "no_person",
+        "warm_color"
+      ],
+      "source": {
+        "relative_path": "source/p1a-026.jpg",
+        "sha256": "cf88c16b1d7a194fde2f61e6b10be267e685248ffda6959ecd1ac41b5e274f6e",
+        "bytes": 758051,
+        "mime": "image/mpo",
+        "representation": "official_original",
+        "original_url": "https://upload.wikimedia.org/wikipedia/commons/0/0c/Fiore%27s_Cafe_interior%2C_Ocala.jpg",
+        "width": 1536,
+        "height": 2048
+      },
+      "sanitized": {
+        "relative_path": "sanitized/p1a-026.jpg",
+        "format": "JPEG",
+        "mime": "image/jpeg",
+        "bytes": 700460,
+        "sha256": "5e334414d8b1bfbf271ce376cbdf38e36a1ed5b9275000e35ff6162e05f23098",
+        "dimensions": [
+          1536,
+          2048
+        ],
+        "source_dimensions": [
+          1536,
+          2048
+        ],
+        "source_orientation": 1,
+        "orientation_normalized": false,
+        "crop_applied": false,
+        "exif_removed": true,
+        "gps_removed": true,
+        "device_metadata_removed": true,
+        "software_metadata_removed": true
+      },
+      "source_page": {
+        "pageid": 167123246,
+        "title": "File:Fiore's Cafe interior, Ocala.jpg",
+        "revision_id": 1174333720,
+        "revision_timestamp": "2026-03-02T00:08:00Z",
+        "canonical_url": "https://commons.wikimedia.org/wiki/File:Fiore%27s%20Cafe%20interior%2C%20Ocala.jpg",
+        "original_url": "https://upload.wikimedia.org/wikipedia/commons/0/0c/Fiore%27s_Cafe_interior%2C_Ocala.jpg",
+        "mime": "image/jpeg",
+        "width": 1536,
+        "height": 2048,
+        "artist": "Mjrmtg",
+        "credit": "Own work",
+        "attribution": "",
+        "commons_api_sha256": "5b3d16eb46b4541db055bd7299cacfb746c20b44a3c74d8fd42bc1806087465e",
+        "retrieved_utc": "2026-07-27T15:12:38Z"
+      },
+      "license": {
+        "id": "CC0",
+        "name": "CC0 1.0 Universal",
+        "url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+        "attribution": {
+          "author": "Mjrmtg",
+          "title": "Fiore's Cafe interior, Ocala",
+          "page_url": "https://commons.wikimedia.org/wiki/File:Fiore%27s%20Cafe%20interior%2C%20Ocala.jpg",
+          "license_name": "CC0 1.0 Universal",
+          "license_url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+          "modified": "Sanitized derivative created by removal of embedded metadata; visual content not cropped.",
+          "recommended_attribution": "Mjrmtg — File:Fiore's Cafe interior, Ocala.jpg — CC0 1.0 Universal (http://creativecommons.org/publicdomain/zero/1.0/deed.en)"
+        }
+      },
+      "license_evidence_relative_path": "metadata/p1a-026/license_evidence.json",
+      "license_evidence_sha256": "70e12b865c63db66c2bdc4474db69d34a2b0fc9a90c7fb71ea7b963261b17d52",
+      "human_review": {
+        "status": "APPROVED",
+        "review_scope": "public-corpus suitability, human presence, age evidence, privacy and category match",
+        "human_presence": "NONE",
+        "person_count": 0,
+        "full_body_count": 0,
+        "age_evidence_basis": "NOT_APPLICABLE",
+        "age_evidence": "No human subject is present after visual review.",
+        "nonvisual_source": "https://commons.wikimedia.org/wiki/File:Fiore%27s%20Cafe%20interior%2C%20Ocala.jpg",
+        "no_person": true,
+        "note": "Cafe interior was visually reviewed as empty: no human, private media, readable identifier, or minor observed."
+      },
+      "metadata_relative_paths": [
+        "metadata/p1a-026/commons_api.json",
+        "metadata/p1a-026/source_page_record.json",
+        "metadata/p1a-026/license_evidence.json",
+        "metadata/p1a-026/transport.json",
+        "metadata/p1a-026/manual_visual_review.json"
+      ]
+    },
+    {
+      "sample_id": "p1a-027",
+      "title": "File:Woman staring out window.jpg",
+      "status": "APPROVED",
+      "category_tags": [
+        "backlight",
+        "cool_color",
+        "indoor_window",
+        "side_light",
+        "single_person_half_body"
+      ],
+      "source": {
+        "relative_path": "source/p1a-027.jpg",
+        "sha256": "7e7115ad7b2cc9d49f229c62cdb4f067eb9f9b992e848ea09b2604e2c1f80729",
+        "bytes": 168293,
+        "mime": "image/jpeg",
+        "representation": "official_wikimedia_thumbnail",
+        "original_url": "https://upload.wikimedia.org/wikipedia/commons/1/14/Woman_staring_out_window.jpg",
+        "downloaded_url": "https://commons.wikimedia.org/wiki/Special:FilePath/Woman_staring_out_window.jpg?width=800",
+        "download_transport": {
+          "url": "https://commons.wikimedia.org/wiki/Special:FilePath/Woman_staring_out_window.jpg?width=800",
+          "final_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/1/14/Woman_staring_out_window.jpg/960px-Woman_staring_out_window.jpg",
+          "status": 200,
+          "content_type": "image/jpeg",
+          "bytes": 168293,
+          "sha256": "7e7115ad7b2cc9d49f229c62cdb4f067eb9f9b992e848ea09b2604e2c1f80729",
+          "retrieved_utc": "2026-07-27T15:25:05Z",
+          "attempt": "curl-retry-bounded"
+        },
+        "width": 960,
+        "height": 768
+      },
+      "sanitized": {
+        "relative_path": "sanitized/p1a-027.jpg",
+        "format": "JPEG",
+        "mime": "image/jpeg",
+        "bytes": 214295,
+        "sha256": "ecd131c13713e2ce9b12d58963b621aef9fdbe5aafdeb82b67ca51c7f8a3abbe",
+        "dimensions": [
+          960,
+          768
+        ],
+        "source_dimensions": [
+          960,
+          768
+        ],
+        "source_orientation": 1,
+        "orientation_normalized": false,
+        "crop_applied": false,
+        "exif_removed": true,
+        "gps_removed": true,
+        "device_metadata_removed": true,
+        "software_metadata_removed": true
+      },
+      "source_page": {
+        "pageid": 24034366,
+        "title": "File:Woman staring out window.jpg",
+        "revision_id": 1227534786,
+        "revision_timestamp": "2026-06-07T22:10:33Z",
+        "canonical_url": "https://commons.wikimedia.org/wiki/File:Woman%20staring%20out%20window.jpg",
+        "original_url": "https://upload.wikimedia.org/wikipedia/commons/1/14/Woman_staring_out_window.jpg",
+        "mime": "image/jpeg",
+        "width": 3000,
+        "height": 2400,
+        "artist": "Rhoda Baer (Photographer)",
+        "credit": "This image was released by the National Cancer Institute, an agency part of the National Institutes of Health, with the ID 7476 (image) (next).",
+        "attribution": "",
+        "commons_api_sha256": "37e9f155eb2a0a19da0f3e648af55198159aa0e5ead6ac3b7e70553d715a07b7",
+        "retrieved_utc": "2026-07-27T15:24:54Z"
+      },
+      "license": {
+        "id": "Public-Domain",
+        "name": "Public domain",
+        "url": "",
+        "attribution": {
+          "author": "Rhoda Baer (Photographer)",
+          "title": "Woman staring out window",
+          "page_url": "https://commons.wikimedia.org/wiki/File:Woman%20staring%20out%20window.jpg",
+          "license_name": "Public domain",
+          "license_url": "",
+          "modified": "Sanitized derivative created by removal of embedded metadata; visual content not cropped.",
+          "recommended_attribution": "Rhoda Baer (Photographer) — File:Woman staring out window.jpg — Public domain (per-item public-domain basis)"
+        }
+      },
+      "license_evidence_relative_path": "metadata/p1a-027/license_evidence.json",
+      "license_evidence_sha256": "e387699f5d7b9aa232bbead4e368818982deb444f2d7073f57c130404127d23d",
+      "human_review": {
+        "status": "APPROVED",
+        "review_scope": "public-corpus suitability, human presence, age evidence, privacy and category match",
+        "human_presence": "VISIBLE_DOCUMENTED_ADULT",
+        "person_count": 1,
+        "full_body_count": 0,
+        "age_evidence_basis": "OFFICIAL_SOURCE_DOCUMENTED_ADULT",
+        "age_evidence": "The official Commons source description classifies the subject under People -- Adult.",
+        "nonvisual_source": "https://commons.wikimedia.org/wiki/File:Woman%20staring%20out%20window.jpg",
+        "no_person": false,
+        "note": "One documented adult is at a window. The frame is not used as a full-body sample; no private source, minor, or sensitive subject observed."
+      },
+      "metadata_relative_paths": [
+        "metadata/p1a-027/commons_api.json",
+        "metadata/p1a-027/source_page_record.json",
+        "metadata/p1a-027/license_evidence.json",
+        "metadata/p1a-027/transport.json",
+        "metadata/p1a-027/manual_visual_review.json"
+      ]
+    },
+    {
+      "sample_id": "p1a-028",
+      "title": "File:An older woman (possibly Laura Godber) partially obscured behind an apple tree ATLIB 314082.png",
+      "status": "APPROVED",
+      "category_tags": [
+        "forest",
+        "occlusion",
+        "single_person_half_body",
+        "warm_color"
+      ],
+      "source": {
+        "relative_path": "source/p1a-028.png",
+        "sha256": "be302df4448f47b5023812deebaeb791620aae55d240e84f0837a4dc6ff4cc26",
+        "bytes": 2000761,
+        "mime": "image/png",
+        "representation": "official_wikimedia_thumbnail",
+        "original_url": "https://upload.wikimedia.org/wikipedia/commons/a/a4/An_older_woman_%28possibly_Laura_Godber%29_partially_obscured_behind_an_apple_tree_ATLIB_314082.png",
+        "downloaded_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a4/An_older_woman_%28possibly_Laura_Godber%29_partially_obscured_behind_an_apple_tree_ATLIB_314082.png/1920px-An_older_woman_%28possibly_Laura_Godber%29_partially_obscured_behind_an_apple_tree_ATLIB_314082.png",
+        "download_transport": {
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a4/An_older_woman_%28possibly_Laura_Godber%29_partially_obscured_behind_an_apple_tree_ATLIB_314082.png/1920px-An_older_woman_%28possibly_Laura_Godber%29_partially_obscured_behind_an_apple_tree_ATLIB_314082.png",
+          "final_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a4/An_older_woman_%28possibly_Laura_Godber%29_partially_obscured_behind_an_apple_tree_ATLIB_314082.png/1920px-An_older_woman_%28possibly_Laura_Godber%29_partially_obscured_behind_an_apple_tree_ATLIB_314082.png",
+          "status": 200,
+          "content_type": "image/png",
+          "bytes": 2000761,
+          "sha256": "be302df4448f47b5023812deebaeb791620aae55d240e84f0837a4dc6ff4cc26",
+          "retrieved_utc": "2026-07-27T15:25:14Z",
+          "attempt": "curl-retry-bounded"
+        },
+        "width": 1920,
+        "height": 2421
+      },
+      "sanitized": {
+        "relative_path": "sanitized/p1a-028.jpg",
+        "format": "JPEG",
+        "mime": "image/jpeg",
+        "bytes": 1190913,
+        "sha256": "da35eab5dd2f4d0d8f2fcc308302e546566e04dca3a6104f47f7a5c30957d4d3",
+        "dimensions": [
+          1920,
+          2421
+        ],
+        "source_dimensions": [
+          1920,
+          2421
+        ],
+        "source_orientation": 1,
+        "orientation_normalized": false,
+        "crop_applied": false,
+        "exif_removed": true,
+        "gps_removed": true,
+        "device_metadata_removed": true,
+        "software_metadata_removed": true
+      },
+      "source_page": {
+        "pageid": 68884906,
+        "title": "File:An older woman (possibly Laura Godber) partially obscured behind an apple tree ATLIB 314082.png",
+        "revision_id": 1053357442,
+        "revision_timestamp": "2025-07-07T01:10:37Z",
+        "canonical_url": "https://commons.wikimedia.org/wiki/File:An%20older%20woman%20(possibly%20Laura%20Godber)%20partially%20obscured%20behind%20an%20apple%20tree%20ATLIB%20314082.png",
+        "original_url": "https://upload.wikimedia.org/wikipedia/commons/a/a4/An_older_woman_%28possibly_Laura_Godber%29_partially_obscured_behind_an_apple_tree_ATLIB_314082.png",
+        "mime": "image/png",
+        "width": 3895,
+        "height": 4912,
+        "artist": "Godber, Albert Percy, 1875-1949",
+        "credit": "https://tiaki.natlib.govt.nz/#details=ecatalogue.314082",
+        "attribution": "",
+        "commons_api_sha256": "0d3c4cc1785742db61c782705cbbac7d7cdcd8befa1f5eb71c3b0ea808d4f494",
+        "retrieved_utc": "2026-07-27T15:24:54Z"
+      },
+      "license": {
+        "id": "Public-Domain",
+        "name": "Public domain",
+        "url": "",
+        "attribution": {
+          "author": "Godber, Albert Percy, 1875-1949",
+          "title": "An older woman (possibly Laura Godber) partially obscured behind an apple tree ATLIB 314082",
+          "page_url": "https://commons.wikimedia.org/wiki/File:An%20older%20woman%20(possibly%20Laura%20Godber)%20partially%20obscured%20behind%20an%20apple%20tree%20ATLIB%20314082.png",
+          "license_name": "Public domain",
+          "license_url": "",
+          "modified": "Sanitized derivative created by removal of embedded metadata; visual content not cropped.",
+          "recommended_attribution": "Godber, Albert Percy, 1875-1949 — File:An older woman (possibly Laura Godber) partially obscured behind an apple tree ATLIB 314082.png — Public domain (per-item public-domain basis)"
+        }
+      },
+      "license_evidence_relative_path": "metadata/p1a-028/license_evidence.json",
+      "license_evidence_sha256": "ee4f8ea6e86001db28591c6d30098b5a49e217f8857f9a679a885b7a0b8891e4",
+      "human_review": {
+        "status": "APPROVED",
+        "review_scope": "public-corpus suitability, human presence, age evidence, privacy and category match",
+        "human_presence": "VISIBLE_DOCUMENTED_ADULT",
+        "person_count": 1,
+        "full_body_count": 0,
+        "age_evidence_basis": "OFFICIAL_SOURCE_DOCUMENTED_ADULT",
+        "age_evidence": "The official Commons title describes an 'older woman'; identity is deliberately not asserted because the page says 'possibly'.",
+        "nonvisual_source": "https://commons.wikimedia.org/wiki/File:An%20older%20woman%20(possibly%20Laura%20Godber)%20partially%20obscured%20behind%20an%20apple%20tree%20ATLIB%20314082.png",
+        "no_person": false,
+        "note": "One documented older adult is partially obscured. The sample is retained for occlusion diversity only, not identity inference."
+      },
+      "metadata_relative_paths": [
+        "metadata/p1a-028/commons_api.json",
+        "metadata/p1a-028/source_page_record.json",
+        "metadata/p1a-028/license_evidence.json",
+        "metadata/p1a-028/transport.json",
+        "metadata/p1a-028/manual_visual_review.json"
+      ]
+    },
+    {
+      "sample_id": "p1a-029",
+      "title": "File:NASA astronauts Jessica Meir and Chris Williams complete a spacewalk (iss074e0403696).jpg",
+      "status": "APPROVED",
+      "category_tags": [
+        "complex_background",
+        "cool_color",
+        "dynamic_action",
+        "two_people"
+      ],
+      "source": {
+        "relative_path": "source/p1a-029.jpg",
+        "sha256": "73f181e88a75e753d74e1f4b711be478dff47a4cf3698e4ef26342bed9dff8c7",
+        "bytes": 495299,
+        "mime": "image/jpeg",
+        "representation": "official_wikimedia_thumbnail",
+        "original_url": "https://upload.wikimedia.org/wikipedia/commons/c/cf/NASA_astronauts_Jessica_Meir_and_Chris_Williams_complete_a_spacewalk_%28iss074e0403696%29.jpg",
+        "downloaded_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/cf/NASA_astronauts_Jessica_Meir_and_Chris_Williams_complete_a_spacewalk_%28iss074e0403696%29.jpg/1920px-NASA_astronauts_Jessica_Meir_and_Chris_Williams_complete_a_spacewalk_%28iss074e0403696%29.jpg",
+        "download_transport": {
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/cf/NASA_astronauts_Jessica_Meir_and_Chris_Williams_complete_a_spacewalk_%28iss074e0403696%29.jpg/1920px-NASA_astronauts_Jessica_Meir_and_Chris_Williams_complete_a_spacewalk_%28iss074e0403696%29.jpg",
+          "final_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/cf/NASA_astronauts_Jessica_Meir_and_Chris_Williams_complete_a_spacewalk_%28iss074e0403696%29.jpg/1920px-NASA_astronauts_Jessica_Meir_and_Chris_Williams_complete_a_spacewalk_%28iss074e0403696%29.jpg",
+          "status": 200,
+          "content_type": "image/jpeg",
+          "bytes": 495299,
+          "sha256": "73f181e88a75e753d74e1f4b711be478dff47a4cf3698e4ef26342bed9dff8c7",
+          "retrieved_utc": "2026-07-27T15:25:23Z",
+          "attempt": "curl-retry-bounded"
+        },
+        "width": 1920,
+        "height": 1280
+      },
+      "sanitized": {
+        "relative_path": "sanitized/p1a-029.jpg",
+        "format": "JPEG",
+        "mime": "image/jpeg",
+        "bytes": 626834,
+        "sha256": "3c683294f79d178c02fa9ba55a13e641b9750307a9a711591b3d17ea4bc7bc65",
+        "dimensions": [
+          1920,
+          1280
+        ],
+        "source_dimensions": [
+          1920,
+          1280
+        ],
+        "source_orientation": 1,
+        "orientation_normalized": false,
+        "crop_applied": false,
+        "exif_removed": true,
+        "gps_removed": true,
+        "device_metadata_removed": true,
+        "software_metadata_removed": true
+      },
+      "source_page": {
+        "pageid": 187060015,
+        "title": "File:NASA astronauts Jessica Meir and Chris Williams complete a spacewalk (iss074e0403696).jpg",
+        "revision_id": 1193441780,
+        "revision_timestamp": "2026-04-07T20:19:47Z",
+        "canonical_url": "https://commons.wikimedia.org/wiki/File:NASA%20astronauts%20Jessica%20Meir%20and%20Chris%20Williams%20complete%20a%20spacewalk%20(iss074e0403696).jpg",
+        "original_url": "https://upload.wikimedia.org/wikipedia/commons/c/cf/NASA_astronauts_Jessica_Meir_and_Chris_Williams_complete_a_spacewalk_%28iss074e0403696%29.jpg",
+        "mime": "image/jpeg",
+        "width": 8256,
+        "height": 5504,
+        "artist": "NASA Johnson Space Center",
+        "credit": "This image or video was catalogued by Lyndon B. Johnson Space Center of the United States National Aeronautics and Space Administration (NASA) under Photo ID: iss074e0403696.",
+        "attribution": "",
+        "commons_api_sha256": "cb65e4360839c0615df84004ef46f88af8bea38e3c67e7a508e3081bb3359d4c",
+        "retrieved_utc": "2026-07-27T15:24:54Z"
+      },
+      "license": {
+        "id": "Public-Domain",
+        "name": "Public domain",
+        "url": "",
+        "attribution": {
+          "author": "NASA Johnson Space Center",
+          "title": "NASA astronauts Jessica Meir and Chris Williams complete a spacewalk (iss074e0403696)",
+          "page_url": "https://commons.wikimedia.org/wiki/File:NASA%20astronauts%20Jessica%20Meir%20and%20Chris%20Williams%20complete%20a%20spacewalk%20(iss074e0403696).jpg",
+          "license_name": "Public domain",
+          "license_url": "",
+          "modified": "Sanitized derivative created by removal of embedded metadata; visual content not cropped.",
+          "recommended_attribution": "NASA Johnson Space Center — File:NASA astronauts Jessica Meir and Chris Williams complete a spacewalk (iss074e0403696).jpg — Public domain (per-item public-domain basis)"
+        }
+      },
+      "license_evidence_relative_path": "metadata/p1a-029/license_evidence.json",
+      "license_evidence_sha256": "d5d62b30009fa56384bfa4ea021d6e5622952169d5ffd6520c3db8441a4c5bd5",
+      "human_review": {
+        "status": "APPROVED",
+        "review_scope": "public-corpus suitability, human presence, age evidence, privacy and category match",
+        "human_presence": "VISIBLE_DOCUMENTED_ADULT",
+        "person_count": 2,
+        "full_body_count": 0,
+        "age_evidence_basis": "OFFICIAL_SOURCE_DOCUMENTED_ADULT",
+        "age_evidence": "The official Commons title identifies exactly two NASA astronauts; astronaut is an adult professional role and both are named.",
+        "nonvisual_source": "https://commons.wikimedia.org/wiki/File:NASA%20astronauts%20Jessica%20Meir%20and%20Chris%20Williams%20complete%20a%20spacewalk%20(iss074e0403696).jpg",
+        "no_person": false,
+        "note": "Exactly two documented adult astronauts are visible in a public NASA image. It is not a real-time pose input and contains no owner media."
+      },
+      "metadata_relative_paths": [
+        "metadata/p1a-029/commons_api.json",
+        "metadata/p1a-029/source_page_record.json",
+        "metadata/p1a-029/license_evidence.json",
+        "metadata/p1a-029/transport.json",
+        "metadata/p1a-029/manual_visual_review.json"
+      ]
+    }
+  ],
+  "quarantine": [
+    {
+      "sample_id": "p1a-008",
+      "status": "QUARANTINED",
+      "reason": "B5 attribution evidence was mojibake-corrupted in the rejected candidate; corrected source attribution is preserved here, but the image is not approved in r2.",
+      "parent_corpus_id": "phase1-5-p1a-public-corpus-20260726T121500Z",
+      "old_source_sha256": "7f9293cfef0388857cbacf12aae4a28ce2ac5421d49cf44817bb6628e71aa64f",
+      "old_sanitized_sha256": "ec9d0f8fd8fd0f439b386d0c4963ddaa7fe9150dbf30e0f3d05af585aeb64110",
+      "source_page": {
+        "pageid": 102119646,
+        "title": "File:Havelock Island, Mangrove tree on the beach, Andaman Islands.jpg",
+        "revision_id": 1220546551,
+        "revision_timestamp": "2026-05-26T10:08:14Z",
+        "canonical_url": "https://commons.wikimedia.org/wiki/File:Havelock%20Island%2C%20Mangrove%20tree%20on%20the%20beach%2C%20Andaman%20Islands.jpg",
+        "original_url": "https://upload.wikimedia.org/wikipedia/commons/5/51/Havelock_Island%2C_Mangrove_tree_on_the_beach%2C_Andaman_Islands.jpg"
+      },
+      "corrected_attribution": {
+        "artist": "Vyacheslav Argenberg",
+        "credit": "Own work",
+        "title": "Havelock Island, Mangrove tree on the beach, Andaman Islands",
+        "license": "CC BY 4.0"
+      },
+      "commons_api_sha256": "76f8aa46cdf4d4c9e4782ce19ef02675906ecdf11790ca41e3a4c536df30d8d2",
+      "transport": {
+        "url": "https://commons.wikimedia.org/w/api.php?action=query&format=json&formatversion=2&titles=File%3AHavelock+Island%2C+Mangrove+tree+on+the+beach%2C+Andaman+Islands.jpg&prop=imageinfo%7Crevisions&iiprop=url%7Csize%7Cmime%7Csha1%7Ctimestamp%7Cextmetadata&iiurlwidth=1600&rvprop=ids%7Ctimestamp&rvlimit=1",
+        "final_url": "https://commons.wikimedia.org/w/api.php?action=query&format=json&formatversion=2&titles=File%3AHavelock+Island%2C+Mangrove+tree+on+the+beach%2C+Andaman+Islands.jpg&prop=imageinfo%7Crevisions&iiprop=url%7Csize%7Cmime%7Csha1%7Ctimestamp%7Cextmetadata&iiurlwidth=1600&rvprop=ids%7Ctimestamp&rvlimit=1",
+        "status": 200,
+        "content_type": "application/json",
+        "bytes": 4133,
+        "sha256": "76f8aa46cdf4d4c9e4782ce19ef02675906ecdf11790ca41e3a4c536df30d8d2",
+        "retrieved_utc": "2026-07-27T15:25:30Z",
+        "attempt": "curl-retry-bounded"
+      },
+      "no_image_copied": true
+    },
+    {
+      "sample_id": "p1a-019",
+      "status": "QUARANTINED",
+      "reason": "B2 human-presence evidence is insufficient for approval; the cafe image has visible people without documented adult evidence.",
+      "parent_corpus_id": "phase1-5-p1a-public-corpus-20260726T121500Z",
+      "old_source_sha256": "5dd0e87095da62744caeaa5b4c5ed317f617a27e31a91a2f33e09a260e3105ed",
+      "old_sanitized_sha256": "f2f81054691335f924ddcc4eafe4ecad38030494eff09285a7546c60e72a8b79",
+      "source_page": {
+        "pageid": 194414005,
+        "title": "File:Cafe interior - San Francisco, CA.jpg",
+        "revision_id": 1238767508,
+        "revision_timestamp": "2026-06-26T13:09:20Z",
+        "canonical_url": "https://commons.wikimedia.org/wiki/File:Cafe%20interior%20-%20San%20Francisco%2C%20CA.jpg",
+        "original_url": "https://upload.wikimedia.org/wikipedia/commons/b/bc/Cafe_interior_-_San_Francisco%2C_CA.jpg"
+      },
+      "corrected_attribution": {
+        "artist": "Daderot",
+        "credit": "Own work",
+        "title": "Cafe interior - San Francisco, CA",
+        "license": "CC0"
+      },
+      "commons_api_sha256": "2c88259fbc8fc8f510eab4b5005809653482204ff2018cc4b18c217cf560ad94",
+      "transport": {
+        "url": "https://commons.wikimedia.org/w/api.php?action=query&format=json&formatversion=2&titles=File%3ACafe+interior+-+San+Francisco%2C+CA.jpg&prop=imageinfo%7Crevisions&iiprop=url%7Csize%7Cmime%7Csha1%7Ctimestamp%7Cextmetadata&iiurlwidth=1600&rvprop=ids%7Ctimestamp&rvlimit=1",
+        "final_url": "https://commons.wikimedia.org/w/api.php?action=query&format=json&formatversion=2&titles=File%3ACafe+interior+-+San+Francisco%2C+CA.jpg&prop=imageinfo%7Crevisions&iiprop=url%7Csize%7Cmime%7Csha1%7Ctimestamp%7Cextmetadata&iiurlwidth=1600&rvprop=ids%7Ctimestamp&rvlimit=1",
+        "status": 200,
+        "content_type": "application/json",
+        "bytes": 2817,
+        "sha256": "2c88259fbc8fc8f510eab4b5005809653482204ff2018cc4b18c217cf560ad94",
+        "retrieved_utc": "2026-07-27T15:25:36Z",
+        "attempt": "curl-retry-bounded"
+      },
+      "no_image_copied": true
+    },
+    {
+      "sample_id": "p1a-023",
+      "status": "QUARANTINED",
+      "reason": "B2 distant visible people conflict with the old no_person tag; B5 corrected source attribution is preserved here, but the image is not approved in r2.",
+      "parent_corpus_id": "phase1-5-p1a-public-corpus-20260726T121500Z",
+      "old_source_sha256": "ecc98a614482b23907a054f72d433c8805c0fc1848e679bfd61fb3a3a93ba0bd",
+      "old_sanitized_sha256": "9224745bb45f256078467a0a5cd6e9a3dd255eba3052b97ad34ee7688d0141ca",
+      "source_page": {
+        "pageid": 91711973,
+        "title": "File:Beach of Cape Fiolent, Crimea.jpg",
+        "revision_id": 1225760847,
+        "revision_timestamp": "2026-06-04T13:39:47Z",
+        "canonical_url": "https://commons.wikimedia.org/wiki/File:Beach%20of%20Cape%20Fiolent%2C%20Crimea.jpg",
+        "original_url": "https://upload.wikimedia.org/wikipedia/commons/4/45/Beach_of_Cape_Fiolent%2C_Crimea.jpg"
+      },
+      "corrected_attribution": {
+        "artist": "Vyacheslav Argenberg",
+        "credit": "Own work",
+        "title": "Beach of Cape Fiolent, Crimea",
+        "license": "CC BY 4.0"
+      },
+      "commons_api_sha256": "b62c65a7fac74b97b97695fed5bcd566c4ab71c91313c5528514c65f64dfd1b6",
+      "transport": {
+        "url": "https://commons.wikimedia.org/w/api.php?action=query&format=json&formatversion=2&titles=File%3ABeach+of+Cape+Fiolent%2C+Crimea.jpg&prop=imageinfo%7Crevisions&iiprop=url%7Csize%7Cmime%7Csha1%7Ctimestamp%7Cextmetadata&iiurlwidth=1600&rvprop=ids%7Ctimestamp&rvlimit=1",
+        "final_url": "https://commons.wikimedia.org/w/api.php?action=query&format=json&formatversion=2&titles=File%3ABeach+of+Cape+Fiolent%2C+Crimea.jpg&prop=imageinfo%7Crevisions&iiprop=url%7Csize%7Cmime%7Csha1%7Ctimestamp%7Cextmetadata&iiurlwidth=1600&rvprop=ids%7Ctimestamp&rvlimit=1",
+        "status": 200,
+        "content_type": "application/json",
+        "bytes": 3981,
+        "sha256": "b62c65a7fac74b97b97695fed5bcd566c4ab71c91313c5528514c65f64dfd1b6",
+        "retrieved_utc": "2026-07-27T15:25:43Z",
+        "attempt": "curl-retry-bounded"
+      },
+      "no_image_copied": true
+    },
+    {
+      "sample_id": "p1a-024",
+      "status": "QUARANTINED",
+      "reason": "B2 visible human-presence/no_person uncertainty in the rejected candidate requires quarantine pending a separate review.",
+      "parent_corpus_id": "phase1-5-p1a-public-corpus-20260726T121500Z",
+      "old_source_sha256": "f0f7d69c382276abc8fe43da5e9930f5fe3f84657d392a5964948ca366cd006a",
+      "old_sanitized_sha256": "eee19eba237b44aace6b5563c33d3af12e934aebab4dc60191ce1f898ef5925c",
+      "source_page": {
+        "pageid": 120348694,
+        "title": "File:Château Frontenac in Quebec city, Canada colorfull.jpg",
+        "revision_id": 1237246606,
+        "revision_timestamp": "2026-06-24T00:24:41Z",
+        "canonical_url": "https://commons.wikimedia.org/wiki/File:Ch%C3%A2teau%20Frontenac%20in%20Quebec%20city%2C%20Canada%20colorfull.jpg",
+        "original_url": "https://upload.wikimedia.org/wikipedia/commons/0/0c/Ch%C3%A2teau_Frontenac_in_Quebec_city%2C_Canada_colorfull.jpg"
+      },
+      "corrected_attribution": {
+        "artist": "Wilfredor",
+        "credit": "Own work",
+        "title": "Château Frontenac in Quebec city, Canada colorfull",
+        "license": "CC0"
+      },
+      "commons_api_sha256": "3a0d7b75c46f4ea76b735d0f446f07a9ee9d159b78fe98c4a6962d1e304e29d5",
+      "transport": {
+        "url": "https://commons.wikimedia.org/w/api.php?action=query&format=json&formatversion=2&titles=File%3ACh%C3%A2teau+Frontenac+in+Quebec+city%2C+Canada+colorfull.jpg&prop=imageinfo%7Crevisions&iiprop=url%7Csize%7Cmime%7Csha1%7Ctimestamp%7Cextmetadata&iiurlwidth=1600&rvprop=ids%7Ctimestamp&rvlimit=1",
+        "final_url": "https://commons.wikimedia.org/w/api.php?action=query&format=json&formatversion=2&titles=File%3ACh%C3%A2teau+Frontenac+in+Quebec+city%2C+Canada+colorfull.jpg&prop=imageinfo%7Crevisions&iiprop=url%7Csize%7Cmime%7Csha1%7Ctimestamp%7Cextmetadata&iiurlwidth=1600&rvprop=ids%7Ctimestamp&rvlimit=1",
+        "status": 200,
+        "content_type": "application/json",
+        "bytes": 4379,
+        "sha256": "3a0d7b75c46f4ea76b735d0f446f07a9ee9d159b78fe98c4a6962d1e304e29d5",
+        "retrieved_utc": "2026-07-27T15:25:50Z",
+        "attempt": "curl-retry-bounded"
+      },
+      "no_image_copied": true
+    },
+    {
+      "sample_id": "p1a-015",
+      "status": "QUARANTINED",
+      "reason": "B2 two-person historical scene has no nonvisual adult evidence for every depicted person; it is quarantined rather than inferred safe.",
+      "parent_corpus_id": "phase1-5-p1a-public-corpus-20260726T121500Z",
+      "old_source_sha256": "623381bbe61258719af839393d7e47f795705b3a128c545545ef8d571a51c831",
+      "old_sanitized_sha256": "57d73f33f9cfb2ec57eb68d36c274853fed36fddb9245d78d9edfad4c7528ab9",
+      "source_page": {
+        "pageid": 68278890,
+        "title": "File:Colonel Lowe, (i.e., Low) 4th Light Dragoons & servant in winter dress LCCN2001699577.jpg",
+        "revision_id": 1130046799,
+        "revision_timestamp": "2025-12-12T22:47:07Z",
+        "canonical_url": "https://commons.wikimedia.org/wiki/File:Colonel%20Lowe%2C%20(i.e.%2C%20Low)%204th%20Light%20Dragoons%20%26%20servant%20in%20winter%20dress%20LCCN2001699577.jpg",
+        "original_url": "https://upload.wikimedia.org/wikipedia/commons/3/3e/Colonel_Lowe%2C_%28i.e.%2C_Low%29_4th_Light_Dragoons_%26_servant_in_winter_dress_LCCN2001699577.jpg"
+      },
+      "corrected_attribution": {
+        "artist": "Fenton, Roger, 1819-1869, photographer",
+        "credit": "Library of Congress Catalog: https://lccn.loc.gov/2001699577 Image download: https://cdn.loc.gov/service/pnp/cph/3g00000/3g09000/3g09300/3g09310v.jpg Original url: https://www.loc.gov/pictures/item/2001699577/",
+        "title": "Colonel Lowe, (i.e., Low) 4th Light Dragoons & servant in winter dress LCCN2001699577",
+        "license": "Public domain"
+      },
+      "commons_api_sha256": "fb08f75af668da98b542ed075cf9aea17e9dc1f17c4166f84f8bbbdbcdab38a7",
+      "transport": {
+        "url": "https://commons.wikimedia.org/w/api.php?action=query&format=json&formatversion=2&titles=File%3AColonel+Lowe%2C+%28i.e.%2C+Low%29+4th+Light+Dragoons+%26+servant+in+winter+dress+LCCN2001699577.jpg&prop=imageinfo%7Crevisions&iiprop=url%7Csize%7Cmime%7Csha1%7Ctimestamp%7Cextmetadata&iiurlwidth=1600&rvprop=ids%7Ctimestamp&rvlimit=1",
+        "final_url": "https://commons.wikimedia.org/w/api.php?action=query&format=json&formatversion=2&titles=File%3AColonel+Lowe%2C+%28i.e.%2C+Low%29+4th+Light+Dragoons+%26+servant+in+winter+dress+LCCN2001699577.jpg&prop=imageinfo%7Crevisions&iiprop=url%7Csize%7Cmime%7Csha1%7Ctimestamp%7Cextmetadata&iiurlwidth=1600&rvprop=ids%7Ctimestamp&rvlimit=1",
+        "status": 200,
+        "content_type": "application/json",
+        "bytes": 4542,
+        "sha256": "fb08f75af668da98b542ed075cf9aea17e9dc1f17c4166f84f8bbbdbcdab38a7",
+        "retrieved_utc": "2026-07-27T15:25:57Z",
+        "attempt": "curl-retry-bounded"
+      },
+      "no_image_copied": true
+    },
+    {
+      "sample_id": "p1a-010",
+      "status": "QUARANTINED",
+      "reason": "B2 visual re-review found that the image does not match its old 'man walking' title; adult evidence cannot be inferred from a mismatched title.",
+      "parent_corpus_id": "phase1-5-p1a-public-corpus-20260726T121500Z",
+      "old_source_sha256": "b9d8e26531d76ccdd6dae0409e33906ff4a039d20e4d2c1daf258e2c1437364f",
+      "old_sanitized_sha256": "6bf37ea963be87c10e468ee7ae82a770ae1c9583780096a8091b0724a59ff730",
+      "source_page": {
+        "pageid": 128639416,
+        "title": "File:Man walking through the Saint Roch neighborhood, Quebec City, Province of Quebec, Canada.jpg",
+        "revision_id": 1219029804,
+        "revision_timestamp": "2026-05-23T18:58:07Z",
+        "canonical_url": "https://commons.wikimedia.org/wiki/File:Man%20walking%20through%20the%20Saint%20Roch%20neighborhood%2C%20Quebec%20City%2C%20Province%20of%20Quebec%2C%20Canada.jpg",
+        "original_url": "https://upload.wikimedia.org/wikipedia/commons/b/bc/Man_walking_through_the_Saint_Roch_neighborhood%2C_Quebec_City%2C_Province_of_Quebec%2C_Canada.jpg"
+      },
+      "corrected_attribution": {
+        "artist": "Wilfredor",
+        "credit": "Own work",
+        "title": "Man walking through the Saint Roch neighborhood, Quebec City, Province of Quebec, Canada",
+        "license": "CC0"
+      },
+      "commons_api_sha256": "3099b19628b2736ac8ae8d0d62a4a7756fed3f4effdaa0ae349355ffb8fdf422",
+      "transport": {
+        "url": "https://commons.wikimedia.org/w/api.php?action=query&format=json&formatversion=2&titles=File%3AMan+walking+through+the+Saint+Roch+neighborhood%2C+Quebec+City%2C+Province+of+Quebec%2C+Canada.jpg&prop=imageinfo%7Crevisions&iiprop=url%7Csize%7Cmime%7Csha1%7Ctimestamp%7Cextmetadata&iiurlwidth=1600&rvprop=ids%7Ctimestamp&rvlimit=1",
+        "final_url": "https://commons.wikimedia.org/w/api.php?action=query&format=json&formatversion=2&titles=File%3AMan+walking+through+the+Saint+Roch+neighborhood%2C+Quebec+City%2C+Province+of+Quebec%2C+Canada.jpg&prop=imageinfo%7Crevisions&iiprop=url%7Csize%7Cmime%7Csha1%7Ctimestamp%7Cextmetadata&iiurlwidth=1600&rvprop=ids%7Ctimestamp&rvlimit=1",
+        "status": 200,
+        "content_type": "application/json",
+        "bytes": 3747,
+        "sha256": "3099b19628b2736ac8ae8d0d62a4a7756fed3f4effdaa0ae349355ffb8fdf422",
+        "retrieved_utc": "2026-07-27T15:26:04Z",
+        "attempt": "curl-retry-bounded"
+      },
+      "no_image_copied": true
+    }
+  ],
+  "aggregate": {
+    "algorithm": "SHA256(UTF8(JSON(sorted approved stable projection; keys sorted; compact separators)))",
+    "sha256": "20ef4759fd1caa097dbafe4b9c81194b38595782aff4dc2caca4b1b3b7ad0008",
+    "stable_projection": [
+      {
+        "sample_id": "p1a-001",
+        "source_sha256": "b47a5deb172066a56b68e73fb34a75f08b616bfc58b648155c548bf22c9b2d08",
+        "sanitized_sha256": "bfe997c149457eabd49bedc409ad41d203359a442201e52daa7ade513aab5943",
+        "source_revision_id": 1126197116,
+        "license_id": "CC0",
+        "license_evidence_sha256": "a2d5f6ff31d34afcb3401f1d1a5caa0b37a45536ec17fd25c332ef00b075e3c7",
+        "human_presence": "NONE",
+        "category_tags": [
+          "city_night",
+          "complex_background",
+          "cool_color",
+          "low_light",
+          "no_person",
+          "street",
+          "strong_color"
+        ]
+      },
+      {
+        "sample_id": "p1a-002",
+        "source_sha256": "5e2aa816f5bd49ab13a45d6afab3a9c9b9e2584a8aabf5b49e99872fe06f3926",
+        "sanitized_sha256": "67fc938c5a1e084e548fc634cb642c64c899d7afc42259fcd3865388f71be4b3",
+        "source_revision_id": 953285201,
+        "license_id": "CC0",
+        "license_evidence_sha256": "4c379791d0a6b03191597ddb8ddcdce760abcb798b733a8d82d1d56c60ee1c5e",
+        "human_presence": "NONE",
+        "category_tags": [
+          "city_night",
+          "complex_background",
+          "low_light",
+          "no_person",
+          "strong_color"
+        ]
+      },
+      {
+        "sample_id": "p1a-003",
+        "source_sha256": "b9e83c5ea1395ca94c8789e51e4bd1aa0cbe136bfa58b9d724191b6c355b3870",
+        "sanitized_sha256": "94c6bfa2d249f8f8572b9da639d74c2f759c7d1b4410667f3a9db15025806d43",
+        "source_revision_id": 1222578020,
+        "license_id": "CC0",
+        "license_evidence_sha256": "74ab9d1c39d2af046eff28eeb7de7dc4586b52055bd7d23a2b3996347362be70",
+        "human_presence": "NONE",
+        "category_tags": [
+          "architecture",
+          "city_night",
+          "low_light",
+          "no_person",
+          "warm_color"
+        ]
+      },
+      {
+        "sample_id": "p1a-004",
+        "source_sha256": "63c483128bc775fe1706900c83816869ad06b0e29e35ea1d26db77d8ee69a978",
+        "sanitized_sha256": "be20da0c5e2c9c7846af7b3cd451ff85e7a29a88b4cc169dbd4694581d933690",
+        "source_revision_id": 1222611511,
+        "license_id": "CC0",
+        "license_evidence_sha256": "959627a6de995c0b47d7697be9c93cc98b83ba871fdbd26f744a93bfc777815c",
+        "human_presence": "NONE",
+        "category_tags": [
+          "complex_background",
+          "low_light",
+          "no_person",
+          "street",
+          "warm_color"
+        ]
+      },
+      {
+        "sample_id": "p1a-005",
+        "source_sha256": "a0dd01dc5dc480417c4c4072de9e979ea748f310fc46f3d8232fe4737665ca74",
+        "sanitized_sha256": "8588637670df8715abfad4eb639210f2525909740b4f027ceac40b2207aecc5a",
+        "source_revision_id": 1222284467,
+        "license_id": "CC0",
+        "license_evidence_sha256": "90286718f853be0ea8f19c2e72103249bbe662b4dcc3c535dece0dc7887b6777",
+        "human_presence": "NONE",
+        "category_tags": [
+          "architecture",
+          "cool_color",
+          "low_light",
+          "no_person",
+          "symmetry",
+          "warm_color"
+        ]
+      },
+      {
+        "sample_id": "p1a-006",
+        "source_sha256": "6e21089bb2ec13ee79edf0b3e5be21a6400d72ce31d867914df6770e39e6c854",
+        "sanitized_sha256": "4b2ab06f68967c74f8911852483ceaf053f3ab25ddc931998549f9fa0fe71763",
+        "source_revision_id": 938381076,
+        "license_id": "CC0",
+        "license_evidence_sha256": "a9db14f1b28ddca3a66f1635e5cb3b24880ddbcdb78ada1f0cd429779e57c95f",
+        "human_presence": "NONE",
+        "category_tags": [
+          "backlight",
+          "indoor_window",
+          "minimal_background",
+          "negative_space",
+          "no_person",
+          "side_light"
+        ]
+      },
+      {
+        "sample_id": "p1a-007",
+        "source_sha256": "13c64ecc43c5a8176972f19793a2375030c8ec49fd787849ae257653001fe0b8",
+        "sanitized_sha256": "e0701665ae6e094239562f0b01d534e514a0d9d69443be8ff42660bb3535befb",
+        "source_revision_id": 1250097053,
+        "license_id": "CC0",
+        "license_evidence_sha256": "d9e7cf718c8d12380a291b38d213495a06f88d45ef9bf7660bdb608c2ec33f39",
+        "human_presence": "NONE",
+        "category_tags": [
+          "negative_space",
+          "no_person",
+          "seaside",
+          "warm_color"
+        ]
+      },
+      {
+        "sample_id": "p1a-009",
+        "source_sha256": "378db84c70a3abcb9476fd20ba325c30be377cc0a51af7b72cb3deaedf3975ee",
+        "sanitized_sha256": "c165f490813141c0c3437531f61706362819935e026b89e041d5fab5351f8374",
+        "source_revision_id": 1168708694,
+        "license_id": "CC0",
+        "license_evidence_sha256": "a24da5689301c0f4aad4203c96b978ffbb3dc91910967444302327e22a9a2bf8",
+        "human_presence": "NONE",
+        "category_tags": [
+          "complex_background",
+          "cool_color",
+          "forest",
+          "no_person"
+        ]
+      },
+      {
+        "sample_id": "p1a-012",
+        "source_sha256": "f11bfa9d3a25f810cb18b4866f5b345ab8f1ed62c971e1650cf4a3aac01810fb",
+        "sanitized_sha256": "a725fae363278e63d6efab9001530adae555b326c96eaa030b8b4fb948b911b1",
+        "source_revision_id": 1056861379,
+        "license_id": "Public-Domain",
+        "license_evidence_sha256": "fa2d3978415296775199a2500919b7de1a61961de905476a4d91ef3e9139f359",
+        "human_presence": "VISIBLE_DOCUMENTED_ADULT",
+        "category_tags": [
+          "dynamic_action",
+          "side_light",
+          "single_person_half_body",
+          "warm_color"
+        ]
+      },
+      {
+        "sample_id": "p1a-016",
+        "source_sha256": "199997b8f9e5bd41c501bd992affd379adc11dbb69021fd9bfec89285959dbb0",
+        "sanitized_sha256": "4ba38559e77fe8a7fb443f4e730eb0e03199b60477888ef8e85d8951315c1b6d",
+        "source_revision_id": 1110295100,
+        "license_id": "CC0",
+        "license_evidence_sha256": "0583bbdb5a5da0079387b8f693b532a6db8e9608ffd0b6862a1d825b2ae83305",
+        "human_presence": "NONE",
+        "category_tags": [
+          "cafe_or_lifestyle_interior",
+          "no_person",
+          "warm_color"
+        ]
+      },
+      {
+        "sample_id": "p1a-017",
+        "source_sha256": "fe36718957be42aaa5c8777cda05053745381f300d213c64d55bf08af9a996f7",
+        "sanitized_sha256": "efd91f803d53f136451498c1082ff78c751f0c830b423165b388b61907de7328",
+        "source_revision_id": 1136960730,
+        "license_id": "CC0",
+        "license_evidence_sha256": "caa62e8b1136430c10ecfa8707c29983ff0223737d508d2ad47e21c1b4a38487",
+        "human_presence": "NONE",
+        "category_tags": [
+          "cafe_or_lifestyle_interior",
+          "complex_background",
+          "no_person",
+          "strong_color"
+        ]
+      },
+      {
+        "sample_id": "p1a-018",
+        "source_sha256": "6e24d02e13683d647ca8b439b0e4b1ce0d2d67931f274bc81a7207fa98fe6e57",
+        "sanitized_sha256": "4152b8f7e09bdb2aafc6ff4fcc62d8d676e95eb657bf69a6f259b0a05d267144",
+        "source_revision_id": 1200728085,
+        "license_id": "CC0",
+        "license_evidence_sha256": "400bc5c18e514fce63555dfcdf813d67116a8aaaecdc7bef164e2c6829dcc4ca",
+        "human_presence": "NONE",
+        "category_tags": [
+          "cafe_or_lifestyle_interior",
+          "complex_background",
+          "no_person",
+          "warm_color"
+        ]
+      },
+      {
+        "sample_id": "p1a-020",
+        "source_sha256": "de9bf90b3b3394bff3314403bbf3ac9bc528859ac1af8d4f430ae5b2d9a2d73f",
+        "sanitized_sha256": "426c1c02e1f8cecacde47ff326a6cd438baa7788d76b672038cd1c7e68583431",
+        "source_revision_id": 1118835995,
+        "license_id": "CC0",
+        "license_evidence_sha256": "6497a61f7466065beede3de5069678a761ecea6ea809eaf192308c650f62f9b9",
+        "human_presence": "NONE",
+        "category_tags": [
+          "architecture",
+          "cool_color",
+          "minimal_background",
+          "no_person"
+        ]
+      },
+      {
+        "sample_id": "p1a-021",
+        "source_sha256": "301a9a7b60774008c50014b52bc8904ee0e4222a826e668c44c701101c0b76c3",
+        "sanitized_sha256": "0ed6a2d37e46be594ced70ea3e4ed2ef0e0c5b67fc3d7822dcd5d88ed560d7cb",
+        "source_revision_id": 1234807202,
+        "license_id": "CC0",
+        "license_evidence_sha256": "d2cb0f51d6f4c7efb3eddf8b529d71082d29f76928ecf5ae413072e9a44799c2",
+        "human_presence": "NONE",
+        "category_tags": [
+          "architecture",
+          "no_person",
+          "symmetry"
+        ]
+      },
+      {
+        "sample_id": "p1a-022",
+        "source_sha256": "941a6f00d760a29d186e9096829bceb2cdb38a07a29fcc3c22899375bcb0a703",
+        "sanitized_sha256": "e110883fb76f1540015b717afd00f5f37378394be39e76094ca3d6c48bcdc2b0",
+        "source_revision_id": 674457892,
+        "license_id": "CC0",
+        "license_evidence_sha256": "b45baa372057fa29788b8a1576735bb9d255ebb9386ace53de713515db34ff71",
+        "human_presence": "NONE",
+        "category_tags": [
+          "architecture",
+          "minimal_background",
+          "no_person",
+          "symmetry"
+        ]
+      },
+      {
+        "sample_id": "p1a-025",
+        "source_sha256": "d8c14166a645f6f2790939ab14ddefcc2a87fc3f81942d0c937da69db15c8dee",
+        "sanitized_sha256": "9bd13a6eee7e9110e983d9230e9abf70d9aaad8258bec93e2bc6d7e947154347",
+        "source_revision_id": 1023484611,
+        "license_id": "Public-Domain",
+        "license_evidence_sha256": "c207369f2bb8e0bbf35da900830bf27d37e9b2d08c50fd840715850dc7b79e6c",
+        "human_presence": "VISIBLE_DOCUMENTED_ADULT",
+        "category_tags": [
+          "portrait_close_up",
+          "single_person_full_body",
+          "single_person_half_body",
+          "warm_color"
+        ]
+      },
+      {
+        "sample_id": "p1a-026",
+        "source_sha256": "cf88c16b1d7a194fde2f61e6b10be267e685248ffda6959ecd1ac41b5e274f6e",
+        "sanitized_sha256": "5e334414d8b1bfbf271ce376cbdf38e36a1ed5b9275000e35ff6162e05f23098",
+        "source_revision_id": 1174333720,
+        "license_id": "CC0",
+        "license_evidence_sha256": "70e12b865c63db66c2bdc4474db69d34a2b0fc9a90c7fb71ea7b963261b17d52",
+        "human_presence": "NONE",
+        "category_tags": [
+          "cafe_or_lifestyle_interior",
+          "minimal_background",
+          "no_person",
+          "warm_color"
+        ]
+      },
+      {
+        "sample_id": "p1a-027",
+        "source_sha256": "7e7115ad7b2cc9d49f229c62cdb4f067eb9f9b992e848ea09b2604e2c1f80729",
+        "sanitized_sha256": "ecd131c13713e2ce9b12d58963b621aef9fdbe5aafdeb82b67ca51c7f8a3abbe",
+        "source_revision_id": 1227534786,
+        "license_id": "Public-Domain",
+        "license_evidence_sha256": "e387699f5d7b9aa232bbead4e368818982deb444f2d7073f57c130404127d23d",
+        "human_presence": "VISIBLE_DOCUMENTED_ADULT",
+        "category_tags": [
+          "backlight",
+          "cool_color",
+          "indoor_window",
+          "side_light",
+          "single_person_half_body"
+        ]
+      },
+      {
+        "sample_id": "p1a-028",
+        "source_sha256": "be302df4448f47b5023812deebaeb791620aae55d240e84f0837a4dc6ff4cc26",
+        "sanitized_sha256": "da35eab5dd2f4d0d8f2fcc308302e546566e04dca3a6104f47f7a5c30957d4d3",
+        "source_revision_id": 1053357442,
+        "license_id": "Public-Domain",
+        "license_evidence_sha256": "ee4f8ea6e86001db28591c6d30098b5a49e217f8857f9a679a885b7a0b8891e4",
+        "human_presence": "VISIBLE_DOCUMENTED_ADULT",
+        "category_tags": [
+          "forest",
+          "occlusion",
+          "single_person_half_body",
+          "warm_color"
+        ]
+      },
+      {
+        "sample_id": "p1a-029",
+        "source_sha256": "73f181e88a75e753d74e1f4b711be478dff47a4cf3698e4ef26342bed9dff8c7",
+        "sanitized_sha256": "3c683294f79d178c02fa9ba55a13e641b9750307a9a711591b3d17ea4bc7bc65",
+        "source_revision_id": 1193441780,
+        "license_id": "Public-Domain",
+        "license_evidence_sha256": "d5d62b30009fa56384bfa4ea021d6e5622952169d5ffd6520c3db8441a4c5bd5",
+        "human_presence": "VISIBLE_DOCUMENTED_ADULT",
+        "category_tags": [
+          "complex_background",
+          "cool_color",
+          "dynamic_action",
+          "two_people"
+        ]
+      }
+    ]
+  },
+  "generated_utc": "2026-07-27T15:24:54Z"
+}

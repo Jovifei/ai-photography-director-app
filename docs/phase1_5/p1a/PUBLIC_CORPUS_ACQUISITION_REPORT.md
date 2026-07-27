@@ -1,6 +1,8 @@
 # P1A Public Corpus Acquisition Report
 
-Status: `CORPUS_ACQUIRED_AND_VERIFIED` for the approved evaluation set.
+Status: `SUPERSEDED_BY_P1A_REMEDIATION_REVIEW`.
+
+The v1 set is not the current approval basis. The r2 evidence root and v2 manifest are identified by the remediation report; the original external root remains immutable.
 
 The acquisition attempt resolved 24 public Wikimedia Commons samples. Network requests wrote first to the host-approved download staging area and were copied only after validation into the external evidence root identified by `public-corpus-20260726T121500Z`. Git contains neither source images nor sanitized images.
 

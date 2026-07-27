@@ -1,6 +1,8 @@
 # P1A Public Corpus Privacy Review
 
-Status: `PASS_WITH_QUARANTINE`.
+Status: `SUPERSEDED_BY_P1A_REMEDIATION_REVIEW`.
+
+The r2 review changes human/age policy to fail closed: approved samples are either `NONE` or `VISIBLE_DOCUMENTED_ADULT`; `VISIBLE_AGE_UNCERTAIN` is not approved.
 
 Manual review approved 20 public, non-private evaluation scenes. The set covers city night, street, beach, forest, architecture, and commercial cafe interiors; it contains no owner media and no downloaded user gallery material.
 

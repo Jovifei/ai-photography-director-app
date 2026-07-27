@@ -1,0 +1,45 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://jovifei.github.io/ai-photography-director-app/phase1_5/p1a/public_corpus_manifest.v2.schema.json",
+  "title": "P1A public corpus evidence manifest v2",
+  "type": "object",
+  "required": ["schema_version", "corpus_id", "parent_corpus_id", "status", "external_evidence_root_id", "approved_count", "quarantine_count", "minimum_required_count", "allowed_license_ids", "privacy_policy", "age_policy", "required_categories", "samples", "quarantine", "aggregate"],
+  "properties": {
+    "schema_version": {"const": "2.0.0"},
+    "corpus_id": {"type": "string", "pattern": "^phase1-5-p1a-public-corpus-[0-9]{8}T[0-9]{6}Z-r2$"},
+    "parent_corpus_id": {"type": "string", "minLength": 1},
+    "status": {"type": "string", "minLength": 1},
+    "external_evidence_root_id": {"type": "string", "pattern": "^public-corpus-[0-9]{8}T[0-9]{6}Z-r2$"},
+    "approved_count": {"type": "integer", "minimum": 20},
+    "quarantine_count": {"type": "integer", "minimum": 4},
+    "minimum_required_count": {"const": 20},
+    "allowed_license_ids": {"type": "array", "items": {"enum": ["CC0", "Public-Domain", "CC-BY-4.0"]}, "minItems": 1},
+    "privacy_policy": {"type": "object"},
+    "age_policy": {"type": "object"},
+    "required_categories": {"type": "array", "minItems": 24, "items": {"type": "string"}},
+    "samples": {"type": "array", "minItems": 20, "items": {"$ref": "#/$defs/sample"}},
+    "quarantine": {"type": "array", "minItems": 4, "items": {"$ref": "#/$defs/quarantine"}},
+    "aggregate": {"type": "object", "required": ["algorithm", "sha256"], "properties": {"algorithm": {"type": "string"}, "sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"}}}
+  },
+  "$defs": {
+    "safePath": {"type": "string", "pattern": "^(?!.*(?:^|/)\\.\\.(?:/|$))(?![A-Za-z]:)(?!/)[^\\\\]+$"},
+    "sample": {
+      "type": "object",
+      "required": ["sample_id", "status", "category_tags", "source", "sanitized", "source_page", "license", "license_evidence_relative_path", "license_evidence_sha256", "human_review", "metadata_relative_paths"],
+      "properties": {
+        "sample_id": {"type": "string", "pattern": "^p1a-[0-9]{3}$"},
+        "status": {"const": "APPROVED"},
+        "category_tags": {"type": "array", "minItems": 1, "items": {"type": "string"}},
+        "source": {"type": "object", "required": ["relative_path", "sha256", "bytes", "mime", "width", "height", "original_url"], "properties": {"relative_path": {"$ref": "#/$defs/safePath"}, "sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"}, "bytes": {"type": "integer", "minimum": 1}, "mime": {"type": "string"}, "width": {"type": "integer", "minimum": 1}, "height": {"type": "integer", "minimum": 1}, "original_url": {"type": "string", "format": "uri"}}},
+        "sanitized": {"type": "object", "required": ["relative_path", "sha256", "bytes", "mime", "dimensions", "source_dimensions", "crop_applied", "exif_removed", "gps_removed"], "properties": {"relative_path": {"$ref": "#/$defs/safePath"}, "sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"}, "bytes": {"type": "integer", "minimum": 1}, "mime": {"const": "image/jpeg"}, "dimensions": {"type": "array", "items": {"type": "integer"}, "minItems": 2, "maxItems": 2}, "source_dimensions": {"type": "array", "items": {"type": "integer"}, "minItems": 2, "maxItems": 2}, "crop_applied": {"const": false}, "exif_removed": {"const": true}, "gps_removed": {"const": true}}},
+        "source_page": {"type": "object", "required": ["pageid", "title", "revision_id", "revision_timestamp", "canonical_url", "original_url", "commons_api_sha256"]},
+        "license": {"type": "object", "required": ["id", "name", "url", "attribution"], "properties": {"id": {"enum": ["CC0", "Public-Domain", "CC-BY-4.0"]}}},
+        "license_evidence_relative_path": {"$ref": "#/$defs/safePath"},
+        "license_evidence_sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+        "human_review": {"type": "object", "required": ["status", "human_presence", "person_count", "full_body_count", "age_evidence_basis", "age_evidence", "nonvisual_source", "no_person"], "properties": {"status": {"const": "APPROVED"}, "human_presence": {"enum": ["NONE", "VISIBLE_DOCUMENTED_ADULT", "VISIBLE_AGE_UNCERTAIN"]}, "person_count": {"type": "integer", "minimum": 0}, "full_body_count": {"type": "integer", "minimum": 0}, "age_evidence_basis": {"type": "string"}, "age_evidence": {"type": "string"}, "nonvisual_source": {"type": "string"}, "no_person": {"type": "boolean"}}},
+        "metadata_relative_paths": {"type": "array", "minItems": 5, "items": {"$ref": "#/$defs/safePath"}}
+      }
+    },
+    "quarantine": {"type": "object", "required": ["sample_id", "status", "reason", "old_source_sha256", "old_sanitized_sha256", "no_image_copied"], "properties": {"sample_id": {"type": "string", "pattern": "^p1a-[0-9]{3}$"}, "status": {"const": "QUARANTINED"}, "reason": {"type": "string", "minLength": 1}, "old_source_sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"}, "old_sanitized_sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"}, "no_image_copied": {"const": true}}}
+  }
+}

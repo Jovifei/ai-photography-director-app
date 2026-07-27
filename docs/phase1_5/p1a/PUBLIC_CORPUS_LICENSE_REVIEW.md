@@ -1,6 +1,8 @@
 # P1A Public Corpus License Review
 
-Status: `PASS_FOR_OFFLINE_EVALUATION_ONLY`.
+Status: `SUPERSEDED_BY_P1A_REMEDIATION_REVIEW`.
+
+The original attribution and per-source evidence were incomplete. The r2 validation requires an offline license-evidence file and source revision for every approved sample.
 
 Every approved sample has a Wikimedia Commons source page and one explicitly accepted license identifier: `CC0`, `Public-Domain`, or `CC-BY-4.0`. The repository manifest preserves the page URL, license URL, author/attribution text, and original source hash for every record.
 
