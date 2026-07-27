@@ -5,6 +5,7 @@
   "download_authorized": false,
   "runtime_authorized": false,
   "inference_authorized": false,
+  "app_integration_authorized": false,
   "model_id": "Qwen/Qwen3-VL-2B-Instruct",
   "immutable_revision": "89644892e4d85e24eaac8bacfd4f463576704203",
   "expected_weight": {
@@ -16,6 +17,20 @@
     "huggingface.co",
     "us.aws.cdn.hf.co"
   ],
+  "weight_license_evidence": {
+    "status": "WEIGHT_LICENSE_EVIDENCE_READY_FOR_INDEPENDENT_REVIEW",
+    "basis": "MODEL_CARD_METADATA_AT_IMMUTABLE_REVISION",
+    "metadata_record": "docs/phase1_5/p1a/qwen_weight_license_evidence.v1.json",
+    "external_evidence_root_id": "model-license-evidence-20260727T152339Z",
+    "legal_review_status": "NOT_LEGAL_APPROVED",
+    "independent_review_required": true
+  },
+  "observed_transport": {
+    "metadata_api_domain": "huggingface.co",
+    "artifact_initial_domain": "huggingface.co",
+    "artifact_redirect_state": "REDIRECT_DOMAIN_NOT_INDEPENDENTLY_VERIFIED",
+    "artifact_request_policy": "No artifact GET, Range, HEAD, or redirect-follow request was performed during P1A evidence remediation."
+  },
   "required_preconditions": [
     "Named Owner approval of this exact model ID and immutable revision.",
     "Fresh official license and publisher identity review at the immutable revision.",

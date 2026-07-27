@@ -1,0 +1,19 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "qwen_weight_license_evidence.v1.schema.json",
+  "type": "object",
+  "required": ["schema_version", "evidence_status", "weight_license_evidence_basis", "model_id", "immutable_revision", "publisher", "model_card_license", "license_scope", "evidence", "repository_additional_terms", "legal_review_status", "independent_review_required", "download_authorized", "runtime_authorized", "inference_authorized", "app_integration_authorized", "external_evidence_root_id"],
+  "properties": {
+    "schema_version": {"const": "1.0.0"},
+    "evidence_status": {"enum": ["WEIGHT_LICENSE_EVIDENCE_READY_FOR_INDEPENDENT_REVIEW", "BLOCKED_LICENSE"]},
+    "weight_license_evidence_basis": {"const": "MODEL_CARD_METADATA_AT_IMMUTABLE_REVISION"},
+    "model_id": {"const": "Qwen/Qwen3-VL-2B-Instruct"},
+    "immutable_revision": {"const": "89644892e4d85e24eaac8bacfd4f463576704203"},
+    "model_card_license": {"const": "apache-2.0"},
+    "legal_review_status": {"const": "NOT_LEGAL_APPROVED"},
+    "download_authorized": {"const": false},
+    "runtime_authorized": {"const": false},
+    "inference_authorized": {"const": false},
+    "app_integration_authorized": {"const": false}
+  }
+}

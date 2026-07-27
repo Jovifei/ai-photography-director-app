@@ -9,6 +9,7 @@
     "download_authorized",
     "runtime_authorized",
     "inference_authorized",
+    "app_integration_authorized",
     "model_id",
     "immutable_revision",
     "expected_weight",
@@ -22,6 +23,7 @@
     "download_authorized": { "const": false },
     "runtime_authorized": { "const": false },
     "inference_authorized": { "const": false },
+    "app_integration_authorized": { "const": false },
     "model_id": { "const": "Qwen/Qwen3-VL-2B-Instruct" },
     "immutable_revision": {
       "const": "89644892e4d85e24eaac8bacfd4f463576704203"

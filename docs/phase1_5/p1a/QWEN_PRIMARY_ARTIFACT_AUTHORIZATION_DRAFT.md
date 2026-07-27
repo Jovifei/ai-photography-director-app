@@ -1,6 +1,8 @@
 # Qwen Primary Artifact Authorization Draft
 
-Status: `READY_FOR_OWNER_DOWNLOAD_DECISION`.
+Status: `SUPERSEDED_BY_P1A_REMEDIATION_REVIEW`.
+
+The current machine-readable draft retains all authorization booleans as `false` and adds immutable-revision weight-license evidence. No model artifact was requested or downloaded in the remediation.
 
 This is an authorization *draft*, not a download authorization. It freezes the only proposed primary artifact:
 

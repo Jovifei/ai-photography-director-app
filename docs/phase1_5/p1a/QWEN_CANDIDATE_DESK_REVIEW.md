@@ -1,6 +1,8 @@
 # Qwen Candidate Desk Review
 
-Status: `READY_FOR_OWNER_DOWNLOAD_DECISION`; no artifact download is authorized.
+Status: `SUPERSEDED_BY_P1A_REMEDIATION_REVIEW`; no artifact download is authorized.
+
+The former wording was not sufficient evidence of exact weight-license scope. The current record is `qwen_weight_license_evidence.v1.json`, based on immutable-revision model-card metadata, and it still is not legal approval or download authorization.
 
 The primary candidate is `Qwen/Qwen3-VL-2B-Instruct` at immutable revision `89644892e4d85e24eaac8bacfd4f463576704203`. Official publisher metadata identifies Qwen, the model card declares `apache-2.0`, and the official Qwen3-VL repository declares Apache-2.0 for code. The exact repository metadata reports 12 files totaling 4,266,648,961 bytes and one 4,255,140,312-byte `model.safetensors` LFS object with OID SHA-256 `7de1838c87a5349b016c26a1c3f7d2bc400a3d485f95ef39a7059ffd734977a0`.
 

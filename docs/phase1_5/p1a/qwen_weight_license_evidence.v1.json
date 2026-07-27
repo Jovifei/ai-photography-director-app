@@ -1,0 +1,34 @@
+{
+  "schema_version": "1.0.0",
+  "evidence_status": "WEIGHT_LICENSE_EVIDENCE_READY_FOR_INDEPENDENT_REVIEW",
+  "weight_license_evidence_basis": "MODEL_CARD_METADATA_AT_IMMUTABLE_REVISION",
+  "model_id": "Qwen/Qwen3-VL-2B-Instruct",
+  "immutable_revision": "89644892e4d85e24eaac8bacfd4f463576704203",
+  "publisher": {
+    "organization": "Qwen",
+    "official_hub_organization_url": "https://huggingface.co/Qwen"
+  },
+  "model_card_license": "apache-2.0",
+  "license_scope": "Exact revision model-card YAML and Hub API cardData metadata. This does not assert that a code-repository license is a model-weight license.",
+  "evidence": {
+    "readme_sha256": "5fc5be1ca9a3910399bd6239ee5086ab5d82a2a59c5d2b00e887a8835cc110e4",
+    "model_api_sha256": "9b723102d32eb770cc9794c7d664035390f230cd73734a349951a5fa6742a01d",
+    "repository_tree_sha256": "1b3045b5c431c2eea62647d0b6b837169fbfb432c1a21d78007e0795e5eefc4d",
+    "hub_license_semantics_sha256": "138363de397eb72e87c7da55189d07263cc55cea513b56db13d2b11bb8fa63b0",
+    "apache_2_0_text_sha256": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30",
+    "qwen_code_license_sha256": "c71d239df91726fc519c6eb72d318ec65820627232b2f796219e87dcf35d0ab4"
+  },
+  "repository_additional_terms": {
+    "license_link_present": false,
+    "conflicting_local_license_or_notice_files": [],
+    "commercial_restriction_marker_found": false,
+    "qwen_code_license_interpretation": "Separate code-repository evidence only; it is not substituted for model-weight licensing."
+  },
+  "legal_review_status": "NOT_LEGAL_APPROVED",
+  "independent_review_required": true,
+  "download_authorized": false,
+  "runtime_authorized": false,
+  "inference_authorized": false,
+  "app_integration_authorized": false,
+  "external_evidence_root_id": "model-license-evidence-20260727T152339Z"
+}

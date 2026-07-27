@@ -1,6 +1,6 @@
 # Owner P1B Decision Matrix
 
-P1A outcome: the public corpus and primary Qwen artifact facts are qualified; all model bytes and runtime work remain blocked pending an explicit Owner decision.
+P1A outcome after remediation: r2 corpus integrity and exact-revision license metadata are ready for independent delta review. All model bytes and runtime work remain blocked pending independent review and an explicit Owner decision.
 
 | Owner choice | Preconditions | Benefit | Risk / cost | Resulting state |
 | --- | --- | --- | --- | --- |

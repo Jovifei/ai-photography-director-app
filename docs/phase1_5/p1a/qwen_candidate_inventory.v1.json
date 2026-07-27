@@ -3,6 +3,9 @@
   "evidence_class": "OFFICIAL_METADATA_ONLY",
   "artifact_bytes_downloaded": false,
   "model_weights_downloaded": false,
+  "weight_license_evidence_basis": "MODEL_CARD_METADATA_AT_IMMUTABLE_REVISION",
+  "weight_license_evidence_status": "WEIGHT_LICENSE_EVIDENCE_READY_FOR_INDEPENDENT_REVIEW",
+  "weight_license_evidence_record": "docs/phase1_5/p1a/qwen_weight_license_evidence.v1.json",
   "publisher": {
     "organization": "Qwen",
     "official_repository": "https://huggingface.co/Qwen"
@@ -12,7 +15,7 @@
     "immutable_revision": "89644892e4d85e24eaac8bacfd4f463576704203",
     "state": "READY_FOR_OWNER_DOWNLOAD_DECISION",
     "model_card_license": "apache-2.0",
-    "code_license": "Apache-2.0",
+    "code_license": "Apache-2.0 (separate code-repository evidence; not a model-weight licence substitute)",
     "repository_file_count": 12,
     "repository_total_bytes": 4266648961,
     "weight_artifacts": [
@@ -83,11 +86,8 @@
   "observed_transport": {
     "metadata_api_domain": "huggingface.co",
     "artifact_initial_domain": "huggingface.co",
-    "artifact_redirect_domain": "us.aws.cdn.hf.co",
-    "allowlist_for_future_owner_approved_download": [
-      "huggingface.co",
-      "us.aws.cdn.hf.co"
-    ],
+    "artifact_redirect_state": "REDIRECT_DOMAIN_NOT_INDEPENDENTLY_VERIFIED",
+    "artifact_request_policy": "No artifact GET, Range, HEAD, or redirect-follow request was performed in remediation.",
     "mirror_or_unlisted_redirect_policy": "STOP_AND_ESCALATE"
   }
 }
