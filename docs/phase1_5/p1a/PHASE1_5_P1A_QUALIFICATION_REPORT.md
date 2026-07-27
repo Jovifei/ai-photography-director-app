@@ -1,6 +1,8 @@
 # Phase 1.5 P1A Qualification Report
 
-Status: `P1A_QUALIFICATION_PASS_AWAITING_INDEPENDENT_REVIEW`.
+Status: `SUPERSEDED_BY_P1A_REMEDIATION_REVIEW`.
+
+The original candidate was rejected for B1-B5 evidence gaps. Current r2 evidence and the corrective disposition are recorded in `PHASE1_5_P1A_REMEDIATION_REPORT.md`; this document remains historical context only.
 
 P1A is a public-corpus and model-artifact authorization preparation gate. It intentionally did not download model weights, tokenizer/runtime artifacts, models, containers, or packages; did not run inference, GPU, Docker, WSL2, or cloud work; and did not modify Android sources, CameraX, UI, Pose, the sibling Pipeline, or product media.
 
