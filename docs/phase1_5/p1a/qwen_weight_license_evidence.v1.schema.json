@@ -2,7 +2,8 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "qwen_weight_license_evidence.v1.schema.json",
   "type": "object",
-  "required": ["schema_version", "evidence_status", "weight_license_evidence_basis", "model_id", "immutable_revision", "publisher", "model_card_license", "license_scope", "evidence", "repository_additional_terms", "legal_review_status", "independent_review_required", "download_authorized", "runtime_authorized", "inference_authorized", "app_integration_authorized", "external_evidence_root_id"],
+  "additionalProperties": false,
+  "required": ["schema_version", "evidence_status", "weight_license_evidence_basis", "model_id", "immutable_revision", "publisher", "model_card_license", "license_scope", "evidence", "repository_additional_terms", "legal_review_status", "independent_review_required", "download_authorized", "runtime_authorized", "inference_authorized", "app_integration_authorized", "model_artifact", "external_evidence", "external_evidence_root_id"],
   "properties": {
     "schema_version": {"const": "1.0.0"},
     "evidence_status": {"enum": ["WEIGHT_LICENSE_EVIDENCE_READY_FOR_INDEPENDENT_REVIEW", "BLOCKED_LICENSE"]},
@@ -10,10 +11,18 @@
     "model_id": {"const": "Qwen/Qwen3-VL-2B-Instruct"},
     "immutable_revision": {"const": "89644892e4d85e24eaac8bacfd4f463576704203"},
     "model_card_license": {"const": "apache-2.0"},
+    "publisher": {"type": "object"},
+    "license_scope": {"type": "string", "minLength": 1},
+    "evidence": {"type": "object"},
+    "repository_additional_terms": {"type": "object"},
     "legal_review_status": {"const": "NOT_LEGAL_APPROVED"},
+    "independent_review_required": {"const": true},
     "download_authorized": {"const": false},
     "runtime_authorized": {"const": false},
     "inference_authorized": {"const": false},
-    "app_integration_authorized": {"const": false}
+    "app_integration_authorized": {"const": false},
+    "external_evidence_root_id": {"type": "string", "pattern": "^model-license-evidence-[0-9]{8}T[0-9]{6}Z$"},
+    "model_artifact": {"type": "object", "additionalProperties": false, "required": ["path", "bytes", "lfs_sha256", "repository_file_count", "repository_total_bytes"], "properties": {"path": {"const": "model.safetensors"}, "bytes": {"const": 4255140312}, "lfs_sha256": {"const": "7de1838c87a5349b016c26a1c3f7d2bc400a3d485f95ef39a7059ffd734977a0"}, "repository_file_count": {"const": 12}, "repository_total_bytes": {"const": 4266648961}}},
+    "external_evidence": {"type": "object", "additionalProperties": false, "required": ["evidence_manifest_sha256", "transport_records_sha256", "qwen_code_repo_commit_sha256", "model_body_downloaded"], "properties": {"evidence_manifest_sha256": {"pattern": "^[a-f0-9]{64}$"}, "transport_records_sha256": {"pattern": "^[a-f0-9]{64}$"}, "qwen_code_repo_commit_sha256": {"pattern": "^[a-f0-9]{64}$"}, "model_body_downloaded": {"const": false}}}
   }
 }

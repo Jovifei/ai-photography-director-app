@@ -12,9 +12,9 @@
   "license_scope": "Exact revision model-card YAML and Hub API cardData metadata. This does not assert that a code-repository license is a model-weight license.",
   "evidence": {
     "readme_sha256": "5fc5be1ca9a3910399bd6239ee5086ab5d82a2a59c5d2b00e887a8835cc110e4",
-    "model_api_sha256": "9b723102d32eb770cc9794c7d664035390f230cd73734a349951a5fa6742a01d",
-    "repository_tree_sha256": "1b3045b5c431c2eea62647d0b6b837169fbfb432c1a21d78007e0795e5eefc4d",
-    "hub_license_semantics_sha256": "138363de397eb72e87c7da55189d07263cc55cea513b56db13d2b11bb8fa63b0",
+    "model_api_sha256": "12c5b4aa90bacdd9de450c7a982029b5cc1bd5f4d801f6ac51273f8d5cfb22a7",
+    "repository_tree_sha256": "96283c7d3a54fd4e5a03621845a2ab2df6e93bbdf69114b13e0b4f46e4ceef83",
+    "hub_license_semantics_sha256": "db547e4d73dfd2db66e5eaa7bb74b7299da750f1a52941cab2bd71f40d8215e5",
     "apache_2_0_text_sha256": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30",
     "qwen_code_license_sha256": "c71d239df91726fc519c6eb72d318ec65820627232b2f796219e87dcf35d0ab4"
   },
@@ -30,5 +30,18 @@
   "runtime_authorized": false,
   "inference_authorized": false,
   "app_integration_authorized": false,
-  "external_evidence_root_id": "model-license-evidence-20260727T152339Z"
+  "model_artifact": {
+    "path": "model.safetensors",
+    "bytes": 4255140312,
+    "lfs_sha256": "7de1838c87a5349b016c26a1c3f7d2bc400a3d485f95ef39a7059ffd734977a0",
+    "repository_file_count": 12,
+    "repository_total_bytes": 4266648961
+  },
+  "external_evidence": {
+    "evidence_manifest_sha256": "8dbdf0ba03fba921ada3a6f756b158a02a62e3097d59522c0db0e0bf633cbb06",
+    "transport_records_sha256": "b56fbef7dbf5b8cee7936c0008f9d4e78c83a877230576f782479439c288accf",
+    "qwen_code_repo_commit_sha256": "3de33f42088b8aff297419d1a7b1782c4c06e3eb040f857ee11af0767edb7ea0",
+    "model_body_downloaded": false
+  },
+  "external_evidence_root_id": "model-license-evidence-20260728T170208Z"
 }
