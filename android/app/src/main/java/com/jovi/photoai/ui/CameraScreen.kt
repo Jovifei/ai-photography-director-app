@@ -94,6 +94,7 @@ private val CameraUiStateSaver = mapSaver(
 fun CameraScreen(
     guidanceItems: List<GuidanceItem>,
     referenceGuidance: CameraDirectorGuidance? = null,
+    directCaptureMode: Boolean = false,
     onBack: () -> Unit = {},
 ) {
     val context = LocalContext.current
@@ -145,6 +146,7 @@ fun CameraScreen(
             uiState = uiState,
             dispatch = dispatch,
             referenceGuidance = referenceGuidance,
+            directCaptureMode = directCaptureMode,
             onBack = onBack,
         )
     } else {
@@ -160,6 +162,7 @@ private fun CameraContent(
     uiState: CameraUiState,
     dispatch: (CameraUiEvent) -> Unit,
     referenceGuidance: CameraDirectorGuidance?,
+    directCaptureMode: Boolean,
     onBack: () -> Unit,
 ) {
     val context = LocalContext.current
@@ -194,6 +197,7 @@ private fun CameraContent(
             onEvent = dispatch,
             onBack = onBack,
             referenceGuidance = referenceGuidance,
+            directCaptureMode = directCaptureMode,
             onCapture = {
                 if (uiState.canCapture) {
                     dispatch(CameraUiEvent.CaptureStarted)

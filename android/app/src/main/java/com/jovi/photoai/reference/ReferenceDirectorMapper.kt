@@ -23,10 +23,13 @@ fun ReferenceBundle.toDirectorCard(): DirectorCard = DirectorCard(
     camera = "$cameraPosition。$directorPrompt",
 )
 
-fun ReferenceBundle.toCameraDirectorGuidance(referenceTitle: String): CameraDirectorGuidance =
+fun ReferenceBundle.toCameraDirectorGuidance(
+    referenceTitle: String,
+    sourceLabel: String = "Demo Analysis · 非实时 Pose",
+): CameraDirectorGuidance =
     CameraDirectorGuidance(
         referenceTitle = referenceTitle,
-        sourceLabel = "Demo Analysis · 非实时 Pose",
+        sourceLabel = sourceLabel,
         centerHint = directorPrompt,
         environment = listOf(
             ReferenceGuidanceItem("场景", scene),

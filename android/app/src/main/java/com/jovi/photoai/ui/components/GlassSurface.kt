@@ -30,7 +30,8 @@ fun GlassSurface(
     content: @Composable BoxScope.() -> Unit
 ) {
     val containerColor = when (tone) {
-        GlassTone.LIGHT -> AppColors.SurfacePrimary.copy(alpha = 0.82f)
+        // A stable opaque near-white avoids vendor/GPU composition blocks inside translucent cards.
+        GlassTone.LIGHT -> Color(0xFFFCFCFE)
         GlassTone.CAMERA_LIGHT -> AppColors.CameraGlassLight
         GlassTone.CAMERA_DARK -> AppColors.CameraGlassDark
     }
@@ -40,7 +41,7 @@ fun GlassSurface(
         GlassTone.CAMERA_DARK -> AppColors.CameraText
     }
     val borderColor = when (tone) {
-        GlassTone.LIGHT -> AppColors.GlassBorder
+        GlassTone.LIGHT -> AppColors.Divider.copy(alpha = 0.82f)
         GlassTone.CAMERA_LIGHT -> AppColors.GlassHighlight
         GlassTone.CAMERA_DARK -> AppColors.CameraBorder
     }
@@ -51,7 +52,7 @@ fun GlassSurface(
         color = containerColor,
         contentColor = contentColor,
         border = BorderStroke(AppDimensions.GlassStroke, borderColor),
-        shadowElevation = AppDimensions.GlassElevation
+        shadowElevation = AppDimensions.GlassElevation / 2
     ) {
         Box(
             modifier = Modifier.padding(contentPadding),

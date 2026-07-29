@@ -1,51 +1,68 @@
 package com.jovi.photoai.ui
 
-import android.net.Uri
+import android.app.Application
 import androidx.activity.compose.BackHandler
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.jovi.photoai.data.demo.DemoContentRepository
 import com.jovi.photoai.data.demo.DemoReferenceAnalyzer
+import com.jovi.photoai.data.reference.ReferenceImportViewModel
+import com.jovi.photoai.data.reference.ReferenceRecord
+import com.jovi.photoai.data.reference.ReferenceRepository
+import com.jovi.photoai.domain.model.ReferencePhoto
 import com.jovi.photoai.reference.DirectorCard
 import com.jovi.photoai.reference.ReferenceBundle
-import com.jovi.photoai.reference.ReferencePhoto
 import com.jovi.photoai.reference.toCameraDirectorGuidance
 import com.jovi.photoai.reference.toDirectorCard
 import com.jovi.photoai.reference.toGuidanceItems
 import com.jovi.photoai.ui.analysis.AnalysisDetailScreen
+import com.jovi.photoai.ui.capture.CaptureEntryScreen
+import com.jovi.photoai.ui.home.HomeReferenceItem
 import com.jovi.photoai.ui.home.HomeScreen
 import com.jovi.photoai.ui.importphoto.ImportReferenceScreen
 import com.jovi.photoai.ui.reference.DirectorCardScreen
 import com.jovi.photoai.ui.reference.ReferenceLibraryEntry
 import com.jovi.photoai.ui.reference.ReferenceLibraryScreen
+import kotlinx.coroutines.launch
 
-private data class SessionReference(
+private data class AppReference(
     val photo: ReferencePhoto,
-    val uri: Uri,
     val bundle: ReferenceBundle,
+    val imageFileName: String?,
 )
 
 /**
- * Phase 1 root navigation. Imported media stays in memory for this app session only; the
- * ReferenceBundle deliberately excludes the Uri and no cloud/network analysis is performed.
+ * UI1 keeps source-media identity out of composition and durable state. The import ViewModel
+ * consumes the picker grant immediately and returns only a private reference record.
  */
 @Composable
 fun PhotographyDirectorApp() {
+    val application = androidx.compose.ui.platform.LocalContext.current.applicationContext as Application
+    val repository = remember { ReferenceRepository.create(application) }
+    val records by repository.activeRecords.collectAsState(initial = emptyList())
+    val scope = rememberCoroutineScope()
+    val importViewModel: ReferenceImportViewModel = viewModel(
+        factory = remember(application) { ReferenceImportViewModelFactory(application) },
+    )
     var destinationName by rememberSaveable { mutableStateOf(AppDestination.HOME.name) }
     var analysisReturnDestinationName by rememberSaveable { mutableStateOf(AppDestination.IMPORT_REFERENCE.name) }
-    var selectedReferenceUri by remember { mutableStateOf<Uri?>(null) }
-    var activeReference by remember { mutableStateOf<SessionReference?>(null) }
-    var nextReferenceNumber by remember { mutableIntStateOf(1) }
-    val referenceLibrary = remember { mutableStateListOf<SessionReference>() }
+    var importReturnDestinationName by rememberSaveable { mutableStateOf(AppDestination.HOME.name) }
+    var activeReference by remember { mutableStateOf<AppReference?>(null) }
+    var searchQuery by rememberSaveable { mutableStateOf("") }
+    var selectedScene by rememberSaveable { mutableStateOf<String?>(null) }
     val destination = AppDestination.valueOf(destinationName)
 
+    LaunchedEffect(repository) { repository.reconcile() }
     LaunchedEffect(destination, activeReference) {
         if (
             activeReference == null && destination in setOf(
@@ -62,108 +79,142 @@ fun PhotographyDirectorApp() {
         destinationName = next.name
     }
 
-    fun openAnalysis(reference: SessionReference, returnDestination: AppDestination) {
+    fun toAppReference(record: ReferenceRecord): AppReference = AppReference(
+        photo = record.photo,
+        bundle = record.bundle,
+        imageFileName = record.imageFileName,
+    )
+
+    fun demoReference(photo: ReferencePhoto): AppReference = AppReference(
+        photo = photo,
+        bundle = DemoReferenceAnalyzer.analyze(photo.id, "built-in-demo"),
+        imageFileName = null,
+    )
+
+    fun openAnalysis(reference: AppReference, returnDestination: AppDestination) {
         activeReference = reference
         analysisReturnDestinationName = returnDestination.name
-        navigateTo(referenceNextDestination(AppDestination.IMPORT_REFERENCE))
+        navigateTo(AppDestination.ANALYSIS_DETAIL)
     }
 
-    fun beginFreshImport() {
-        selectedReferenceUri = null
+    fun beginFreshImport(returnDestination: AppDestination = AppDestination.HOME) {
+        importViewModel.discardForBackOrReplacement()
+        importReturnDestinationName = returnDestination.name
         navigateTo(AppDestination.IMPORT_REFERENCE)
     }
 
-    fun importSelectedReference() {
-        val uri = selectedReferenceUri ?: return
-        val id = "session-reference-$nextReferenceNumber"
-        val photo = ReferencePhoto(
-            id = id,
-            title = "导入参考图 $nextReferenceNumber",
-            description = "仅本次会话可见；由系统 Photo Picker 选择。",
-            sourceLabel = "本次会话",
-            imageAssetKey = "session/$id",
-            aspectRatio = 4f / 5f,
-        )
-        val bundle = DemoReferenceAnalyzer.analyze(photo.id, uri.toString())
-        val reference = SessionReference(photo = photo, uri = uri, bundle = bundle)
-        referenceLibrary.removeAll { it.photo.id == photo.id }
-        referenceLibrary.add(0, reference)
-        nextReferenceNumber += 1
-        selectedReferenceUri = null
-        openAnalysis(reference, AppDestination.IMPORT_REFERENCE)
+    fun leaveImport() {
+        importViewModel.discardForBackOrReplacement()
+        navigateTo(AppDestination.valueOf(importReturnDestinationName))
     }
 
-    fun openBuiltInDemo() {
-        val photo = DemoContentRepository.featuredReferencePhoto
-        openAnalysis(
-            reference = SessionReference(
-                photo = photo,
-                uri = Uri.parse("demo://reference/${photo.id}"),
-                bundle = DemoReferenceAnalyzer.analyze(photo.id, "demo://reference/${photo.id}"),
-            ),
-            returnDestination = AppDestination.HOME,
+    fun deleteReference(id: String) {
+        scope.launch {
+            repository.delete(id)
+            if (activeReference?.photo?.id == id) activeReference = null
+        }
+    }
+
+    fun clearReferences() {
+        scope.launch {
+            repository.clearAll()
+            activeReference = null
+        }
+    }
+
+    val allReferences = buildList {
+        addAll(records.map(::toAppReference))
+        addAll(DemoContentRepository.referencePhotos.map(::demoReference))
+    }
+    val homeReferences = allReferences.map { reference ->
+        HomeReferenceItem(
+            id = reference.photo.id,
+            title = reference.photo.title,
+            sourceLabel = reference.photo.sourceLabel,
+            scene = reference.bundle.scene,
+            lighting = reference.bundle.lighting,
+            composition = reference.bundle.composition,
+            tags = setOf(reference.bundle.scene, reference.bundle.lighting, reference.bundle.composition),
+            imageFileName = reference.imageFileName,
         )
     }
 
-    fun returnFromCamera() {
-        navigateTo(cameraReturnDestination(AppDestination.CAMERA_DIRECTOR))
-    }
+    fun findReference(id: String): AppReference? = allReferences.firstOrNull { it.photo.id == id }
 
     BackHandler(enabled = destination != AppDestination.HOME) {
-        navigateTo(
-            when (destination) {
-                AppDestination.REFERENCE_LIBRARY -> AppDestination.HOME
-                AppDestination.IMPORT_REFERENCE -> AppDestination.HOME
-                AppDestination.ANALYSIS_DETAIL -> AppDestination.valueOf(analysisReturnDestinationName)
-                AppDestination.DIRECTOR_CARD -> AppDestination.ANALYSIS_DETAIL
-                AppDestination.CAMERA_DIRECTOR -> AppDestination.DIRECTOR_CARD
-                AppDestination.HOME -> AppDestination.HOME
-            },
-        )
+        when (destination) {
+            AppDestination.HOME -> Unit
+            AppDestination.CAPTURE_ENTRY,
+            AppDestination.REFERENCE_LIBRARY -> navigateTo(AppDestination.HOME)
+            AppDestination.IMPORT_REFERENCE -> leaveImport()
+            AppDestination.ANALYSIS_DETAIL -> navigateTo(AppDestination.valueOf(analysisReturnDestinationName))
+            AppDestination.DIRECTOR_CARD -> navigateTo(AppDestination.ANALYSIS_DETAIL)
+            AppDestination.CAMERA_DIRECTOR -> navigateTo(AppDestination.DIRECTOR_CARD)
+            AppDestination.DIRECT_CAPTURE -> navigateTo(AppDestination.CAPTURE_ENTRY)
+        }
     }
 
     when (destination) {
         AppDestination.HOME -> HomeScreen(
-            referenceCount = referenceLibrary.size,
+            references = homeReferences,
+            query = searchQuery,
+            selectedScene = selectedScene,
+            onQueryChange = { searchQuery = it },
+            onSceneSelected = { selectedScene = it },
             onImportReference = ::beginFreshImport,
             onOpenReferenceLibrary = { navigateTo(AppDestination.REFERENCE_LIBRARY) },
-            onOpenDemoAnalysis = ::openBuiltInDemo,
-            onStartCamera = ::beginFreshImport,
+            onOpenReference = { id -> findReference(id)?.let { openAnalysis(it, AppDestination.HOME) } },
+            onOpenCapture = { navigateTo(AppDestination.CAPTURE_ENTRY) },
+        )
+
+        AppDestination.CAPTURE_ENTRY -> CaptureEntryScreen(
+            referenceCount = records.size,
+            onOpenInspiration = { navigateTo(AppDestination.HOME) },
+            onChooseReference = {
+                if (records.isEmpty()) beginFreshImport(AppDestination.CAPTURE_ENTRY) else navigateTo(AppDestination.REFERENCE_LIBRARY)
+            },
+            onDirectCapture = { navigateTo(AppDestination.DIRECT_CAPTURE) },
         )
 
         AppDestination.REFERENCE_LIBRARY -> ReferenceLibraryScreen(
-            entries = referenceLibrary.map { ReferenceLibraryEntry(photo = it.photo, uri = it.uri) },
+            entries = records.map { record -> ReferenceLibraryEntry(record.photo, record.bundle, record.imageFileName) },
             onBack = { navigateTo(AppDestination.HOME) },
-            onImportReference = ::beginFreshImport,
-            onOpenReference = { referenceId ->
-                referenceLibrary.firstOrNull { it.photo.id == referenceId }?.let {
-                    openAnalysis(it, AppDestination.REFERENCE_LIBRARY)
-                }
-            },
+            onImportReference = { beginFreshImport(AppDestination.REFERENCE_LIBRARY) },
+            onOpenReference = { id -> findReference(id)?.let { openAnalysis(it, AppDestination.REFERENCE_LIBRARY) } },
+            onDeleteReference = ::deleteReference,
+            onClearAll = ::clearReferences,
         )
 
         AppDestination.IMPORT_REFERENCE -> ImportReferenceScreen(
-            selectedUri = selectedReferenceUri,
-            onSelected = { selectedReferenceUri = it },
-            onBack = { navigateTo(AppDestination.HOME) },
-            onContinue = ::importSelectedReference,
+            state = importViewModel.state,
+            onPickerResult = importViewModel::importImmediately,
+            onPickerCancelled = importViewModel::retry,
+            onBack = ::leaveImport,
+            onContinue = {
+                importViewModel.consumeReady()?.let { record ->
+                    openAnalysis(toAppReference(record), AppDestination.IMPORT_REFERENCE)
+                }
+            },
+            onDiscardReady = importViewModel::discardForBackOrReplacement,
+            onRetry = importViewModel::retry,
         )
 
         AppDestination.ANALYSIS_DETAIL -> activeReference?.let { reference ->
             AnalysisDetailScreen(
-                selectedUri = reference.uri.takeUnless { it.scheme == "demo" },
+                imageFileName = reference.imageFileName,
                 bundle = reference.bundle,
+                sourceLabel = reference.photo.sourceLabel,
                 onBack = { navigateTo(AppDestination.valueOf(analysisReturnDestinationName)) },
-                onOpenDirectorCard = { navigateTo(referenceNextDestination(AppDestination.ANALYSIS_DETAIL)) },
+                onOpenDirectorCard = { navigateTo(AppDestination.DIRECTOR_CARD) },
             )
         }
 
         AppDestination.DIRECTOR_CARD -> activeReference?.let { reference ->
             DirectorCardScreen(
                 card = reference.bundle.toDirectorCard(),
-                sourceLabel = DemoReferenceAnalyzer.SOURCE_LABEL,
+                sourceLabel = reference.photo.sourceLabel,
                 onBack = { navigateTo(AppDestination.ANALYSIS_DETAIL) },
-                onEnterCameraDirector = { navigateTo(referenceNextDestination(AppDestination.DIRECTOR_CARD)) },
+                onEnterCameraDirector = { navigateTo(AppDestination.CAMERA_DIRECTOR) },
             )
         }
 
@@ -171,10 +222,29 @@ fun PhotographyDirectorApp() {
             val card: DirectorCard = reference.bundle.toDirectorCard()
             CameraScreen(
                 guidanceItems = card.toGuidanceItems(),
-                referenceGuidance = reference.bundle.toCameraDirectorGuidance(reference.photo.title),
-                onBack = ::returnFromCamera,
+                referenceGuidance = reference.bundle.toCameraDirectorGuidance(
+                    referenceTitle = reference.photo.title,
+                    sourceLabel = reference.photo.sourceLabel,
+                ),
+                onBack = { navigateTo(AppDestination.DIRECTOR_CARD) },
             )
         }
+
+        AppDestination.DIRECT_CAPTURE -> CameraScreen(
+            guidanceItems = emptyList(),
+            directCaptureMode = true,
+            onBack = { navigateTo(AppDestination.CAPTURE_ENTRY) },
+        )
+    }
+}
+
+private class ReferenceImportViewModelFactory(
+    private val application: Application,
+) : ViewModelProvider.Factory {
+    @Suppress("UNCHECKED_CAST")
+    override fun <T : ViewModel> create(modelClass: Class<T>): T {
+        require(modelClass.isAssignableFrom(ReferenceImportViewModel::class.java))
+        return ReferenceImportViewModel(application) as T
     }
 }
 

@@ -20,6 +20,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
@@ -55,7 +56,7 @@ fun ReferencePhotoCard(
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(168.dp)
+                    .aspectRatio(16f / 9f)
                     .clip(RoundedCornerShape(
                         topStart = AppDimensions.RadiusLarge,
                         topEnd = AppDimensions.RadiusLarge
@@ -66,26 +67,18 @@ fun ReferencePhotoCard(
                 modifier = Modifier.padding(AppDimensions.Space16),
                 verticalArrangement = Arrangement.spacedBy(AppDimensions.Space8)
             ) {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text(
-                        text = title,
-                        modifier = Modifier.weight(1f),
-                        style = MaterialTheme.typography.titleMedium,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis
-                    )
-                    Spacer(Modifier.width(AppDimensions.Space8))
-                    GlassPill(text = badge)
-                }
+                GlassPill(text = badge)
+                Text(
+                    text = title,
+                    style = MaterialTheme.typography.titleMedium,
+                    maxLines = 2,
+                    overflow = TextOverflow.Ellipsis
+                )
                 Text(
                     text = subtitle,
                     color = AppColors.TextSecondary,
                     style = MaterialTheme.typography.bodyMedium,
-                    maxLines = 2,
+                    maxLines = 3,
                     overflow = TextOverflow.Ellipsis
                 )
             }

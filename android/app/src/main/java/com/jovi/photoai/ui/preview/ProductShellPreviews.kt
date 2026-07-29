@@ -1,12 +1,13 @@
 package com.jovi.photoai.ui.preview
 
-import android.net.Uri
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import com.jovi.photoai.data.demo.DemoReferenceAnalyzer
+import com.jovi.photoai.data.reference.ReferenceImportErrorCode
+import com.jovi.photoai.data.reference.ReferenceImportUiState
 import com.jovi.photoai.reference.toDirectorCard
 import com.jovi.photoai.ui.CameraPermissionPreviewContent
 import com.jovi.photoai.ui.analysis.AnalysisDetailScreen
@@ -17,6 +18,7 @@ import com.jovi.photoai.ui.camera.DirectorGuidePanel
 import com.jovi.photoai.ui.components.CameraPreviewPlaceholder
 import com.jovi.photoai.ui.design.PhotographyDirectorTheme
 import com.jovi.photoai.ui.home.HomeScreen
+import com.jovi.photoai.ui.home.HomeReferenceItem
 import com.jovi.photoai.ui.importphoto.ImportReferenceScreen
 import com.jovi.photoai.ui.reference.DirectorCardScreen
 
@@ -24,11 +26,25 @@ import com.jovi.photoai.ui.reference.DirectorCardScreen
 @Composable
 private fun HomePreview() = PreviewTheme {
     HomeScreen(
-        referenceCount = 0,
+        references = listOf(
+            HomeReferenceItem(
+                id = "preview",
+                title = "窗边柔光人像",
+                sourceLabel = "内置示例",
+                scene = "窗边",
+                lighting = "柔和侧光",
+                composition = "右侧三分线留白",
+                tags = setOf("人像", "留白"),
+            ),
+        ),
+        query = "",
+        selectedScene = null,
+        onQueryChange = {},
+        onSceneSelected = {},
         onImportReference = {},
         onOpenReferenceLibrary = {},
-        onOpenDemoAnalysis = {},
-        onStartCamera = {},
+        onOpenReference = {},
+        onOpenCapture = {},
     )
 }
 
@@ -36,21 +52,27 @@ private fun HomePreview() = PreviewTheme {
 @Composable
 private fun ImportEmptyPreview() = PreviewTheme {
     ImportReferenceScreen(
-        selectedUri = null,
-        onSelected = {},
+        state = ReferenceImportUiState.Idle,
+        onPickerResult = {},
+        onPickerCancelled = {},
         onBack = {},
         onContinue = {},
+        onDiscardReady = {},
+        onRetry = {},
     )
 }
 
-@Preview(name = "Import · Selected", showSystemUi = true, widthDp = 390, heightDp = 844)
+@Preview(name = "Import · Error", showSystemUi = true, widthDp = 390, heightDp = 844)
 @Composable
-private fun ImportSelectedPreview() = PreviewTheme {
+private fun ImportErrorPreview() = PreviewTheme {
     ImportReferenceScreen(
-        selectedUri = Uri.parse("content://ui0-preview/reference"),
-        onSelected = {},
+        state = ReferenceImportUiState.Failed(ReferenceImportErrorCode.UNSUPPORTED_IMAGE),
+        onPickerResult = {},
+        onPickerCancelled = {},
         onBack = {},
         onContinue = {},
+        onDiscardReady = {},
+        onRetry = {},
     )
 }
 
@@ -58,8 +80,9 @@ private fun ImportSelectedPreview() = PreviewTheme {
 @Composable
 private fun AnalysisPreview() = PreviewTheme {
     AnalysisDetailScreen(
-        selectedUri = null,
+        imageFileName = null,
         bundle = DemoReferenceAnalyzer.analyze("preview-reference", "demo://preview"),
+        sourceLabel = DemoReferenceAnalyzer.SOURCE_LABEL,
         onBack = {},
         onOpenDirectorCard = {},
     )

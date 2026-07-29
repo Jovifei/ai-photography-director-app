@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
@@ -61,6 +62,7 @@ fun CameraDirectorChrome(
     onBack: () -> Unit,
     onCapture: () -> Unit,
     referenceGuidance: CameraDirectorGuidance? = null,
+    directCaptureMode: Boolean = false,
     modifier: Modifier = Modifier,
 ) {
     val closePanelOrBack = {
@@ -75,55 +77,60 @@ fun CameraDirectorChrome(
     }
 
     Box(modifier = modifier.fillMaxSize()) {
-        if (referenceGuidance == null) {
+        if (!directCaptureMode && referenceGuidance == null) {
             DemoOverlay(mode = uiState.overlayMode, showGrid = uiState.gridVisible)
         }
 
         CameraTopBar(
             referenceGuidance = referenceGuidance,
+            directCaptureMode = directCaptureMode,
             onBack = closePanelOrBack,
             modifier = Modifier.align(Alignment.TopCenter),
         )
         CameraHint(
             uiState = uiState,
             referenceGuidance = referenceGuidance,
+            directCaptureMode = directCaptureMode,
             modifier = Modifier
                 .align(Alignment.TopCenter)
-                .padding(top = 88.dp),
+                .padding(top = 144.dp),
         )
 
-        EdgeGestureZone(
-            panel = GuidePanel.ENVIRONMENT,
-            onOpen = { onEvent(CameraUiEvent.GuidePanelSelected(it)) },
-            modifier = Modifier.align(Alignment.CenterStart),
-        )
-        EdgeGestureZone(
-            panel = GuidePanel.SUBJECT,
-            onOpen = { onEvent(CameraUiEvent.GuidePanelSelected(it)) },
-            modifier = Modifier.align(Alignment.CenterEnd),
-        )
-        CameraEdgeHandle(
-            label = "环境",
-            contentDescription = "打开环境指导",
-            onClick = { onEvent(CameraUiEvent.GuidePanelSelected(GuidePanel.ENVIRONMENT)) },
-            modifier = Modifier.align(Alignment.CenterStart),
-        )
-        CameraEdgeHandle(
-            label = "人物",
-            contentDescription = "打开人物指导",
-            onClick = { onEvent(CameraUiEvent.GuidePanelSelected(GuidePanel.SUBJECT)) },
-            modifier = Modifier.align(Alignment.CenterEnd),
-        )
+        if (!directCaptureMode) {
+            EdgeGestureZone(
+                panel = GuidePanel.ENVIRONMENT,
+                onOpen = { onEvent(CameraUiEvent.GuidePanelSelected(it)) },
+                modifier = Modifier.align(Alignment.CenterStart),
+            )
+            EdgeGestureZone(
+                panel = GuidePanel.SUBJECT,
+                onOpen = { onEvent(CameraUiEvent.GuidePanelSelected(it)) },
+                modifier = Modifier.align(Alignment.CenterEnd),
+            )
+            CameraEdgeHandle(
+                label = "环境",
+                contentDescription = "打开环境指导",
+                onClick = { onEvent(CameraUiEvent.GuidePanelSelected(GuidePanel.ENVIRONMENT)) },
+                modifier = Modifier.align(Alignment.CenterStart),
+            )
+            CameraEdgeHandle(
+                label = "人物",
+                contentDescription = "打开人物指导",
+                onClick = { onEvent(CameraUiEvent.GuidePanelSelected(GuidePanel.SUBJECT)) },
+                modifier = Modifier.align(Alignment.CenterEnd),
+            )
+        }
 
         CameraBottomControls(
             uiState = uiState,
             onEvent = onEvent,
             onCapture = onCapture,
             referenceGuidance = referenceGuidance,
+            directCaptureMode = directCaptureMode,
             modifier = Modifier.align(Alignment.BottomCenter),
         )
 
-        if (uiState.selectedGuidePanel != GuidePanel.NONE) {
+        if (!directCaptureMode && uiState.selectedGuidePanel != GuidePanel.NONE) {
             GuidePanelSheet(
                 uiState = uiState,
                 onEvent = onEvent,
@@ -144,11 +151,14 @@ fun CameraDirectorChrome(
 @Composable
 private fun CameraTopBar(
     referenceGuidance: CameraDirectorGuidance?,
+    directCaptureMode: Boolean,
     onBack: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Surface(
-        modifier = modifier.fillMaxWidth(),
+        modifier = modifier
+            .fillMaxWidth()
+            .statusBarsPadding(),
         color = AppColors.CameraChromeSurface,
         border = androidx.compose.foundation.BorderStroke(1.dp, AppColors.CameraChromeBorder),
         shadowElevation = AppDimensions.GlassElevation,
@@ -165,14 +175,21 @@ private fun CameraTopBar(
             }
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
                 Text(
-                    if (referenceGuidance == null) "参考图拍摄" else "Camera Director",
+                    when {
+                        directCaptureMode -> "基础拍摄"
+                        referenceGuidance == null -> "参考图拍摄"
+                        else -> "Camera Director"
+                    },
                     color = AppColors.CameraChromeText,
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.SemiBold,
                 )
                 Text(
-                    referenceGuidance?.let { "当前参考图：${it.referenceTitle} · ${it.sourceLabel}" }
-                        ?: "当前参考图：窗边等待感 · Demo",
+                    when {
+                        directCaptureMode -> "无参考指导"
+                        referenceGuidance != null -> "当前参考图：${referenceGuidance.referenceTitle} · ${referenceGuidance.sourceLabel}"
+                        else -> "当前参考图：窗边等待感 · Demo"
+                    },
                     color = AppColors.CameraChromeSecondaryText,
                     style = MaterialTheme.typography.labelSmall,
                 )
@@ -195,10 +212,12 @@ private fun CameraTopBar(
 private fun CameraHint(
     uiState: CameraUiState,
     referenceGuidance: CameraDirectorGuidance?,
+    directCaptureMode: Boolean,
     modifier: Modifier = Modifier,
 ) {
     val text = when {
-        uiState.message == CameraUiMessage.CAPTURE_FAILED -> "拍摄未完成，请稍后再试 · Demo"
+        uiState.message == CameraUiMessage.CAPTURE_FAILED -> "拍摄未完成，请稍后再试"
+        directCaptureMode -> "基础拍摄 · 无参考指导\n请先确认现场安全与取景。"
         referenceGuidance != null -> "${referenceGuidance.sourceLabel}\n${referenceGuidance.centerHint}"
         uiState.currentGuidance != null -> {
             "${uiState.currentGuidance.title} · Demo\n${uiState.currentGuidance.instruction}"
@@ -294,6 +313,7 @@ private fun CameraBottomControls(
     onEvent: (CameraUiEvent) -> Unit,
     onCapture: () -> Unit,
     referenceGuidance: CameraDirectorGuidance?,
+    directCaptureMode: Boolean,
     modifier: Modifier = Modifier,
 ) {
     Surface(
@@ -306,7 +326,13 @@ private fun CameraBottomControls(
             modifier = Modifier.padding(horizontal = AppDimensions.Space16, vertical = AppDimensions.Space12),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
-            if (referenceGuidance == null) {
+            if (directCaptureMode) {
+                Text(
+                    "基础拍摄 · 无参考指导",
+                    color = AppColors.CameraChromeText,
+                    style = MaterialTheme.typography.labelSmall,
+                )
+            } else if (referenceGuidance == null) {
                 OverlayModeControls(
                     selected = uiState.overlayMode,
                     onSelected = { onEvent(CameraUiEvent.OverlayModeSelected(it)) },
@@ -330,7 +356,11 @@ private fun CameraBottomControls(
                     border = androidx.compose.foundation.BorderStroke(1.dp, AppColors.CameraChromeBorder),
                 ) {
                     Text(
-                        referenceGuidance?.let { "参考图 · ${it.sourceLabel}" } ?: "参考图 · Demo",
+                        when {
+                            directCaptureMode -> "无参考指导"
+                            referenceGuidance != null -> "参考图 · ${referenceGuidance.sourceLabel}"
+                            else -> "参考图 · Demo"
+                        },
                         modifier = Modifier.padding(horizontal = AppDimensions.Space12, vertical = AppDimensions.Space12),
                         color = AppColors.CameraChromeText,
                         style = MaterialTheme.typography.labelSmall,

@@ -57,7 +57,7 @@ fun DirectorCardScreen(
         Text("摄影导演卡", style = MaterialTheme.typography.displaySmall, color = AppColors.TextPrimary)
         Spacer(Modifier.height(AppDimensions.Space8))
         Text(
-            "以下内容是固定 Demo Analysis，用于验证产品流程；不是实时 Pose，也不是对当前现场的 AI 判断。",
+            "以下内容是固定示例指导，用于验证产品流程；不是实时 Pose，也不是对当前现场的 AI 判断。",
             style = MaterialTheme.typography.bodyLarge,
             color = AppColors.TextSecondary,
         )

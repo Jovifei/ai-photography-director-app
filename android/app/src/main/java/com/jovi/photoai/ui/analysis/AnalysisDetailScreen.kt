@@ -1,6 +1,5 @@
 package com.jovi.photoai.ui.analysis
 
-import android.net.Uri
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -22,17 +21,9 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.asImageBitmap
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import com.jovi.photoai.reference.ReferenceBundle
 import com.jovi.photoai.reference.toReferenceAnalysis
 import com.jovi.photoai.ui.components.AnalysisSection
@@ -41,13 +32,13 @@ import com.jovi.photoai.ui.components.GlassSurface
 import com.jovi.photoai.ui.components.PrimaryActionButton
 import com.jovi.photoai.ui.design.AppColors
 import com.jovi.photoai.ui.design.AppDimensions
-import com.jovi.photoai.ui.importphoto.ReferencePreviewState
-import com.jovi.photoai.ui.importphoto.decodeSampledBitmap
+import com.jovi.photoai.ui.reference.PrivateReferenceImage
 
 @Composable
 fun AnalysisDetailScreen(
-    selectedUri: Uri?,
+    imageFileName: String?,
     bundle: ReferenceBundle,
+    sourceLabel: String,
     onBack: () -> Unit,
     onOpenDirectorCard: () -> Unit,
 ) {
@@ -68,14 +59,14 @@ fun AnalysisDetailScreen(
             verticalAlignment = Alignment.CenterVertically,
         ) {
             TextButton(onClick = onBack) { Text("返回") }
-            GlassPill(text = "Demo Analysis")
+            GlassPill(text = sourceLabel)
         }
 
         Spacer(Modifier.height(AppDimensions.Space16))
         Text("参考图分析", style = MaterialTheme.typography.displaySmall, color = AppColors.TextPrimary)
         Spacer(Modifier.height(AppDimensions.Space8))
         Text(
-            "固定 Demo Analysis：不连接 AI、不上传图片、不生成实时 Pose。",
+            "示例指导：不连接 AI、不上传图片、不生成实时 Pose，也不声称分析了这张照片。",
             style = MaterialTheme.typography.titleMedium,
             color = AppColors.AccentBlue,
         )
@@ -87,16 +78,16 @@ fun AnalysisDetailScreen(
             shape = RoundedCornerShape(AppDimensions.RadiusLarge),
             contentPadding = PaddingValues(AppDimensions.Space8),
         ) {
-            AnalysisReferenceHero(selectedUri = selectedUri)
+            AnalysisReferenceHero(imageFileName = imageFileName)
         }
 
         Spacer(Modifier.height(AppDimensions.Space20))
         listOf(
             Triple("背景", analysis.scene, analysis.backgroundValue),
-            Triple("光线", "Demo Analysis", analysis.lighting),
-            Triple("构图", "Demo Analysis", analysis.composition),
+            Triple("光线", sourceLabel, analysis.lighting),
+            Triple("构图", sourceLabel, analysis.composition),
             Triple("人物", "参考姿态意图", analysis.subjectIntent),
-            Triple("情绪", "Demo Analysis", analysis.emotion),
+            Triple("情绪", sourceLabel, analysis.emotion),
             Triple("拍摄建议", "建议机位", analysis.cameraSuggestion),
         ).forEach { (title, label, body) ->
             AnalysisSection(title = title, body = body, label = label)
@@ -118,19 +109,7 @@ fun AnalysisDetailScreen(
 }
 
 @Composable
-private fun AnalysisReferenceHero(selectedUri: Uri?) {
-    val context = LocalContext.current
-    var state by remember(selectedUri) {
-        mutableStateOf<ReferencePreviewState>(ReferencePreviewState.Empty)
-    }
-    LaunchedEffect(selectedUri) {
-        state = if (selectedUri == null) {
-            ReferencePreviewState.Empty
-        } else {
-            decodeSampledBitmap(context.contentResolver, selectedUri)
-        }
-    }
-
+private fun AnalysisReferenceHero(imageFileName: String?) {
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -140,17 +119,15 @@ private fun AnalysisReferenceHero(selectedUri: Uri?) {
             ),
         contentAlignment = Alignment.BottomStart,
     ) {
-        val ready = state as? ReferencePreviewState.Ready
-        if (ready != null) {
-            Image(
-                bitmap = ready.bitmap.asImageBitmap(),
-                contentDescription = "本次会话选择的参考照片",
+        if (imageFileName != null) {
+            PrivateReferenceImage(
+                imageFileName = imageFileName,
+                contentDescription = "本地私有参考图",
                 modifier = Modifier.fillMaxSize(),
-                contentScale = ContentScale.Crop,
             )
         }
         GlassPill(
-            text = if (ready == null) "内置示例参考图 · Demo Analysis" else "本次会话参考图 · Demo Analysis",
+            text = if (imageFileName == null) "内置示例参考图 · 示例指导" else "本地私有参考图 · 示例指导",
             modifier = Modifier.padding(AppDimensions.Space16),
         )
     }
