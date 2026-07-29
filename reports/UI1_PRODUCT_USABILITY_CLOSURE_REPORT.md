@@ -64,4 +64,3 @@ this report or in Git.
 - No model, VLM, Pipeline, Pose provider, or P1B work was started.
 - CameraXManager and the Pose Domain were not modified.
 - Main was not merged or modified.
-
