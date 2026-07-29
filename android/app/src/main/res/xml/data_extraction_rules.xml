@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Cloud backup and device transfer include only final references; cache import parts are excluded. -->
+<data-extraction-rules>
+    <cloud-backup disableIfNoEncryptionCapabilities="true">
+        <include domain="database" path="reference-library.db" />
+        <include domain="file" path="references/" />
+        <include domain="sharedpref" path="ui1_preferences.xml" />
+    </cloud-backup>
+    <device-transfer>
+        <include domain="database" path="reference-library.db" />
+        <include domain="file" path="references/" />
+        <include domain="sharedpref" path="ui1_preferences.xml" />
+    </device-transfer>
+</data-extraction-rules>

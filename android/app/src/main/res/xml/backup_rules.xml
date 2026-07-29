@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Explicit allowlist. Import parts live under cache/, which Android always excludes from backup. -->
+<full-backup-content>
+    <include domain="database" path="reference-library.db" />
+    <include domain="file" path="references/" />
+    <include domain="sharedpref" path="ui1_preferences.xml" />
+</full-backup-content>

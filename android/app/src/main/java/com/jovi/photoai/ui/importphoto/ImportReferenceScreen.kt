@@ -4,7 +4,6 @@ import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts.PickVisualMedia
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -26,18 +25,10 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.asImageBitmap
-import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalInspectionMode
+import com.jovi.photoai.data.reference.ReferenceImportErrorCode
+import com.jovi.photoai.data.reference.ReferenceImportUiState
 import com.jovi.photoai.ui.components.EmptyState
 import com.jovi.photoai.ui.components.GlassPill
 import com.jovi.photoai.ui.components.GlassSurface
@@ -45,38 +36,30 @@ import com.jovi.photoai.ui.components.PrimaryActionButton
 import com.jovi.photoai.ui.components.SecondaryActionButton
 import com.jovi.photoai.ui.design.AppColors
 import com.jovi.photoai.ui.design.AppDimensions
+import com.jovi.photoai.ui.reference.PrivateReferenceImage
 
+/** Displays only private derivatives. The Picker Uri is consumed immediately by the callback. */
 @Composable
 fun ImportReferenceScreen(
-    selectedUri: Uri?,
-    onSelected: (Uri?) -> Unit,
+    state: ReferenceImportUiState,
+    onPickerResult: (Uri) -> Unit,
+    onPickerCancelled: () -> Unit,
     onBack: () -> Unit,
     onContinue: () -> Unit,
+    onDiscardReady: () -> Unit,
+    onRetry: () -> Unit,
 ) {
-    val context = LocalContext.current
-    val isInspection = LocalInspectionMode.current
-    var previewState by remember(selectedUri) {
-        mutableStateOf<ReferencePreviewState>(
-            if (selectedUri == null) ReferencePreviewState.Empty else ReferencePreviewState.Loading,
-        )
-    }
     val picker = rememberLauncherForActivityResult(PickVisualMedia()) { uri ->
-        if (uri != null) onSelected(uri)
+        if (uri == null) onPickerCancelled() else onPickerResult(uri)
     }
     val openPicker = {
         picker.launch(PickVisualMediaRequest(PickVisualMedia.ImageOnly))
     }
-
-    LaunchedEffect(selectedUri, isInspection) {
-        previewState = if (selectedUri == null) {
-            ReferencePreviewState.Empty
-        } else if (isInspection) {
-            ReferencePreviewState.PreviewSelected
-        } else {
-            ReferencePreviewState.Loading
-            decodeSampledBitmap(context.contentResolver, selectedUri)
-        }
+    val retryPicker = {
+        onRetry()
+        openPicker()
     }
+    val isImporting = state is ReferenceImportUiState.Importing
 
     Column(
         modifier = Modifier
@@ -87,25 +70,20 @@ fun ImportReferenceScreen(
             .padding(horizontal = AppDimensions.PagePadding),
     ) {
         Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = AppDimensions.Space12),
+            modifier = Modifier.fillMaxWidth().padding(top = AppDimensions.Space12),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            TextButton(onClick = onBack) { Text("返回") }
-            GlassPill(text = "仅本次会话")
+            TextButton(onClick = onBack, enabled = !isImporting) { Text("返回") }
+            GlassPill(text = "私有导入")
         }
 
         Spacer(Modifier.height(AppDimensions.Space16))
-        Text(
-            text = "导入参考图",
-            style = MaterialTheme.typography.displaySmall,
-            color = AppColors.TextPrimary,
-        )
+        Text("导入参考图", style = MaterialTheme.typography.displaySmall, color = AppColors.TextPrimary)
         Spacer(Modifier.height(AppDimensions.Space8))
         Text(
-            text = "系统照片选择器只把你选择的这一张图片交给 App。UI0 不上传、不联网，也不持久保存 URI。",
+            "系统照片选择器只把你选择的一张图片交给 App。选中后会立即导入到本机，" +
+                "仅保留去元数据的私有派生图；不会申请相册读取权限、上传或保存来源 URI。",
             style = MaterialTheme.typography.bodyLarge,
             color = AppColors.TextSecondary,
         )
@@ -115,82 +93,51 @@ fun ImportReferenceScreen(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(AppDimensions.Space12),
         ) {
-            RecommendationCard(
-                title = "推荐图片类型",
-                detail = "单人、光线清楚、姿态完整、背景关系明确",
-                modifier = Modifier.weight(1f),
-            )
-            RecommendationCard(
-                title = "暂不建议类型",
-                detail = "多人合照、严重模糊、拼图、带大量遮挡的图片",
-                modifier = Modifier.weight(1f),
-            )
+            RecommendationCard("推荐图片类型", "单人、光线清楚、姿态完整、背景关系明确", Modifier.weight(1f))
+            RecommendationCard("暂不建议类型", "多人合照、严重模糊、拼图、带大量遮挡的图片", Modifier.weight(1f))
         }
-
         Spacer(Modifier.height(AppDimensions.Space16))
 
-        when (val state = previewState) {
-            ReferencePreviewState.Empty -> EmptyState(
+        when (state) {
+            ReferenceImportUiState.Idle -> EmptyState(
                 title = "还没有参考图",
                 message = "选择一张能代表目标光线、姿态或构图的照片。",
                 actionLabel = "打开系统照片选择器",
                 onAction = openPicker,
             )
 
-            ReferencePreviewState.Loading -> GlassSurface(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .aspectRatio(4f / 5f),
+            ReferenceImportUiState.Importing -> GlassSurface(
+                modifier = Modifier.fillMaxWidth().aspectRatio(4f / 5f),
                 shape = RoundedCornerShape(AppDimensions.RadiusLarge),
                 contentPadding = PaddingValues(AppDimensions.CardPadding),
             ) {
                 Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    CircularProgressIndicator()
+                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                        CircularProgressIndicator()
+                        Spacer(Modifier.height(AppDimensions.Space12))
+                        Text("正在导入到本机", color = AppColors.TextPrimary)
+                    }
                 }
             }
 
-            is ReferencePreviewState.Failed -> EmptyState(
-                title = "无法打开这张照片",
-                message = state.message,
-                actionLabel = "重新选择",
-                onAction = openPicker,
-            )
-
-            ReferencePreviewState.PreviewSelected -> GlassSurface(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .aspectRatio(4f / 5f),
+            is ReferenceImportUiState.Ready -> GlassSurface(
+                modifier = Modifier.fillMaxWidth().aspectRatio(4f / 5f),
                 shape = RoundedCornerShape(AppDimensions.RadiusLarge),
                 contentPadding = PaddingValues(AppDimensions.Space8),
             ) {
-                Box(
-                    Modifier
-                        .fillMaxSize()
-                        .background(
-                            Brush.linearGradient(
-                                listOf(AppColors.AccentBlueSoft, AppColors.CameraGlassDark),
-                            ),
-                        ),
-                    contentAlignment = Alignment.Center,
-                ) {
-                    GlassPill(text = "已选择 · 设计预览")
-                }
-            }
-
-            is ReferencePreviewState.Ready -> GlassSurface(
-                modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(AppDimensions.RadiusLarge),
-                contentPadding = PaddingValues(AppDimensions.Space8),
-            ) {
-                Image(
-                    bitmap = state.bitmap.asImageBitmap(),
-                    contentDescription = "本次会话选择的参考照片",
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .aspectRatio(4f / 5f),
-                    contentScale = ContentScale.Crop,
+                PrivateReferenceImage(
+                    imageFileName = state.record.imageFileName,
+                    contentDescription = "已导入的私有参考照片",
+                    modifier = Modifier.fillMaxSize(),
                 )
             }
+
+            is ReferenceImportUiState.Failed -> EmptyState(
+                title = "无法导入这张照片",
+                message = importFailureMessage(state.code),
+                actionLabel = "重新选择",
+                onAction = retryPicker,
+            )
         }
 
         Spacer(Modifier.height(AppDimensions.Space20))
@@ -200,41 +147,36 @@ fun ImportReferenceScreen(
             contentPadding = PaddingValues(AppDimensions.Space16),
         ) {
             Column(verticalArrangement = Arrangement.spacedBy(AppDimensions.Space8)) {
-                Text(
-                    text = "本页不会执行真实 AI 分析",
-                    style = MaterialTheme.typography.titleMedium,
-                    color = AppColors.TextPrimary,
-                )
-                Text(
-                    text = "继续后显示的是预置示例，用来验证产品流程与视觉层级。",
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = AppColors.TextSecondary,
-                )
+                Text("本页不会执行真实 AI 分析", style = MaterialTheme.typography.titleMedium, color = AppColors.TextPrimary)
+                Text("继续后显示的是预置示例，用来验证产品流程与视觉层级。", style = MaterialTheme.typography.bodyMedium, color = AppColors.TextSecondary)
             }
         }
 
         Spacer(Modifier.height(AppDimensions.Space20))
-        if (selectedUri != null) {
-            SecondaryActionButton(
-                text = "清除选择",
-                onClick = { onSelected(null) },
-                modifier = Modifier.fillMaxWidth(),
+        when (state) {
+            is ReferenceImportUiState.Ready -> {
+                SecondaryActionButton("清除已导入图片", onDiscardReady, Modifier.fillMaxWidth())
+                Spacer(Modifier.height(AppDimensions.Space12))
+                PrimaryActionButton("开始示例指导", onContinue, modifier = Modifier.fillMaxWidth())
+                Spacer(Modifier.height(AppDimensions.Space12))
+                SecondaryActionButton(
+                    "更换照片",
+                    onClick = {
+                        onDiscardReady()
+                        openPicker()
+                    },
+                    modifier = Modifier.fillMaxWidth(),
+                )
+            }
+
+            ReferenceImportUiState.Importing -> Text(
+                "请保持此页面打开，导入完成后即可继续。",
+                color = AppColors.TextSecondary,
+                style = MaterialTheme.typography.bodyMedium,
             )
-            Spacer(Modifier.height(AppDimensions.Space12))
+
+            else -> SecondaryActionButton("选择照片", openPicker, Modifier.fillMaxWidth())
         }
-        PrimaryActionButton(
-            text = "开始分析（示例）",
-            onClick = onContinue,
-            enabled = previewState is ReferencePreviewState.Ready ||
-                previewState is ReferencePreviewState.PreviewSelected,
-            modifier = Modifier.fillMaxWidth(),
-        )
-        Spacer(Modifier.height(AppDimensions.Space12))
-        SecondaryActionButton(
-            text = if (selectedUri == null) "选择照片" else "更换照片",
-            onClick = openPicker,
-            modifier = Modifier.fillMaxWidth(),
-        )
         Spacer(Modifier.height(AppDimensions.Space32))
     }
 }
@@ -251,4 +193,15 @@ private fun RecommendationCard(title: String, detail: String, modifier: Modifier
             Text(detail, style = MaterialTheme.typography.bodySmall, color = AppColors.TextSecondary)
         }
     }
+}
+
+private fun importFailureMessage(code: ReferenceImportErrorCode): String = when (code) {
+    ReferenceImportErrorCode.SOURCE_EMPTY,
+    ReferenceImportErrorCode.SOURCE_TRUNCATED,
+    ReferenceImportErrorCode.UNSUPPORTED_IMAGE,
+    ReferenceImportErrorCode.MIME_CONTENT_MISMATCH,
+    ReferenceImportErrorCode.IMAGE_DECODE_FAILED -> "该图片无法安全导入，请选择另一张图片。"
+    ReferenceImportErrorCode.IMAGE_TOO_LARGE -> "这张图片尺寸过大，请选择较小的图片。"
+    ReferenceImportErrorCode.USER_CANCELLED -> "已取消导入。"
+    else -> "导入未完成，请重试或选择另一张图片。"
 }

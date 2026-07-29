@@ -1,6 +1,7 @@
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
+    id("org.jetbrains.kotlin.kapt")
     id("org.jetbrains.kotlin.plugin.compose")
 }
 
@@ -57,8 +58,17 @@ dependencies {
     implementation("androidx.core:core-ktx:1.13.1")
     implementation("androidx.activity:activity-compose:1.9.3")
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.8.7")
+    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.8.7")
     implementation("androidx.lifecycle:lifecycle-runtime-compose:2.8.7")
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.8.7")
+    implementation("androidx.room:room-runtime:2.6.1")
+    implementation("androidx.room:room-ktx:2.6.1")
+    implementation("androidx.exifinterface:exifinterface:1.3.7")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.8.1")
+    kapt("androidx.room:room-compiler:2.6.1")
+    // Room 2.6.1 requests an older KSP API transitively. Pin to this Kotlin 2.0.21-compatible
+    // API so Gradle resolves one compiler API version instead of reaching for a stale artifact.
+    kapt("com.google.devtools.ksp:symbol-processing-api:2.0.21-1.0.28")
 
     // Compose UI
     implementation("androidx.compose.ui:ui")
