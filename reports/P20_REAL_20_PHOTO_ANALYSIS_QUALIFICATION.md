@@ -84,5 +84,5 @@ The external `gate-ledger.json` is the mutable run-state index and is intentiona
 ## Remaining gates
 
 - Exact-file staging and non-force push: `PASS`; final branch SHA is recorded in the external gate ledger.
-- Independent detached-worktree review: `PENDING_REMEDIATION_REVIEW` after final-HEAD D2D evidence binding.
+- Independent detached-worktree review: `PASS` on final detached review; D2D evidence is bound to the e7 runtime commit and later descendants are docs/evidence-only.
 - Merge to `main`: not authorized in this task.
