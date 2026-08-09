@@ -71,7 +71,6 @@ Evidence root: `E:\project\_benchmark_evidence\p20-runtime-closure\20260809T1252
 | Evidence | SHA-256 |
 |---|---|
 | `candidate-baseline.json` | `c291d1f10f645bb406acab2213d962fac07d96fa1241774c616147075388ac20` |
-| `gate-ledger.json` | `cd5a199cadd042f9a9e79bb89886a671e961a2085ff80b0161fb6466dcb0b048` |
 | `d2d-restore/backup-restore-summary.json` | `a5edf91a1ba8fd4f9f1b8b5f8412ce87877d507c8b7160680767ea389a164879` |
 | `d2d-restore/reconciliation-fixture-summary.json` | `84c046efd6546d7cc968977e1b1a1e2e62b2b6c6a53bf1f544dc134b3e50f4ff` |
 | `static-regression-summary.json` | `6df910dce8afb4569437573e5afc76a7964d5ad115706a8c060e1923dec61515` |
@@ -80,6 +79,7 @@ Evidence root: `E:\project\_benchmark_evidence\p20-runtime-closure\20260809T1252
 | `static-remediation-a1b8563.json` | `ea86142a2066e954beb30105fe00e837147a0a80ba47cf8c819d6245780bced7` |
 
 Evidence contains only aggregate statuses, counts, error codes, hashes and model identity. It does not contain photos, original filenames, URIs, database contents, raw inference, device serials, credentials or private keys. D2D file binding uses canonical Git blob OIDs; candidate and detached worktrees may differ in CRLF/LF checkout representation.
+The external `gate-ledger.json` is the mutable run-state index and is intentionally not duplicated as a static report hash.
 
 ## Remaining gates
 
