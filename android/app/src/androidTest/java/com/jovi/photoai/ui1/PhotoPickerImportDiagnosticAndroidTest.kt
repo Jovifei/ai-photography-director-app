@@ -9,6 +9,7 @@ import com.jovi.photoai.data.reference.PrivateReferenceImportResult
 import com.jovi.photoai.data.reference.PrivateReferenceImporter
 import com.jovi.photoai.data.reference.ReferenceImportErrorCode
 import com.jovi.photoai.data.reference.ReferenceImportResult
+import com.jovi.photoai.data.reference.ReferenceLibraryPreferences
 import com.jovi.photoai.data.reference.ReferenceRepository
 import java.io.File
 import java.util.UUID
@@ -83,14 +84,14 @@ class PhotoPickerImportDiagnosticAndroidTest {
             assertFalse(record.photo.imageAssetKey.contains("://"))
             val image = File(context.filesDir, "references/${record.imageFileName}")
             assertTrue(image.delete())
-            assertEquals(1, repository.reconcile())
+            assertEquals(1, repository.reconcile().removedInvalidRecords)
             assertNotNull(record.photo.id)
 
             val second = repository.importFromPicker(media.jpeg().uri)
             assertTrue(second is com.jovi.photoai.data.reference.ReferenceImportResult.Success)
             val corruptRecord = (second as com.jovi.photoai.data.reference.ReferenceImportResult.Success).record
             File(context.filesDir, "references/${corruptRecord.imageFileName}").writeBytes(byteArrayOf(0x01, 0x02))
-            assertEquals(1, repository.reconcile())
+            assertEquals(1, repository.reconcile().removedInvalidRecords)
             assertStagingIsEmpty()
         }
     }
@@ -119,6 +120,28 @@ class PhotoPickerImportDiagnosticAndroidTest {
                 assertTrue(restarted.activeRecords.first().isEmpty())
                 assertFalse(File(context.filesDir, "references/${second.imageFileName}").exists())
             }
+            assertStagingIsEmpty()
+        }
+    }
+
+    @Test
+    fun startup_recovery_resolvesOnlyValidOpaqueActiveReference() = runBlocking {
+        SyntheticPickerMediaFactory(context).use { media ->
+            val preferences = ReferenceLibraryPreferences(context)
+            preferences.clearLastActiveReferenceId()
+            val repository = ReferenceRepository.create(context)
+            repository.clearAll()
+            val record = (repository.importFromPicker(media.jpeg().uri) as ReferenceImportResult.Success).record
+            preferences.saveLastActiveReferenceId(record.photo.id)
+
+            val restarted = ReferenceRepository.create(context)
+            assertFalse(restarted.reconcile().hasRecoveryNotice)
+            assertEquals(record.photo.id, restarted.activeRecord(preferences.lastActiveReferenceId()!!)?.photo?.id)
+
+            assertTrue(File(context.filesDir, "references/${record.imageFileName}").delete())
+            assertEquals(1, restarted.reconcile().removedInvalidRecords)
+            assertEquals(null, restarted.activeRecord(record.photo.id))
+            preferences.clearLastActiveReferenceId()
             assertStagingIsEmpty()
         }
     }

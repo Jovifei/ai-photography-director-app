@@ -1,6 +1,8 @@
 package com.jovi.photoai.ui
 
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
+import org.junit.Assert.assertTrue
 import org.junit.Test
 
 class PhotographyDirectorAppTest {
@@ -26,5 +28,49 @@ class PhotographyDirectorAppTest {
         assertEquals(AppDestination.ANALYSIS_DETAIL, analysis)
         assertEquals(AppDestination.DIRECTOR_CARD, card)
         assertEquals(AppDestination.CAMERA_DIRECTOR, camera)
+    }
+
+    @Test
+    fun startup_restore_opensLastValidReferenceAnalysis_withoutClearingPreference() {
+        val decision = resolveStartupRestore(
+            current = AppDestination.HOME,
+            hasPersistedActiveReference = true,
+            restoredActiveReference = true,
+        )
+
+        assertEquals(
+            AppDestination.ANALYSIS_DETAIL,
+            decision.destination,
+        )
+        assertFalse(decision.shouldClearPersistedActiveReference)
+    }
+
+    @Test
+    fun startup_invalidActiveReference_fallsBackToLibrary_andClearsPreference() {
+        val decision = resolveStartupRestore(
+            current = AppDestination.CAMERA_DIRECTOR,
+            hasPersistedActiveReference = true,
+            restoredActiveReference = false,
+        )
+
+        assertEquals(
+            AppDestination.REFERENCE_LIBRARY,
+            decision.destination,
+        )
+        assertTrue(decision.shouldClearPersistedActiveReference)
+    }
+
+    @Test
+    fun referenceContent_staysHiddenUntilStartupRecoveryIsReady() {
+        assertFalse(referenceContentVisible(ReferenceStartupState.RECONCILING))
+        assertTrue(referenceContentVisible(ReferenceStartupState.READY))
+    }
+
+    @Test
+    fun restoredProjectPhoto_returnsToItsProjectBoard() {
+        assertEquals(
+            AppDestination.PROJECT_BOARD,
+            restoredReferenceReturnDestination("project-opaque-id"),
+        )
     }
 }

@@ -26,7 +26,12 @@ internal class SyntheticPickerMediaFactory(
     private val resolver = context.contentResolver
     private val createdUris = mutableListOf<Uri>()
 
-    fun jpeg(width: Int = 96, height: Int = 64, orientation: Int = ExifInterface.ORIENTATION_NORMAL): Fixture {
+    fun jpeg(
+        width: Int = 96,
+        height: Int = 64,
+        orientation: Int = ExifInterface.ORIENTATION_NORMAL,
+        displayName: String = "ui1-fixture-${UUID.randomUUID()}.jpg",
+    ): Fixture {
         val bytes = jpegBytes(width, height, orientation)
         val expectedAspect = when (orientation) {
             ExifInterface.ORIENTATION_ROTATE_90,
@@ -34,24 +39,48 @@ internal class SyntheticPickerMediaFactory(
             -> height.toFloat() / width.toFloat()
             else -> width.toFloat() / height.toFloat()
         }
-        return insert(bytes, "image/jpeg", ExpectedFormat.JPEG, expectedAspect)
+        return insert(bytes, "image/jpeg", ExpectedFormat.JPEG, expectedAspect, displayName)
     }
 
     fun png(width: Int = 96, height: Int = 64): Fixture =
-        insert(pngBytes(width, height), "image/png", ExpectedFormat.PNG, width.toFloat() / height.toFloat())
+        insert(
+            pngBytes(width, height),
+            "image/png",
+            ExpectedFormat.PNG,
+            width.toFloat() / height.toFloat(),
+            "ui1-fixture-${UUID.randomUUID()}.png",
+        )
 
     fun corrupt(): Fixture =
-        insert("not-an-image".encodeToByteArray(), "image/jpeg", ExpectedFormat.INVALID, null)
+        insert(
+            "not-an-image".encodeToByteArray(),
+            "image/jpeg",
+            ExpectedFormat.INVALID,
+            null,
+            "ui1-fixture-${UUID.randomUUID()}.jpg",
+        )
 
     fun mimeMismatchPngAsJpeg(): Fixture =
-        insert(pngBytes(96, 64), "image/jpeg", ExpectedFormat.PNG, null)
+        insert(
+            pngBytes(96, 64),
+            "image/jpeg",
+            ExpectedFormat.PNG,
+            null,
+            "ui1-fixture-${UUID.randomUUID()}.jpg",
+        )
 
     fun controlledLarge(): Fixture {
         val data = ByteArray(26 * 1024 * 1024)
         data[0] = 0xFF.toByte()
         data[1] = 0xD8.toByte()
         data[2] = 0xFF.toByte()
-        return insert(data, "image/jpeg", ExpectedFormat.TOO_LARGE, null)
+        return insert(
+            data,
+            "image/jpeg",
+            ExpectedFormat.TOO_LARGE,
+            null,
+            "ui1-fixture-${UUID.randomUUID()}.jpg",
+        )
     }
 
     fun directDecodes(fixture: Fixture): Boolean =
@@ -67,10 +96,11 @@ internal class SyntheticPickerMediaFactory(
         mimeType: String,
         expectedFormat: ExpectedFormat,
         expectedAspectRatio: Float?,
+        displayName: String,
     ): Fixture {
         val collection = MediaStore.Images.Media.getContentUri(MediaStore.VOLUME_EXTERNAL_PRIMARY)
         val values = ContentValues().apply {
-            put(MediaStore.Images.Media.DISPLAY_NAME, "ui1-fixture-${UUID.randomUUID()}.bin")
+            put(MediaStore.Images.Media.DISPLAY_NAME, displayName)
             put(MediaStore.Images.Media.MIME_TYPE, mimeType)
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
                 put(MediaStore.Images.Media.RELATIVE_PATH, "Pictures/UI1PickerFixture")
@@ -89,7 +119,7 @@ internal class SyntheticPickerMediaFactory(
                 }, null, null)
             }
             createdUris += uri
-            return Fixture(uri, expectedFormat, sha256(bytes), expectedAspectRatio)
+            return Fixture(uri, displayName, expectedFormat, sha256(bytes), expectedAspectRatio)
         } catch (error: Exception) {
             resolver.delete(uri, null, null)
             throw error
@@ -135,6 +165,7 @@ internal class SyntheticPickerMediaFactory(
 
     internal data class Fixture(
         val uri: Uri,
+        val displayName: String,
         val expectedFormat: ExpectedFormat,
         val sourceSha256: String,
         val expectedAspectRatio: Float?,
