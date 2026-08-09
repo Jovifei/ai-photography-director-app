@@ -1,7 +1,7 @@
 ﻿# P20 Real 20-Photo Analysis Qualification
 
 Date: 2026-08-09
-Qualification state: `P20_REAL_20_PHOTO_ANALYSIS_COMPLETE_AWAITING_INDEPENDENT_REVIEW`
+Qualification state: `P20_ANDROID_CLOSED_BETA_CANDIDATE_REVIEWED_NOT_MERGED`
 
 ## Candidate
 
