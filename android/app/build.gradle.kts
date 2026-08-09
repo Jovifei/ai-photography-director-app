@@ -1,3 +1,5 @@
+import java.security.KeyStore
+
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
@@ -18,9 +20,31 @@ android {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
+    val releaseStoreFile = System.getenv("PHOTOAI_RELEASE_STORE_FILE")
+    val releaseStorePassword = System.getenv("PHOTOAI_RELEASE_STORE_PASSWORD")
+    val releaseKeyAlias = System.getenv("PHOTOAI_RELEASE_KEY_ALIAS")
+    val releaseKeyPassword = System.getenv("PHOTOAI_RELEASE_KEY_PASSWORD")
+
+    signingConfigs {
+        create("release") {
+            if (
+                !releaseStoreFile.isNullOrBlank() &&
+                !releaseStorePassword.isNullOrBlank() &&
+                !releaseKeyAlias.isNullOrBlank() &&
+                !releaseKeyPassword.isNullOrBlank()
+            ) {
+                storeFile = file(releaseStoreFile)
+                storePassword = releaseStorePassword
+                keyAlias = releaseKeyAlias
+                keyPassword = releaseKeyPassword
+            }
+        }
+    }
+
     buildTypes {
         release {
             isMinifyEnabled = false
+            signingConfig = signingConfigs.getByName("release")
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
@@ -98,4 +122,37 @@ dependencies {
     androidTestImplementation("androidx.test.espresso:espresso-core:3.7.0")
     androidTestImplementation("androidx.test.uiautomator:uiautomator:2.3.0")
     androidTestImplementation("androidx.compose.ui:ui-test-junit4")
+}
+
+tasks.register("verifyReleaseSigning") {
+    doLast {
+        fun required(name: String): String =
+            System.getenv(name)?.takeIf { it.isNotBlank() }
+                ?: throw GradleException("P20_BLOCKED_RELEASE_SIGNING_INPUT: missing $name")
+
+        val storeFile = File(required("PHOTOAI_RELEASE_STORE_FILE"))
+        val storePassword = required("PHOTOAI_RELEASE_STORE_PASSWORD")
+        val keyAlias = required("PHOTOAI_RELEASE_KEY_ALIAS")
+        required("PHOTOAI_RELEASE_KEY_PASSWORD")
+        if (!storeFile.isFile) {
+            throw GradleException("P20_BLOCKED_RELEASE_SIGNING_INPUT: signing store is unavailable")
+        }
+        try {
+            val keyStore = KeyStore.getInstance(KeyStore.getDefaultType())
+            storeFile.inputStream().use { keyStore.load(it, storePassword.toCharArray()) }
+            if (!keyStore.isKeyEntry(keyAlias)) {
+                throw GradleException("P20_BLOCKED_RELEASE_SIGNING_INPUT: signing alias is unavailable")
+            }
+        } catch (error: GradleException) {
+            throw error
+        } catch (_: Exception) {
+            throw GradleException("P20_BLOCKED_RELEASE_SIGNING_INPUT: signing store cannot be opened")
+        }
+    }
+}
+
+tasks.configureEach {
+    if (name == "preReleaseBuild") {
+        dependsOn("verifyReleaseSigning")
+    }
 }
