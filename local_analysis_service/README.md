@@ -1,18 +1,18 @@
 # PhotoAI local analysis service
 
-This service is the private-Wi-Fi Windows adapter for the Android app. It never downloads model weights. The Owner must obtain the official model from:
+This service is the private-Wi-Fi Windows adapter for the Android app. It never downloads model weights. The runtime is frozen to the existing offline 2B artifact:
 
-<https://huggingface.co/Qwen/Qwen3-VL-4B-Instruct-FP8>
+<https://huggingface.co/Qwen/Qwen3-VL-2B-Instruct>
 
-Stage the downloaded model at `E:\Claude_allow\Download\ai-photography-director-app\Qwen3-VL-4B-Instruct-FP8`, then copy the verified runtime directory to `E:\AI_Tools\Other\LocalLLM\Qwen3-VL-4B-Instruct-FP8`. Add a completed `photoai-model-manifest.json` beside `config.json`; do not commit either directory. The manifest must contain the exact official model revision, artifact SHA-256 and runtime identifier.
+The verified quarantine snapshot is staged at `E:\AI_Tools\Other\LocalLLM\Qwen3-VL-2B-Instruct\89644892e4d85e24eaac8bacfd4f463576704203`. Do not download or replace it in this gate. Add a completed `photoai-model-manifest.json` beside `config.json`; do not commit the runtime directory. The manifest must contain the exact revision, artifact SHA-256 and runtime identifier.
 
 After copying, verify without downloading:
 
 ```powershell
 python -m local_analysis_service.verify_model `
-  --model-dir 'E:\AI_Tools\Other\LocalLLM\Qwen3-VL-4B-Instruct-FP8' `
-  --model-id 'Qwen/Qwen3-VL-4B-Instruct-FP8' `
-  --model-revision '<official revision>' `
+  --model-dir 'E:\AI_Tools\Other\LocalLLM\Qwen3-VL-2B-Instruct\89644892e4d85e24eaac8bacfd4f463576704203' `
+  --model-id 'Qwen/Qwen3-VL-2B-Instruct' `
+  --model-revision '89644892e4d85e24eaac8bacfd4f463576704203' `
   --write-manifest
 ```
 
