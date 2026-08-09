@@ -14,6 +14,11 @@ internal data class SanitizedReferenceImage(
     val aspectRatio: Float,
 )
 
+internal data class ReferenceOrphanCleanup(
+    val removedTemporaryFiles: Int,
+    val removedOrphanFiles: Int,
+)
+
 /** Decodes only a private source part and emits a metadata-free private JPEG derivative. */
 internal class ReferenceImageSanitizer(
     private val finalReferencesDirectory: File,
@@ -89,6 +94,12 @@ internal class ReferenceImageSanitizer(
 
     fun exists(fileName: String): Boolean = File(finalReferencesDirectory, fileName).isFile
 
+    fun readPrivateJpeg(fileName: String): ByteArray? {
+        if (!fileName.matches(Regex("^[a-zA-Z0-9_-]+\\.jpg$"))) return null
+        val file = File(finalReferencesDirectory, fileName)
+        return file.takeIf { it.isFile && it.length() in 1..MAX_PRIVATE_JPEG_BYTES }?.readBytes()
+    }
+
     /** Startup recovery accepts only a decodable private JPEG with a safe opaque basename. */
     fun isValidPrivateJpeg(fileName: String): Boolean {
         if (!fileName.matches(Regex("^[a-zA-Z0-9_-]+\\.jpg$"))) return false
@@ -104,14 +115,17 @@ internal class ReferenceImageSanitizer(
         return !file.exists() || file.delete()
     }
 
-    fun removeOrphans(knownFileNames: Set<String>) {
-        stagingDirectory.listFiles()
-            ?.filter { it.isFile }
-            ?.forEach { it.delete() }
-        if (!finalReferencesDirectory.isDirectory) return
-        finalReferencesDirectory.listFiles()
-            ?.filter { it.isFile && it.name.endsWith(".jpg") && it.name !in knownFileNames }
-            ?.forEach { it.delete() }
+    fun removeOrphans(knownFileNames: Set<String>): ReferenceOrphanCleanup {
+        val removedTemporaryFiles = stagingDirectory.listFiles()
+            ?.count { it.isFile && it.delete() }
+            ?: 0
+        if (!finalReferencesDirectory.isDirectory) {
+            return ReferenceOrphanCleanup(removedTemporaryFiles, removedOrphanFiles = 0)
+        }
+        val removedOrphanFiles = finalReferencesDirectory.listFiles()
+            ?.count { it.isFile && it.name.endsWith(".jpg") && it.name !in knownFileNames && it.delete() }
+            ?: 0
+        return ReferenceOrphanCleanup(removedTemporaryFiles, removedOrphanFiles)
     }
 
     private fun orientationFor(file: File): Int = runCatching {
@@ -165,6 +179,7 @@ internal class ReferenceImageSanitizer(
         const val MAX_DERIVED_DIMENSION = 2048
         const val MAX_INPUT_PIXELS = 40_000_000L
         const val JPEG_QUALITY = 92
+        const val MAX_PRIVATE_JPEG_BYTES = 15L * 1024L * 1024L
     }
 }
 

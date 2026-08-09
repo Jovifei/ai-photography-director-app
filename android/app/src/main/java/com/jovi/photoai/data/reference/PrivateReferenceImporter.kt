@@ -54,9 +54,11 @@ internal class PrivateReferenceImporter(context: Context) {
 
     fun exists(fileName: String): Boolean = sanitizer.exists(fileName)
 
+    fun readPrivateJpeg(fileName: String): ByteArray? = sanitizer.readPrivateJpeg(fileName)
+
     fun isValidPrivateJpeg(fileName: String): Boolean = sanitizer.isValidPrivateJpeg(fileName)
 
     fun delete(fileName: String): Boolean = sanitizer.delete(fileName)
 
-    fun removeOrphans(knownFileNames: Set<String>) = sanitizer.removeOrphans(knownFileNames)
+    fun removeOrphans(knownFileNames: Set<String>): ReferenceOrphanCleanup = sanitizer.removeOrphans(knownFileNames)
 }

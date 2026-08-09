@@ -40,7 +40,7 @@ import com.jovi.photoai.ui.reference.PrivateReferenceImage
 
 /** Displays only private derivatives. The Picker Uri is consumed immediately by the callback. */
 @Composable
-fun ImportReferenceScreen(
+internal fun ImportReferenceScreen(
     state: ReferenceImportUiState,
     onPickerResult: (Uri) -> Unit,
     onPickerCancelled: () -> Unit,
@@ -203,5 +203,7 @@ private fun importFailureMessage(code: ReferenceImportErrorCode): String = when 
     ReferenceImportErrorCode.IMAGE_DECODE_FAILED -> "该图片无法安全导入，请选择另一张图片。"
     ReferenceImportErrorCode.IMAGE_TOO_LARGE -> "这张图片尺寸过大，请选择较小的图片。"
     ReferenceImportErrorCode.USER_CANCELLED -> "已取消导入。"
+    ReferenceImportErrorCode.PROJECT_LIMIT_REACHED -> "这个拍摄项目已达到 20 张照片上限。"
+    ReferenceImportErrorCode.PROJECT_NOT_FOUND -> "当前拍摄项目不可用，请返回项目列表后重试。"
     else -> "导入未完成，请重试或选择另一张图片。"
 }

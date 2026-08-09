@@ -14,6 +14,8 @@ import kotlin.coroutines.coroutineContext
 
 enum class ReferenceImportErrorCode {
     USER_CANCELLED,
+    PROJECT_NOT_FOUND,
+    PROJECT_LIMIT_REACHED,
     SOURCE_OPEN_FAILED,
     SOURCE_READ_FAILED,
     SOURCE_EMPTY,

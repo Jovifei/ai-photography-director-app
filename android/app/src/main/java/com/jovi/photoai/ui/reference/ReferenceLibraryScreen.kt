@@ -13,9 +13,14 @@ import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import com.jovi.photoai.domain.model.ReferencePhoto
@@ -33,6 +38,11 @@ data class ReferenceLibraryEntry(
     val imageFileName: String,
 )
 
+private sealed interface PendingReferenceDeletion {
+    data object ClearAll : PendingReferenceDeletion
+    data class Single(val id: String) : PendingReferenceDeletion
+}
+
 /** Durable app-private references. The original Photo Picker Uri never reaches this UI. */
 @Composable
 fun ReferenceLibraryScreen(
@@ -43,6 +53,7 @@ fun ReferenceLibraryScreen(
     onDeleteReference: (String) -> Unit,
     onClearAll: () -> Unit,
 ) {
+    var pendingDeletion by remember { mutableStateOf<PendingReferenceDeletion?>(null) }
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -77,7 +88,7 @@ fun ReferenceLibraryScreen(
                 onAction = onImportReference,
             )
         } else {
-            TextButton(onClick = onClearAll, modifier = Modifier.align(Alignment.End)) {
+            TextButton(onClick = { pendingDeletion = PendingReferenceDeletion.ClearAll }, modifier = Modifier.align(Alignment.End)) {
                 Text("清空全部")
             }
             entries.forEach { entry ->
@@ -94,7 +105,10 @@ fun ReferenceLibraryScreen(
                     },
                     onClick = { onOpenReference(entry.photo.id) },
                 )
-                TextButton(onClick = { onDeleteReference(entry.photo.id) }, modifier = Modifier.align(Alignment.End)) {
+                TextButton(
+                    onClick = { pendingDeletion = PendingReferenceDeletion.Single(entry.photo.id) },
+                    modifier = Modifier.align(Alignment.End),
+                ) {
                     Text("删除此参考图")
                 }
                 Spacer(Modifier.height(AppDimensions.Space12))
@@ -107,5 +121,36 @@ fun ReferenceLibraryScreen(
             modifier = Modifier.fillMaxWidth(),
         )
         Spacer(Modifier.height(AppDimensions.Space32))
+    }
+
+    pendingDeletion?.let { deletion ->
+        val clearAll = deletion is PendingReferenceDeletion.ClearAll
+        AlertDialog(
+            onDismissRequest = { pendingDeletion = null },
+            title = { Text(if (clearAll) "清空全部参考图？" else "删除此参考图？") },
+            text = {
+                Text(
+                    if (clearAll) {
+                        "这会删除当前设备上的全部参考记录和私有派生图。"
+                    } else {
+                        "这会删除当前设备上的参考记录和私有派生图。"
+                    },
+                )
+            },
+            dismissButton = { TextButton(onClick = { pendingDeletion = null }) { Text("取消") } },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        pendingDeletion = null
+                        when (deletion) {
+                            PendingReferenceDeletion.ClearAll -> onClearAll()
+                            is PendingReferenceDeletion.Single -> onDeleteReference(deletion.id)
+                        }
+                    },
+                ) {
+                    Text(if (clearAll) "确认清空" else "确认删除")
+                }
+            },
+        )
     }
 }

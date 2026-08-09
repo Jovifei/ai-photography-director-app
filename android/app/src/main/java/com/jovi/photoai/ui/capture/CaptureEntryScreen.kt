@@ -24,6 +24,7 @@ import com.jovi.photoai.ui.navigation.RootSection
 @Composable
 fun CaptureEntryScreen(
     referenceCount: Int,
+    projectTitle: String? = null,
     onOpenInspiration: () -> Unit,
     onChooseReference: () -> Unit,
     onDirectCapture: () -> Unit,
@@ -44,7 +45,11 @@ fun CaptureEntryScreen(
         Spacer(Modifier.height(AppDimensions.Space8))
         Text("开始拍摄", style = MaterialTheme.typography.displaySmall, color = AppColors.TextPrimary)
         Text(
-            "先选择参考图获得环境、人物和机位建议；也可以进入不带示例或参考指导的基础拍摄。",
+            if (projectTitle == null) {
+                "先选择参考图获得环境、人物和机位建议；也可以进入不带示例或参考指导的基础拍摄。"
+            } else {
+                "先为“$projectTitle”选择项目主参考；也可以进入不带示例或参考指导的基础拍摄。"
+            },
             style = MaterialTheme.typography.bodyLarge,
             color = AppColors.TextSecondary,
         )
@@ -54,13 +59,21 @@ fun CaptureEntryScreen(
         ) {
             Column(verticalArrangement = Arrangement.spacedBy(AppDimensions.Space8)) {
                 Text(
-                    if (referenceCount > 0) "已有 $referenceCount 张本地参考图" else "尚未选择活动参考图",
+                    if (referenceCount > 0) {
+                        if (projectTitle == null) "已有 $referenceCount 张本地参考图" else "项目内有 $referenceCount 张私有照片"
+                    } else {
+                        "尚未选择活动参考图"
+                    },
                     style = MaterialTheme.typography.titleMedium,
                     color = AppColors.TextPrimary,
                 )
                 Text(
                     if (referenceCount > 0) {
-                        "选择一张参考图后，可继续 Reference → Director 流程。"
+                        if (projectTitle == null) {
+                            "选择一张参考图后，可继续 Reference → Director 流程。"
+                        } else {
+                            "返回项目看板，将其中一张设为主参考后再进入指导拍摄。"
+                        }
                     } else {
                         "选择参考图会打开系统 Photo Picker；不会申请相册读取权限或上传图片。"
                     },
@@ -70,7 +83,7 @@ fun CaptureEntryScreen(
             }
         }
         PrimaryActionButton(
-            text = if (referenceCount > 0) "选择参考图并拍摄" else "选择参考图并拍摄",
+            text = if (projectTitle == null) "选择参考图并拍摄" else "返回项目选择主参考",
             onClick = onChooseReference,
             modifier = Modifier.fillMaxWidth(),
         )
