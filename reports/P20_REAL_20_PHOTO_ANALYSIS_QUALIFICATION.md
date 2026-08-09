@@ -6,7 +6,8 @@ Qualification state: `P20_REAL_20_PHOTO_ANALYSIS_COMPLETE_AWAITING_INDEPENDENT_R
 ## Candidate
 
 - Candidate branch: `codex/p20-real-20-photo-analysis-closure`
-- Candidate HEAD for this report: `e7a2d931fa27355edfc93c2a4849a254eff7ac75`
+- Runtime-bound candidate commit: `e7a2d931fa27355edfc93c2a4849a254eff7ac75`
+- Final branch HEAD is recorded in the external gate ledger; descendants after the runtime-bound commit are report/evidence-only.
 - Base: `bdb04f344241149b32f9412dc23807d6c47a2179`
 - Main was not reset, cleaned, staged, committed, or merged.
 
@@ -82,6 +83,6 @@ Evidence contains only aggregate statuses, counts, error codes, hashes and model
 
 ## Remaining gates
 
-- Exact-file staging and non-force push: `PASS`; final remote HEAD is `e7a2d931fa27355edfc93c2a4849a254eff7ac75`.
+- Exact-file staging and non-force push: `PASS`; final branch SHA is recorded in the external gate ledger.
 - Independent detached-worktree review: `PENDING_REMEDIATION_REVIEW` after final-HEAD D2D evidence binding.
 - Merge to `main`: not authorized in this task.
