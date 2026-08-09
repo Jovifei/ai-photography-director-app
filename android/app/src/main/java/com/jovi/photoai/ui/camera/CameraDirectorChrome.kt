@@ -61,6 +61,9 @@ fun CameraDirectorChrome(
     onEvent: (CameraUiEvent) -> Unit,
     onBack: () -> Unit,
     onCapture: () -> Unit,
+    onSave: () -> Unit = {},
+    saveEnabled: Boolean = false,
+    saveStatus: String? = null,
     referenceGuidance: CameraDirectorGuidance? = null,
     directCaptureMode: Boolean = false,
     modifier: Modifier = Modifier,
@@ -125,6 +128,9 @@ fun CameraDirectorChrome(
             uiState = uiState,
             onEvent = onEvent,
             onCapture = onCapture,
+            onSave = onSave,
+            saveEnabled = saveEnabled,
+            saveStatus = saveStatus,
             referenceGuidance = referenceGuidance,
             directCaptureMode = directCaptureMode,
             modifier = Modifier.align(Alignment.BottomCenter),
@@ -312,6 +318,9 @@ private fun CameraBottomControls(
     uiState: CameraUiState,
     onEvent: (CameraUiEvent) -> Unit,
     onCapture: () -> Unit,
+    onSave: () -> Unit,
+    saveEnabled: Boolean,
+    saveStatus: String?,
     referenceGuidance: CameraDirectorGuidance?,
     directCaptureMode: Boolean,
     modifier: Modifier = Modifier,
@@ -384,11 +393,27 @@ private fun CameraBottomControls(
                     )
                 }
             }
+            Button(
+                onClick = onSave,
+                enabled = saveEnabled,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .heightIn(min = AppDimensions.MinTouchTarget),
+                colors = ButtonDefaults.buttonColors(containerColor = AppColors.AccentBlue),
+            ) {
+                Text("保存照片")
+            }
+            Text(
+                text = saveStatus ?: "拍摄结果先保存在应用缓存；保存照片时由系统选择位置",
+                color = AppColors.CameraChromeSecondaryText,
+                style = MaterialTheme.typography.labelSmall,
+                modifier = Modifier.padding(top = AppDimensions.Space4),
+            )
             Text(
                 text = if (uiState.captureInFlight) {
                     "保存中…"
                 } else {
-                    "已拍 ${uiState.captureCount} 张 · 仅保存至应用缓存"
+                    "已拍 ${uiState.captureCount} 张 · 缓存由应用管理"
                 },
                 color = AppColors.CameraChromeSecondaryText,
                 style = MaterialTheme.typography.labelSmall,
