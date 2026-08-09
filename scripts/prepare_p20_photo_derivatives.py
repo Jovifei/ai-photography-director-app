@@ -17,7 +17,10 @@ def digest(path: Path) -> str:
 
 
 def main() -> int:
-    source = Path(os.environ.get("P20_SOURCE_DIR", "F:\\npi_g1_source_ro"))
+    source_value = os.environ.get("P20_SOURCE_DIR")
+    if not source_value:
+        raise SystemExit("P20_SOURCE_DIR_REQUIRED")
+    source = Path(source_value)
     output = Path(os.environ["P20_DERIVATIVE_DIR"])
     if not source.is_dir():
         raise SystemExit("P20_SOURCE_NOT_FOUND")
