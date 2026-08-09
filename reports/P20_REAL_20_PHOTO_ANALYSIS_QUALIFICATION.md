@@ -49,7 +49,7 @@ Qualification state: `P20_REAL_20_PHOTO_ANALYSIS_COMPLETE_AWAITING_INDEPENDENT_R
 - `assembleDebug`: `PASS`
 - `assembleDebugAndroidTest`: `PASS`
 - JVM: `110` tests, `0` failures, `0` errors.
-- Lint: `0` errors, `21` warnings.
+- Lint: `0` errors; primary run recorded `21` warnings and the final detached rerun observed `20` non-blocking warnings (warning metadata varied, errors remained zero).
 - Local service unittest: `5` tests, `0` failures.
 - Python compile: `PASS`.
 - Privacy audit: `PASS`.
