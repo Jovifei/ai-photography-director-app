@@ -4,6 +4,7 @@ build/
 **/build/
 local.properties
 .idea/
+__pycache__/
 *.iml
 .externalNativeBuild/
 .cxx/

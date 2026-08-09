@@ -1,0 +1,5 @@
+fastapi==0.115.6
+uvicorn==0.34.0
+pillow>=12.1.1,<13
+transformers>=4.57.0,<5
+qwen-vl-utils==0.0.14

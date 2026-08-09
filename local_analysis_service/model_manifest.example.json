@@ -1,0 +1,6 @@
+{
+  "model_id": "Qwen/Qwen3-VL-4B-Instruct-FP8",
+  "model_revision": "OWNER_MUST_FILL_OFFICIAL_REVISION",
+  "model_artifact_sha256": "OWNER_MUST_FILL_64_HEX_SHA256",
+  "runtime_id": "native-windows-transformers"
+}
