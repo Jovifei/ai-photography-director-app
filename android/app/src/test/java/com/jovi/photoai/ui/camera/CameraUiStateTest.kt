@@ -14,6 +14,13 @@ import org.junit.Test
 
 class CameraUiStateTest {
     @Test
+    fun captureSaveStatus_keepsOutcomesExplicitAndRetryable() {
+        assertEquals("照片已保存到你选择的位置", captureSaveStatus(CaptureSaveOutcome.SUCCESS))
+        assertEquals("已取消保存，照片仍保留在应用缓存", captureSaveStatus(CaptureSaveOutcome.CANCELLED))
+        assertEquals("保存失败，照片仍保留在应用缓存，可重试", captureSaveStatus(CaptureSaveOutcome.FAILED))
+    }
+
+    @Test
     fun initialState_isSafeAndCannotCapture() {
         val state = CameraUiState()
 
@@ -38,6 +45,20 @@ class CameraUiStateTest {
 
         assertEquals(CameraRuntime.STARTING, starting.cameraRuntime)
         assertEquals(CameraRuntime.READY, ready.cameraRuntime)
+        assertTrue(ready.canCapture)
+    }
+
+    @Test
+    fun cameraStartRace_beforePermissionObserved_isRetainedUntilGrant() {
+        val starting = reduceCameraUiState(CameraUiState(), CameraUiEvent.CameraStartRequested)
+        val granted = reduceCameraUiState(
+            starting,
+            CameraUiEvent.PermissionObserved(CameraPermission.GRANTED),
+        )
+        val ready = reduceCameraUiState(granted, CameraUiEvent.CameraReady)
+
+        assertEquals(CameraRuntime.STARTING, starting.cameraRuntime)
+        assertEquals(CameraRuntime.STARTING, granted.cameraRuntime)
         assertTrue(ready.canCapture)
     }
 

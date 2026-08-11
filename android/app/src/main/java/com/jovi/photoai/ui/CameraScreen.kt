@@ -49,7 +49,9 @@ import com.jovi.photoai.ui.camera.CameraPermission
 import com.jovi.photoai.ui.camera.CameraUiEvent
 import com.jovi.photoai.ui.camera.CameraUiSnapshot
 import com.jovi.photoai.ui.camera.CameraUiState
+import com.jovi.photoai.ui.camera.CaptureSaveOutcome
 import com.jovi.photoai.ui.camera.cameraGuidanceFor
+import com.jovi.photoai.ui.camera.captureSaveStatus
 import com.jovi.photoai.ui.camera.reduceCameraUiState
 import com.jovi.photoai.ui.camera.restoreCameraUiState
 import com.jovi.photoai.ui.camera.toSnapshot
@@ -109,10 +111,10 @@ fun CameraScreen(
         val source = pendingSave
         pendingSave = null
         saveStatus = when {
-            destination == null -> "已取消保存，照片仍保留在应用缓存"
+            destination == null -> captureSaveStatus(CaptureSaveOutcome.CANCELLED)
             source != null && CaptureExporter.copyTo(context.contentResolver, source, destination) ->
-                "照片已保存到你选择的位置"
-            else -> "保存失败，照片仍保留在应用缓存，可重试"
+                captureSaveStatus(CaptureSaveOutcome.SUCCESS)
+            else -> captureSaveStatus(CaptureSaveOutcome.FAILED)
         }
     }
     var uiState by rememberSaveable(stateSaver = CameraUiStateSaver) { mutableStateOf(CameraUiState()) }
@@ -204,6 +206,11 @@ private fun CameraContent(
     val previewView = remember { PreviewView(context) }
 
     DisposableEffect(lifecycleOwner) {
+        // CameraContent is only composed after the platform permission is granted, but the
+        // parent PermissionObserved effect can race this first frame. Seed the pure reducer
+        // with the already-verified permission before requesting CameraX startup so a valid
+        // CameraReady callback cannot be discarded as stale.
+        dispatch(CameraUiEvent.PermissionObserved(CameraPermission.GRANTED))
         dispatch(CameraUiEvent.CameraStartRequested)
         manager.initialize(
             onReady = {
