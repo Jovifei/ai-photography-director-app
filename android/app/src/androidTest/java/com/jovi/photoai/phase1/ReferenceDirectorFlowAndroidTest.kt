@@ -6,11 +6,10 @@ import android.provider.MediaStore
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts.PickVisualMedia
 import androidx.compose.ui.test.assertIsDisplayed
-import androidx.compose.ui.test.assertCountEquals
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
-import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.onAllNodesWithContentDescription
-import androidx.compose.ui.test.onNodeWithContentDescription
+import androidx.compose.ui.test.onAllNodesWithText
+import androidx.compose.ui.test.onFirst
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollTo
@@ -23,11 +22,7 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 
-/**
- * Phase 1 flow evidence. No gallery is opened: the Android Photo Picker is validated as an
- * image-only Intent contract, while a fake Uri is supplied only to the import screen in inspection
- * mode to verify its continuation callback without reading any media.
- */
+/** Current P20 product flow; this deliberately contains no Demo-first assertions. */
 @RunWith(AndroidJUnit4::class)
 class ReferenceDirectorFlowAndroidTest {
     @get:Rule
@@ -37,13 +32,23 @@ class ReferenceDirectorFlowAndroidTest {
     val cameraPermission = GrantPermissionRule.grant(Manifest.permission.CAMERA)
 
     @Test
-    fun mainActivity_importSurface_andDemoDirectorNavigation_areReachable() {
-        composeRule.onAllNodesWithContentDescription(IMPORT_REFERENCE)[0]
-            .performScrollTo()
-            .performClick()
-        composeRule.waitForIdle()
-        composeRule.onNodeWithText(IMPORT_SCREEN_TITLE).assertIsDisplayed()
+    fun currentProjectFlow_reachesBoardAndDirectCapture() {
+        clickAction("新建拍摄项目")
+        composeRule.onNodeWithText("添加项目照片").assertIsDisplayed()
+        composeRule.onNodeWithText("选择照片").assertIsDisplayed()
+        composeRule.onNodeWithText("稍后添加").performClick()
+        composeRule.onNodeWithText("项目看板").assertIsDisplayed()
+        composeRule.onNodeWithText("项目还没有照片").assertIsDisplayed()
 
+        composeRule.onNodeWithText("选择拍摄方式").performClick()
+        composeRule.onNodeWithText("开始拍摄").assertIsDisplayed()
+        composeRule.onNodeWithText("无指导直接拍摄").performClick()
+        composeRule.onAllNodesWithText("基础拍摄", substring = true).onFirst().assertIsDisplayed()
+        composeRule.onNodeWithText("保存照片").assertIsDisplayed()
+    }
+
+    @Test
+    fun currentPickerContract_isImageOnlyAndUsesSystemSelection() {
         val pickerIntent = PickVisualMedia().createIntent(
             composeRule.activity,
             PickVisualMediaRequest(PickVisualMedia.ImageOnly),
@@ -55,84 +60,21 @@ class ReferenceDirectorFlowAndroidTest {
                 pickerIntent.action == Intent.ACTION_OPEN_DOCUMENT ||
                 pickerIntent.action.orEmpty().contains("PICK_IMAGES"),
         )
-
-        composeRule.activity.runOnUiThread {
-            composeRule.activity.onBackPressedDispatcher.onBackPressed()
-        }
-        composeRule.waitForIdle()
-
-        composeRule.onNodeWithContentDescription(DEMO_REFERENCE_CARD)
-            .performScrollTo()
-            .performClick()
-        composeRule.onNodeWithText(ANALYSIS_SCREEN_TITLE).assertIsDisplayed()
-        composeRule.onNodeWithText(DEMO_ANALYSIS_MESSAGE).assertIsDisplayed()
-
-        composeRule.onNodeWithContentDescription(OPEN_DIRECTOR_CARD)
-            .performScrollTo()
-            .performClick()
-        composeRule.onNodeWithText(DIRECTOR_CARD_TITLE).assertIsDisplayed()
-        composeRule.onNodeWithText(ENVIRONMENT).assertIsDisplayed()
-        composeRule.onNodeWithText(SUBJECT).assertIsDisplayed()
-        composeRule.onNodeWithText(EMOTION).assertIsDisplayed()
-        composeRule.onNodeWithText(CAMERA).performScrollTo().assertIsDisplayed()
-
-        composeRule.onNodeWithContentDescription(ENTER_CAMERA_DIRECTOR)
-            .performScrollTo()
-            .performClick()
-        composeRule.onNodeWithText(CAMERA_DIRECTOR).assertIsDisplayed()
-        composeRule.onNodeWithText(REFERENCE_GUIDANCE, substring = true).assertIsDisplayed()
-
-        composeRule.activity.runOnUiThread {
-            composeRule.activity.onBackPressedDispatcher.onBackPressed()
-        }
-        composeRule.waitForIdle()
-        composeRule.onNodeWithText(DIRECTOR_CARD_TITLE).assertIsDisplayed()
     }
 
-    @Test
-    fun rootNavigation_exposes_guided_and_direct_capture_choices_withoutOpeningMedia() {
-        composeRule.onNodeWithText(CAPTURE_ROOT).performClick()
-        composeRule.onNodeWithText(CAPTURE_ENTRY_TITLE).assertIsDisplayed()
-        composeRule.onNodeWithText(CHOOSE_REFERENCE_CAPTURE).assertIsDisplayed()
-        composeRule.onNodeWithText(DIRECT_CAPTURE).assertIsDisplayed()
-        composeRule.onNodeWithText(DIRECT_CAPTURE_EXPLANATION).assertIsDisplayed()
-        composeRule.onNodeWithText(CHOOSE_REFERENCE_CAPTURE).performClick()
-        composeRule.onNodeWithText(IMPORT_SCREEN_TITLE).assertIsDisplayed()
-        composeRule.onNodeWithText(RETURN).performClick()
-        composeRule.onNodeWithText(CAPTURE_ENTRY_TITLE).assertIsDisplayed()
-        composeRule.onNodeWithText(DIRECT_CAPTURE).performClick()
-        composeRule.onNodeWithText(BASIC_CAPTURE).assertIsDisplayed()
-        composeRule.onAllNodesWithText(NO_REFERENCE_GUIDANCE).assertCountEquals(2)
-        composeRule.onNodeWithContentDescription(RETURN).performClick()
-        composeRule.onNodeWithText(CAPTURE_ENTRY_TITLE).assertIsDisplayed()
-        composeRule.onNodeWithText(INSPIRATION_ROOT).performClick()
-        composeRule.onNodeWithText(INSPIRATION_LIBRARY_TITLE).assertIsDisplayed()
+    private fun clickAction(description: String) {
+        composeRule.waitUntil(STARTUP_TIMEOUT_MILLIS) {
+            composeRule.onAllNodesWithContentDescription(description, useUnmergedTree = true)
+                .fetchSemanticsNodes()
+                .isNotEmpty()
+        }
+        composeRule.onAllNodesWithContentDescription(description, useUnmergedTree = true)
+            .onFirst()
+            .performScrollTo()
+            .performClick()
     }
 
     private companion object {
-        const val IMPORT_REFERENCE = "\u5bfc\u5165\u53c2\u8003\u56fe"
-        const val IMPORT_SCREEN_TITLE = "\u5bfc\u5165\u53c2\u8003\u56fe"
-        const val DEMO_REFERENCE_CARD = "\u7a97\u8fb9\u67d4\u5149\u4eba\u50cf\uff0c\u5185\u7f6e\u793a\u4f8b"
-        const val ANALYSIS_SCREEN_TITLE = "\u53c2\u8003\u56fe\u5206\u6790"
-        const val DEMO_ANALYSIS_MESSAGE = "\u793a\u4f8b\u6307\u5bfc\uff1a\u4e0d\u8fde\u63a5 AI\u3001\u4e0d\u4e0a\u4f20\u56fe\u7247\u3001\u4e0d\u751f\u6210\u5b9e\u65f6 Pose\uff0c\u4e5f\u4e0d\u58f0\u79f0\u5206\u6790\u4e86\u8fd9\u5f20\u7167\u7247\u3002"
-        const val OPEN_DIRECTOR_CARD = "\u67e5\u770b\u6444\u5f71\u5bfc\u6f14\u5361"
-        const val DIRECTOR_CARD_TITLE = "\u6444\u5f71\u5bfc\u6f14\u5361"
-        const val ENVIRONMENT = "\u73af\u5883"
-        const val SUBJECT = "\u4eba\u7269"
-        const val EMOTION = "\u60c5\u7eea"
-        const val CAMERA = "\u76f8\u673a"
-        const val ENTER_CAMERA_DIRECTOR = "\u8fdb\u5165 Camera Director"
-        const val CAMERA_DIRECTOR = "Camera Director"
-        const val REFERENCE_GUIDANCE = "Reference Guidance"
-        const val CAPTURE_ROOT = "\u62cd\u6444"
-        const val CAPTURE_ENTRY_TITLE = "\u5f00\u59cb\u62cd\u6444"
-        const val CHOOSE_REFERENCE_CAPTURE = "\u9009\u62e9\u53c2\u8003\u56fe\u5e76\u62cd\u6444"
-        const val DIRECT_CAPTURE = "\u65e0\u6307\u5bfc\u76f4\u63a5\u62cd\u6444"
-        const val DIRECT_CAPTURE_EXPLANATION = "\u57fa\u7840\u62cd\u6444 \u00b7 \u65e0\u53c2\u8003\u6307\u5bfc\uff1a\u4e0d\u663e\u793a Demo \u5206\u6790\u3001\u53c2\u8003\u56fe\u8986\u76d6\u6216\u4eba\u7269\u6307\u5bfc\u3002"
-        const val RETURN = "\u8fd4\u56de"
-        const val INSPIRATION_ROOT = "\u7075\u611f"
-        const val INSPIRATION_LIBRARY_TITLE = "\u7075\u611f\u5e93"
-        const val BASIC_CAPTURE = "\u57fa\u7840\u62cd\u6444"
-        const val NO_REFERENCE_GUIDANCE = "\u65e0\u53c2\u8003\u6307\u5bfc"
+        const val STARTUP_TIMEOUT_MILLIS = 10_000L
     }
 }

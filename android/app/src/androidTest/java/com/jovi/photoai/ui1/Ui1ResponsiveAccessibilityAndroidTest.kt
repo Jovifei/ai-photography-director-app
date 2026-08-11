@@ -4,7 +4,7 @@ import androidx.compose.ui.test.assertHasClickAction
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onAllNodesWithContentDescription
-import androidx.compose.ui.test.onNodeWithContentDescription
+import androidx.compose.ui.test.onFirst
 import androidx.compose.ui.test.performScrollTo
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
@@ -38,13 +38,15 @@ class Ui1ResponsiveAccessibilityAndroidTest {
             composeRule.onAllNodesWithContentDescription("新建拍摄项目", useUnmergedTree = true)
                 .fetchSemanticsNodes().isNotEmpty()
         }
-        composeRule.onNodeWithContentDescription("新建拍摄项目", useUnmergedTree = true)
+        composeRule.onAllNodesWithContentDescription("新建拍摄项目", useUnmergedTree = true)
+            .onFirst()
             .assertHasClickAction()
 
         device.setOrientationLeft()
         try {
             composeRule.waitForIdle()
-            composeRule.onNodeWithContentDescription("新建拍摄项目", useUnmergedTree = true)
+            composeRule.onAllNodesWithContentDescription("新建拍摄项目", useUnmergedTree = true)
+                .onFirst()
                 .performScrollTo()
                 .assertIsDisplayed()
         } finally {
