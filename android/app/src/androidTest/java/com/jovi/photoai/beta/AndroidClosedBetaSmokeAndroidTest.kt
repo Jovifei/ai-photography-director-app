@@ -1,7 +1,6 @@
 package com.jovi.photoai.beta
 
 import android.Manifest
-import android.content.Intent
 import androidx.activity.compose.setContent
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsEnabled
@@ -113,19 +112,15 @@ class AndroidClosedBetaSmokeAndroidTest {
     }
 
     private fun bringMainActivityToForeground() {
-        val context = InstrumentationRegistry.getInstrumentation().targetContext
-        context.startActivity(
-            Intent(context, MainActivity::class.java).addFlags(
-                Intent.FLAG_ACTIVITY_NEW_TASK or
-                    Intent.FLAG_ACTIVITY_CLEAR_TOP or
-                    Intent.FLAG_ACTIVITY_SINGLE_TOP,
-            ),
-        )
+        device.executeShellCommand("am start -W -n com.jovi.photoai/.MainActivity")
         assertTrue(
             "P20_BETA_RUNTIME_GATE_BLOCKED_MAIN_ACTIVITY_NOT_READY",
             device.wait(Until.hasObject(By.pkg("com.jovi.photoai")), TIMEOUT_MILLIS),
         )
         composeRule.waitForIdle()
+        composeRule.waitUntil(TIMEOUT_MILLIS) {
+            composeRule.onAllNodesWithText("拍摄").fetchSemanticsNodes().isNotEmpty()
+        }
     }
 
     private fun chooseSystemDocumentDestination() {
