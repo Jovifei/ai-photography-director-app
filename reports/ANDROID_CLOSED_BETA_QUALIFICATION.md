@@ -1,6 +1,6 @@
 # Android Closed Beta Qualification
 
-状态：`ANDROID_CLOSED_BETA_CANDIDATE_AWAITING_INDEPENDENT_REVIEW`
+状态：`ANDROID_CLOSED_BETA_CANDIDATE_READY`
 
 本报告绑定本轮 Beta 候选执行。它不表示已合并、公开发布或完成 T01–T05 试点。
 
@@ -64,4 +64,4 @@
 
 ## Next gate
 
-提交本报告后，按精确文件清单完成四个线性提交，运行最终隐私审计并非 force push Beta 分支；随后由新的 detached Reviewer 重跑静态 Gate、签名证据、D2D 证据和 P20 canonical binding。独立 PASS 后状态才可升级为 `ANDROID_CLOSED_BETA_CANDIDATE_READY`。
+四个线性提交、最终隐私审计、非 force push 和新的 detached Reviewer 已完成。Reviewer 对固定代码 SHA `c5a52ffbaa77305b14651d489bf8ac81e01215ca` 输出 `PASS`；本报告状态现固定为 `ANDROID_CLOSED_BETA_CANDIDATE_READY`。T01–T05、Beta 合并、APK 外发和公开发布仍未执行。
