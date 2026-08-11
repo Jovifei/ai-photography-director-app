@@ -39,7 +39,7 @@
 | Release signing identity | PASS | 永久非 Debug RSA 4096 身份；公开证书 SHA-256 已 pin |
 | APK/AAB signature | PASS | APK `apksigner`、AAB `jarsigner -verify`、AAB `keytool` 均通过；三方指纹一致 |
 | signed Release runtime | PASS | API 35 直接启动签名 APK；空项目、创建项目、Camera 页面可达；版本/包名正确 |
-| Beta branch push | PASS | 非 force push 已完成；最终远端 SHA `a01c584cc17bf592bc4138d5474fb738c64e1e6e` |
+| Beta branch push | PASS | 非 force push 已完成；最终远端 SHA `e01e628d34a1e62c6ae46ebe1dbe3349e18956df` |
 | independent review | PASS | c5a52ff detached Reviewer `PASS`；d25afbd 仅为本报告状态修正 |
 | T01–T05 pilot | NOT_RUN | 需独立审查 PASS 和 Jovi 后续分发授权 |
 
