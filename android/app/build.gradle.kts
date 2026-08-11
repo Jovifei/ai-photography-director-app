@@ -1,4 +1,9 @@
 import java.security.KeyStore
+import java.security.MessageDigest
+import java.security.PrivateKey
+import java.security.interfaces.RSAPublicKey
+import java.security.cert.X509Certificate
+import java.util.Properties
 
 plugins {
     id("com.android.application")
@@ -130,18 +135,61 @@ tasks.register("verifyReleaseSigning") {
             System.getenv(name)?.takeIf { it.isNotBlank() }
                 ?: throw GradleException("P20_BLOCKED_RELEASE_SIGNING_INPUT: missing $name")
 
+        val identityFile = rootProject.file("release-signing-identity.properties")
+        if (!identityFile.isFile) {
+            throw GradleException("P20_BLOCKED_SIGNING_IDENTITY_CONFLICT: public identity file is unavailable")
+        }
+        val identity = Properties().apply {
+            identityFile.inputStream().use(::load)
+        }
+        fun identityRequired(name: String): String =
+            identity.getProperty(name)?.takeIf { it.isNotBlank() }
+                ?: throw GradleException("P20_BLOCKED_SIGNING_IDENTITY_CONFLICT: missing public identity $name")
+
+        if (identityRequired("packageName") != "com.jovi.photoai" ||
+            identityRequired("role") != "direct-distribution-app-signing") {
+            throw GradleException("P20_BLOCKED_SIGNING_IDENTITY_CONFLICT: public identity package or role mismatch")
+        }
+        val expectedAlias = identityRequired("keyAlias")
+        val expectedFingerprint = identityRequired("certificateSha256")
+            .replace(":", "")
+            .uppercase()
+        if (expectedFingerprint.length != 64 || !expectedFingerprint.matches(Regex("[0-9A-F]{64}"))) {
+            throw GradleException("P20_BLOCKED_SIGNING_IDENTITY_CONFLICT: public certificate fingerprint is invalid")
+        }
+
         val storeFile = File(required("PHOTOAI_RELEASE_STORE_FILE"))
         val storePassword = required("PHOTOAI_RELEASE_STORE_PASSWORD")
         val keyAlias = required("PHOTOAI_RELEASE_KEY_ALIAS")
-        required("PHOTOAI_RELEASE_KEY_PASSWORD")
+        val keyPassword = required("PHOTOAI_RELEASE_KEY_PASSWORD")
         if (!storeFile.isFile) {
             throw GradleException("P20_BLOCKED_RELEASE_SIGNING_INPUT: signing store is unavailable")
         }
+        if (keyAlias != expectedAlias || keyAlias.equals("androiddebugkey", ignoreCase = true)) {
+            throw GradleException("P20_BLOCKED_SIGNING_IDENTITY_CONFLICT: signing alias does not match pinned identity")
+        }
         try {
-            val keyStore = KeyStore.getInstance(KeyStore.getDefaultType())
+            val keyStore = KeyStore.getInstance("PKCS12")
             storeFile.inputStream().use { keyStore.load(it, storePassword.toCharArray()) }
             if (!keyStore.isKeyEntry(keyAlias)) {
                 throw GradleException("P20_BLOCKED_RELEASE_SIGNING_INPUT: signing alias is unavailable")
+            }
+            val privateKey = keyStore.getKey(keyAlias, keyPassword.toCharArray())
+            if (privateKey !is PrivateKey) {
+                throw GradleException("P20_BLOCKED_RELEASE_SIGNING_INPUT: private key password is invalid")
+            }
+            val certificate = keyStore.getCertificate(keyAlias) as? X509Certificate
+                ?: throw GradleException("P20_BLOCKED_SIGNING_IDENTITY_CONFLICT: signing certificate is unavailable")
+            certificate.checkValidity()
+            val publicKey = certificate.publicKey
+            if (publicKey !is RSAPublicKey || publicKey.modulus.bitLength() < 4096) {
+                throw GradleException("P20_BLOCKED_SIGNING_IDENTITY_CONFLICT: RSA-4096 certificate required")
+            }
+            val actualFingerprint = MessageDigest.getInstance("SHA-256")
+                .digest(certificate.encoded)
+                .joinToString("") { "%02X".format(it.toInt() and 0xFF) }
+            if (actualFingerprint != expectedFingerprint) {
+                throw GradleException("P20_BLOCKED_SIGNING_IDENTITY_CONFLICT: certificate fingerprint mismatch")
             }
         } catch (error: GradleException) {
             throw error
