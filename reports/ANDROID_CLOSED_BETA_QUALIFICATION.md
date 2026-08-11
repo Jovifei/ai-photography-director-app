@@ -7,7 +7,7 @@
 ## 固定来源
 
 - `origin/main`：`61a9b26f7a17ae84a2b4ec8d7bb02e18695801b6`
-- 本轮 Release 运行源 SHA：`e87e937d0de48c2f909c7bc71b732ed9ee46596f`
+- 本轮 Release 运行源 SHA：`62114ed1e3d7da984aab488b47fd2a9713e9556d`
 - Beta 分支：`codex/android-beta-release-candidate`
 - package：`com.jovi.photoai`
 - version：`0.2.0-beta.1` / `versionCode 2`
@@ -47,10 +47,11 @@
 
 产物只存在外部 evidence，不进入 Git：
 
-- APK：`photo-director-0.2.0-beta.1-e87e937d.apk`，9,056,280 bytes，SHA-256 `0041cab8470fd09f1a0ec46f4d4d6a2a85d85dc055c4d89d6ef148f001e6982b`
-- AAB：`photo-director-0.2.0-beta.1-e87e937d.aab`，8,570,196 bytes，SHA-256 `91f352a204b8e5047ed34a9adbdec48f709deaa00b31b2c06c41def7264ab072`
+- APK：`photo-director-0.2.0-beta.1-62114ed1.apk`，9,056,280 bytes，SHA-256 `e0af1bc6b6fcc3f3143d28929d6086d32d7f95078e23333139b080a93d4c04e7`
+- AAB：`photo-director-0.2.0-beta.1-62114ed1.aab`，8,570,196 bytes，SHA-256 `91f352a204b8e5047ed34a9adbdec48f709deaa00b31b2c06c41def7264ab072`
 - APK/AAB/public identity certificate SHA-256：`623C7DB70A8AA8552BD59B20BC103152326062F7FEC3D6D9313F8BBB94469CD0`
 - Android build-tools：`37.0.0`
+- Final source-bound artifact summary：`release-final/qualification-summary.json` under the external evidence root.
 
 `jarsigner -strict` 对 Android App Bundle 的标准 JarInputStream 条目警告返回非零；本轮按计划要求的 `jarsigner -verify -verbose -certs` 成功，并另行提取 AAB 证书与 APK/public pin 比对。
 
