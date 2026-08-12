@@ -7,7 +7,7 @@
 ## 固定来源
 
 - `origin/main`：`61a9b26f7a17ae84a2b4ec8d7bb02e18695801b6`
-- 当前 Beta/远端 HEAD：`7094ac6de22f709d24f0ebdefe90803281ed2b0d`
+- 独立审查代码边界：`7094ac6de22f709d24f0ebdefe90803281ed2b0d`
 - 本轮 Release 运行源 SHA：`eafcf30fce81982876f7adc6269190debcbd7093`
 - Beta 分支：`codex/android-beta-release-candidate`
 - package：`com.jovi.photoai`
@@ -40,7 +40,7 @@
 | Release signing identity | PASS | 永久非 Debug RSA 4096 身份；公开证书 SHA-256 已 pin |
 | APK/AAB signature | PASS | APK `apksigner`、AAB `jarsigner -verify`、AAB `keytool` 均通过；三方指纹一致 |
 | signed Release runtime | PASS | API 35 直接启动签名 APK；空项目、创建项目、Camera 页面可达；版本/包名正确 |
-| Beta branch push | PASS | 非 force push 已完成，远端 Beta 固定为 `7094ac6`；本报告为后续 docs-only 状态更新 |
+| Beta branch push | PASS | 非 force push 已完成；独立审查代码边界固定为 `7094ac6`，随后仅追加本报告 docs-only 跟进 |
 | independent review | PASS | detached Reviewer 固定审查 `7094ac6`；静态、脚本、证据边界和 P20 canonical binding 均通过 |
 | T01–T05 pilot | NOT_RUN | 需独立审查 PASS 和 Jovi 后续分发授权 |
 
