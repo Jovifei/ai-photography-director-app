@@ -168,6 +168,7 @@ function Publish-PilotPackage($outputRootPath, $sourceBoundary, $apk) {
         New-Item -ItemType Directory -Path $staging | Out-Null
         Copy-Item -LiteralPath $ArtifactPath -Destination (Join-Path $staging $packageApkName)
         Copy-Item -LiteralPath (Join-Path $repo 'docs\BETA_USER_GUIDE.md') -Destination (Join-Path $staging 'BETA_USER_GUIDE.md')
+        Copy-Item -LiteralPath (Join-Path $repo 'docs\ANDROID_BETA_PHONE_SETUP.md') -Destination (Join-Path $staging 'ANDROID_BETA_PHONE_SETUP.md')
         Copy-Item -LiteralPath (Join-Path $repo 'docs\privacy-policy.md') -Destination (Join-Path $staging 'privacy-policy.md')
         Set-Content -LiteralPath (Join-Path $staging 'SHA256SUMS.txt') -Encoding ASCII -NoNewline -Value ($apk.Sha256 + '  ' + $packageApkName)
         $summary = [ordered]@{
@@ -180,11 +181,11 @@ function Publish-PilotPackage($outputRootPath, $sourceBoundary, $apk) {
             version_code = [int]$versionCode
             apk = [ordered]@{ name = $packageApkName; size_bytes = $apk.SizeBytes; sha256 = $apk.Sha256 }
             signing_certificate_sha256 = $apk.CertificateSha256
-            included_documents = @('BETA_USER_GUIDE.md', 'privacy-policy.md')
+            included_documents = @('BETA_USER_GUIDE.md', 'ANDROID_BETA_PHONE_SETUP.md', 'privacy-policy.md')
             scope = 'direct pilot package; no private media, device identifiers, LAN addresses, pairing material, or secrets'
         }
         $summary | ConvertTo-Json -Depth 5 | Set-Content -LiteralPath (Join-Path $staging 'pilot-package-summary.json') -Encoding UTF8
-        $expectedContents = @($packageApkName, 'SHA256SUMS.txt', 'BETA_USER_GUIDE.md', 'privacy-policy.md', 'pilot-package-summary.json') | Sort-Object
+        $expectedContents = @($packageApkName, 'SHA256SUMS.txt', 'BETA_USER_GUIDE.md', 'ANDROID_BETA_PHONE_SETUP.md', 'privacy-policy.md', 'pilot-package-summary.json') | Sort-Object
         $actualContents = @(Get-ChildItem -LiteralPath $staging -Force | ForEach-Object { $_.Name } | Sort-Object)
         if ((Compare-Object -ReferenceObject $expectedContents -DifferenceObject $actualContents).Count -ne 0) {
             Stop-Pilot 'P20_PILOT_PACKAGE_BLOCKED_PACKAGE_CONTENTS'

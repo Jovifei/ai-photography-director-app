@@ -1,5 +1,7 @@
 # 摄影导演 Android Beta 用户指南
 
+首次配置手机、Windows 本机 Qwen 服务、Private Wi‑Fi、一次性配对码和证书 pin，请先阅读：[Android Beta 手机配置与首次使用说明](ANDROID_BETA_PHONE_SETUP.md)。
+
 ## 一次完整流程
 
 1. 打开“摄影导演”，创建拍摄项目。
