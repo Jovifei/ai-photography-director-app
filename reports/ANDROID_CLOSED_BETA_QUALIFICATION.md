@@ -1,19 +1,19 @@
 # Android Closed Beta Qualification
 
-状态：`ANDROID_CLOSED_BETA_CANDIDATE_READY`
+状态：`ANDROID_CLOSED_BETA_CANDIDATE_AWAITING_INDEPENDENT_REVIEW`
 
 本报告绑定本轮 Beta 候选执行。它不表示已合并、公开发布或完成 T01–T05 试点。
 
 ## 固定来源
 
 - `origin/main`：`61a9b26f7a17ae84a2b4ec8d7bb02e18695801b6`
-- 本轮 Release 运行源 SHA：`62114ed1e3d7da984aab488b47fd2a9713e9556d`
+- 本轮 Release 运行源 SHA：`eafcf30fce81982876f7adc6269190debcbd7093`
 - Beta 分支：`codex/android-beta-release-candidate`
 - package：`com.jovi.photoai`
 - version：`0.2.0-beta.1` / `versionCode 2`
 - P20 复用证据：20 READY、0 FAILED、0 CANCELLED、READY-only Summary SUCCESS
 - P20 Provider/Coordinator/Room/项目汇总 canonical 内容未改变
-- 外部证据根：`E:\project\_benchmark_evidence\android-closed-beta\20260811T115749Z\`
+- 外部证据根：`E:\project\_benchmark_evidence\android-closed-beta-pilot\20260812T115722Z\`
 
 ## Gate ledger
 
@@ -39,29 +39,30 @@
 | Release signing identity | PASS | 永久非 Debug RSA 4096 身份；公开证书 SHA-256 已 pin |
 | APK/AAB signature | PASS | APK `apksigner`、AAB `jarsigner -verify`、AAB `keytool` 均通过；三方指纹一致 |
 | signed Release runtime | PASS | API 35 直接启动签名 APK；空项目、创建项目、Camera 页面可达；版本/包名正确 |
-| Beta branch push | PASS | 非 force push 已完成；代码审查 SHA `c5a52ff` 已固定，后续仅追加 docs-only 提交 |
-| independent review | PASS | c5a52ff detached Reviewer `PASS`；后续仅为本报告状态/证据文字修正 |
+| Beta branch push | NOT_RUN | 本轮新增试点工具提交尚未推送；推送前需完成最终隐私审计 |
+| independent review | NOT_RUN | 当前 HEAD 的新增试点工具尚待固定远端 SHA 后独立审查 |
 | T01–T05 pilot | NOT_RUN | 需独立审查 PASS 和 Jovi 后续分发授权 |
 
 ## Release artifacts
 
 产物只存在外部 evidence，不进入 Git：
 
-- APK：`photo-director-0.2.0-beta.1-62114ed1.apk`，9,056,280 bytes，SHA-256 `e0af1bc6b6fcc3f3143d28929d6086d32d7f95078e23333139b080a93d4c04e7`
-- AAB：`photo-director-0.2.0-beta.1-62114ed1.aab`，8,570,196 bytes，SHA-256 `91f352a204b8e5047ed34a9adbdec48f709deaa00b31b2c06c41def7264ab072`
+- APK：`photo-director-0.2.0-beta.1-eafcf30f.apk`，9,056,280 bytes，SHA-256 `a4cd77c7949fd40eaee8c8e9909406c52a2c1eac962d3ffeb9f13b1660708bcb`
+- AAB：`photo-director-0.2.0-beta.1-eafcf30f.aab`，8,570,196 bytes，SHA-256 `91f352a204b8e5047ed34a9adbdec48f709deaa00b31b2c06c41def7264ab072`
 - APK/AAB/public identity certificate SHA-256：`623C7DB70A8AA8552BD59B20BC103152326062F7FEC3D6D9313F8BBB94469CD0`
 - Android build-tools：`37.0.0`
-- Final source-bound artifact summary：`release-final/qualification-summary.json` under the external evidence root.
+- Final source-bound artifact summary：`release-current-summary.json` under the external evidence root；摘要标记 `api35_runtime=PASS_EMULATOR_ONLY`、`beta_smoke=PASS_3_OF_3`。
 
 `jarsigner -strict` 对 Android App Bundle 的标准 JarInputStream 条目警告返回非零；本轮按计划要求的 `jarsigner -verify -verbose -certs` 成功，并另行提取 AAB 证书与 APK/public pin 比对。
 
 ## Runtime boundary
 
 - 所有 instrumentation 仅使用 API 35 `emulator-*`；检测到的物理设备未安装、未清除、未 instrumentation。
+- 当前真实 LAN Preflight：`BLOCKED_NO_RFC1918_INTERFACE`；本机没有可验证的 RFC1918 Private 网络接口，因此没有启动服务、创建防火墙规则或宣称 LAN 配对通过。
 - D2D 先在 wipe-data/no-snapshot AVD 上通过 clean 顺序完成；Picker 残留导致的首轮失败未被升级为 PASS。
 - Debug 测试包不能驱动签名 Release 包，Android 系统按签名匹配规则拒绝该组合；签名 APK 的产品行为改用直接 UI smoke 验证，不放宽签名边界。
 - 不包含照片、URI、来源文件名、数据库、模型权重、原始 AI 输出、设备 serial、密钥、密码或绝对私人媒体路径。
 
 ## Next gate
 
-四个线性提交、最终隐私审计、非 force push 和新的 detached Reviewer 已完成。Reviewer 对固定代码 SHA `c5a52ffbaa77305b14651d489bf8ac81e01215ca` 输出 `PASS`；本报告状态现固定为 `ANDROID_CLOSED_BETA_CANDIDATE_READY`。T01–T05、Beta 合并、APK 外发和公开发布仍未执行。
+当前必须先提交本轮试点工具/报告，运行最终隐私与静态门禁，非 force push 到 Beta 分支，再由新的 detached Reviewer 独立复核。只有 Reviewer PASS 后，才可在 Jovi 实际分发授权、Private LAN 与五位测试者到位时执行 T01–T05；Beta 合并、公开发布仍未执行。
