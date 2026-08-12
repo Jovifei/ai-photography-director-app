@@ -68,3 +68,10 @@
 ## Next gate
 
 候选已通过当前实现、签名、API 35、隐私和独立审查门禁。下一步只有在 Jovi 实际分发授权、Private LAN Preflight 通过、服务可达且五位测试者到位后执行 T01–T05；本机当前仍为 `BLOCKED_NO_RFC1918_INTERFACE`，因此本报告不宣称 LAN 或五人试点通过。Beta 合并、公开发布仍未执行。
+
+## Phone setup documentation follow-up
+
+- Final Beta docs-only follow-up: `51d41aa252ccf792e8a5c87db5f620343cca7568` (runtime product code unchanged).
+- Repository guide: `docs/ANDROID_BETA_PHONE_SETUP.md`; `docs/BETA_USER_GUIDE.md` links to it.
+- External pilot package regenerated at `E:\project\_benchmark_evidence\android-closed-beta-pilot\20260812T155333Z\`; package summary SHA-256 `073C6717F0A6C046CEE9917D3D5D9FD77B39937EC03D2D89C7AE8FFFEBA354AC`.
+- The package contains the setup guide, user guide, privacy policy, signed APK and SHA256SUMS; it contains no pairing material, private key, photo or raw model output.
