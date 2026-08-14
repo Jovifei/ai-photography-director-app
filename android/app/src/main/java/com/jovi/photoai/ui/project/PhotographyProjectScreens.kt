@@ -278,11 +278,13 @@ internal fun ProjectBoardScreen(
     onStartAnalysis: () -> Unit,
     onCancelAnalysis: () -> Unit,
     analysisInProgress: Boolean = false,
+    analysisServiceConnected: Boolean = false,
 ) {
     var pendingDeletionId by rememberSaveable(project.id) { mutableStateOf<String?>(null) }
     var statusFilterName by rememberSaveable(project.id) { mutableStateOf(ProjectStatusFilter.ALL.name) }
     val statusFilter = ProjectStatusFilter.valueOf(statusFilterName)
     val filteredRecords = records.filter(statusFilter::matches)
+    val primaryStatus = records.firstOrNull { it.photo.id == project.primaryReferenceId }?.analysisStatus
     ProjectScreenScaffold(title = "项目看板", project = project, onBack = onBack) {
         Text("${records.size}/$MAX_PROJECT_PHOTOS 张照片", style = MaterialTheme.typography.headlineSmall)
         Spacer(Modifier.height(AppDimensions.Space4))
@@ -295,6 +297,20 @@ internal fun ProjectBoardScreen(
             style = MaterialTheme.typography.bodyMedium,
         )
         Spacer(Modifier.height(AppDimensions.Space16))
+        if (!analysisServiceConnected) {
+            GlassSurface(modifier = Modifier.fillMaxWidth(), contentPadding = PaddingValues(AppDimensions.Space16)) {
+                Column(verticalArrangement = Arrangement.spacedBy(AppDimensions.Space4)) {
+                    GlassPill(text = "本机分析服务未连接")
+                    Text("可继续整理项目或无 AI 指导拍摄", style = MaterialTheme.typography.titleMedium)
+                    Text(
+                        "连接服务后才会逐张产生真实 READY 结果、项目汇总和 AI Camera Director 指导。",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = AppColors.TextSecondary,
+                    )
+                }
+            }
+            Spacer(Modifier.height(AppDimensions.Space16))
+        }
         if (records.isEmpty()) {
             EmptyState(
                 title = "项目还没有照片",
@@ -330,7 +346,7 @@ internal fun ProjectBoardScreen(
         }
         if (records.isNotEmpty()) {
             PrimaryActionButton(
-                text = if (analysisInProgress) "停止逐张分析" else "开始逐张分析",
+                text = if (analysisInProgress) "停止逐张分析" else "连接本机并逐张分析",
                 onClick = if (analysisInProgress) onCancelAnalysis else onStartAnalysis,
                 enabled = true,
                 modifier = Modifier.fillMaxWidth(),
@@ -344,7 +360,7 @@ internal fun ProjectBoardScreen(
             Spacer(Modifier.height(AppDimensions.Space12))
         }
         SecondaryActionButton(
-            text = if (project.primaryReferenceId == null) "选择拍摄方式" else "使用主参考进入拍摄",
+            text = projectShootingActionLabel(primaryStatus),
             onClick = onStartShooting,
             modifier = Modifier.fillMaxWidth(),
         )
@@ -369,8 +385,10 @@ internal fun ProjectSummaryScreen(
     onOpenPhoto: (String) -> Unit,
     onSelectPrimary: (String?) -> Unit,
     onStartShooting: () -> Unit,
+    analysisServiceConnected: Boolean = false,
 ) {
     val summary = projectSummaryOf(records, project.failedImportCount, project.primaryReferenceId)
+    val primaryStatus = records.firstOrNull { it.photo.id == project.primaryReferenceId }?.analysisStatus
     ProjectScreenScaffold(title = "项目汇总", project = project, onBack = onBack) {
         GlassSurface(modifier = Modifier.fillMaxWidth(), contentPadding = PaddingValues(AppDimensions.Space16)) {
             Column(verticalArrangement = Arrangement.spacedBy(AppDimensions.Space8)) {
@@ -378,13 +396,16 @@ internal fun ProjectSummaryScreen(
                     GlassPill(text = "真实分析尚未接入")
                     Text("还不能生成图片内容汇总", style = MaterialTheme.typography.titleLarge)
                     Text(
-                        "本项目有 ${summary.importedCount} 张私有照片；其中 ${summary.exampleGuidanceCount} 张仅有示例指导，" +
-                            "${summary.unavailableCount + summary.failedImportCount} 项未纳入汇总。",
+                        if (analysisServiceConnected) {
+                            "本项目还没有完成的 READY 结果；当前照片未参与汇总。"
+                        } else {
+                            "本机分析服务未连接；本项目的 ${summary.importedCount} 张私有照片当前未参与汇总。"
+                        },
                         style = MaterialTheme.typography.bodyMedium,
                         color = AppColors.TextSecondary,
                     )
                     Text(
-                        "示例指导不会被伪装成图片分析，也不会被混入项目结论。",
+                        "可继续整理项目，或使用主参考进入无 AI 指导拍摄；不会把示例内容混入项目结论。",
                         style = MaterialTheme.typography.labelMedium,
                         color = AppColors.AccentBlue,
                     )
@@ -437,11 +458,17 @@ internal fun ProjectSummaryScreen(
         )
         Spacer(Modifier.height(AppDimensions.Space20))
         PrimaryActionButton(
-            text = if (project.primaryReferenceId == null) "选择拍摄方式" else "使用主参考进入拍摄",
+            text = projectShootingActionLabel(primaryStatus),
             onClick = onStartShooting,
             modifier = Modifier.fillMaxWidth(),
         )
     }
+}
+
+internal fun projectShootingActionLabel(primaryStatus: PhotoAnalysisStatus?): String = when (primaryStatus) {
+    null -> "选择拍摄方式"
+    PhotoAnalysisStatus.READY -> "使用主参考进入 AI 拍摄"
+    else -> "使用主参考进行无 AI 拍摄"
 }
 
 @Composable

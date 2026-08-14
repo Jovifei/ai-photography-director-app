@@ -97,6 +97,7 @@ fun PhotographyDirectorApp() {
     var importReturnDestinationName by rememberSaveable { mutableStateOf(AppDestination.HOME.name) }
     var selectedProjectId by rememberSaveable { mutableStateOf<String?>(null) }
     var captureProjectId by rememberSaveable { mutableStateOf<String?>(null) }
+    var captureNotice by rememberSaveable { mutableStateOf<String?>(null) }
     var pendingProject by remember { mutableStateOf<PhotographyProject?>(null) }
     var activeReference by remember { mutableStateOf<AppReference?>(null) }
     var startupState by remember { mutableStateOf(ReferenceStartupState.RECONCILING) }
@@ -154,7 +155,16 @@ fun PhotographyDirectorApp() {
         if (recoverySummary.hasRecoveryNotice) recoverySummaryToShow = recoverySummary
         startupState = ReferenceStartupState.READY
     }
-    LaunchedEffect(destination, activeReference) {
+    val presentationDestination = when {
+        activeReference == null && destination in setOf(
+            AppDestination.ANALYSIS_DETAIL,
+            AppDestination.DIRECTOR_CARD,
+            AppDestination.CAMERA_DIRECTOR,
+        ) -> AppDestination.HOME
+        else -> guardedGuidanceDestination(destination, activeReference?.analysisStatus)
+    }
+
+    LaunchedEffect(destination, activeReference?.photo?.id, activeReference?.analysisStatus) {
         if (
             activeReference == null && destination in setOf(
                 AppDestination.ANALYSIS_DETAIL,
@@ -163,6 +173,10 @@ fun PhotographyDirectorApp() {
             )
         ) {
             destinationName = AppDestination.HOME.name
+        } else if (presentationDestination != destination) {
+            captureProjectId = selectedProjectId
+            captureNotice = offlineCaptureNotice(activeReference?.analysisStatus)
+            destinationName = presentationDestination.name
         }
     }
 
@@ -190,6 +204,7 @@ fun PhotographyDirectorApp() {
 
     fun selectProjectPrimary(referenceId: String?) {
         val project = selectedProject ?: return
+        captureNotice = null
         scope.launch { repository.setPrimaryReference(project.id, referenceId) }
     }
 
@@ -198,12 +213,17 @@ fun PhotographyDirectorApp() {
         val primaryRecord = selectedProjectRecords.firstOrNull { it.photo.id == project.primaryReferenceId }
         if (primaryRecord == null) {
             captureProjectId = project.id
+            captureNotice = null
             navigateTo(AppDestination.CAPTURE_ENTRY)
-        } else {
+        } else if (isRealAiGuidanceReady(primaryRecord.analysisStatus)) {
             activeReference = toAppReference(primaryRecord)
             libraryPreferences.saveLastActiveReferenceId(primaryRecord.photo.id)
             analysisReturnDestinationName = AppDestination.PROJECT_BOARD.name
             navigateTo(AppDestination.CAMERA_DIRECTOR)
+        } else {
+            captureProjectId = project.id
+            captureNotice = offlineCaptureNotice(primaryRecord.analysisStatus)
+            navigateTo(AppDestination.CAPTURE_ENTRY)
         }
     }
 
@@ -235,6 +255,7 @@ fun PhotographyDirectorApp() {
 
     fun openCaptureEntry(projectId: String? = null) {
         captureProjectId = projectId
+        captureNotice = null
         navigateTo(AppDestination.CAPTURE_ENTRY)
     }
 
@@ -307,8 +328,8 @@ fun PhotographyDirectorApp() {
 
     fun findReference(id: String): AppReference? = allReferences.firstOrNull { it.photo.id == id }
 
-    BackHandler(enabled = destination != AppDestination.HOME) {
-        when (destination) {
+    BackHandler(enabled = presentationDestination != AppDestination.HOME) {
+        when (presentationDestination) {
             AppDestination.HOME -> Unit
             AppDestination.PROJECT_IMPORT -> navigateTo(AppDestination.PROJECT_BOARD)
             AppDestination.PROJECT_BOARD -> navigateTo(AppDestination.HOME)
@@ -327,7 +348,7 @@ fun PhotographyDirectorApp() {
 
     if (!referenceContentVisible(startupState)) {
         ReferenceStartupRecoveryScreen()
-    } else when (destination) {
+    } else when (presentationDestination) {
         AppDestination.HOME -> ProjectsHomeScreen(
             projects = projectHomeItems,
             onCreateProject = ::createProject,
@@ -372,6 +393,7 @@ fun PhotographyDirectorApp() {
                 onStartAnalysis = { startProjectAnalysis(project.id) },
                 onCancelAnalysis = ::cancelProjectAnalysis,
                 analysisInProgress = analysisProjectId == project.id,
+                analysisServiceConnected = localConnection != null,
             )
         }
 
@@ -388,6 +410,7 @@ fun PhotographyDirectorApp() {
                 },
                 onSelectPrimary = ::selectProjectPrimary,
                 onStartShooting = ::startProjectShooting,
+                analysisServiceConnected = localConnection != null,
             )
         }
 
@@ -396,6 +419,7 @@ fun PhotographyDirectorApp() {
                 if (projectId == selectedProjectId) selectedProjectRecords.size else records.count { it.projectId == projectId }
             } ?: records.size,
             projectTitle = captureProjectId?.let { projectId -> projects.firstOrNull { it.id == projectId }?.title },
+            offlineNotice = captureNotice,
             onOpenInspiration = { navigateTo(AppDestination.HOME) },
             onChooseReference = {
                 if (captureProjectId != null) {

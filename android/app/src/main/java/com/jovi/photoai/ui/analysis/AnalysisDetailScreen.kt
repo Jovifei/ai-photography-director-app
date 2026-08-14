@@ -34,6 +34,7 @@ import com.jovi.photoai.ui.components.GlassSurface
 import com.jovi.photoai.ui.components.PrimaryActionButton
 import com.jovi.photoai.ui.design.AppColors
 import com.jovi.photoai.ui.design.AppDimensions
+import com.jovi.photoai.ui.isRealAiGuidanceReady
 import com.jovi.photoai.ui.reference.PrivateReferenceImage
 
 @Composable
@@ -91,7 +92,7 @@ internal fun AnalysisDetailScreen(
         }
 
         Spacer(Modifier.height(AppDimensions.Space20))
-        if (analysisStatus in setOf(PhotoAnalysisStatus.EXAMPLE_GUIDANCE, PhotoAnalysisStatus.READY)) {
+        if (isRealAiGuidanceReady(analysisStatus)) {
             listOf(
                 Triple("背景", analysis.scene, analysis.backgroundValue),
                 Triple("光线", sourceLabel, analysis.lighting),
@@ -113,7 +114,7 @@ internal fun AnalysisDetailScreen(
         } else {
             AnalysisSection(
                 title = "本张照片尚未可用",
-                body = "请保留项目中的其他照片，稍后在 Provider 可用后单独重试；当前不会替换成固定示例结果。",
+                body = "请保留项目中的其他照片，稍后在 Provider 可用后单独重试；当前不会显示固定示例建议，也不能进入 AI Camera Director。",
                 label = "安全状态",
                 accentColor = AppColors.Warning,
             )

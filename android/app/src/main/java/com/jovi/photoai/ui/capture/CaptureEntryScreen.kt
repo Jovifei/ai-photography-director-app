@@ -25,6 +25,7 @@ import com.jovi.photoai.ui.navigation.RootSection
 fun CaptureEntryScreen(
     referenceCount: Int,
     projectTitle: String? = null,
+    offlineNotice: String? = null,
     onOpenInspiration: () -> Unit,
     onChooseReference: () -> Unit,
     onDirectCapture: () -> Unit,
@@ -53,6 +54,17 @@ fun CaptureEntryScreen(
             style = MaterialTheme.typography.bodyLarge,
             color = AppColors.TextSecondary,
         )
+        offlineNotice?.takeIf(String::isNotBlank)?.let { notice ->
+            GlassSurface(
+                modifier = Modifier.fillMaxWidth(),
+                contentPadding = androidx.compose.foundation.layout.PaddingValues(AppDimensions.CardPadding),
+            ) {
+                Column(verticalArrangement = Arrangement.spacedBy(AppDimensions.Space4)) {
+                    Text("无 AI 指导拍摄", style = MaterialTheme.typography.titleMedium, color = AppColors.TextPrimary)
+                    Text(notice, style = MaterialTheme.typography.bodyMedium, color = AppColors.TextSecondary)
+                }
+            }
+        }
         GlassSurface(
             modifier = Modifier.fillMaxWidth(),
             contentPadding = androidx.compose.foundation.layout.PaddingValues(AppDimensions.CardPadding),
@@ -72,7 +84,7 @@ fun CaptureEntryScreen(
                         if (projectTitle == null) {
                             "选择一张参考图后，可继续 Reference → Director 流程。"
                         } else {
-                            "返回项目看板，将其中一张设为主参考后再进入指导拍摄。"
+                            "返回项目看板；只有已完成 READY 分析的主参考可进入 AI 指导，其他主参考可无 AI 拍摄。"
                         }
                     } else {
                         "选择参考图会打开系统 Photo Picker；不会申请相册读取权限或上传图片。"
