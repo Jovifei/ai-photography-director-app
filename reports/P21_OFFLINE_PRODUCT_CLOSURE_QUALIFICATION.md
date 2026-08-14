@@ -40,9 +40,8 @@ Independent-review boundary: `6edb41ddeca79c24f981f5691f6c7673291d74eb`
 
 ## Signed artifact binding
 
-The final release qualification is external to Git at:
-
-`E:\project\_benchmark_evidence\p21-offline-product-closure\20260814T165113Z\signed-release-final-542011d\`
+The final release qualification is external to Git under redacted evidence ID
+`p21-offline-product-closure/20260814T165113Z/signed-release-final-542011d`.
 
 - Source SHA: `542011dc4e7075c5e19870641fa2a10be6d8d77f`
 - Package/version: `com.jovi.photoai` / `0.2.0-beta.1` / code `2`
@@ -56,9 +55,9 @@ The earlier pre-commit artifact run is intentionally not cited as final evidence
 
 ## D2D binding
 
-External D2D summary:
+External D2D evidence ID:
 
-`E:\project\_benchmark_evidence\p21-offline-product-closure\20260814T165113Z\ui1-d2d-api35-r2\backup-restore-summary.json`
+`p21-offline-product-closure/20260814T165113Z/ui1-d2d-api35-r2/backup-restore-summary.json`
 
 It records `PASS` for system Picker, 100%/200% semantic checks, LocalTransport restore, official D2D automatic restore, and reconciliation. Summary SHA-256: `35C857A81F1C177A391C2C6FA14D008C4A41357469C7A845705336BE348C31D6`.
 
@@ -68,7 +67,7 @@ The Provider, Coordinator, Room database, READY-only summary Provider, and summa
 
 ## Independent review binding
 
-The independent review ran from a new clean detached worktree at `6edb41ddeca79c24f981f5691f6c7673291d74eb` and returned `PASS`. It independently re-ran the Debug/Test APK, JVM (119/0/0/0), Debug and Release lint (0 errors), signed APK/AAB verification, service/contract/privacy checks, official API 35 D2D, P21 truthfulness (3/3), offline Beta smoke (3/3), exporter retry (1/1), and signed Release install/launch. The external review report is `E:\project\_benchmark_evidence\p21-offline-product-closure\20260814T165113Z\independent-review-6edb41d.md` with SHA-256 `0DA6A1BE19CD59C0CD011784F911C41B78B025D81922102D9CD5827D525F64FE`.
+The independent review ran from a new clean detached worktree at `6edb41ddeca79c24f981f5691f6c7673291d74eb` and returned `PASS`. It independently re-ran the Debug/Test APK, JVM (119/0/0/0), Debug and Release lint (0 errors), signed APK/AAB verification, service/contract/privacy checks, official API 35 D2D, P21 truthfulness (3/3), offline Beta smoke (3/3), exporter retry (1/1), and signed Release install/launch. Its redacted external evidence ID is `independent-review-6edb41d.md`; SHA-256 `0DA6A1BE19CD59C0CD011784F911C41B78B025D81922102D9CD5827D525F64FE`.
 
 The signed runtime artifact is bound to `542011d`; commits through the review boundary add only qualification/documentation material after that runtime code. No Qwen service, LAN Provider, night pipeline, real photo, physical device, five-person trial, main merge, or public distribution was performed.
 
