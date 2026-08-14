@@ -1,6 +1,6 @@
 # P21：无 Qwen 服务的 Android 产品收口与接入就绪闭环
 
-状态：`P21_OFFLINE_PRODUCT_CLOSURE_QUALIFIED_AWAITING_PUSH_AND_INDEPENDENT_REVIEW`
+状态：`ANDROID_OFFLINE_BETA_PRODUCT_CLOSURE_READY_AWAITING_QWEN_AND_PIPELINE`
 基线：`origin/codex/android-beta-release-candidate` @ `0bd618109202b1ce7c5584275da903e4728b0d32`
 
 ## 目标
@@ -21,7 +21,14 @@
 - [x] 使用合成媒体完成 JVM/Compose/API 35 离线 Gate、D2D 和 Release 复验。
 - [x] 复核 P20 核心 Provider/Coordinator/Room/summary canonical blob 未漂移；P0 UI 变化由合成路由测试覆盖。
 - [x] 运行隐私、权限、敏感产物与差异检查；不提交私人数据、APK/AAB、证书或配对材料。
-- [ ] 创建文档提交、非 force push、detached 独立审查，并更新最终任务/Obsidian状态。
+- [x] 创建文档提交、非 force push、detached 独立审查，并更新最终任务/Obsidian状态。
+
+## 审查结论（2026-08-15）
+
+- [x] 三个 P21 线性提交已推送至 `codex/p21-offline-product-closure`；固定独立审查边界为 `6edb41ddeca79c24f981f5691f6c7673291d74eb`。
+- [x] 新 detached worktree 独立审查为 `PASS`：P20 核心 blob、签名 APK/AAB、119 项 JVM、lint、服务/隐私、官方 API 35 D2D、离线真实性、另存为与 Release 启动均已复验。
+- [x] 专用 API 35 AVD 已恢复出厂并停止；没有接触物理设备、真实照片、Qwen、LAN 服务、夜间 Pipeline 或五人试点。
+- [ ] 后续只保留两个需独立授权的激活 Gate：本机 Qwen 私有 LAN 与真实逐张分析；夜间 Pipeline Photo Knowledge Bundle 实际接入。
 
 ## 边界
 

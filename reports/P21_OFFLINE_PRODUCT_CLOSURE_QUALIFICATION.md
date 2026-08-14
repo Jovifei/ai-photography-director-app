@@ -1,9 +1,10 @@
 # P21 Offline Product Closure Qualification
 
-Status: `P21_OFFLINE_PRODUCT_CLOSURE_QUALIFIED_AWAITING_INDEPENDENT_REVIEW`
+Status: `ANDROID_OFFLINE_BETA_PRODUCT_CLOSURE_READY_AWAITING_QWEN_AND_PIPELINE`
 
 Baseline: `0bd618109202b1ce7c5584275da903e4728b0d32`
 Runtime candidate: `542011dc4e7075c5e19870641fa2a10be6d8d77f`
+Independent-review boundary: `6edb41ddeca79c24f981f5691f6c7673291d74eb`
 
 ## Product truthfulness result
 
@@ -35,7 +36,7 @@ Runtime candidate: `542011dc4e7075c5e19870641fa2a10be6d8d77f`
 | API 35 Picker, responsive, Local backup | PASS | real system Picker plus 100%/200% semantic tests and LocalTransport restore |
 | API 35 D2D | PASS | official single-device automatic restore and reconciliation |
 | Signed release | PASS | APK/AAB verification, certificate pin, install and MainActivity launch |
-| Independent review | NOT_RUN | required after push from a detached worktree |
+| Independent review | PASS | clean detached worktree at `6edb41d`; all required static, signing and API 35 layers re-run |
 
 ## Signed artifact binding
 
@@ -65,6 +66,12 @@ It records `PASS` for system Picker, 100%/200% semantic checks, LocalTransport r
 
 The Provider, Coordinator, Room database, READY-only summary Provider, and summary model retain their baseline canonical Git blobs. P21 intentionally changes `PhotographyDirectorApp` and `AnalysisDetailScreen` to enforce the non-`READY` offline boundary; those routes are requalified synthetically above. P21 does not re-read the 20 private photos or re-run the Qwen runtime.
 
+## Independent review binding
+
+The independent review ran from a new clean detached worktree at `6edb41ddeca79c24f981f5691f6c7673291d74eb` and returned `PASS`. It independently re-ran the Debug/Test APK, JVM (119/0/0/0), Debug and Release lint (0 errors), signed APK/AAB verification, service/contract/privacy checks, official API 35 D2D, P21 truthfulness (3/3), offline Beta smoke (3/3), exporter retry (1/1), and signed Release install/launch. The external review report is `E:\project\_benchmark_evidence\p21-offline-product-closure\20260814T165113Z\independent-review-6edb41d.md` with SHA-256 `0DA6A1BE19CD59C0CD011784F911C41B78B025D81922102D9CD5827D525F64FE`.
+
+The signed runtime artifact is bound to `542011d`; commits through the review boundary add only qualification/documentation material after that runtime code. No Qwen service, LAN Provider, night pipeline, real photo, physical device, five-person trial, main merge, or public distribution was performed.
+
 ## Next gate
 
-Push the three P21 commits, then perform a detached independent review. If it passes, the only future activation gates are separate authorization for (1) private-LAN Qwen service and real per-photo analysis, and (2) night-pipeline Bundle consumption.
+P21 is closed as an honest offline Android Beta candidate. The only future activation gates are separate authorization for (1) private-LAN Qwen service and real per-photo analysis, and (2) night-pipeline Bundle consumption. Main merge, APK distribution, five-person pilot and public release remain out of scope.
