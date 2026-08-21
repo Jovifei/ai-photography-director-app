@@ -30,7 +30,7 @@
 | `git diff --check` | PASS | 仅有 Windows 换行提示，无差异错误 |
 | Signed Release APK/AAB | PASS | APK `apksigner`、AAB `jarsigner -verify`、证书 pin 均通过 |
 | Signed Release install/launch | PASS | API 35 专用 emulator 安装、启动、包名和版本核对通过 |
-| Qwen3 / private LAN | NOT_RUN | 明确不在 P22 范围 |
+| Qwen3 / private LAN | BLOCKED_PREFLIGHT | 模型/Python 前置通过；Private LAN 预检以 `P20_PILOT_SESSION_BLOCKED_NETWORK_PROFILE` 安全停止，未启动服务、TLS 或防火墙 |
 | Night pipeline artifact | NOT_RUN | 等待独立批准的 Bundle artifact |
 | Real photos / physical device | NOT_RUN | 本轮未读取真实照片，未触碰实体设备 |
 | Independent review | NOT_RUN | 按 Jovi 指令不执行 |
@@ -49,7 +49,7 @@
 
 ## 后续唯一入口
 
-1. 独立授权后接入本机 Qwen3 Private LAN：逐张真实分析、READY-only 汇总和 AI Camera Director。
+1. 将受控 Wi-Fi 的 Windows 网络类别设为 `Private` 后重新运行预检，再经独立授权接入本机 Qwen3 Private LAN：逐张真实分析、READY-only 汇总和 AI Camera Director。
 2. 独立授权后接入夜间管线 Bundle artifact；先通过 PKB1 合同、ID 映射和完整性 Gate，再进入 App。
 
 P22 到此停止，不进入 Pose、Pipeline 运行、Cloud、iOS、发布或五人试点。
