@@ -32,6 +32,18 @@
 
 如果手机上已经有旧 Beta，使用更新安装即可；不要为了排查问题先清除 App 数据，因为这会删除本机项目状态。
 
+如果你希望从 Windows 通过 USB 安装，可以在候选仓库目录执行下面的安全脚本。它只允许指定的实体 Android 设备，执行同签名的 `adb install -r`；会拒绝模拟器，不会卸载、清除数据或运行 instrumentation：
+
+```powershell
+$apk = 'E:\project\_benchmark_evidence\p22-offline-product-closure\<UTC_RUN_ID>\phone-test-package\photo-director-0.2.0-beta.1.apk'
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File `
+  .\scripts\install_android_beta_phone.ps1 `
+  -Serial '<手机 adb serial>' `
+  -ApkPath $apk
+```
+
+如果脚本返回 `P20_PHONE_INSTALL_BLOCKED_SAME_SIGNATURE_OR_DEVICE_POLICY`，不要卸载手机上的旧 App；先确认它是否由同一长期签名身份安装，或改用系统文件管理器手动安装。
+
 ## 2. 准备 Windows 电脑
 
 ### 2.1 确认模型已在本机
