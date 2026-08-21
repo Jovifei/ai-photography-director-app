@@ -3,6 +3,8 @@
 from __future__ import annotations
 
 import copy
+import hashlib
+import hmac
 import json
 import re
 import sys
@@ -23,7 +25,21 @@ FORBIDDEN_KEYS = frozenset(
         "raw_output",
     }
 )
-UNSAFE_TRANSPORT_TEXT = re.compile(r"(?:\b(?:content|file|https?)://|[A-Za-z]:[\\/]|(?:^|\s)/[^\s]+)", re.IGNORECASE)
+UNSAFE_TRANSPORT_TEXT = re.compile(
+    r"(?:[a-z][a-z0-9+.-]*://|(?:content|file):|(?:^|\s)[a-z]:[\\/]|/sdcard(?:/|$)|/storage(?:/|$)|\.\.[\\/])",
+    re.IGNORECASE,
+)
+PHOTOGRAPHY_FIELDS = (
+    "scene",
+    "background_story",
+    "lighting",
+    "composition",
+    "subject_intent",
+    "emotion",
+    "pose_template",
+    "camera_position",
+    "director_prompt",
+)
 
 
 def load(path: Path) -> dict:
@@ -58,17 +74,64 @@ def semantic_errors(instance: dict) -> list[str]:
     return errors
 
 
+def canonical_payload_bytes(instance: dict) -> bytes:
+    """Mirror Android canonicalPayloadBytes exactly; integrity is intentionally excluded."""
+    output = bytearray(b"PKB1\n")
+
+    def append(name: str, value: str) -> None:
+        for token in (name, value):
+            encoded = token.encode("utf-8")
+            output.extend(str(len(encoded)).encode("ascii"))
+            output.extend(b":")
+            output.extend(encoded)
+            output.extend(b"\n")
+
+    append("contract_version", instance["contract_version"])
+    append("bundle_id", instance["bundle_id"])
+    append("source.origin", instance["source"]["origin"])
+    append("source.producer_id", instance["source"]["producer_id"])
+    append("source.release_id", instance["source"]["release_id"])
+    references = instance["references"]
+    append("references.count", str(len(references)))
+    for index, item in enumerate(references):
+        prefix = f"references[{index}]"
+        append(f"{prefix}.reference_id", item["reference_id"])
+        for field in PHOTOGRAPHY_FIELDS:
+            append(f"{prefix}.photography.{field}", item["photography"][field])
+    return bytes(output)
+
+
+def canonical_payload_sha256(instance: dict) -> str:
+    return hashlib.sha256(canonical_payload_bytes(instance)).hexdigest()
+
+
+def integrity_errors(instance: dict) -> list[str]:
+    try:
+        declared = instance["integrity"]["payload_sha256"].lower()
+        actual = canonical_payload_sha256(instance)
+    except (KeyError, TypeError, UnicodeError):
+        return ["$.integrity.payload_sha256: canonical payload unavailable"]
+    if not hmac.compare_digest(declared, actual):
+        return ["$.integrity.payload_sha256: digest mismatch"]
+    return []
+
+
+def contract_errors(instance: dict, schema: dict) -> list[object]:
+    errors: list[object] = schema_errors(instance, schema)
+    errors.extend(semantic_errors(instance))
+    if not errors:
+        errors.extend(integrity_errors(instance))
+    return errors
+
+
 def check(name: str, assertion: bool) -> None:
     if not assertion:
         raise AssertionError(name)
     print(f"PASS {name}")
 
 
-def rejects(name: str, candidate: dict, schema: dict, semantic: bool = False) -> None:
-    errors = schema_errors(candidate, schema)
-    if semantic:
-        errors += semantic_errors(candidate)
-    check(name, bool(errors))
+def rejects(name: str, candidate: dict, schema: dict) -> None:
+    check(name, bool(contract_errors(candidate, schema)))
 
 
 def main() -> int:
@@ -78,6 +141,12 @@ def main() -> int:
     check("SCHEMA_SELF_CHECK", True)
     check("FIXTURE_SCHEMA_ACCEPTANCE", not schema_errors(fixture, schema))
     check("FIXTURE_PRIVACY_BOUNDARY", not semantic_errors(fixture))
+    check("FIXTURE_PKB1_DIGEST", not integrity_errors(fixture))
+    check("FIXTURE_DIGEST_IS_LOWERCASE", fixture["integrity"]["payload_sha256"] == fixture["integrity"]["payload_sha256"].lower())
+
+    tampered_payload = copy.deepcopy(fixture)
+    tampered_payload["references"][0]["photography"]["scene"] += " changed"
+    rejects("REJECT_TAMPERED_PAYLOAD_DIGEST", tampered_payload, schema)
 
     unknown_version = copy.deepcopy(fixture)
     unknown_version["contract_version"] = "2.0"
@@ -89,19 +158,19 @@ def main() -> int:
 
     image_field = copy.deepcopy(fixture)
     image_field["references"][0]["image_uri"] = "content://media/private/1"
-    rejects("REJECT_IMAGE_URI_FIELD", image_field, schema, semantic=True)
+    rejects("REJECT_IMAGE_URI_FIELD", image_field, schema)
 
     model_field = copy.deepcopy(fixture)
     model_field["source"]["model_weight"] = "fixture-weight"
-    rejects("REJECT_MODEL_WEIGHT_FIELD", model_field, schema, semantic=True)
+    rejects("REJECT_MODEL_WEIGHT_FIELD", model_field, schema)
 
     unsafe_text = copy.deepcopy(fixture)
     unsafe_text["references"][0]["photography"]["director_prompt"] = "Read C:\\private\\photo.jpg before capture."
-    rejects("REJECT_PATH_LIKE_GUIDANCE", unsafe_text, schema, semantic=True)
+    rejects("REJECT_PATH_LIKE_GUIDANCE", unsafe_text, schema)
 
     duplicate_reference = copy.deepcopy(fixture)
     duplicate_reference["references"].append(copy.deepcopy(duplicate_reference["references"][0]))
-    rejects("REJECT_DUPLICATE_REFERENCE_ID", duplicate_reference, schema, semantic=True)
+    rejects("REJECT_DUPLICATE_REFERENCE_ID", duplicate_reference, schema)
     return 0
 
 

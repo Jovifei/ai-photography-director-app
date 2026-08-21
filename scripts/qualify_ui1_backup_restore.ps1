@@ -38,7 +38,17 @@ function Invoke-Ui1Adb {
 
 function Invoke-Ui1Instrumentation {
     param([Parameter(Mandatory)][string]$ClassOrMethod)
+    Invoke-Ui1Adb -Arguments @('shell', 'am', 'force-stop', $ui1Package) | Out-Null
     Invoke-Ui1Adb -Arguments @('shell', 'am', 'start', '-W', '-n', "$ui1Package/.MainActivity") | Out-Null
+    $ui1LaunchDeadline = (Get-Date).ToUniversalTime().AddSeconds(15)
+    do {
+        $ui1Activities = Invoke-Ui1Adb -Arguments @('shell', 'dumpsys', 'activity', 'activities')
+        if ($ui1Activities -match "(?:topResumedActivity|ResumedActivity).*$([regex]::Escape($ui1Package))") { break }
+        Start-Sleep -Milliseconds 250
+    } while ((Get-Date).ToUniversalTime() -lt $ui1LaunchDeadline)
+    if (-not ($ui1Activities -match "(?:topResumedActivity|ResumedActivity).*$([regex]::Escape($ui1Package))")) {
+        throw 'APP_ACTIVITY_NOT_RESUMED'
+    }
     Invoke-Ui1PreservingInstrumentation $ClassOrMethod
 }
 
@@ -88,7 +98,11 @@ function Invoke-Ui1PreservingInstrumentation {
     $ui1Output = Invoke-Ui1Adb -Arguments @(
         'shell', 'am', 'instrument', '-w', '-r', '-e', 'class', $ClassOrMethod, "$ui1TestPackage/$ui1TestRunner"
     )
-    if (-not ($ui1Output -match 'OK \([0-9]+ test')) { throw 'PRESERVING_INSTRUMENTATION_FAILED' }
+    $ui1OutputText = [string]::Join("`n", @($ui1Output))
+    if ($ui1OutputText -match 'FAILURES!!!|There was [0-9]+ failure') {
+        throw 'INSTRUMENTATION_ASSERTION_FAILED'
+    }
+    if ($ui1OutputText -notmatch 'OK \([0-9]+ tests?\)') { throw 'PRESERVING_INSTRUMENTATION_FAILED' }
 }
 
 function Restore-Ui1App {

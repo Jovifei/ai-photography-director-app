@@ -19,10 +19,27 @@ class ProjectSummaryTest {
 
         assertEquals(3, summary.importedCount)
         assertEquals(1, summary.providerReadyCount)
+        assertEquals(0, summary.knowledgeBundleReadyCount)
         assertEquals(1, summary.exampleGuidanceCount)
         assertEquals(1, summary.unavailableCount)
         assertEquals(2, summary.failedImportCount)
         assertEquals(4, summary.excludedCount)
+    }
+
+    @Test
+    fun summary_countsVerifiedBundleReadySeparately_andRejectsBareReadyFlag() {
+        val summary = projectSummaryOf(
+            records = listOf(
+                record("bundle", PhotoAnalysisStatus.READY, useBundleProvenance = true),
+                record("bare", PhotoAnalysisStatus.READY, useProviderProvenance = false),
+            ),
+            failedImportCount = 0,
+        )
+
+        assertEquals(0, summary.providerReadyCount)
+        assertEquals(1, summary.knowledgeBundleReadyCount)
+        assertEquals(1, summary.guidanceReadyCount)
+        assertEquals(1, summary.excludedCount)
     }
 
     @Test
@@ -48,6 +65,8 @@ class ProjectSummaryTest {
         status: PhotoAnalysisStatus,
         scene: String = "场景",
         prompt: String = "提示",
+        useProviderProvenance: Boolean = status == PhotoAnalysisStatus.READY,
+        useBundleProvenance: Boolean = false,
     ) = ReferenceRecord(
         photo = ReferencePhoto(id, "照片", "仅用于测试", "示例指导", "$id.jpg", 1f),
         bundle = ReferenceBundle(id, scene, "背景", "光线", "构图", "主体", "情绪", "姿态", "机位", prompt, "1"),
@@ -55,5 +74,28 @@ class ProjectSummaryTest {
         createdAtEpochMillis = 1L,
         projectId = "project",
         analysisStatus = status,
+        analysisProvenance = if (useProviderProvenance && !useBundleProvenance) providerProvenance() else null,
+        knowledgeBundleProvenance = if (useBundleProvenance) bundleProvenance(id) else null,
+    )
+
+    private fun providerProvenance() = ProviderAnalysisProvenance(
+        providerId = "provider",
+        providerType = ProviderType.LOCAL_SERVICE,
+        modelId = "model",
+        modelRevision = "revision",
+        modelArtifactSha256 = "a".repeat(64),
+        runtimeId = "runtime",
+        completedAtEpochMillis = 2L,
+        startedAtEpochMillis = 1L,
+    )
+
+    private fun bundleProvenance(referenceId: String) = KnowledgeBundleProvenance(
+        bundleId = "bundle_001",
+        producerReferenceId = referenceId,
+        producerId = "pipeline",
+        origin = KnowledgeBundleOrigin.PIPELINE,
+        releaseId = "release_001",
+        payloadSha256 = "b".repeat(64),
+        importedAtEpochMillis = 2L,
     )
 }

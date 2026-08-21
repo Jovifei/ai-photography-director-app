@@ -11,6 +11,8 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.jovi.photoai.MainActivity
 import com.jovi.photoai.data.demo.DemoReferenceAnalyzer
 import com.jovi.photoai.data.reference.PhotoAnalysisStatus
+import com.jovi.photoai.data.reference.KnowledgeBundleOrigin
+import com.jovi.photoai.data.reference.KnowledgeBundleProvenance
 import com.jovi.photoai.ui.analysis.AnalysisDetailScreen
 import com.jovi.photoai.ui.capture.CaptureEntryScreen
 import com.jovi.photoai.ui.design.PhotoDirectorTheme
@@ -70,6 +72,19 @@ class P21OfflineProductAndroidTest {
                         bundle = DemoReferenceAnalyzer.analyze("p21_fixture", "synthetic-fixture"),
                         sourceLabel = "合成夹具",
                         analysisStatus = status,
+                        knowledgeBundleProvenance = if (status == PhotoAnalysisStatus.READY) {
+                            KnowledgeBundleProvenance(
+                                bundleId = "p21_fixture_bundle",
+                                producerReferenceId = "p21_fixture",
+                                producerId = "synthetic_test",
+                                origin = KnowledgeBundleOrigin.PIPELINE,
+                                releaseId = "p21_fixture_release",
+                                payloadSha256 = "a".repeat(64),
+                                importedAtEpochMillis = 1L,
+                            )
+                        } else {
+                            null
+                        },
                         onBack = {},
                         onOpenDirectorCard = {},
                     )

@@ -1,18 +1,18 @@
 {
   "contract_version": "1.0",
-  "bundle_id": "bundle_fixture_p21_001",
+  "bundle_id": "bundle_fixture_p22_001",
   "source": {
     "origin": "PIPELINE",
     "producer_id": "approved_pipeline_fixture",
-    "release_id": "release_fixture_p21_001"
+    "release_id": "release_fixture_p22_001"
   },
   "integrity": {
     "algorithm": "SHA-256",
-    "payload_sha256": "e62fca0a1e9dbf7f2b5fa5a83e6134d073fd1567185fb2c7c9750d4b8d65a6c8"
+    "payload_sha256": "9bd85c8b1be3e3544d9a74b4140e59fc57f85e6b97a343d7c6fba2018048bb69"
   },
   "references": [
     {
-      "reference_id": "reference_fixture_p21_001",
+      "reference_id": "reference_fixture_p22_001",
       "photography": {
         "scene": "Synthetic indoor portrait setting",
         "background_story": "Use the quiet wall rhythm to keep attention on the subject.",
