@@ -13,3 +13,4 @@
 - P22 implementation qualification 通过不等于 Pipeline artifact 已接入：离线 Bundle 只能提供逐张、带 provenance 的 READY，项目级汇总和夜间管线仍保持独立授权边界。
 - 手机配置指南中的命令必须从当前候选仓库目录解析脚本，不能硬编码已经替代的旧 worktree 路径。
 - Qwen 激活前置要区分模型可用与网络可用：`P20_PILOT_SESSION_BLOCKED_NETWORK_PROFILE` 时保持服务/TLS/防火墙全未启动，不用模型检查结果冒充 LAN 可用。
+- 网络资格修复应提供默认只读、显式 `-Apply` 的管理员脚本，并拒绝虚拟/VPN/WSL 接口；不要在 agent 任务中静默改变 Windows 网络类别。

@@ -74,6 +74,20 @@ Get-NetIPAddress -AddressFamily IPv4 |
 
 如果类别是 `Public`，请在 Windows“设置 → 网络和 Internet → Wi‑Fi → 当前网络属性”把网络配置文件改为“专用”。公司网络、访客网络或安全软件可能禁止修改；这种情况下不要绕过策略，换用你控制的私有 Wi‑Fi。
 
+也可以先在仓库目录运行只读诊断：
+
+```powershell
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\scripts\qualify_windows_private_network.ps1
+```
+
+如果输出了合格的真实硬件接口编号，只有在你确认这是受控私有 Wi‑Fi、并以管理员 PowerShell 明确执行时，才使用：
+
+```powershell
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\scripts\qualify_windows_private_network.ps1 -InterfaceIndex <以太网接口编号> -Apply
+```
+
+脚本拒绝 FlClash、WSL、VPN、公共地址和非硬件接口；不带 `-Apply` 时绝不修改系统设置。
+
 把下面的 `$lanIp` 替换为电脑在该 Private Wi‑Fi 上的 IPv4 地址；不要把地址写入仓库或反馈记录。
 
 ## 3. 启动本机 Qwen HTTPS 服务
