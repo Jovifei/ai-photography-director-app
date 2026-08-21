@@ -11,3 +11,4 @@
 - 通过嵌套 PowerShell 调用 Gradle 时要显式继承 `ANDROID_HOME`；缺少 SDK 前置不应被误判为签名或产品失败。
 - 独立审查必须在固定远端 SHA 的干净 detached worktree 中执行；其 `PASS` 只能覆盖实际复跑的静态、签名和 API 35 层，不得外推为 Qwen/LAN、夜间 Pipeline、五人试点、main 合并或发布完成。
 - P22 implementation qualification 通过不等于 Pipeline artifact 已接入：离线 Bundle 只能提供逐张、带 provenance 的 READY，项目级汇总和夜间管线仍保持独立授权边界。
+- 手机配置指南中的命令必须从当前候选仓库目录解析脚本，不能硬编码已经替代的旧 worktree 路径。

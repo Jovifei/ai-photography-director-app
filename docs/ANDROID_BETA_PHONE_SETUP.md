@@ -83,14 +83,16 @@ Get-NetIPAddress -AddressFamily IPv4 |
 在 PowerShell 中执行：
 
 ```powershell
-$repo = 'E:\project\_worktrees\ai-photography-director-app-android-beta-release-candidate'
+$repo = (Get-Location).Path # 在包含 scripts\start_photoai_pilot_session.ps1 的 P22 候选仓库目录执行
+$startScript = Join-Path $repo 'scripts\start_photoai_pilot_session.ps1'
+if (-not (Test-Path -LiteralPath $startScript)) { throw '请先切换到包含 P22 候选脚本的仓库目录' }
 $python = 'E:\AI_Tools\Other\LocalLLM\photoai-service-venv\Scripts\python.exe'
 $model = 'E:\AI_Tools\Other\LocalLLM\Qwen3-VL-2B-Instruct\89644892e4d85e24eaac8bacfd4f463576704203'
 $lanIp = '192.168.x.x' # 改成上一步确认的 Private Wi‑Fi IPv4
 $session = 'E:\project\_benchmark_evidence\android-closed-beta-pilot\phone-session-<UTC>'
 
 & powershell.exe -NoProfile -ExecutionPolicy Bypass -File `
-  (Join-Path $repo 'scripts\start_photoai_pilot_session.ps1') `
+  $startScript `
   -Mode Run `
   -LanIp $lanIp `
   -SessionDirectory $session `
