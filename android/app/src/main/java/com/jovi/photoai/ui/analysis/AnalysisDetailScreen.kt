@@ -25,6 +25,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import com.jovi.photoai.data.reference.PhotoAnalysisStatus
+import com.jovi.photoai.data.reference.KnowledgeBundleProvenance
 import com.jovi.photoai.data.reference.ProviderAnalysisProvenance
 import com.jovi.photoai.reference.ReferenceBundle
 import com.jovi.photoai.reference.toReferenceAnalysis
@@ -45,6 +46,7 @@ internal fun AnalysisDetailScreen(
     title: String = "参考图分析",
     analysisStatus: PhotoAnalysisStatus = PhotoAnalysisStatus.EXAMPLE_GUIDANCE,
     analysisProvenance: ProviderAnalysisProvenance? = null,
+    knowledgeBundleProvenance: KnowledgeBundleProvenance? = null,
     onBack: () -> Unit,
     onOpenDirectorCard: () -> Unit,
 ) {
@@ -72,13 +74,17 @@ internal fun AnalysisDetailScreen(
         Text(title, style = MaterialTheme.typography.displaySmall, color = AppColors.TextPrimary)
         Spacer(Modifier.height(AppDimensions.Space8))
         Text(
-            analysisStatusMessage(analysisStatus),
+            analysisStatusMessage(analysisStatus, analysisProvenance != null, knowledgeBundleProvenance != null),
             style = MaterialTheme.typography.titleMedium,
             color = AppColors.AccentBlue,
         )
         if (analysisStatus == PhotoAnalysisStatus.READY && analysisProvenance != null) {
             Spacer(Modifier.height(AppDimensions.Space8))
             AnalysisProvenanceSummary(analysisProvenance)
+        }
+        if (analysisStatus == PhotoAnalysisStatus.READY && knowledgeBundleProvenance != null) {
+            Spacer(Modifier.height(AppDimensions.Space8))
+            KnowledgeBundleProvenanceSummary(knowledgeBundleProvenance)
         }
         Spacer(Modifier.height(AppDimensions.Space20))
         GlassSurface(
@@ -92,7 +98,7 @@ internal fun AnalysisDetailScreen(
         }
 
         Spacer(Modifier.height(AppDimensions.Space20))
-        if (isRealAiGuidanceReady(analysisStatus)) {
+        if (isRealAiGuidanceReady(analysisStatus, analysisProvenance != null, knowledgeBundleProvenance != null)) {
             listOf(
                 Triple("背景", analysis.scene, analysis.backgroundValue),
                 Triple("光线", sourceLabel, analysis.lighting),
@@ -127,12 +133,20 @@ internal fun AnalysisDetailScreen(
     }
 }
 
-private fun analysisStatusMessage(status: PhotoAnalysisStatus): String = when (status) {
+private fun analysisStatusMessage(
+    status: PhotoAnalysisStatus,
+    hasProviderProvenance: Boolean,
+    hasKnowledgeBundleProvenance: Boolean,
+): String = when (status) {
     PhotoAnalysisStatus.EXAMPLE_GUIDANCE -> "示例指导：不连接 AI、不上传图片、不生成实时 Pose，也不声称分析了这张照片。"
     PhotoAnalysisStatus.QUEUED -> "这张照片等待真实 Provider 分析；当前不会回退为示例结果。"
     PhotoAnalysisStatus.IMPORTED -> "这张照片已导入，等待真实 Provider 分析。"
     PhotoAnalysisStatus.RUNNING -> "这张照片正在由真实 Provider 分析；完成前不会显示推断结论。"
-    PhotoAnalysisStatus.READY -> "此结果来自真实 Provider 的结构化分析；详情和不确定性会随 Provider 记录显示。"
+    PhotoAnalysisStatus.READY -> when {
+        hasProviderProvenance -> "此结果来自本机 Provider 的结构化分析；详情和不确定性会随来源记录显示。"
+        hasKnowledgeBundleProvenance -> "此结果来自用户选择并完成完整性校验的离线知识包；未声称验证了生产者身份。"
+        else -> "此记录缺少可信来源，已禁止进入 AI Camera Director。"
+    }
     PhotoAnalysisStatus.FAILED -> "这张照片的真实分析失败；当前不会回退为示例结果。"
     PhotoAnalysisStatus.UNAVAILABLE -> "这张照片的真实分析不可用；当前不会回退为示例结果。"
     PhotoAnalysisStatus.CANCELLED -> "这张照片的真实分析已取消，可单项重试。"
@@ -175,6 +189,17 @@ private fun AnalysisProvenanceSummary(provenance: ProviderAnalysisProvenance) {
             if (provenance.warnings.isNotEmpty()) {
                 Text("提示：${provenance.warnings.joinToString("；")}", style = MaterialTheme.typography.bodySmall)
             }
+        }
+    }
+}
+
+@Composable
+private fun KnowledgeBundleProvenanceSummary(provenance: KnowledgeBundleProvenance) {
+    GlassSurface(modifier = Modifier.fillMaxWidth(), contentPadding = PaddingValues(AppDimensions.Space12)) {
+        Column(verticalArrangement = Arrangement.spacedBy(AppDimensions.Space4)) {
+            Text("来源：用户导入的离线知识包", style = MaterialTheme.typography.labelLarge)
+            Text("生产类型：${provenance.origin.name} · 发布标识：${provenance.releaseId}", style = MaterialTheme.typography.bodySmall)
+            Text("结构和 SHA-256 完整性已验证；生产者身份未做密码学认证。", style = MaterialTheme.typography.bodySmall)
         }
     }
 }

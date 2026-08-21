@@ -46,6 +46,7 @@ internal data class ReferenceRecord(
     val analysisStatus: PhotoAnalysisStatus = PhotoAnalysisStatus.EXAMPLE_GUIDANCE,
     val safeAnalysisErrorCode: String? = null,
     val analysisProvenance: ProviderAnalysisProvenance? = null,
+    val knowledgeBundleProvenance: KnowledgeBundleProvenance? = null,
 )
 
 internal fun ReferenceRecord.requireSafeImageFileName() {

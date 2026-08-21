@@ -155,6 +155,26 @@ internal class ReferenceRepository private constructor(
         finishPendingDeletes()
     }
 
+    /** Deletes exactly one project and its private derivatives; any failed file deletion stays retryable. */
+    suspend fun deleteProject(projectId: String): Boolean = withContext(Dispatchers.IO) {
+        if (dao.projectById(projectId) == null) return@withContext false
+        val ids = dao.allByProjectOnce(projectId).map(ReferenceEntity::id)
+        database.withTransaction {
+            if (ids.isNotEmpty()) {
+                dao.markDeletePending(ids)
+                dao.clearPrimaryReferences(ids)
+            }
+            dao.deleteSummary(projectId)
+        }
+        finishPendingDeletes(ids.toSet())
+        if (dao.recordCountByProject(projectId) != 0) return@withContext false
+        database.withTransaction {
+            dao.deleteSummary(projectId)
+            dao.deleteProject(projectId)
+        }
+        true
+    }
+
     suspend fun clearAll() = withContext(Dispatchers.IO) {
         val activeIds = dao.activeOnce().map(ReferenceEntity::id)
         if (activeIds.isNotEmpty()) {
@@ -198,6 +218,59 @@ internal class ReferenceRepository private constructor(
         validated
     }
 
+    /** Applies an integrity-checked bundle atomically after revalidating every explicit mapping. */
+    suspend fun applyKnowledgeBundle(
+        projectId: String,
+        bundle: PhotoKnowledgeBundle,
+        bindings: List<KnowledgeBundleBinding>,
+    ): KnowledgeBundleApplyResult = withContext(Dispatchers.IO) {
+        if (
+            bundle.contractVersion != PHOTO_KNOWLEDGE_BUNDLE_VERSION ||
+            bundle.references.size !in 1..MAX_PROJECT_PHOTOS ||
+            bundle.references.map(PhotoKnowledgeBundleItem::referenceId).distinct().size != bundle.references.size ||
+            !bundle.payloadSha256.equals(canonicalPayloadSha256(bundle), ignoreCase = true)
+        ) {
+            return@withContext KnowledgeBundleApplyResult.Failure(KnowledgeBundleApplyErrorCode.BUNDLE_INTEGRITY_INVALID)
+        }
+        try {
+            database.withTransaction {
+                if (dao.projectById(projectId) == null) throw KnowledgeBundleApplyException(KnowledgeBundleApplyErrorCode.PROJECT_NOT_FOUND)
+                val producerIds = bundle.references.map(PhotoKnowledgeBundleItem::referenceId)
+                if (bindings.size != producerIds.size || bindings.map(KnowledgeBundleBinding::producerReferenceId).toSet() != producerIds.toSet()) {
+                    throw KnowledgeBundleApplyException(KnowledgeBundleApplyErrorCode.BINDING_INCOMPLETE)
+                }
+                if (
+                    bindings.map(KnowledgeBundleBinding::producerReferenceId).distinct().size != bindings.size ||
+                    bindings.map(KnowledgeBundleBinding::localReferenceId).distinct().size != bindings.size
+                ) {
+                    throw KnowledgeBundleApplyException(KnowledgeBundleApplyErrorCode.BINDING_DUPLICATE)
+                }
+                val currentById = dao.activeByProjectOnce(projectId).associateBy(ReferenceEntity::id)
+                val bindingByProducer = bindings.associateBy(KnowledgeBundleBinding::producerReferenceId)
+                val importedAt = now()
+                bundle.references.forEach { item ->
+                    val localId = bindingByProducer[item.referenceId]?.localReferenceId
+                        ?: throw KnowledgeBundleApplyException(KnowledgeBundleApplyErrorCode.BINDING_INCOMPLETE)
+                    val current = currentById[localId]
+                        ?: throw KnowledgeBundleApplyException(KnowledgeBundleApplyErrorCode.REFERENCE_NOT_FOUND)
+                    val status = runCatching { PhotoAnalysisStatus.valueOf(current.analysisStatus) }
+                        .getOrDefault(PhotoAnalysisStatus.UNAVAILABLE)
+                    if (!isKnowledgeBundleTargetEligible(status)) {
+                        throw KnowledgeBundleApplyException(KnowledgeBundleApplyErrorCode.REFERENCE_NOT_ELIGIBLE)
+                    }
+                    dao.update(current.withKnowledgeBundleResult(item, bundle, importedAt))
+                }
+                dao.deleteSummary(projectId)
+                dao.touchProject(projectId, importedAt)
+            }
+            KnowledgeBundleApplyResult.Success(bindings.size)
+        } catch (error: KnowledgeBundleApplyException) {
+            KnowledgeBundleApplyResult.Failure(error.code)
+        } catch (_: Exception) {
+            KnowledgeBundleApplyResult.Failure(KnowledgeBundleApplyErrorCode.DATABASE_COMMIT_FAILED)
+        }
+    }
+
     suspend fun markAnalysisQueued(referenceId: String): Boolean = withContext(Dispatchers.IO) {
         val current = dao.activeById(referenceId) ?: return@withContext false
         database.withTransaction {
@@ -238,7 +311,10 @@ internal class ReferenceRepository private constructor(
 
     suspend fun readyRecordsOnce(projectId: String): List<ReferenceRecord> = withContext(Dispatchers.IO) {
         dao.activeByProjectOnce(projectId).map(ReferenceEntity::toRecord)
-            .filter { it.analysisStatus == PhotoAnalysisStatus.READY }
+            .filter {
+                it.analysisStatus == PhotoAnalysisStatus.READY &&
+                    (it.analysisProvenance != null || it.knowledgeBundleProvenance != null)
+            }
     }
 
     suspend fun reconcile(): ReferenceRecoverySummary = withContext(Dispatchers.IO) {
@@ -287,6 +363,7 @@ internal class ReferenceRepository private constructor(
     }
 
     private class ProjectCapacityReachedException : RuntimeException()
+    private class KnowledgeBundleApplyException(val code: KnowledgeBundleApplyErrorCode) : RuntimeException()
 
     companion object {
         private const val MAX_PROJECT_TITLE_LENGTH = 60

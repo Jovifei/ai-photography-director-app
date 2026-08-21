@@ -28,6 +28,8 @@ import com.jovi.photoai.data.reference.ReferenceImportViewModel
 import com.jovi.photoai.data.reference.ReferenceLibraryPreferences
 import com.jovi.photoai.data.reference.PhotoAnalysisStatus
 import com.jovi.photoai.data.reference.ProviderAnalysisProvenance
+import com.jovi.photoai.data.reference.KnowledgeBundleProvenance
+import com.jovi.photoai.data.reference.PhotoKnowledgeBundleImportViewModel
 import com.jovi.photoai.data.reference.ReferenceRecord
 import com.jovi.photoai.data.reference.ReferenceRecoverySummary
 import com.jovi.photoai.data.reference.ReferenceRepository
@@ -55,6 +57,7 @@ import com.jovi.photoai.ui.project.ProjectHomeItem
 import com.jovi.photoai.ui.project.ProjectSummaryScreen
 import com.jovi.photoai.ui.project.ProjectsHomeScreen
 import com.jovi.photoai.ui.project.LocalAnalysisConnectionDialog
+import com.jovi.photoai.ui.project.PhotoKnowledgeBundleImportScreen
 import com.jovi.photoai.ui.reference.DirectorCardScreen
 import com.jovi.photoai.ui.reference.ReferenceLibraryEntry
 import com.jovi.photoai.ui.reference.ReferenceLibraryScreen
@@ -67,6 +70,7 @@ private data class AppReference(
     val imageFileName: String?,
     val analysisStatus: PhotoAnalysisStatus = PhotoAnalysisStatus.EXAMPLE_GUIDANCE,
     val analysisProvenance: ProviderAnalysisProvenance? = null,
+    val knowledgeBundleProvenance: KnowledgeBundleProvenance? = null,
     val ordinal: Int? = null,
 )
 
@@ -92,6 +96,10 @@ fun PhotographyDirectorApp() {
     val importViewModel: ReferenceImportViewModel = viewModel(
         factory = remember(application) { ReferenceImportViewModelFactory(application) },
     )
+    val knowledgeBundleViewModel: PhotoKnowledgeBundleImportViewModel = viewModel(
+        factory = remember(application, repository) { PhotoKnowledgeBundleImportViewModelFactory(application, repository) },
+    )
+    val knowledgeBundleState by knowledgeBundleViewModel.state.collectAsState()
     var destinationName by rememberSaveable { mutableStateOf(AppDestination.HOME.name) }
     var analysisReturnDestinationName by rememberSaveable { mutableStateOf(AppDestination.IMPORT_REFERENCE.name) }
     var importReturnDestinationName by rememberSaveable { mutableStateOf(AppDestination.HOME.name) }
@@ -109,6 +117,7 @@ fun PhotographyDirectorApp() {
     var pairingError by rememberSaveable { mutableStateOf<String?>(null) }
     var analysisProjectId by rememberSaveable { mutableStateOf<String?>(null) }
     var analysisJob by remember { mutableStateOf<Job?>(null) }
+    var projectDeletionFailed by rememberSaveable { mutableStateOf(false) }
     val destination = AppDestination.valueOf(destinationName)
     val selectedProject = projects.firstOrNull { it.id == selectedProjectId }
         ?: pendingProject?.takeIf { it.id == selectedProjectId }
@@ -123,6 +132,7 @@ fun PhotographyDirectorApp() {
         imageFileName = record.imageFileName,
         analysisStatus = record.analysisStatus,
         analysisProvenance = record.analysisProvenance,
+        knowledgeBundleProvenance = record.knowledgeBundleProvenance,
         ordinal = record.ordinal,
     )
 
@@ -161,10 +171,21 @@ fun PhotographyDirectorApp() {
             AppDestination.DIRECTOR_CARD,
             AppDestination.CAMERA_DIRECTOR,
         ) -> AppDestination.HOME
-        else -> guardedGuidanceDestination(destination, activeReference?.analysisStatus)
+        else -> guardedGuidanceDestination(
+            destination,
+            activeReference?.analysisStatus,
+            activeReference?.analysisProvenance != null,
+            activeReference?.knowledgeBundleProvenance != null,
+        )
     }
 
-    LaunchedEffect(destination, activeReference?.photo?.id, activeReference?.analysisStatus) {
+    LaunchedEffect(
+        destination,
+        activeReference?.photo?.id,
+        activeReference?.analysisStatus,
+        activeReference?.analysisProvenance,
+        activeReference?.knowledgeBundleProvenance,
+    ) {
         if (
             activeReference == null && destination in setOf(
                 AppDestination.ANALYSIS_DETAIL,
@@ -175,7 +196,11 @@ fun PhotographyDirectorApp() {
             destinationName = AppDestination.HOME.name
         } else if (presentationDestination != destination) {
             captureProjectId = selectedProjectId
-            captureNotice = offlineCaptureNotice(activeReference?.analysisStatus)
+            captureNotice = offlineCaptureNotice(
+                activeReference?.analysisStatus,
+                activeReference?.analysisProvenance != null,
+                activeReference?.knowledgeBundleProvenance != null,
+            )
             destinationName = presentationDestination.name
         }
     }
@@ -215,14 +240,24 @@ fun PhotographyDirectorApp() {
             captureProjectId = project.id
             captureNotice = null
             navigateTo(AppDestination.CAPTURE_ENTRY)
-        } else if (isRealAiGuidanceReady(primaryRecord.analysisStatus)) {
+        } else if (
+            isRealAiGuidanceReady(
+                primaryRecord.analysisStatus,
+                primaryRecord.analysisProvenance != null,
+                primaryRecord.knowledgeBundleProvenance != null,
+            )
+        ) {
             activeReference = toAppReference(primaryRecord)
             libraryPreferences.saveLastActiveReferenceId(primaryRecord.photo.id)
             analysisReturnDestinationName = AppDestination.PROJECT_BOARD.name
             navigateTo(AppDestination.CAMERA_DIRECTOR)
         } else {
             captureProjectId = project.id
-            captureNotice = offlineCaptureNotice(primaryRecord.analysisStatus)
+            captureNotice = offlineCaptureNotice(
+                primaryRecord.analysisStatus,
+                primaryRecord.analysisProvenance != null,
+                primaryRecord.knowledgeBundleProvenance != null,
+            )
             navigateTo(AppDestination.CAPTURE_ENTRY)
         }
     }
@@ -303,6 +338,27 @@ fun PhotographyDirectorApp() {
         }
     }
 
+    fun openKnowledgeBundleImport() {
+        knowledgeBundleViewModel.reset()
+        navigateTo(AppDestination.PROJECT_KNOWLEDGE_IMPORT)
+    }
+
+    fun deleteSelectedProject() {
+        val project = selectedProject ?: return
+        projectDeletionFailed = false
+        scope.launch {
+            if (repository.deleteProject(project.id)) {
+                libraryPreferences.clearLastActiveReferenceId()
+                activeReference = null
+                selectedProjectId = null
+                pendingProject = null
+                navigateTo(AppDestination.HOME)
+            } else {
+                projectDeletionFailed = true
+            }
+        }
+    }
+
     val allReferences = buildList {
         addAll(records.map(::toAppReference))
         addAll(DemoContentRepository.referencePhotos.map(::demoReference))
@@ -332,6 +388,10 @@ fun PhotographyDirectorApp() {
         when (presentationDestination) {
             AppDestination.HOME -> Unit
             AppDestination.PROJECT_IMPORT -> navigateTo(AppDestination.PROJECT_BOARD)
+            AppDestination.PROJECT_KNOWLEDGE_IMPORT -> {
+                knowledgeBundleViewModel.reset()
+                navigateTo(AppDestination.PROJECT_BOARD)
+            }
             AppDestination.PROJECT_BOARD -> navigateTo(AppDestination.HOME)
             AppDestination.PROJECT_SUMMARY -> navigateTo(AppDestination.PROJECT_BOARD)
             AppDestination.CAPTURE_ENTRY -> navigateTo(
@@ -375,6 +435,22 @@ fun PhotographyDirectorApp() {
             )
         }
 
+        AppDestination.PROJECT_KNOWLEDGE_IMPORT -> selectedProject?.let { project ->
+            PhotoKnowledgeBundleImportScreen(
+                project = project,
+                records = selectedProjectRecords,
+                state = knowledgeBundleState,
+                onDocumentSelected = knowledgeBundleViewModel::readDocument,
+                onBind = knowledgeBundleViewModel::bind,
+                onApply = { knowledgeBundleViewModel.apply(project.id) },
+                onReset = knowledgeBundleViewModel::reset,
+                onBack = {
+                    knowledgeBundleViewModel.reset()
+                    navigateTo(AppDestination.PROJECT_BOARD)
+                },
+            )
+        }
+
         AppDestination.PROJECT_BOARD -> selectedProject?.let { project ->
             ProjectBoardScreen(
                 project = project,
@@ -388,6 +464,9 @@ fun PhotographyDirectorApp() {
                 },
                 onSelectPrimary = ::selectProjectPrimary,
                 onDeletePhoto = ::deleteReference,
+                onImportKnowledgeBundle = ::openKnowledgeBundleImport,
+                onDeleteProject = ::deleteSelectedProject,
+                projectDeletionFailed = projectDeletionFailed,
                 onOpenSummary = { navigateTo(AppDestination.PROJECT_SUMMARY) },
                 onStartShooting = ::startProjectShooting,
                 onStartAnalysis = { startProjectAnalysis(project.id) },
@@ -464,6 +543,7 @@ fun PhotographyDirectorApp() {
                 title = reference.ordinal?.let { "项目照片 · 第 ${it + 1} 张" } ?: "参考图分析",
                 analysisStatus = reference.analysisStatus,
                 analysisProvenance = reference.analysisProvenance,
+                knowledgeBundleProvenance = reference.knowledgeBundleProvenance,
                 onBack = { navigateTo(AppDestination.valueOf(analysisReturnDestinationName)) },
                 onOpenDirectorCard = { navigateTo(AppDestination.DIRECTOR_CARD) },
             )
@@ -560,6 +640,16 @@ private class ReferenceImportViewModelFactory(
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         require(modelClass.isAssignableFrom(ReferenceImportViewModel::class.java))
         return ReferenceImportViewModel(application) as T
+    }
+}
+
+private class PhotoKnowledgeBundleImportViewModelFactory(
+    private val application: Application,
+    private val repository: ReferenceRepository,
+) : ViewModelProvider.Factory {
+    @Suppress("UNCHECKED_CAST")
+    override fun <T : ViewModel> create(modelClass: Class<T>): T {
+        return PhotoKnowledgeBundleImportViewModel(repository, application.contentResolver) as T
     }
 }
 

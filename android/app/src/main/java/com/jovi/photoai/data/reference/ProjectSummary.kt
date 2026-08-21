@@ -88,6 +88,7 @@ internal fun ProjectSummaryEntity.toPersistedSummary(): PersistedProjectSummary 
 internal data class ProjectSummarySnapshot(
     val importedCount: Int,
     val providerReadyCount: Int,
+    val knowledgeBundleReadyCount: Int,
     val exampleGuidanceCount: Int,
     val unavailableCount: Int,
     val failedImportCount: Int,
@@ -95,8 +96,11 @@ internal data class ProjectSummarySnapshot(
     val differingDirectionLabels: List<String>,
     val shootFirstPlan: String?,
 ) {
+    val guidanceReadyCount: Int
+        get() = providerReadyCount + knowledgeBundleReadyCount
+
     val excludedCount: Int
-        get() = exampleGuidanceCount + unavailableCount + failedImportCount
+        get() = (importedCount - guidanceReadyCount).coerceAtLeast(0) + failedImportCount
 }
 
 internal fun projectSummaryOf(
@@ -104,7 +108,10 @@ internal fun projectSummaryOf(
     failedImportCount: Int,
     primaryReferenceId: String? = null,
 ): ProjectSummarySnapshot {
-    val readyRecords = records.filter { it.analysisStatus == PhotoAnalysisStatus.READY }
+    val readyRecords = records.filter {
+        it.analysisStatus == PhotoAnalysisStatus.READY &&
+            (it.analysisProvenance != null || it.knowledgeBundleProvenance != null)
+    }
     val directions = listOf(
         "场景" to { record: ReferenceRecord -> record.bundle.scene },
         "光线" to { record: ReferenceRecord -> record.bundle.lighting },
@@ -130,7 +137,8 @@ internal fun projectSummaryOf(
 
     return ProjectSummarySnapshot(
         importedCount = records.size,
-        providerReadyCount = readyRecords.size,
+        providerReadyCount = readyRecords.count { it.analysisProvenance != null },
+        knowledgeBundleReadyCount = readyRecords.count { it.knowledgeBundleProvenance != null },
         exampleGuidanceCount = records.count { it.analysisStatus == PhotoAnalysisStatus.EXAMPLE_GUIDANCE },
         unavailableCount = records.count {
         it.analysisStatus == PhotoAnalysisStatus.FAILED ||
