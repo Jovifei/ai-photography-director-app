@@ -50,6 +50,7 @@ Kotlin、Jetpack Compose、CameraX、系统 Photo Picker、Room、应用私有 J
 - [Photo Knowledge Bundle Consumer v1](docs/reference/PHOTO_KNOWLEDGE_BUNDLE_CONSUMER_V1.md)
 - [P22 离线产品资格报告](reports/P22_OFFLINE_PRODUCT_CLOSURE_QUALIFICATION.md)
 - Windows Private 网络只读诊断：`scripts/qualify_windows_private_network.ps1`
+- 实体手机安全安装：`scripts/install_android_beta_phone.ps1`（只执行同签名 `adb install -r`）
 
 ## 测试与参考仓库
 
