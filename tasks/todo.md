@@ -39,7 +39,7 @@
 - [x] 签名 Release APK/AAB、证书指纹、API 35 安装和启动 PASS；产物只写入仓库外逻辑证据目录。
 - [x] 报告 `reports/P22_OFFLINE_PRODUCT_CLOSURE_QUALIFICATION.md` 已脱敏；不包含绝对私人路径、照片、模型、数据库、设备 serial 或原始日志。
 - [ ] 独立审查、Qwen 私有 LAN、夜间 Pipeline 实际 artifact、main 合并、发布和五人试点：NOT_RUN（均需新的独立授权）。
-- [x] Qwen 激活只做了安全前置检查：模型/Python 通过，因 Windows 网络类别不是可确认的 `Private` 而以 `P20_PILOT_SESSION_BLOCKED_NETWORK_PROFILE` 停止；未启动服务、TLS、防火墙或真实分析。
+- [x] Qwen 激活只做了安全前置检查：模型/Python 通过；系统 PowerShell 确认真实以太网为 `Public`、FlClash 为虚拟 `Public`，因此以 `P20_PILOT_SESSION_BLOCKED_NETWORK_PROFILE` 停止；未启动服务、TLS、防火墙或真实分析。
 
 ---
 

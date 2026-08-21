@@ -30,7 +30,7 @@
 | `git diff --check` | PASS | 仅有 Windows 换行提示，无差异错误 |
 | Signed Release APK/AAB | PASS | APK `apksigner`、AAB `jarsigner -verify`、证书 pin 均通过 |
 | Signed Release install/launch | PASS | API 35 专用 emulator 安装、启动、包名和版本核对通过 |
-| Qwen3 / private LAN | BLOCKED_PREFLIGHT | 模型/Python 前置通过；Private LAN 预检以 `P20_PILOT_SESSION_BLOCKED_NETWORK_PROFILE` 安全停止，未启动服务、TLS 或防火墙 |
+| Qwen3 / private LAN | BLOCKED_PREFLIGHT | 模型/Python 前置通过；系统 PowerShell 确认真实以太网接口 `index 21` 为 `Public`，FlClash `index 46` 为虚拟 `Public`；预检以 `P20_PILOT_SESSION_BLOCKED_NETWORK_PROFILE` 安全停止，未启动服务、TLS 或防火墙 |
 | Night pipeline artifact | NOT_RUN | 等待独立批准的 Bundle artifact |
 | Real photos / physical device | NOT_RUN | 本轮未读取真实照片，未触碰实体设备 |
 | Independent review | NOT_RUN | 按 Jovi 指令不执行 |
