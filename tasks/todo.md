@@ -1,3 +1,35 @@
+# P23A：Android 本地资格复验与可靠性修复
+
+状态：`P23A_ANDROID_VALIDATED_AWAITING_INDEPENDENT_REVIEW`
+基线：`origin/codex/p23a-bundle-import-reliability-20260913@1d13b8edbcd4b04401dad0ca490eca7d767eb2f2`
+工作树：`E:\project\_worktrees\ai-photography-director-app-p23a-local-validation-20260913`
+
+## 验证与修复计划
+
+- [x] 保护 Owner 主工作树并保存 modified/untracked 文件的仓库外 SHA-256 快照。
+- [x] fetch 后核对 P23A 实际远端 HEAD、P22 祖先关系和 worktree clean 状态。
+- [x] 完整读取 P23A handoff、source manifest、可靠性报告、Bundle v1 合同及 P20/Beta/P21/P22 资格报告。
+- [ ] SDK-free `scripts/test_p23_bundle_core.py`：`NOT_RUN`，当前环境无 `kotlinc`；同一核心已由 Gradle JVM 回归覆盖。
+- [x] Debug/Test APK、全量 JVM、Debug/Release lint：通过 release-only signing guard 排除运行；JVM `128/128`，0 failure/error/skip。
+- [x] 标准静态命令已实际尝试；因缺少 Owner 外部 `PHOTOAI_RELEASE_*` keystore 输入，在 `verifyReleaseSigning` 处精确阻断，未生成新密钥。
+- [x] 专用 API 35 emulator：P23A 新增 `11/11`；目标回归 `14 classes / 36 tests` 全部通过；官方 Picker、100%/200% 字体、Local/D2D 均通过。
+- [x] 调查取消、异步 ticket、映射、提交防重入、BackHandler 和失败语义；本轮未复现生产逻辑缺陷，仅修正一条落后于 P23A UI 文案的 P22 测试断言。
+- [x] Bundle contract、Phase 1.5 contract、service `5/5`、compileall、隐私审计、差异检查和 manifest blob 复核通过。
+- [ ] 逐段非 force 提交到本地验证分支；如需推送，先运行 `python scripts/prepush_privacy_audit.py`。
+
+## Review
+
+- 目标状态：`P23A_ANDROID_VALIDATED_AWAITING_INDEPENDENT_REVIEW`。
+- P23A 代码边界：`43b1dcd23ca0b2ad621c9dfff960ea3e18ac7d3b`；交接 HEAD：`1d13b8edbcd4b04401dad0ca490eca7d767eb2f2`。
+- P23A 新增 Android：parser `6/6`，ViewModel `5/5`；全量 JVM `128/128`；目标 Android 回归 `36/36`。
+- 官方脚本证据：system Picker `PASS`、font 100/200 `PASS_SEMANTICS_ONLY`、Local `PASS_LOCAL_TRANSPORT`、D2D `PASS_D2D_TRANSPORT`。
+- 真实未完成项：签名 APK/AAB 未运行，原因是缺少 Owner 外部签名输入；P20 Qwen/LAN 测试因明确禁区和缺少配对参数未运行；独立审查未运行。
+- P20 私有分析、Pipeline、真实照片、实体设备、生产签名、main 合并和发布均未执行。
+- 外部证据目录：`E:\project\_benchmark_evidence\p23a-local-validation-20260913-v3\`。
+- 本轮不合并 `main`，不覆盖 Owner 文件，不执行独立审查或生产发布。
+
+---
+
 # P22：Android 离线知识包导入与产品落地
 
 状态：`ANDROID_LOCAL_BUNDLE_IMPORT_PRODUCT_READY_AWAITING_APPROVED_PIPELINE_ARTIFACT`
