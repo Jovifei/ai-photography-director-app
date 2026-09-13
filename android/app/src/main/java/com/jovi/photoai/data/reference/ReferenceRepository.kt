@@ -9,6 +9,7 @@ import java.util.UUID
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
 
@@ -62,7 +63,9 @@ internal class ReferenceRepository private constructor(
         dao.observeActiveByProject(projectId).map { entities -> entities.map(ReferenceEntity::toRecord) }
 
     fun projectSummaryForProject(projectId: String): Flow<PersistedProjectSummary?> =
-        dao.observeSummary(projectId).map { it?.toPersistedSummary() }
+        combine(dao.observeSummary(projectId), dao.observeActiveByProject(projectId)) { summary, rows ->
+            summary?.takeIf { it.isCurrentProviderSummary(rows) }?.toPersistedSummary()
+        }
 
     suspend fun createProject(title: String = "新的拍摄项目"): PhotographyProject = withContext(Dispatchers.IO) {
         val timestamp = now()
@@ -356,7 +359,26 @@ internal class ReferenceRepository private constructor(
     }
 
     suspend fun projectSummary(projectId: String): PersistedProjectSummary? = withContext(Dispatchers.IO) {
-        dao.summaryByProject(projectId)?.toPersistedSummary()
+        val entity = dao.summaryByProject(projectId) ?: return@withContext null
+        if (!entity.isCurrentProviderSummary(dao.activeByProjectOnce(projectId))) {
+            database.withTransaction { dao.deleteSummary(projectId) }
+            return@withContext null
+        }
+        entity.toPersistedSummary()
+    }
+
+    private fun ProjectSummaryEntity.isCurrentProviderSummary(rows: List<ReferenceEntity>): Boolean {
+        val records = rows.map(ReferenceEntity::toRecord)
+        val inputs = records.filter {
+            it.analysisStatus == PhotoAnalysisStatus.READY &&
+                it.analysisProvenance != null &&
+                it.knowledgeBundleProvenance == null
+        }.map { ReadySummaryInput(it.photo.id, it.bundle) }
+        val failed = records.count {
+            it.analysisStatus == PhotoAnalysisStatus.FAILED || it.analysisStatus == PhotoAnalysisStatus.UNAVAILABLE
+        }
+        if (inputs.isEmpty() || readyCount != inputs.size || failedCount != failed) return false
+        return ProjectSummaryRequest(projectId, inputs, failed).inputDigest == inputDigest
     }
 
     suspend fun readyRecordsOnce(projectId: String): List<ReferenceRecord> = withContext(Dispatchers.IO) {

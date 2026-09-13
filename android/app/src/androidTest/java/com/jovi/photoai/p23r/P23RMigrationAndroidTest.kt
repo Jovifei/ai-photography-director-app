@@ -23,9 +23,21 @@ class P23RMigrationAndroidTest {
     @Test fun version5To6_preservesBundle_andClearsLegacyWorkOnRecoveryQuery() = runBlocking {
         val context = ApplicationProvider.getApplicationContext<Context>()
         val name = "p23r-migration-${UUID.randomUUID()}.db"
+        var projectId = ""
         val tables = P23RRoomFixture().use { source ->
             source.seed(2)
+            projectId = source.project.id
             source.repository.applyKnowledgeBundle(source.project.id, source.bundle(1), source.bindings(1))
+            source.dao.upsertSummary(
+                PersistedProjectSummary(
+                    projectId = source.project.id,
+                    status = ProjectSummaryStatus.SUCCESS,
+                    readyCount = 1,
+                    failedCount = 0,
+                    inputDigest = "legacy-bundle-summary",
+                    modelId = "legacy-model",
+                ).toEntity(),
+            )
             source.repository.markAnalysisQueued(AnalysisAttempt(source.records[1].photo.id, "legacy_work"))
             val db = source.database.openHelper.writableDatabase
             val ddl = db.query("SELECT name, sql FROM sqlite_master WHERE type='table' AND name IN ('reference_records','photography_projects','project_summaries')").use { cursor ->
@@ -83,6 +95,7 @@ class P23RMigrationAndroidTest {
                 assertEquals("synthetic_bundle", before.getValue("synthetic_0").knowledgeBundleId)
                 assertEquals("QUEUED", before.getValue("synthetic_1").analysisStatus)
                 assertTrue(before.values.all { it.analysisAttemptId == null })
+                assertNull(dao.summaryByProject(projectId))
                 // Only test the production startup cancellation query here: metadata fixtures
                 // intentionally contain no JPEG, so full reconcile would remove them.
                 dao.cancelAllOutstandingAnalysis()

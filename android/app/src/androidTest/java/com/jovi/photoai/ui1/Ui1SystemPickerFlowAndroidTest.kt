@@ -63,6 +63,8 @@ class Ui1SystemPickerFlowAndroidTest {
 
             val record = awaitSingleActiveRecord()
             assertTrue(record.imageFileName.matches(Regex("^[a-zA-Z0-9_-]+\\.jpg$")))
+            assertTrue(fixture.expectedAspectRatio != null)
+            assertEquals(fixture.expectedAspectRatio!!, record.photo.aspectRatio, 0.01f)
             assertEquals(1, File(context.filesDir, "references").listFiles()?.count { it.isFile && it.name.endsWith(".jpg") })
             assertTrue(File(context.cacheDir, "reference-import").listFiles().isNullOrEmpty())
         }
@@ -115,8 +117,9 @@ class Ui1SystemPickerFlowAndroidTest {
         device.wait(Until.findObject(By.res(PICKER_PACKAGE, "button_add")), SHORT_TIMEOUT_MILLIS)?.click()
     }
 
+    /** Photo Picker orders newest media first; other device media must not make the test fail. */
     private fun singlePickerThumbnail(): UiObject2? =
-        device.findObjects(By.res(PICKER_PACKAGE, "icon_thumbnail")).singleOrNull()
+        device.findObjects(By.res(PICKER_PACKAGE, "icon_thumbnail")).firstOrNull()
 
     private suspend fun awaitSingleActiveRecord(): ReferenceRecord {
         repeat(50) {

@@ -17,24 +17,28 @@ import androidx.test.uiautomator.By
 import androidx.test.uiautomator.UiDevice
 import androidx.test.uiautomator.Until
 import com.jovi.photoai.MainActivity
-import com.jovi.photoai.data.demo.DemoReferenceAnalyzer
 import com.jovi.photoai.data.reference.KnowledgeBundleImportUiState
+import com.jovi.photoai.data.reference.KnowledgeBundleApplyResult
 import com.jovi.photoai.data.reference.KnowledgeBundleOrigin
 import com.jovi.photoai.data.reference.KnowledgeBundlePhotography
 import com.jovi.photoai.data.reference.KnowledgeBundleSource
-import com.jovi.photoai.data.reference.PhotoAnalysisStatus
 import com.jovi.photoai.data.reference.PhotoKnowledgeBundle
 import com.jovi.photoai.data.reference.PhotoKnowledgeBundleDocumentReader
 import com.jovi.photoai.data.reference.PhotoKnowledgeBundleItem
 import com.jovi.photoai.data.reference.PhotoKnowledgeBundleParseResult
-import com.jovi.photoai.data.reference.PhotographyProject
-import com.jovi.photoai.data.reference.ReferenceRecord
 import com.jovi.photoai.data.reference.canonicalPayloadSha256
-import com.jovi.photoai.domain.model.ReferencePhoto
+import com.jovi.photoai.p23r.P23RRoomFixture
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import com.jovi.photoai.ui.design.PhotoDirectorTheme
 import com.jovi.photoai.ui.project.PhotoKnowledgeBundleImportScreen
 import org.json.JSONArray
 import org.json.JSONObject
+import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotNull
 import org.junit.Rule
 import org.junit.Test
@@ -52,24 +56,17 @@ class P22SystemDocumentImportAndroidTest {
         val context = ApplicationProvider.getApplicationContext<Context>()
         val fileName = "p22-synthetic-knowledge-${System.currentTimeMillis()}.json"
         val documentUri = publishSyntheticDocument(context, fileName)
-        val state = mutableStateOf(KnowledgeBundleImportUiState())
-        val project = PhotographyProject("project_001", "合成项目", null, 0, 1L, 1L)
-        val record = ReferenceRecord(
-            ReferencePhoto("local_001", "合成照片", "测试", "已导入", "private/local_001.jpg", 1f),
-            DemoReferenceAnalyzer.analyze("local_001", "p22-system-document"),
-            "local_001.jpg",
-            1L,
-            project.id,
-            0,
-            PhotoAnalysisStatus.IMPORTED,
-        )
         try {
+            P23RRoomFixture().use { fixture ->
+            runBlocking { fixture.seed(1) }
+            val state = mutableStateOf(KnowledgeBundleImportUiState())
+            val applyScope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
             composeRule.activity.runOnUiThread {
                 composeRule.activity.setContent {
                     PhotoDirectorTheme {
                         PhotoKnowledgeBundleImportScreen(
-                            project = project,
-                            records = listOf(record),
+                            project = fixture.project,
+                            records = fixture.records,
                             state = state.value,
                             onDocumentSelected = { uri ->
                                 state.value = when (val result = PhotoKnowledgeBundleDocumentReader(context.contentResolver).read(uri)) {
@@ -78,7 +75,20 @@ class P22SystemDocumentImportAndroidTest {
                                 }
                             },
                             onBind = { producerId, localId -> state.value = state.value.copy(bindings = mapOf(producerId to localId)) },
-                            onApply = { state.value = KnowledgeBundleImportUiState(appliedCount = 1) },
+                            onApply = {
+                                state.value.bundle?.let { bundle ->
+                                    val bindings = state.value.bindings.map { (producer, local) ->
+                                        com.jovi.photoai.data.reference.KnowledgeBundleBinding(producer, local)
+                                    }
+                                    applyScope.launch {
+                                        state.value = when (val result = fixture.repository.applyKnowledgeBundle(fixture.project.id, bundle, bindings)) {
+                                            is KnowledgeBundleApplyResult.Success -> KnowledgeBundleImportUiState(appliedCount = result.appliedCount)
+                                            is KnowledgeBundleApplyResult.Failure -> KnowledgeBundleImportUiState(applyError = result.code)
+                                            KnowledgeBundleApplyResult.OutcomeUnknown -> KnowledgeBundleImportUiState(applyOutcomeUnknown = true)
+                                        }
+                                    }
+                                }
+                            },
                             onReset = { state.value = KnowledgeBundleImportUiState() },
                             onBack = {},
                         )
@@ -99,7 +109,13 @@ class P22SystemDocumentImportAndroidTest {
             composeRule.onNodeWithText("格式与摘要校验通过 · 1 条").assertIsDisplayed()
             composeRule.onNodeWithText("第 1 张").performScrollTo().performClick()
             composeRule.onNodeWithText("确认全部绑定并导入").performScrollTo().performClick()
+            composeRule.waitUntil(DOCUMENT_TIMEOUT_MILLIS) { state.value.appliedCount == 1 }
             composeRule.onNodeWithText("已将 1 条知识逐张写入项目。").assertIsDisplayed()
+            val persisted = runBlocking { fixture.dao.activeById(fixture.records.single().photo.id) }
+            assertEquals("READY", persisted?.analysisStatus)
+            assertEquals("bundle_document_001", persisted?.knowledgeBundleId)
+            applyScope.cancel()
+            }
         } finally {
             context.contentResolver.delete(documentUri, null, null)
         }

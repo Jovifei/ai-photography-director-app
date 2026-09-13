@@ -22,6 +22,7 @@ import javax.net.ssl.SSLContext
 import javax.net.ssl.SSLSession
 import javax.net.ssl.X509TrustManager
 import java.util.concurrent.TimeUnit
+import kotlinx.coroutines.CancellationException
 
 internal data class LocalLanAnalysisConnection(
     val baseUrl: String,
@@ -42,7 +43,7 @@ internal object LocalLanPairingClient {
         pairingCode: String,
         certificatePin: String,
     ): Result<LocalLanAnalysisConnection> = withContext(Dispatchers.IO) {
-        runCatching {
+        try {
             val normalizedBaseUrl = baseUrl.trim().trimEnd('/')
             val parsed = Uri.parse(normalizedBaseUrl)
             parsed.host ?: error("PAIRING_HOST_MISSING")
@@ -58,11 +59,16 @@ internal object LocalLanPairingClient {
                 .header("Content-Type", "application/json")
                 .post(JSONObject(mapOf("pairing_code" to pairingCode)).toString().toRequestBody("application/json".toMediaType()))
                 .build()
-            client.newCall(request).execute().use { response ->
+            val connection = client.newCall(request).execute().use { response ->
                 if (!response.isSuccessful) error("PAIRING_REJECTED")
                 val token = JSONObject(response.body?.string().orEmpty()).getString("access_token")
                 LocalLanAnalysisConnection(normalizedBaseUrl, token, certificatePin)
             }
+            Result.success(connection)
+        } catch (cancelled: CancellationException) {
+            throw cancelled
+        } catch (error: Exception) {
+            Result.failure(error)
         }
     }
 }
@@ -87,7 +93,7 @@ internal class LocalLanReferenceAnalysisProvider(
             .header("Accept", "application/json")
             .put(input.jpegBytes.toRequestBody("image/jpeg".toMediaType()))
             .build()
-        runCatching {
+        try {
             client.newCall(httpRequest).execute().use { response ->
                 val body = response.body?.string().orEmpty()
                 if (body.isBlank()) return@use ProviderAnalysisResult.Failed(
@@ -96,7 +102,9 @@ internal class LocalLanReferenceAnalysisProvider(
                 )
                 parseEnvelope(request, body)
             }
-        }.getOrElse {
+        } catch (cancelled: CancellationException) {
+            throw cancelled
+        } catch (_: Exception) {
             ProviderAnalysisResult.Unavailable(SafeProviderErrorCode.PROVIDER_UNAVAILABLE)
         }
     }
@@ -239,11 +247,15 @@ internal class LocalLanProjectSummaryProvider(
             .header("Accept", "application/json")
             .post(body.toRequestBody("application/json".toMediaType()))
             .build()
-        runCatching {
+        try {
             client.newCall(httpRequest).execute().use { response ->
                 parseSummaryResponse(request, response.body?.string().orEmpty())
             }
-        }.getOrElse { ProjectSummaryResult.Failed(SafeProviderErrorCode.PROVIDER_UNAVAILABLE) }
+        } catch (cancelled: CancellationException) {
+            throw cancelled
+        } catch (_: Exception) {
+            ProjectSummaryResult.Failed(SafeProviderErrorCode.PROVIDER_UNAVAILABLE)
+        }
     }
 
     private fun parseSummaryResponse(request: ProjectSummaryRequest, body: String): ProjectSummaryResult {

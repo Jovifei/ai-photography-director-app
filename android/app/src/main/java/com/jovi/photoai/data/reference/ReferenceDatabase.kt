@@ -295,6 +295,8 @@ internal val MIGRATION_4_5 = object : Migration(4, 5) {
 internal val MIGRATION_5_6 = object : Migration(5, 6) {
     override fun migrate(database: SupportSQLiteDatabase) {
         database.execSQL("ALTER TABLE `reference_records` ADD COLUMN `analysisAttemptId` TEXT")
+        // v5 summaries may have included Bundle-only READY rows; force a fresh Provider-only summary.
+        database.execSQL("DELETE FROM `project_summaries`")
     }
 }
 

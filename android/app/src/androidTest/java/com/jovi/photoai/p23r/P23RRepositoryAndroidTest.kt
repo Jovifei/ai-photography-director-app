@@ -139,10 +139,10 @@ class P23RRepositoryAndroidTest {
             val attempt = AnalysisAttempt(f.records.single().photo.id, "delete_race")
             assertTrue(f.repository.markAnalysisQueued(attempt))
             assertTrue(f.repository.markAnalysisRunning(attempt))
-            f.dao.markDeletePending(listOf(attempt.referenceId))
+            f.repository.delete(attempt.referenceId)
             assertNull(f.repository.persistAnalysis(ReferenceAnalysisRequest(attempt.referenceId), unavailable(), attempt))
             assertNull(f.dao.activeById(attempt.referenceId))
-            assertEquals("DELETE_PENDING", f.dao.allOnce().single().storageState)
+            assertTrue(f.dao.allOnce().isEmpty())
         }
     }
 
