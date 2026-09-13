@@ -135,8 +135,14 @@ internal object PhotoKnowledgeBundleParser {
             return PhotoKnowledgeBundleParseResult.Failure(PhotoKnowledgeBundleErrorCode.INVALID_UTF8)
         }
         if (json.isBlank()) return PhotoKnowledgeBundleParseResult.Failure(PhotoKnowledgeBundleErrorCode.DOCUMENT_EMPTY)
-        if (hasDuplicateObjectKeys(json)) {
-            return PhotoKnowledgeBundleParseResult.Failure(PhotoKnowledgeBundleErrorCode.SCHEMA_INVALID)
+        val syntaxProblem = StrictKnowledgeBundleJson.problem(json)
+        if (syntaxProblem != null) {
+            val code = if (syntaxProblem == KnowledgeBundleJsonProblem.DUPLICATE_KEY) {
+                PhotoKnowledgeBundleErrorCode.SCHEMA_INVALID
+            } else {
+                PhotoKnowledgeBundleErrorCode.MALFORMED_JSON
+            }
+            return PhotoKnowledgeBundleParseResult.Failure(code)
         }
 
         return try {
@@ -264,44 +270,6 @@ private fun JSONObject.hasExactKeys(expected: Set<String>): Boolean {
     val iterator = keys()
     while (iterator.hasNext()) actual += iterator.next()
     return actual == expected
-}
-
-/** JSONObject otherwise accepts a later duplicate value; reject duplicate keys before parsing. */
-private fun hasDuplicateObjectKeys(json: String): Boolean {
-    val containers = mutableListOf<MutableSet<String>?>()
-    var index = 0
-    while (index < json.length) {
-        when (json[index]) {
-            '{' -> containers.add(mutableSetOf())
-            '[' -> containers.add(null)
-            '}', ']' -> if (containers.isNotEmpty()) containers.removeAt(containers.lastIndex)
-            '"' -> {
-                val start = index
-                index += 1
-                var escaped = false
-                while (index < json.length) {
-                    val character = json[index]
-                    if (!escaped && character == '"') break
-                    escaped = !escaped && character == '\\'
-                    if (character != '\\') escaped = false
-                    index += 1
-                }
-                if (index >= json.length) return false
-                var next = index + 1
-                while (next < json.length && json[next].isWhitespace()) next += 1
-                if (next < json.length && json[next] == ':' && containers.lastOrNull() != null) {
-                    val rawKey = json.substring(start, index + 1)
-                    val decodedKey = runCatching {
-                        val wrapper = JSONObject("{$rawKey:null}")
-                        wrapper.keys().next()
-                    }.getOrNull() ?: return false
-                    if (!containers.last()!!.add(decodedKey)) return true
-                }
-            }
-        }
-        index += 1
-    }
-    return false
 }
 
 private fun JSONObject.strictString(name: String): String {
