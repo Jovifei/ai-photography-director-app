@@ -1,5 +1,6 @@
 package com.jovi.photoai.ui.project
 
+import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts.OpenDocument
 import androidx.compose.foundation.background
@@ -52,6 +53,10 @@ internal fun PhotoKnowledgeBundleImportScreen(
 ) {
     val documentPicker = rememberLauncherForActivityResult(OpenDocument(), onDocumentSelected)
     val eligibleRecords = records.filter { isKnowledgeBundleTargetEligible(it.analysisStatus) }
+    val eligibleIds = eligibleRecords.map { it.photo.id }.toSet()
+    val mappedTargetsAvailable = state.bindings.values.all { it in eligibleIds }
+    // This child handler takes priority over app navigation while the transaction is in flight.
+    BackHandler(enabled = state.isApplying) { /* Do not imply that navigating away cancels a commit. */ }
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -61,7 +66,7 @@ internal fun PhotoKnowledgeBundleImportScreen(
             .padding(horizontal = AppDimensions.PagePadding),
         verticalArrangement = Arrangement.spacedBy(AppDimensions.Space12),
     ) {
-        TextButton(onClick = onBack) { Text("返回项目") }
+        TextButton(onClick = onBack, enabled = !state.isApplying) { Text("返回项目") }
         Text("导入离线知识包", style = MaterialTheme.typography.displaySmall)
         Text(
             "只读取你通过系统文件选择器明确选择的结构化 JSON。不会读取照片、路径、EXIF，也不会按顺序猜测照片对应关系。",
@@ -71,7 +76,7 @@ internal fun PhotoKnowledgeBundleImportScreen(
         GlassSurface(modifier = Modifier.fillMaxWidth(), contentPadding = PaddingValues(AppDimensions.Space16)) {
             Column(verticalArrangement = Arrangement.spacedBy(AppDimensions.Space8)) {
                 GlassPill(text = "${project.title} · 用户逐条确认")
-                if (state.bundle == null && state.appliedCount == null) {
+                if (state.bundle == null && state.appliedCount == null && !state.applyOutcomeUnknown) {
                     PrimaryActionButton(
                         text = if (state.isReading) "正在验证知识包" else "选择 JSON 知识包",
                         onClick = { documentPicker.launch(arrayOf("application/json", "text/json")) },
@@ -79,9 +84,16 @@ internal fun PhotoKnowledgeBundleImportScreen(
                         modifier = Modifier.fillMaxWidth(),
                     )
                 }
+                if (state.isReading) {
+                    SecondaryActionButton("取消读取", onReset, Modifier.fillMaxWidth())
+                }
+                if (state.applyOutcomeUnknown) {
+                    Text("提交结果暂时无法确认；请返回项目看板检查，不要立即重复导入。", color = AppColors.Warning)
+                    PrimaryActionButton("返回项目看板", onBack, Modifier.fillMaxWidth())
+                }
                 state.parseError?.let {
                     Text(bundleParseErrorText(it), color = AppColors.Warning, style = MaterialTheme.typography.bodyMedium)
-                    SecondaryActionButton("重新选择", onReset, Modifier.fillMaxWidth())
+                    SecondaryActionButton("重新选择", { documentPicker.launch(arrayOf("application/json", "text/json")) }, Modifier.fillMaxWidth())
                 }
                 state.applyError?.let {
                     Text(bundleApplyErrorText(it), color = AppColors.Warning, style = MaterialTheme.typography.bodyMedium)
@@ -96,11 +108,21 @@ internal fun PhotoKnowledgeBundleImportScreen(
 
         state.bundle?.let { bundle ->
             Text(
-                "已验证 ${bundle.references.size} 条 · ${bundle.source.origin.name} · ${bundle.source.releaseId}",
+                "格式与摘要校验通过 · ${bundle.references.size} 条",
                 style = MaterialTheme.typography.titleMedium,
             )
+            Text("来源：${bundle.source.origin.name} · ${bundle.source.producerId}", style = MaterialTheme.typography.bodySmall)
+            Text("版本：${bundle.contractVersion} · ${bundle.source.releaseId}", style = MaterialTheme.typography.bodySmall)
+            Text("知识包：${bundle.bundleId}", style = MaterialTheme.typography.bodySmall)
+            Text("SHA-256：${bundle.payloadSha256}", style = MaterialTheme.typography.bodySmall)
             Text(
-                "以下每一条都必须绑定到一张尚未 READY、且未在本次使用的项目照片。",
+                "摘要一致不代表发布者身份认证或内容质量审核。请只导入你确认来源的知识包。",
+                style = MaterialTheme.typography.bodyMedium,
+                color = AppColors.Warning,
+            )
+            Text("已绑定 ${state.bindings.size} / ${bundle.references.size} 条", style = MaterialTheme.typography.titleMedium)
+            Text(
+                "每条知识须绑定一张尚未 READY、也不在分析中的照片。再次点击已选照片可解除绑定。",
                 style = MaterialTheme.typography.bodyMedium,
                 color = AppColors.TextSecondary,
             )
@@ -109,6 +131,7 @@ internal fun PhotoKnowledgeBundleImportScreen(
                     Column(verticalArrangement = Arrangement.spacedBy(AppDimensions.Space8)) {
                         Text("知识条目 ${index + 1} · ${item.photography.scene}", style = MaterialTheme.typography.titleMedium)
                         Text(item.photography.lighting, style = MaterialTheme.typography.bodySmall, color = AppColors.TextSecondary)
+                        Text(item.photography.directorPrompt, style = MaterialTheme.typography.bodyMedium)
                         FlowRow(
                             horizontalArrangement = Arrangement.spacedBy(AppDimensions.Space8),
                             verticalArrangement = Arrangement.spacedBy(AppDimensions.Space8),
@@ -126,7 +149,11 @@ internal fun PhotoKnowledgeBundleImportScreen(
                                     modifier = Modifier
                                         .heightIn(min = AppDimensions.MinTouchTarget)
                                         .semantics {
-                                            contentDescription = "将知识条目 ${index + 1} 绑定到项目照片第 ${record.ordinal + 1} 张"
+                                            contentDescription = if (selected) {
+                                                "解除知识条目 ${index + 1} 与项目照片第 ${record.ordinal + 1} 张的绑定"
+                                            } else {
+                                                "将知识条目 ${index + 1} 绑定到项目照片第 ${record.ordinal + 1} 张"
+                                            }
                                         },
                                 )
                             }
@@ -137,13 +164,20 @@ internal fun PhotoKnowledgeBundleImportScreen(
             if (eligibleRecords.size < bundle.references.size) {
                 Text("可绑定照片不足；READY 或分析中的照片不会被覆盖。", color = AppColors.Warning)
             }
+            if (!mappedTargetsAvailable) {
+                Text("已选照片已删除或状态已变化，请重新绑定。", color = AppColors.Warning)
+            }
             PrimaryActionButton(
                 text = if (state.isApplying) "正在原子写入" else "确认全部绑定并导入",
                 onClick = onApply,
-                enabled = state.isComplete && !state.isApplying,
+                enabled = state.isComplete && mappedTargetsAvailable && !state.isApplying && !state.isReading,
                 modifier = Modifier.fillMaxWidth(),
             )
-            SecondaryActionButton("放弃本次知识包", onReset, Modifier.fillMaxWidth())
+            if (state.isApplying) {
+                Text("写入期间暂不退出，完成后将显示结果。", style = MaterialTheme.typography.bodyMedium)
+            } else {
+                SecondaryActionButton("放弃本次知识包", onReset, Modifier.fillMaxWidth())
+            }
         }
         Spacer(Modifier.height(AppDimensions.Space24))
     }
@@ -155,7 +189,12 @@ private fun bundleParseErrorText(code: PhotoKnowledgeBundleErrorCode): String = 
     PhotoKnowledgeBundleErrorCode.INVALID_UTF8 -> "知识包不是受支持的无 BOM UTF-8 JSON。"
     PhotoKnowledgeBundleErrorCode.VERSION_UNSUPPORTED -> "知识包版本不受支持。"
     PhotoKnowledgeBundleErrorCode.DIGEST_MISMATCH -> "知识包完整性摘要不匹配，已拒绝导入。"
-    else -> "知识包格式或字段无效，项目没有变化。"
+    PhotoKnowledgeBundleErrorCode.DOCUMENT_UNAVAILABLE -> "无法读取该文件，请重新选择可访问的 JSON；项目没有变化。"
+    PhotoKnowledgeBundleErrorCode.DOCUMENT_EMPTY -> "所选文件为空；请选择完整的知识包。"
+    PhotoKnowledgeBundleErrorCode.MALFORMED_JSON -> "JSON 语法、字符或嵌套无效；请重新导出标准知识包。"
+    PhotoKnowledgeBundleErrorCode.SCHEMA_INVALID -> "知识包字段不符合合同，或包含重复字段。"
+    PhotoKnowledgeBundleErrorCode.FIELD_INVALID -> "知识包含不允许的字段值，已拒绝导入。"
+    PhotoKnowledgeBundleErrorCode.DUPLICATE_REFERENCE_ID -> "知识条目标识重复，已拒绝导入。"
 }
 
 private fun bundleApplyErrorText(code: KnowledgeBundleApplyErrorCode): String = when (code) {
