@@ -55,8 +55,9 @@ internal fun PhotoKnowledgeBundleImportScreen(
     val eligibleRecords = records.filter { isKnowledgeBundleTargetEligible(it.analysisStatus) }
     val eligibleIds = eligibleRecords.map { it.photo.id }.toSet()
     val mappedTargetsAvailable = state.bindings.values.all { it in eligibleIds }
-    // This child handler takes priority over app navigation while the transaction is in flight.
-    BackHandler(enabled = state.isApplying) { /* Do not imply that navigating away cancels a commit. */ }
+    // Always delegate to the parent's synchronous tryLeave gate, including the same frame
+    // that apply() begins. An observed isApplying value may still be from the previous frame.
+    BackHandler { onBack() }
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -204,5 +205,5 @@ private fun bundleApplyErrorText(code: KnowledgeBundleApplyErrorCode): String = 
     KnowledgeBundleApplyErrorCode.BINDING_DUPLICATE -> "同一张照片不能绑定多条知识。"
     KnowledgeBundleApplyErrorCode.REFERENCE_NOT_FOUND -> "项目照片已发生变化，请重新选择。"
     KnowledgeBundleApplyErrorCode.REFERENCE_NOT_ELIGIBLE -> "目标照片已 READY 或正在分析，未覆盖任何结果。"
-    KnowledgeBundleApplyErrorCode.DATABASE_COMMIT_FAILED -> "知识包未能完整写入，项目保持原状。"
+    KnowledgeBundleApplyErrorCode.DATABASE_COMMIT_FAILED -> "提交结果无法确认；请返回项目核查，不要立即重复导入。"
 }

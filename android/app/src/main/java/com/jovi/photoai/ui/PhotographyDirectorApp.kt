@@ -272,13 +272,19 @@ fun PhotographyDirectorApp() {
         analysisProjectId = projectId
         analysisJob?.cancel()
         analysisJob = scope.launch {
-            PhotoAnalysisCoordinator(
-                repository = repository,
-                provider = LocalLanReferenceAnalysisProvider(repository, connection),
-                summaryProvider = LocalLanProjectSummaryProvider(connection),
-            ).analyzeProject(projectId)
-            analysisProjectId = null
-            analysisJob = null
+            val ownJob = kotlinx.coroutines.currentCoroutineContext()[Job]
+            try {
+                PhotoAnalysisCoordinator(
+                    repository = repository,
+                    provider = LocalLanReferenceAnalysisProvider(repository, connection),
+                    summaryProvider = LocalLanProjectSummaryProvider(connection),
+                ).analyzeProject(projectId)
+            } finally {
+                if (analysisJob === ownJob) {
+                    analysisProjectId = null
+                    analysisJob = null
+                }
+            }
         }
     }
 
@@ -339,8 +345,13 @@ fun PhotographyDirectorApp() {
     }
 
     fun openKnowledgeBundleImport() {
-        knowledgeBundleViewModel.reset()
+        if (analysisJob?.isActive == true && analysisProjectId == selectedProjectId) return
+        if (!knowledgeBundleViewModel.tryLeave()) return
         navigateTo(AppDestination.PROJECT_KNOWLEDGE_IMPORT)
+    }
+
+    fun leaveKnowledgeBundleImport() {
+        if (knowledgeBundleViewModel.tryLeave()) navigateTo(AppDestination.PROJECT_BOARD)
     }
 
     fun deleteSelectedProject() {
@@ -388,10 +399,7 @@ fun PhotographyDirectorApp() {
         when (presentationDestination) {
             AppDestination.HOME -> Unit
             AppDestination.PROJECT_IMPORT -> navigateTo(AppDestination.PROJECT_BOARD)
-            AppDestination.PROJECT_KNOWLEDGE_IMPORT -> {
-                knowledgeBundleViewModel.reset()
-                navigateTo(AppDestination.PROJECT_BOARD)
-            }
+            AppDestination.PROJECT_KNOWLEDGE_IMPORT -> leaveKnowledgeBundleImport()
             AppDestination.PROJECT_BOARD -> navigateTo(AppDestination.HOME)
             AppDestination.PROJECT_SUMMARY -> navigateTo(AppDestination.PROJECT_BOARD)
             AppDestination.CAPTURE_ENTRY -> navigateTo(
@@ -444,10 +452,7 @@ fun PhotographyDirectorApp() {
                 onBind = knowledgeBundleViewModel::bind,
                 onApply = { knowledgeBundleViewModel.apply(project.id) },
                 onReset = knowledgeBundleViewModel::reset,
-                onBack = {
-                    knowledgeBundleViewModel.reset()
-                    navigateTo(AppDestination.PROJECT_BOARD)
-                },
+                onBack = ::leaveKnowledgeBundleImport,
             )
         }
 

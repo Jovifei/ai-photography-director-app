@@ -352,11 +352,15 @@ internal fun ProjectBoardScreen(
             Spacer(Modifier.height(AppDimensions.Space12))
         }
         if (records.isNotEmpty()) {
-            SecondaryActionButton(
-                text = "导入离线知识包",
-                onClick = onImportKnowledgeBundle,
-                modifier = Modifier.fillMaxWidth(),
-            )
+            if (analysisInProgress) {
+                Text("逐张分析期间暂不导入知识包，请等待完成或先停止分析。")
+            } else {
+                SecondaryActionButton(
+                    text = "导入离线知识包",
+                    onClick = onImportKnowledgeBundle,
+                    modifier = Modifier.fillMaxWidth(),
+                )
+            }
             Spacer(Modifier.height(AppDimensions.Space12))
             PrimaryActionButton(
                 text = if (analysisInProgress) "停止逐张分析" else "连接本机并逐张分析",
