@@ -96,7 +96,7 @@ class P22SystemDocumentImportAndroidTest {
             fileNode!!.click()
 
             composeRule.waitUntil(DOCUMENT_TIMEOUT_MILLIS) { state.value.bundle != null }
-            composeRule.onNodeWithText("已验证 1 条", substring = true).assertIsDisplayed()
+            composeRule.onNodeWithText("格式与摘要校验通过 · 1 条").assertIsDisplayed()
             composeRule.onNodeWithText("第 1 张").performScrollTo().performClick()
             composeRule.onNodeWithText("确认全部绑定并导入").performScrollTo().performClick()
             composeRule.onNodeWithText("已将 1 条知识逐张写入项目。").assertIsDisplayed()
