@@ -1,8 +1,13 @@
 {
   "base_sha": "be040188c93d7613d9433a23e0d1f5d640e317f1",
   "status": "P23A_R1_ANDROID_REQUALIFIED_AWAITING_INDEPENDENT_REVIEW",
-  "scope": "R1 repair sources and tests; final local Android evidence is external",
+  "scope": "R1 repair sources plus independent-review findings remediation sources and tests; final local Android evidence is external",
   "files": {
+    "android/app/src/androidTest/java/com/jovi/photoai/p22/P22SystemDocumentImportAndroidTest.kt": {
+      "bytes": 10180,
+      "git_blob": "515562be7425cf05051a92d16c5fcc0d1351e439",
+      "sha256": "84269baef900d3ad57c1dc5ca5eae3c74bdb1cb4b9abaf11eab3f105e68e3933"
+    },
     "android/app/src/androidTest/java/com/jovi/photoai/p22/ReferenceDatabaseMigrationAndroidTest.kt": {
       "bytes": 5574,
       "git_blob": "a3b81a4f6585015797079c62ea51024f9010ba31",
@@ -18,20 +23,30 @@
       "git_blob": "bc6549726c31cbe92af6466e26d479f337bae604",
       "sha256": "7fac7a02ec209cf67f74f363627ae9cfd3bfaa054b8a8c19bc40998691f93b7c"
     },
+    "android/app/src/androidTest/java/com/jovi/photoai/p23r/P23RLocalProviderAndroidTest.kt": {
+      "bytes": 2149,
+      "git_blob": "8c4efe107f5bcfa23397562a769913734da683c4",
+      "sha256": "0f798ee9aec59c0f08313a9e97d49bd9d659d2c7c4e42a73f56251c02333b6c7"
+    },
     "android/app/src/androidTest/java/com/jovi/photoai/p23r/P23RMigrationAndroidTest.kt": {
-      "bytes": 5819,
-      "git_blob": "ad35831b335ac0a92bebad13610be51cdeefd19d",
-      "sha256": "693a341c25e2c3160782b49e35a2c8be668cec0b05fb9a0bac0bd7f64853941e"
+      "bytes": 6359,
+      "git_blob": "e52b5d178c6f05b7106520bcff321a19b2252ea2",
+      "sha256": "8a0396edb12cba512be47574b7404bd9fab90b1ee85da1f91c3c2bb4ddc2b849"
     },
     "android/app/src/androidTest/java/com/jovi/photoai/p23r/P23RRepositoryAndroidTest.kt": {
-      "bytes": 8081,
-      "git_blob": "e058b93b3ee218acac2a3be081b14356f71a6c0a",
-      "sha256": "d07cf7873482fafa14ad4b79cadea944d57a457ae0341a930b15378325b8e48a"
+      "bytes": 8037,
+      "git_blob": "5b76757c25364d31226fb71fbdc883c11a3496e7",
+      "sha256": "b676a25aacdeb25ee16701059e59b5b6872774a96bfe8673791b524de0377e4a"
     },
     "android/app/src/androidTest/java/com/jovi/photoai/p23r/P23RRoomFixture.kt": {
       "bytes": 2563,
       "git_blob": "f9ff50c8ea475a2c4edca2a7e66e720339e512f3",
       "sha256": "f9d6f6dcfdc08b65d514413f8c98f25a071d940c0fe7616506b723493491a837"
+    },
+    "android/app/src/androidTest/java/com/jovi/photoai/p23r/P23RSummaryAndroidTest.kt": {
+      "bytes": 1497,
+      "git_blob": "059217a09692e252aad4fbadafda5d68d1e9ca62",
+      "sha256": "51e4f1b2d47ab36a06315fc5afc248f0d6ac7c214974d8d8f59091729c4e3cc2"
     },
     "android/app/src/androidTest/java/com/jovi/photoai/p23r/P23RUtf8AndroidTest.kt": {
       "bytes": 996,
@@ -43,6 +58,11 @@
       "git_blob": "7e3992ca3e01c39c09a0ebf5554e8fcfcc7aec2b",
       "sha256": "97db5b8e2c217ae3d5ff1f7f092a08ef8d2bf8e365e33aea7f40b1f9e99db0ce"
     },
+    "android/app/src/androidTest/java/com/jovi/photoai/ui1/Ui1SystemPickerFlowAndroidTest.kt": {
+      "bytes": 5596,
+      "git_blob": "19b9d1c4b64129f85920d4fbcd8ae31dd6cbcf1e",
+      "sha256": "636fe00996d87509443a493e9f913aca8f04dd7283f710d923e210373d923d18"
+    },
     "android/app/src/main/java/com/jovi/photoai/data/reference/AnalysisAttempt.kt": {
       "bytes": 938,
       "git_blob": "dbbe8b00353109488164d7a3f4f0ad54b94eff8e",
@@ -52,6 +72,11 @@
       "bytes": 687,
       "git_blob": "4afdd67f232437cf68b38d274d8434ac9d0c2581",
       "sha256": "572c225f52b2606f27ea417e14754aaf55265111dcc17cf605bc9eca18c9414d"
+    },
+    "android/app/src/main/java/com/jovi/photoai/data/reference/LocalLanReferenceAnalysisProvider.kt": {
+      "bytes": 19546,
+      "git_blob": "8c4a8377be8aa103633d60862d5a128a734a85e8",
+      "sha256": "0317fdb56e2bb21c60e8187eca2a6a7877f6e25d43a72bba09ae6953237a93b8"
     },
     "android/app/src/main/java/com/jovi/photoai/data/reference/PhotoAnalysisCoordinator.kt": {
       "bytes": 3888,
@@ -69,14 +94,14 @@
       "sha256": "b3638e0e611c3a20fed4f35561d1357187fc6ea10923c384c9453859b7683cbf"
     },
     "android/app/src/main/java/com/jovi/photoai/data/reference/ReferenceDatabase.kt": {
-      "bytes": 27722,
-      "git_blob": "0e91904c28f682d315db3d74fa72599c02203783",
-      "sha256": "9e6b65f4f2a9785b6255ea87cdaba2bcc26a0dc3b6a11245192ba91c7dddcae6"
+      "bytes": 27885,
+      "git_blob": "f36616d299c9ebb53df4e62773609f4c6a80271f",
+      "sha256": "1ef797e961db01f60b206745c1ac0e658f2048faccfa04d71a918b17e781bc77"
     },
     "android/app/src/main/java/com/jovi/photoai/data/reference/ReferenceRepository.kt": {
-      "bytes": 22432,
-      "git_blob": "53919dd7a2ef6b4461558f937aa62fc1115edfc1",
-      "sha256": "c943fc58fb5c156b96b48a98befa042ad93aad82b1d2680dfe2c30389161f832"
+      "bytes": 23637,
+      "git_blob": "8cae7999a732e6cd44a693319f50bf24b2fa2d32",
+      "sha256": "13b7b0fdefd6be31e697f0aa882f18373ea6220c87411545cdc4ba0daf7be8e8"
     },
     "android/app/src/main/java/com/jovi/photoai/ui/PhotographyDirectorApp.kt": {
       "bytes": 31484,
