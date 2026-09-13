@@ -5,6 +5,7 @@ import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.jovi.photoai.data.reference.MIGRATION_4_5
+import com.jovi.photoai.data.reference.MIGRATION_5_6
 import com.jovi.photoai.data.reference.ReferenceLibraryDatabase
 import kotlinx.coroutines.runBlocking
 import org.junit.Assert.assertEquals
@@ -15,7 +16,7 @@ import org.junit.runner.RunWith
 @RunWith(AndroidJUnit4::class)
 class ReferenceDatabaseMigrationAndroidTest {
     @Test
-    fun migration4To5_preservesExistingReferenceAndAddsNullableBundleProvenance() {
+    fun migration4Through6_preservesReferenceAndAddsNullableProvenanceAndAttempt() {
         val context = ApplicationProvider.getApplicationContext<Context>()
         val name = "p22-migration-test.db"
         context.deleteDatabase(name)
@@ -40,7 +41,7 @@ class ReferenceDatabaseMigrationAndroidTest {
         }
 
         val room = Room.databaseBuilder(context, ReferenceLibraryDatabase::class.java, name)
-            .addMigrations(MIGRATION_4_5)
+            .addMigrations(MIGRATION_4_5, MIGRATION_5_6)
             .allowMainThreadQueries()
             .build()
         val migrated = runBlocking { room.referenceDao().allOnce().single() }
@@ -49,6 +50,7 @@ class ReferenceDatabaseMigrationAndroidTest {
         assertEquals("IMPORTED", migrated.analysisStatus)
         assertNull(migrated.knowledgeBundleId)
         assertNull(migrated.knowledgeBundlePayloadSha256)
+        assertNull(migrated.analysisAttemptId)
         room.close()
         context.deleteDatabase(name)
     }

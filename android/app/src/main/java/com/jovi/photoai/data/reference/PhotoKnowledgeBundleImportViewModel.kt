@@ -95,7 +95,7 @@ internal class PhotoKnowledgeBundleImportViewModel(
         mutableState.value = current.copy(isApplying = true, applyError = null)
         viewModelScope.launch {
             val result = try {
-                applySelectedBundle(projectId, bundle, bindings)
+                applySelectedBundle(projectId, bundle, bindings).also { currentCoroutineContext().ensureActive() }
             } catch (cancelled: CancellationException) {
                 // No rollback claim, even if a provider cancels without clearing this ViewModel.
                 if (session.finishApply(ticket)) {
@@ -108,19 +108,29 @@ internal class PhotoKnowledgeBundleImportViewModel(
                 }
                 return@launch
             }
-            currentCoroutineContext().ensureActive()
             if (!session.finishApply(ticket)) return@launch
             mutableState.value = when (result) {
                 is KnowledgeBundleApplyResult.Success -> KnowledgeBundleImportUiState(appliedCount = result.appliedCount)
-                is KnowledgeBundleApplyResult.Failure -> current.copy(isApplying = false, applyError = result.code)
+                KnowledgeBundleApplyResult.OutcomeUnknown -> KnowledgeBundleImportUiState(applyOutcomeUnknown = true)
+                is KnowledgeBundleApplyResult.Failure -> if (result.code == KnowledgeBundleApplyErrorCode.DATABASE_COMMIT_FAILED) {
+                    KnowledgeBundleImportUiState(applyOutcomeUnknown = true)
+                } else {
+                    current.copy(isApplying = false, applyError = result.code)
+                }
             }
         }
     }
 
-    fun reset() {
-        if (!session.reset()) return
+    /** Synchronous gate: callers must not navigate if the transaction is already applying. */
+    fun tryLeave(): Boolean {
+        if (!session.reset()) return false
         readJob?.cancel()
         readJob = null
         mutableState.value = KnowledgeBundleImportUiState()
+        return true
+    }
+
+    fun reset() {
+        tryLeave()
     }
 }

@@ -45,6 +45,8 @@ internal class ReferenceRepository private constructor(
     private val database: ReferenceLibraryDatabase,
     private val importer: PrivateReferenceImporter,
     private val now: () -> Long,
+    private val afterKnowledgeBundleCommit: () -> Unit = {},
+    private val afterAnalysisQueueCommit: () -> Unit = {},
 ) {
     private val dao = database.referenceDao()
 
@@ -208,14 +210,21 @@ internal class ReferenceRepository private constructor(
         }
     }
 
+    /** Fence the response against cancellation, retries, deletion and a Bundle winner. */
     suspend fun persistAnalysis(
         request: ReferenceAnalysisRequest,
         result: ProviderAnalysisResult,
+        attempt: AnalysisAttempt,
     ): ProviderAnalysisResult? = withContext(Dispatchers.IO) {
-        val current = dao.activeById(request.referenceId) ?: return@withContext null
-        val validated = result.validatedFor(request)
-        database.withTransaction { dao.update(current.withAnalysisResult(validated)) }
-        validated
+        if (request.referenceId != attempt.referenceId) return@withContext null
+        database.withTransaction {
+            val current = dao.activeById(request.referenceId) ?: return@withTransaction null
+            if (!current.owns(attempt, PhotoAnalysisStatus.RUNNING)) return@withTransaction null
+            val validated = result.validatedFor(request)
+            dao.update(current.withAnalysisResult(validated).copy(analysisAttemptId = null))
+            dao.deleteSummary(current.projectId)
+            validated
+        }
     }
 
     /** Applies an integrity-checked bundle atomically after revalidating every explicit mapping. */
@@ -232,66 +241,97 @@ internal class ReferenceRepository private constructor(
         ) {
             return@withContext KnowledgeBundleApplyResult.Failure(KnowledgeBundleApplyErrorCode.BUNDLE_INTEGRITY_INVALID)
         }
-        try {
-            database.withTransaction {
-                if (dao.projectById(projectId) == null) throw KnowledgeBundleApplyException(KnowledgeBundleApplyErrorCode.PROJECT_NOT_FOUND)
+        val outcome = observeCommitOutcome<KnowledgeBundleApplyResult> {
+            val committed = database.withTransaction {
+                // Prevalidate ALL targets before the first mutation. Only these no-write
+                // branches are known rejections; database/commit exceptions are UNKNOWN.
+                if (dao.projectById(projectId) == null) {
+                    return@withTransaction KnowledgeBundleApplyResult.Failure(KnowledgeBundleApplyErrorCode.PROJECT_NOT_FOUND)
+                }
                 val producerIds = bundle.references.map(PhotoKnowledgeBundleItem::referenceId)
                 if (bindings.size != producerIds.size || bindings.map(KnowledgeBundleBinding::producerReferenceId).toSet() != producerIds.toSet()) {
-                    throw KnowledgeBundleApplyException(KnowledgeBundleApplyErrorCode.BINDING_INCOMPLETE)
+                    return@withTransaction KnowledgeBundleApplyResult.Failure(KnowledgeBundleApplyErrorCode.BINDING_INCOMPLETE)
                 }
-                if (
-                    bindings.map(KnowledgeBundleBinding::producerReferenceId).distinct().size != bindings.size ||
-                    bindings.map(KnowledgeBundleBinding::localReferenceId).distinct().size != bindings.size
-                ) {
-                    throw KnowledgeBundleApplyException(KnowledgeBundleApplyErrorCode.BINDING_DUPLICATE)
+                if (bindings.map(KnowledgeBundleBinding::localReferenceId).distinct().size != bindings.size) {
+                    return@withTransaction KnowledgeBundleApplyResult.Failure(KnowledgeBundleApplyErrorCode.BINDING_DUPLICATE)
                 }
                 val currentById = dao.activeByProjectOnce(projectId).associateBy(ReferenceEntity::id)
                 val bindingByProducer = bindings.associateBy(KnowledgeBundleBinding::producerReferenceId)
                 val importedAt = now()
-                bundle.references.forEach { item ->
+                val updates = mutableListOf<ReferenceEntity>()
+                for (item in bundle.references) {
                     val localId = bindingByProducer[item.referenceId]?.localReferenceId
-                        ?: throw KnowledgeBundleApplyException(KnowledgeBundleApplyErrorCode.BINDING_INCOMPLETE)
+                        ?: return@withTransaction KnowledgeBundleApplyResult.Failure(KnowledgeBundleApplyErrorCode.BINDING_INCOMPLETE)
                     val current = currentById[localId]
-                        ?: throw KnowledgeBundleApplyException(KnowledgeBundleApplyErrorCode.REFERENCE_NOT_FOUND)
-                    val status = runCatching { PhotoAnalysisStatus.valueOf(current.analysisStatus) }
-                        .getOrDefault(PhotoAnalysisStatus.UNAVAILABLE)
-                    if (!isKnowledgeBundleTargetEligible(status)) {
-                        throw KnowledgeBundleApplyException(KnowledgeBundleApplyErrorCode.REFERENCE_NOT_ELIGIBLE)
+                        ?: return@withTransaction KnowledgeBundleApplyResult.Failure(KnowledgeBundleApplyErrorCode.REFERENCE_NOT_FOUND)
+                    val status = runCatching { PhotoAnalysisStatus.valueOf(current.analysisStatus) }.getOrNull()
+                    if (status == null || !isKnowledgeBundleTargetEligible(status) ||
+                        current.analysisAttemptId != null || current.hasKnowledgeProvenance()) {
+                        return@withTransaction KnowledgeBundleApplyResult.Failure(KnowledgeBundleApplyErrorCode.REFERENCE_NOT_ELIGIBLE)
                     }
-                    dao.update(current.withKnowledgeBundleResult(item, bundle, importedAt))
+                    updates += current.withKnowledgeBundleResult(item, bundle, importedAt).copy(analysisAttemptId = null)
                 }
+                for (updated in updates) dao.update(updated)
                 dao.deleteSummary(projectId)
                 dao.touchProject(projectId, importedAt)
+                KnowledgeBundleApplyResult.Success(bindings.size)
             }
-            KnowledgeBundleApplyResult.Success(bindings.size)
-        } catch (error: KnowledgeBundleApplyException) {
-            KnowledgeBundleApplyResult.Failure(error.code)
-        } catch (_: Exception) {
-            KnowledgeBundleApplyResult.Failure(KnowledgeBundleApplyErrorCode.DATABASE_COMMIT_FAILED)
+            // Test-only acknowledgement boundary; production construction keeps this a no-op.
+            afterKnowledgeBundleCommit()
+            committed
+        }
+        when (outcome) {
+            is CommitOutcome.Acknowledged -> outcome.value
+            CommitOutcome.Unknown -> KnowledgeBundleApplyResult.OutcomeUnknown
         }
     }
 
-    suspend fun markAnalysisQueued(referenceId: String): Boolean = withContext(Dispatchers.IO) {
-        val current = dao.activeById(referenceId) ?: return@withContext false
-        database.withTransaction {
-            dao.update(
-                current.copy(
-                    sourceLabel = "本机分析等待",
-                    analysisStatus = PhotoAnalysisStatus.QUEUED.name,
-                    safeAnalysisErrorCode = null,
-                ),
-            )
+    /** Claim inside the transaction, not from the coordinator's possibly stale snapshot. */
+    suspend fun markAnalysisQueued(attempt: AnalysisAttempt): Boolean = withContext(Dispatchers.IO) {
+        val claimed = database.withTransaction {
+            val current = dao.activeById(attempt.referenceId) ?: return@withTransaction false
+            if (!AnalysisAttemptPolicy.canClaim(current.analysisStatus, current.hasKnowledgeProvenance(), current.analysisAttemptId)) {
+                return@withTransaction false
+            }
+            dao.update(current.copy(sourceLabel = "本机分析等待", analysisStatus = PhotoAnalysisStatus.QUEUED.name,
+                safeAnalysisErrorCode = null, analysisAttemptId = attempt.attemptId))
+            dao.deleteSummary(current.projectId)
+            true
         }
-        true
+        if (claimed) afterAnalysisQueueCommit()
+        claimed
     }
 
-    suspend fun markAnalysisRunning(referenceId: String): Boolean = withContext(Dispatchers.IO) {
-        val current = dao.activeById(referenceId) ?: return@withContext false
+    suspend fun markAnalysisRunning(attempt: AnalysisAttempt): Boolean = withContext(Dispatchers.IO) {
         database.withTransaction {
-            dao.update(current.copy(sourceLabel = "本机分析中", analysisStatus = PhotoAnalysisStatus.RUNNING.name, safeAnalysisErrorCode = null))
+            val current = dao.activeById(attempt.referenceId) ?: return@withTransaction false
+            if (!current.owns(attempt, PhotoAnalysisStatus.QUEUED)) return@withTransaction false
+            dao.update(current.copy(sourceLabel = "本机分析中", analysisStatus = PhotoAnalysisStatus.RUNNING.name,
+                safeAnalysisErrorCode = null))
+            true
         }
-        true
     }
+
+    /** Cleanup belongs only to this attempt; an old job must not cancel a newer retry. */
+    suspend fun cancelAnalysisAttempt(attempt: AnalysisAttempt) = withContext(Dispatchers.IO) {
+        database.withTransaction {
+            val current = dao.activeById(attempt.referenceId) ?: return@withTransaction
+            if (current.owns(attempt, PhotoAnalysisStatus.QUEUED) || current.owns(attempt, PhotoAnalysisStatus.RUNNING)) {
+                dao.update(current.copy(analysisStatus = PhotoAnalysisStatus.CANCELLED.name, analysisAttemptId = null))
+                dao.deleteSummary(current.projectId)
+            }
+        }
+    }
+
+    private fun ReferenceEntity.hasKnowledgeProvenance(): Boolean =
+        knowledgeBundleId != null || knowledgeBundleReferenceId != null || knowledgeBundleProducerId != null ||
+            knowledgeBundleOrigin != null || knowledgeBundleReleaseId != null ||
+            knowledgeBundlePayloadSha256 != null || knowledgeBundleImportedAtEpochMillis != null
+
+    private fun ReferenceEntity.owns(attempt: AnalysisAttempt, required: PhotoAnalysisStatus): Boolean =
+        id == attempt.referenceId && AnalysisAttemptPolicy.owns(
+            analysisStatus, required.name, hasKnowledgeProvenance(), analysisAttemptId, attempt.attemptId,
+        )
 
     suspend fun cancelOutstandingAnalysis(projectId: String) = withContext(Dispatchers.IO) {
         database.withTransaction { dao.cancelOutstandingAnalysis(projectId) }
@@ -302,7 +342,17 @@ internal class ReferenceRepository private constructor(
     }
 
     suspend fun persistProjectSummary(summary: PersistedProjectSummary) = withContext(Dispatchers.IO) {
-        database.withTransaction { dao.upsertSummary(summary.toEntity()) }
+        database.withTransaction {
+            if (dao.projectById(summary.projectId) == null) return@withTransaction
+            val rows = dao.activeByProjectOnce(summary.projectId).map(ReferenceEntity::toRecord)
+            val inputs = rows.filter {
+                it.analysisStatus == PhotoAnalysisStatus.READY && it.analysisProvenance != null && it.knowledgeBundleProvenance == null
+            }.map { ReadySummaryInput(it.photo.id, it.bundle) }
+            val failed = rows.count { it.analysisStatus == PhotoAnalysisStatus.FAILED || it.analysisStatus == PhotoAnalysisStatus.UNAVAILABLE }
+            if (inputs.isEmpty() || summary.readyCount != inputs.size || summary.failedCount != failed) return@withTransaction
+            if (ProjectSummaryRequest(summary.projectId, inputs, failed).inputDigest != summary.inputDigest) return@withTransaction
+            dao.upsertSummary(summary.toEntity())
+        }
     }
 
     suspend fun projectSummary(projectId: String): PersistedProjectSummary? = withContext(Dispatchers.IO) {
@@ -363,10 +413,24 @@ internal class ReferenceRepository private constructor(
     }
 
     private class ProjectCapacityReachedException : RuntimeException()
-    private class KnowledgeBundleApplyException(val code: KnowledgeBundleApplyErrorCode) : RuntimeException()
 
     companion object {
         private const val MAX_PROJECT_TITLE_LENGTH = 60
+
+        /** Test caller owns and closes its isolated database. No production failure hooks. */
+        @androidx.annotation.VisibleForTesting
+        internal fun createForTest(
+            context: Context,
+            database: ReferenceLibraryDatabase,
+            afterKnowledgeBundleCommit: () -> Unit = {},
+            afterAnalysisQueueCommit: () -> Unit = {},
+        ): ReferenceRepository = ReferenceRepository(
+            database = database,
+            importer = PrivateReferenceImporter(context),
+            now = System::currentTimeMillis,
+            afterKnowledgeBundleCommit = afterKnowledgeBundleCommit,
+            afterAnalysisQueueCommit = afterAnalysisQueueCommit,
+        )
 
         fun create(context: Context): ReferenceRepository = ReferenceRepository(
             database = ReferenceLibraryDatabase.create(context),

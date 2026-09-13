@@ -66,6 +66,7 @@ internal data class ReferenceEntity(
     val knowledgeBundleReleaseId: String? = null,
     val knowledgeBundlePayloadSha256: String? = null,
     val knowledgeBundleImportedAtEpochMillis: Long? = null,
+    val analysisAttemptId: String? = null,
 )
 
 @Entity(
@@ -190,17 +191,17 @@ internal interface ReferenceDao {
     @Query("DELETE FROM project_summaries WHERE projectId = :projectId")
     suspend fun deleteSummary(projectId: String)
 
-    @Query("UPDATE reference_records SET analysisStatus = 'CANCELLED' WHERE projectId = :projectId AND storageState = 'ACTIVE' AND analysisStatus IN ('QUEUED', 'RUNNING', 'ANALYZING')")
+    @Query("UPDATE reference_records SET analysisStatus = 'CANCELLED', analysisAttemptId = NULL WHERE projectId = :projectId AND storageState = 'ACTIVE' AND analysisStatus IN ('QUEUED', 'RUNNING', 'ANALYZING')")
     suspend fun cancelOutstandingAnalysis(projectId: String)
 
     @Query("UPDATE reference_records SET analysisStatus = 'RUNNING' WHERE analysisStatus = 'ANALYZING'")
     suspend fun migrateAnalyzingToRunning()
 
-    @Query("UPDATE reference_records SET analysisStatus = 'CANCELLED' WHERE storageState = 'ACTIVE' AND analysisStatus IN ('QUEUED', 'RUNNING', 'ANALYZING')")
+    @Query("UPDATE reference_records SET analysisStatus = 'CANCELLED', analysisAttemptId = NULL WHERE storageState = 'ACTIVE' AND analysisStatus IN ('QUEUED', 'RUNNING', 'ANALYZING')")
     suspend fun cancelAllOutstandingAnalysis()
 }
 
-@Database(entities = [ReferenceEntity::class, PhotographyProjectEntity::class, ProjectSummaryEntity::class], version = 5, exportSchema = false)
+@Database(entities = [ReferenceEntity::class, PhotographyProjectEntity::class, ProjectSummaryEntity::class], version = 6, exportSchema = false)
 internal abstract class ReferenceLibraryDatabase : RoomDatabase() {
     abstract fun referenceDao(): ReferenceDao
 
@@ -210,7 +211,7 @@ internal abstract class ReferenceLibraryDatabase : RoomDatabase() {
             ReferenceLibraryDatabase::class.java,
             "reference-library.db",
         ).setJournalMode(JournalMode.TRUNCATE)
-            .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5)
+            .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5, MIGRATION_5_6)
             .build()
     }
 }
@@ -287,6 +288,13 @@ internal val MIGRATION_4_5 = object : Migration(4, 5) {
             "knowledgeBundlePayloadSha256 TEXT",
             "knowledgeBundleImportedAtEpochMillis INTEGER",
         ).forEach { database.execSQL("ALTER TABLE `reference_records` ADD COLUMN $it") }
+    }
+}
+
+/** Nullable fence; existing records retain all content and provenance. */
+internal val MIGRATION_5_6 = object : Migration(5, 6) {
+    override fun migrate(database: SupportSQLiteDatabase) {
+        database.execSQL("ALTER TABLE `reference_records` ADD COLUMN `analysisAttemptId` TEXT")
     }
 }
 

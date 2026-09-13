@@ -98,6 +98,8 @@ internal enum class KnowledgeBundleApplyErrorCode {
 internal sealed interface KnowledgeBundleApplyResult {
     data class Success(val appliedCount: Int) : KnowledgeBundleApplyResult
     data class Failure(val code: KnowledgeBundleApplyErrorCode) : KnowledgeBundleApplyResult
+    /** Database finalization/acknowledgement failed. Re-read state, never blindly retry. */
+    object OutcomeUnknown : KnowledgeBundleApplyResult
 }
 
 internal object PhotoKnowledgeBundleParser {
