@@ -65,6 +65,13 @@
 - 100%/200% 系统截图：`NOT_RUN`；语义 Gate 已通过，未保存截图。
 - 独立 Reviewer：`NOT_RUN`。
 
+## 修复包自检边界
+
+- ZIP 内 23 个文件 SHA-256：全部匹配。
+- ZIP 内 `tests/test_apply_repair.py`：当前 Windows 环境 `12` 项中 `9` 项通过；2 项因临时文件 CRLF 与 LF 硬编码断言失败，1 项因创建符号链接需要当前进程特权而失败。未用这些包内测试结果冒充 Android 资格。
+- ZIP 内 host Kotlin policy check：`NOT_RUN`，当前环境没有 `kotlinc`；真实 Gradle JVM 已通过 `130/130`。
+- 应用脚本 dry-run/write：`DRY_RUN_PASS`、`APPLIED_NOT_COMMITTED` 均已取得；应用没有联网、暂存或覆盖 Owner 文件。
+
 ## Owner 安全
 
 Owner 主工作树仍保持原始状态；仓库外快照：
