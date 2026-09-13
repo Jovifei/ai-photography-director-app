@@ -100,11 +100,37 @@ internal object KnowledgeBundleCoreRegressionCases {
         return count
     }
 
+    fun boundedRead(): Int {
+        var count = 0
+        fun expect(value: Boolean) { check(value) { "Read case ${count + 1}" }; count++ }
+        expect(readBoundedKnowledgeBundleBytes(java.io.ByteArrayInputStream(byteArrayOf()), 4).isEmpty())
+        expect(readBoundedKnowledgeBundleBytes(java.io.ByteArrayInputStream(byteArrayOf(1, 2)), 4).contentEquals(byteArrayOf(1, 2)))
+        expect(readBoundedKnowledgeBundleBytes(java.io.ByteArrayInputStream(byteArrayOf(1, 2)), 2).size == 2)
+        val limitError = runCatching {
+            readBoundedKnowledgeBundleBytes(java.io.ByteArrayInputStream(byteArrayOf(1, 2, 3)), 2)
+        }.exceptionOrNull()
+        expect(limitError is KnowledgeBundleDocumentTooLargeException)
+        val source = java.io.ByteArrayInputStream(ByteArray(10000))
+        expect(runCatching { readBoundedKnowledgeBundleBytes(source, 16) }.exceptionOrNull() is KnowledgeBundleDocumentTooLargeException)
+        expect(source.available() == 10000 - 17)
+        val zeroProvider = object : java.io.ByteArrayInputStream(byteArrayOf(3, 4)) {
+            override fun read(bytes: ByteArray, offset: Int, length: Int): Int = 0
+        }
+        expect(readBoundedKnowledgeBundleBytes(zeroProvider, 2).contentEquals(byteArrayOf(3, 4)))
+        val marker = IllegalStateException("synthetic cancellation")
+        val cancelled = java.io.ByteArrayInputStream(byteArrayOf(1, 2))
+        expect(runCatching { readBoundedKnowledgeBundleBytes(cancelled, 2) { throw marker } }.exceptionOrNull() === marker)
+        expect(cancelled.available() == 2)
+        expect(runCatching { readBoundedKnowledgeBundleBytes(cancelled, 0) }.exceptionOrNull() is IllegalArgumentException)
+        return count
+    }
+
     @JvmStatic
     fun main(args: Array<String>) {
         val syntax = syntax()
         val session = session()
         val mapping = mapping()
-        println("PASS syntax=$syntax session=$session mapping=$mapping total=${syntax + session + mapping}")
+        val boundedRead = boundedRead()
+        println("PASS syntax=$syntax session=$session mapping=$mapping boundedRead=$boundedRead total=${syntax + session + mapping + boundedRead}")
     }
 }

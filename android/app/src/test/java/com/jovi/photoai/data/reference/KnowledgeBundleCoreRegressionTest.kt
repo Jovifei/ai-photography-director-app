@@ -14,4 +14,7 @@ class KnowledgeBundleCoreRegressionTest {
     @Test fun mapping_requiresExactOneToOneAndAllowsExplicitUnbind() {
         KnowledgeBundleCoreRegressionCases.mapping()
     }
+    @Test fun boundedRead_limitsBytesAndHonoursCancellation() {
+        KnowledgeBundleCoreRegressionCases.boundedRead()
+    }
 }

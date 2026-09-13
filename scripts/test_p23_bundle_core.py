@@ -21,6 +21,7 @@ def main() -> int:
     production = "android/app/src/main/java/com/jovi/photoai/data/reference/"
     tests = "android/app/src/test/java/com/jovi/photoai/data/reference/"
     sources = [production + "StrictKnowledgeBundleJson.kt", production + "KnowledgeBundleImportSession.kt",
+               production + "BoundedKnowledgeBundleReader.kt",
                tests + "KnowledgeBundleCoreRegressionCases.kt"]
     compiler, java = shutil.which("kotlinc"), shutil.which("java")
     if not compiler or not java:
