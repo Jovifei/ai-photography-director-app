@@ -15,7 +15,7 @@
 - [x] 专用 API 35 emulator：P23A 新增 `11/11`；目标回归 `14 classes / 36 tests` 全部通过；官方 Picker、100%/200% 字体、Local/D2D 均通过。
 - [x] 调查取消、异步 ticket、映射、提交防重入、BackHandler 和失败语义；本轮未复现生产逻辑缺陷，仅修正一条落后于 P23A UI 文案的 P22 测试断言。
 - [x] Bundle contract、Phase 1.5 contract、service `5/5`、compileall、隐私审计、差异检查和 manifest blob 复核通过。
-- [ ] 逐段非 force 提交到本地验证分支；如需推送，先运行 `python scripts/prepush_privacy_audit.py`。
+- [x] 已分两段非 force 提交并推送到 `codex/p23a-local-validation-20260913`；push 前隐私审计通过。
 
 ## Review
 
@@ -25,6 +25,7 @@
 - 官方脚本证据：system Picker `PASS`、font 100/200 `PASS_SEMANTICS_ONLY`、Local `PASS_LOCAL_TRANSPORT`、D2D `PASS_D2D_TRANSPORT`。
 - 真实未完成项：签名 APK/AAB 未运行，原因是缺少 Owner 外部签名输入；P20 Qwen/LAN 测试因明确禁区和缺少配对参数未运行；独立审查未运行。
 - P20 私有分析、Pipeline、真实照片、实体设备、生产签名、main 合并和发布均未执行。
+- 验证分支已独立推送；其提交基于 P23A 远端 HEAD，未覆盖原实现分支或 `main`。
 - 外部证据目录：`E:\project\_benchmark_evidence\p23a-local-validation-20260913-v3\`。
 - 本轮不合并 `main`，不覆盖 Owner 文件，不执行独立审查或生产发布。
 
