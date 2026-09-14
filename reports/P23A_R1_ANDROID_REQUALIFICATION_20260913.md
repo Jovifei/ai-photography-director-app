@@ -11,6 +11,7 @@
 - A 提交：`7968ef3a0314120e60d4ad0c5116fc49f449df7b`
 - B 提交：`a874ec266341db67203892f69096f37a57866446`
 - findings 修复提交：`c0a2cc387d5ce95858b4c98bb7cb23828f3a3de0`。
+- summary 读取失效测试提交：`0f7b42c9d052b1d745fa9add5ebc42568d1f26bc`。
 - 最终 docs 提交后的审查 SHA 以 Git 实际 HEAD 为准。
 
 本轮未修改 main、旧验证分支或 Pipeline；未启动 Qwen、真实照片、LAN、防火墙、生产 Bundle、实体设备、Cloud、iOS 或公开发布。
@@ -23,7 +24,7 @@
 - Bundle 来源不能覆盖分析任务；旧任务不能覆盖新 token、删除记录或新的 Bundle 结果。
 - ViewModel unknown outcome 不展示确定回滚或盲目重试；父级返回和子级 BackHandler 使用同步 `tryLeave()`。
 - 项目 summary 写回校验最新 Provider 输入摘要，Bundle-only 结果不冒充 Provider summary。
-- 新增/复验 25 个真实 Android 测试方法，使用实际 Repository/Room/Coordinator/ViewModel/Composable；不使用 fake apply 替代。新增 summary 失效、Local cancellation、真实 OpenDocument apply 三条审查缺口链路。
+- 新增/复验 28 个真实 Android 测试方法，使用实际 Repository/Room/Coordinator/ViewModel/Composable；不使用 fake apply 替代。新增 summary 失效、Local cancellation、真实 OpenDocument apply 三条审查缺口链路。
 
 ## 新鲜验证结果
 
@@ -31,7 +32,7 @@
 |---|---|
 | 标准 Gradle 命令 | `BLOCKED`：缺少 Owner 外部 `PHOTOAI_RELEASE_*` 签名输入 |
 | Debug/Test APK、JVM、lintDebug/lintRelease（排除 release-only signing guard） | `PASS`；JVM `130/130`，0 failure/error/skip |
-| P23R/R1 与审查缺口 Android 测试 | `PASS`；10 类、25/25（8 个 P23R 类 + 真实 OpenDocument/Picker 集成） |
+| P23R/R1 与审查缺口 Android 测试 | `PASS`；10 类、28/28（含 Provider READY 集合、failed count、inputDigest 和 summary Flow 失效） |
 | 既有 Android 回归 | `PASS`；15 类、38/38 |
 | Room migration v5→v6 | `PASS` |
 | System OpenDocument / Photo Picker | `PASS` |
@@ -52,9 +53,9 @@
 
 关键证据：
 
-- `static-final3/standard-gradle.log`、`static-final3/no-signing-gradle.log`
-- `findings-final3/gradle-findings-25.log`、`findings-final3/TEST-findings-25.xml`
-- `regression-final4/TEST-regression-38.xml`
+- `E:\project\_benchmark_evidence\p23a-r1-20260915\static/standard.log`、`no-signing.log`
+- `E:\project\_benchmark_evidence\p23a-r1-20260915\findings-28/gradle.log`、`TEST-28.xml`
+- `E:\project\_benchmark_evidence\p23a-r1-20260915\regression-38/gradle.log`、`TEST-38.xml`
 - `official-final-findings3/backup-restore-summary.json`
 - `P23A_R1_SOURCE_MANIFEST_20260913.json`
 
@@ -85,10 +86,10 @@ Owner 主工作树仍保持原始状态；仓库外快照：
 
 针对审查候选 `724b6227370ba3e71437c2e50e1957abb536a38a` 的 REQUEST_CHANGES 已在本分支继续处理：
 
-- P1 summary：v5→v6 migration 清除旧 `project_summaries`；Repository 读取时只接受当前 Provider READY 集合、failed count 和 `inputDigest` 均匹配的 summary；新增真实 migration/digest 测试。
+- P1 summary：v5→v6 migration 清除旧 `project_summaries`；Repository 读取时只接受当前 Provider READY 集合、failed count 和 `inputDigest` 均匹配的 summary；新增真实 migration、集合/count/digest 以及 summary Flow 失效测试。
 - P2 cancellation：Local LAN pair/analyze/summary 明确重新抛出 `CancellationException`；新增真实 Repository 读取私有合成 JPEG + OkHttp cancellation 测试。
 - P2 OpenDocument/Repository bypass：P22 OpenDocument 测试调用真实 isolated Room `applyKnowledgeBundle`；迟到分析测试调用真实 `ReferenceRepository.delete`；新增 25 项 findings/R1 Android coverage。
 - P2 Photo Picker：fallback 不再要求设备只有一个 thumbnail，并以合成 fixture aspect ratio 验证实际选择了测试媒体；在专用 API35 emulator 上通过。
-- P3 manifest：最终 manifest 共 27 个文件，同时记录 Git blob domain 与当前 Windows checkout SHA-256；不把 CRLF 工作树哈希冒充 canonical blob。
+- P3 manifest：最终 manifest 共 27 个文件，`git_blob` 使用 Git clean/index blob，`bytes`/`sha256` 使用 LF 规范化内容；明确注明 Windows CRLF 工作树 hash 不属于 canonical 域。
 
-审查后续新鲜结果：代码提交 `c0a2cc387d5ce95858b4c98bb7cb23828f3a3de0` 上 R1/审查缺口 Android `25/25`，既有回归 `38/38`；官方 Local/D2D summary 为 PASS。最终候选 SHA 以本轮最后 docs commit 的 Git HEAD 为准。
+审查后续新鲜结果：代码提交 `0f7b42c9d052b1d745fa9add5ebc42568d1f26bc` 上 R1/审查缺口 Android `28/28`，既有回归 `38/38`；官方 Local/D2D summary 为 PASS。最终候选 SHA 以本轮最后 docs commit 的 Git HEAD 为准。

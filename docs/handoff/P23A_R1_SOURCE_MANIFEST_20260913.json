@@ -1,12 +1,13 @@
 {
   "base_sha": "be040188c93d7613d9433a23e0d1f5d640e317f1",
+  "source_commit": "0f7b42c9d052b1d745fa9add5ebc42568d1f26bc",
   "status": "P23A_R1_ANDROID_REQUALIFIED_AWAITING_INDEPENDENT_REVIEW",
-  "scope": "R1 repair sources plus independent-review findings remediation sources and tests; final local Android evidence is external",
+  "scope": "R1 repair sources plus independent-review findings remediation sources and tests; manifest hashes are canonical LF/blob domains; local Android evidence is external",
   "files": {
     "android/app/src/androidTest/java/com/jovi/photoai/p22/P22SystemDocumentImportAndroidTest.kt": {
-      "bytes": 10180,
-      "git_blob": "515562be7425cf05051a92d16c5fcc0d1351e439",
-      "sha256": "84269baef900d3ad57c1dc5ca5eae3c74bdb1cb4b9abaf11eab3f105e68e3933"
+      "bytes": 10051,
+      "git_blob": "f7323a5b2f3f01996175160b9f6c70183682b7d5",
+      "sha256": "3ab6bcc27f2c1731bb7856585fb193afafe401c4489eea6ee72e81e9c84f4ae2"
     },
     "android/app/src/androidTest/java/com/jovi/photoai/p22/ReferenceDatabaseMigrationAndroidTest.kt": {
       "bytes": 5574,
@@ -44,9 +45,9 @@
       "sha256": "f9d6f6dcfdc08b65d514413f8c98f25a071d940c0fe7616506b723493491a837"
     },
     "android/app/src/androidTest/java/com/jovi/photoai/p23r/P23RSummaryAndroidTest.kt": {
-      "bytes": 1497,
-      "git_blob": "059217a09692e252aad4fbadafda5d68d1e9ca62",
-      "sha256": "51e4f1b2d47ab36a06315fc5afc248f0d6ac7c214974d8d8f59091729c4e3cc2"
+      "bytes": 7711,
+      "git_blob": "9fbe73dfeb27cd3871189aefa62a4a9f7aaccf68",
+      "sha256": "d663a776992f72281518d9e9e883cd404b9b4734fd8167aef4ce64763d350ea6"
     },
     "android/app/src/androidTest/java/com/jovi/photoai/p23r/P23RUtf8AndroidTest.kt": {
       "bytes": 996,
@@ -59,9 +60,9 @@
       "sha256": "97db5b8e2c217ae3d5ff1f7f092a08ef8d2bf8e365e33aea7f40b1f9e99db0ce"
     },
     "android/app/src/androidTest/java/com/jovi/photoai/ui1/Ui1SystemPickerFlowAndroidTest.kt": {
-      "bytes": 5596,
-      "git_blob": "19b9d1c4b64129f85920d4fbcd8ae31dd6cbcf1e",
-      "sha256": "636fe00996d87509443a493e9f913aca8f04dd7283f710d923e210373d923d18"
+      "bytes": 5466,
+      "git_blob": "0dfb5fade6bab1d0ec99ed7cce790e866aa56ba5",
+      "sha256": "37849120d03c2a8c26604e24bf9e934397f7a2cb9d6fe96639648e5714c59026"
     },
     "android/app/src/main/java/com/jovi/photoai/data/reference/AnalysisAttempt.kt": {
       "bytes": 938,
@@ -74,9 +75,9 @@
       "sha256": "572c225f52b2606f27ea417e14754aaf55265111dcc17cf605bc9eca18c9414d"
     },
     "android/app/src/main/java/com/jovi/photoai/data/reference/LocalLanReferenceAnalysisProvider.kt": {
-      "bytes": 19546,
-      "git_blob": "8c4a8377be8aa103633d60862d5a128a734a85e8",
-      "sha256": "0317fdb56e2bb21c60e8187eca2a6a7877f6e25d43a72bba09ae6953237a93b8"
+      "bytes": 19206,
+      "git_blob": "3e45b4cf8ba95603f1e091226f6ddd0100be999c",
+      "sha256": "169848b5f91daeb4d1a295fdaf76931515648c3d7114a9d8a312fb41e93c790c"
     },
     "android/app/src/main/java/com/jovi/photoai/data/reference/PhotoAnalysisCoordinator.kt": {
       "bytes": 3888,
@@ -138,5 +139,11 @@
       "git_blob": "434199ca7c5fb16c26bab1a0e22d99f0c62550b4",
       "sha256": "40968365ab9c25047cffdd75c2ad60f25bc2ce20b347b8b4982d488f1f3d835e"
     }
+  },
+  "hash_domains": {
+    "git_blob": "Git clean/index blob OID (SHA-1), computed with git hash-object --path for the listed repository path",
+    "bytes": "LF-normalized canonical source byte length",
+    "sha256": "SHA-256 of LF-normalized canonical source bytes",
+    "windows_checkout": "Checkout bytes may use CRLF; Windows checkout SHA-256 is intentionally not represented by bytes/sha256"
   }
 }
