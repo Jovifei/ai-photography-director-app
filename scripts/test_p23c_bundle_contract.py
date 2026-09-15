@@ -152,8 +152,16 @@ class ContractTests(unittest.TestCase):
 
     def test_pinned_p23c_android_asset(self):
         path = Path(__file__).resolve().parents[1] / "android/app/src/androidTest/assets/p23c/roundtrip.bundle.json"
-        self.assertEqual(encoded_json(synthetic_bundle()), path.read_bytes())
-        validate_bundle(path.read_bytes())
+        raw = path.read_bytes()
+        # Source checkout CRLF is not the runtime receipt hash domain.
+        self.assertEqual(encoded_json(synthetic_bundle()), raw.replace(b"\r\n", b"\n"))
+        validate_bundle(raw)
+
+    def test_windows_crlf_vector_keeps_pkb1_but_changes_file_hash(self):
+        raw = encoded_json(synthetic_bundle())
+        crlf = raw.replace(b"\n", b"\r\n")
+        self.assertEqual(validate_bundle(raw), validate_bundle(crlf))
+        self.assertNotEqual(sha256(raw), sha256(crlf))
 
 
 if __name__ == "__main__":
