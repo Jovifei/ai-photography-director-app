@@ -1,0 +1,43 @@
+{
+  "bundle_id": "synthetic_p23c",
+  "contract_version": "1.0",
+  "integrity": {
+    "algorithm": "SHA-256",
+    "payload_sha256": "889ccdde3f9e9065795f8440c97e8c1364c87864c7f8b519e903ae6573213ca1"
+  },
+  "references": [
+    {
+      "photography": {
+        "background_story": "合成测试 background_story 0 📷 é",
+        "camera_position": "合成测试 camera_position 0 📷 é",
+        "composition": "合成测试 composition 0 📷 é",
+        "director_prompt": "合成测试 director_prompt 0 📷 é",
+        "emotion": "合成测试 emotion 0 📷 é",
+        "lighting": "合成测试 lighting 0 📷 é",
+        "pose_template": "合成测试 pose_template 0 📷 é",
+        "scene": "合成测试 scene 0 📷 é",
+        "subject_intent": "合成测试 subject_intent 0 📷 é"
+      },
+      "reference_id": "synthetic_00"
+    },
+    {
+      "photography": {
+        "background_story": "合成测试 background_story 1 📷 é",
+        "camera_position": "合成测试 camera_position 1 📷 é",
+        "composition": "合成测试 composition 1 📷 é",
+        "director_prompt": "合成测试 director_prompt 1 📷 é",
+        "emotion": "合成测试 emotion 1 📷 é",
+        "lighting": "合成测试 lighting 1 📷 é",
+        "pose_template": "合成测试 pose_template 1 📷 é",
+        "scene": "合成测试 scene 1 📷 é",
+        "subject_intent": "合成测试 subject_intent 1 📷 é"
+      },
+      "reference_id": "synthetic_01"
+    }
+  ],
+  "source": {
+    "origin": "PIPELINE",
+    "producer_id": "synthetic_test",
+    "release_id": "test_v1"
+  }
+}
