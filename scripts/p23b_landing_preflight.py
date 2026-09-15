@@ -63,7 +63,10 @@ def checked_local_file(root: Path, rel: str) -> dict:
 
 def owner_snapshot(owner: Git) -> dict:
     # A configured clean/process filter could run an external program during git status.
-    configured = owner.run("config", "--name-only", "--get-regexp", r"^filter\..*\.(clean|process)$", allow_one=True)
+    # A system-wide Git LFS definition is not evidence that this repository uses it.
+    # Treat only repository-local filter definitions as a landing-check blocker.
+    configured = owner.run("config", "--local", "--name-only", "--get-regexp",
+                           r"^filter\..*\.(clean|process)$", allow_one=True)
     if configured not in {b"", b"NOT_ANCESTOR"}:
         raise GateError("CUSTOM_GIT_FILTER_REQUIRES_REVIEW")
     raw = owner.run("status", "--porcelain=v1", "-z", "--no-renames", "--untracked-files=all",

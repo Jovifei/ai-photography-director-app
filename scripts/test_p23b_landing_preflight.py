@@ -174,6 +174,12 @@ class LandingTests(RepoCase):
         with self.assertRaisesRegex(GateError, "CUSTOM_GIT_FILTER"):
             self.check()
 
+    def test_filter_gate_reads_repository_scope_not_system_scope(self):
+        with mock.patch.object(self.owner, "run", wraps=self.owner.run) as run:
+            owner_snapshot(self.owner)
+        config_calls = [call.args for call in run.call_args_list if call.args[:1] == ("config",)]
+        self.assertTrue(any(args[1:2] == ("--local",) for args in config_calls))
+
     def test_preflight_never_updates_owner_index_or_refs(self):
         index = self.root / ".git/index"
         self.put("notes.md", "Owner change\n")
