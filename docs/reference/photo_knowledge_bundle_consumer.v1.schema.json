@@ -1,0 +1,90 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://photoai.local/drafts/photo_knowledge_bundle_consumer.v1.schema.json",
+  "title": "Photo Knowledge Bundle Consumer v1",
+  "description": "App-local acceptance boundary for a user-selected, approved, image-free Photo Knowledge Bundle. This is not a shared-contract change or a transport specification.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["contract_version", "bundle_id", "source", "integrity", "references"],
+  "properties": {
+    "contract_version": {
+      "const": "1.0",
+      "description": "Unknown versions are rejected rather than guessed or partially rendered."
+    },
+    "bundle_id": { "$ref": "#/$defs/opaqueId" },
+    "source": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["origin", "producer_id", "release_id"],
+      "properties": {
+        "origin": { "enum": ["LOCAL_SERVICE", "PIPELINE"] },
+        "producer_id": { "$ref": "#/$defs/opaqueId" },
+        "release_id": { "$ref": "#/$defs/opaqueId" }
+      }
+    },
+    "integrity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["algorithm", "payload_sha256"],
+      "properties": {
+        "algorithm": { "const": "SHA-256" },
+        "payload_sha256": { "type": "string", "pattern": "^[A-Fa-f0-9]{64}$" }
+      }
+    },
+    "references": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 20,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["reference_id", "photography"],
+        "properties": {
+          "reference_id": { "$ref": "#/$defs/opaqueId" },
+          "photography": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["scene", "background_story", "lighting", "composition", "subject_intent", "emotion", "pose_template", "camera_position", "director_prompt"],
+            "properties": {
+              "scene": { "$ref": "#/$defs/safeText800" },
+              "background_story": { "$ref": "#/$defs/safeText800" },
+              "lighting": { "$ref": "#/$defs/safeText800" },
+              "composition": { "$ref": "#/$defs/safeText800" },
+              "subject_intent": { "$ref": "#/$defs/safeText800" },
+              "emotion": { "$ref": "#/$defs/safeText800" },
+              "pose_template": {
+                "$ref": "#/$defs/safeText800",
+                "description": "Textual pose intent only; never keypoints, skeleton coordinates, biometric output, or live Pose data."
+              },
+              "camera_position": { "$ref": "#/$defs/safeText800" },
+              "director_prompt": { "$ref": "#/$defs/safeText1200" }
+            }
+          }
+        }
+      }
+    }
+  },
+  "$defs": {
+    "opaqueId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+      "description": "Opaque token syntax only: no URI, path, email, whitespace, colon, slash, or backslash syntax. Producer policy must ensure it is not derived from an account, device, location, file name, URI, EXIF record, or media hash."
+    },
+    "safeText800": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 800,
+      "pattern": "^(?=.*\\S)[^\\u0000-\\u001F\\u007F-\\u009F]+$",
+      "description": "Non-blank single-line text without ISO control characters. The consumer additionally rejects transport/path-like text."
+    },
+    "safeText1200": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 1200,
+      "pattern": "^(?=.*\\S)[^\\u0000-\\u001F\\u007F-\\u009F]+$",
+      "description": "Non-blank single-line text without ISO control characters. The consumer additionally rejects transport/path-like text."
+    }
+  }
+}

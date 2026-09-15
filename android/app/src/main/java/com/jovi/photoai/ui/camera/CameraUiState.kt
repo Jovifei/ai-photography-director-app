@@ -38,6 +38,18 @@ enum class CameraUiMessage {
     CAPTURE_FAILED,
 }
 
+enum class CaptureSaveOutcome {
+    SUCCESS,
+    CANCELLED,
+    FAILED,
+}
+
+fun captureSaveStatus(outcome: CaptureSaveOutcome): String = when (outcome) {
+    CaptureSaveOutcome.SUCCESS -> "照片已保存到你选择的位置"
+    CaptureSaveOutcome.CANCELLED -> "已取消保存，照片仍保留在应用缓存"
+    CaptureSaveOutcome.FAILED -> "保存失败，照片仍保留在应用缓存，可重试"
+}
+
 /**
  * Pure runtime UI state. Android permission, CameraX, PreviewView, Context and Uri stay outside.
  * Guidance is injected from the navigation layer and intentionally omitted from durable snapshots.
@@ -142,7 +154,7 @@ fun reduceCameraUiState(state: CameraUiState, event: CameraUiEvent): CameraUiSta
         }
 
         CameraUiEvent.CameraStartRequested -> {
-            if (state.permission != CameraPermission.GRANTED) state
+            if (state.permission == CameraPermission.DENIED) state
             else state.copy(cameraRuntime = CameraRuntime.STARTING, message = null)
         }
 

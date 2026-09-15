@@ -41,6 +41,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import com.jovi.photoai.camera.CameraXManager
+import com.jovi.photoai.camera.CaptureExporter
 import com.jovi.photoai.domain.model.GuidanceItem
 import com.jovi.photoai.reference.CameraDirectorGuidance
 import com.jovi.photoai.ui.camera.CameraDirectorChrome
@@ -48,7 +49,9 @@ import com.jovi.photoai.ui.camera.CameraPermission
 import com.jovi.photoai.ui.camera.CameraUiEvent
 import com.jovi.photoai.ui.camera.CameraUiSnapshot
 import com.jovi.photoai.ui.camera.CameraUiState
+import com.jovi.photoai.ui.camera.CaptureSaveOutcome
 import com.jovi.photoai.ui.camera.cameraGuidanceFor
+import com.jovi.photoai.ui.camera.captureSaveStatus
 import com.jovi.photoai.ui.camera.reduceCameraUiState
 import com.jovi.photoai.ui.camera.restoreCameraUiState
 import com.jovi.photoai.ui.camera.toSnapshot
@@ -99,6 +102,21 @@ fun CameraScreen(
 ) {
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
+    var latestCapture by remember { mutableStateOf<File?>(null) }
+    var pendingSave by remember { mutableStateOf<File?>(null) }
+    var saveStatus by remember { mutableStateOf<String?>(null) }
+    val saveLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.CreateDocument("image/jpeg"),
+    ) { destination ->
+        val source = pendingSave
+        pendingSave = null
+        saveStatus = when {
+            destination == null -> captureSaveStatus(CaptureSaveOutcome.CANCELLED)
+            source != null && CaptureExporter.copyTo(context.contentResolver, source, destination) ->
+                captureSaveStatus(CaptureSaveOutcome.SUCCESS)
+            else -> captureSaveStatus(CaptureSaveOutcome.FAILED)
+        }
+    }
     var uiState by rememberSaveable(stateSaver = CameraUiStateSaver) { mutableStateOf(CameraUiState()) }
     val dispatch: (CameraUiEvent) -> Unit = { event ->
         uiState = reduceCameraUiState(uiState, event)
@@ -147,6 +165,19 @@ fun CameraScreen(
             dispatch = dispatch,
             referenceGuidance = referenceGuidance,
             directCaptureMode = directCaptureMode,
+            latestCapture = latestCapture,
+            saveStatus = saveStatus,
+            onSave = {
+                latestCapture?.takeIf(File::isFile)?.let { source ->
+                    pendingSave = source
+                    saveStatus = null
+                    saveLauncher.launch(CaptureExporter.defaultFileName(uiState.captureCount))
+                }
+            },
+            onCaptureSaved = { file ->
+                latestCapture = file
+                saveStatus = null
+            },
             onBack = onBack,
         )
     } else {
@@ -163,6 +194,10 @@ private fun CameraContent(
     dispatch: (CameraUiEvent) -> Unit,
     referenceGuidance: CameraDirectorGuidance?,
     directCaptureMode: Boolean,
+    latestCapture: File?,
+    saveStatus: String?,
+    onSave: () -> Unit,
+    onCaptureSaved: (File) -> Unit,
     onBack: () -> Unit,
 ) {
     val context = LocalContext.current
@@ -171,6 +206,11 @@ private fun CameraContent(
     val previewView = remember { PreviewView(context) }
 
     DisposableEffect(lifecycleOwner) {
+        // CameraContent is only composed after the platform permission is granted, but the
+        // parent PermissionObserved effect can race this first frame. Seed the pure reducer
+        // with the already-verified permission before requesting CameraX startup so a valid
+        // CameraReady callback cannot be discarded as stale.
+        dispatch(CameraUiEvent.PermissionObserved(CameraPermission.GRANTED))
         dispatch(CameraUiEvent.CameraStartRequested)
         manager.initialize(
             onReady = {
@@ -198,6 +238,9 @@ private fun CameraContent(
             onBack = onBack,
             referenceGuidance = referenceGuidance,
             directCaptureMode = directCaptureMode,
+            saveEnabled = latestCapture?.isFile == true,
+            saveStatus = saveStatus,
+            onSave = onSave,
             onCapture = {
                 if (uiState.canCapture) {
                     dispatch(CameraUiEvent.CaptureStarted)
@@ -208,7 +251,10 @@ private fun CameraContent(
                     file.parentFile?.mkdirs()
                     manager.takePicture(
                         outputFile = file,
-                        onSaved = { dispatch(CameraUiEvent.CaptureSucceeded) },
+                        onSaved = {
+                            onCaptureSaved(file)
+                            dispatch(CameraUiEvent.CaptureSucceeded)
+                        },
                         onError = { dispatch(CameraUiEvent.CaptureFailed) },
                     )
                 }
@@ -253,7 +299,7 @@ private fun PermissionContent(onBack: () -> Unit, onRequest: () -> Unit) {
                     Text("需要相机权限", style = MaterialTheme.typography.headlineSmall)
                     Spacer(Modifier.height(12.dp))
                     Text(
-                        "相机仅用于实时预览与拍摄。照片保存在应用缓存中；UI0 不上传、不联网，也不执行 AI 分析。",
+                        "相机仅用于实时预览与拍摄。照片先保存在应用缓存；点击“保存照片”时由 Android 系统选择保存位置。私有参考图分析只连接你主动配对的局域网服务。",
                         color = AppColors.TextSecondary,
                         style = MaterialTheme.typography.bodyMedium,
                     )

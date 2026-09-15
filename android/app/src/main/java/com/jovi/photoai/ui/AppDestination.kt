@@ -3,6 +3,7 @@ package com.jovi.photoai.ui
 enum class AppDestination {
     HOME,
     PROJECT_IMPORT,
+    PROJECT_KNOWLEDGE_IMPORT,
     PROJECT_BOARD,
     PROJECT_SUMMARY,
     CAPTURE_ENTRY,

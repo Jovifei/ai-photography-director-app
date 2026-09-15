@@ -1,0 +1,6 @@
+<resources>
+    <color name="splash_background">#F5F5F7</color>
+    <color name="icon_background">#DCE5EF</color>
+    <color name="icon_accent">#56728E</color>
+    <color name="icon_lens">#24384D</color>
+</resources>

@@ -1,6 +1,7 @@
 package com.jovi.photoai.ui1
 
 import android.content.Context
+import android.os.SystemClock
 import androidx.test.core.app.ApplicationProvider
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onAllNodesWithContentDescription
@@ -62,6 +63,8 @@ class Ui1SystemPickerFlowAndroidTest {
 
             val record = awaitSingleActiveRecord()
             assertTrue(record.imageFileName.matches(Regex("^[a-zA-Z0-9_-]+\\.jpg$")))
+            assertTrue(fixture.expectedAspectRatio != null)
+            assertEquals(fixture.expectedAspectRatio!!, record.photo.aspectRatio, 0.01f)
             assertEquals(1, File(context.filesDir, "references").listFiles()?.count { it.isFile && it.name.endsWith(".jpg") })
             assertTrue(File(context.cacheDir, "reference-import").listFiles().isNullOrEmpty())
         }
@@ -102,16 +105,21 @@ class Ui1SystemPickerFlowAndroidTest {
     }
 
     private fun selectFixture(displayName: String) {
-        val fixture = device.wait(Until.findObject(By.text(displayName)), SHORT_TIMEOUT_MILLIS)
-            ?: device.findObject(By.desc(displayName))
-            ?: singlePickerThumbnail()
-            ?: error("PICKER_FIXTURE_NOT_SELECTABLE")
-        fixture.click()
+        val deadline = SystemClock.elapsedRealtime() + TIMEOUT_MILLIS
+        var fixture: UiObject2? = null
+        while (fixture == null && SystemClock.elapsedRealtime() < deadline) {
+            fixture = device.findObject(By.text(displayName))
+                ?: device.findObject(By.desc(displayName))
+                ?: singlePickerThumbnail()
+            if (fixture == null) SystemClock.sleep(100)
+        }
+        fixture?.click() ?: error("PICKER_FIXTURE_NOT_SELECTABLE")
         device.wait(Until.findObject(By.res(PICKER_PACKAGE, "button_add")), SHORT_TIMEOUT_MILLIS)?.click()
     }
 
+    /** Photo Picker orders newest media first; other device media must not make the test fail. */
     private fun singlePickerThumbnail(): UiObject2? =
-        device.findObjects(By.res(PICKER_PACKAGE, "icon_thumbnail")).singleOrNull()
+        device.findObjects(By.res(PICKER_PACKAGE, "icon_thumbnail")).firstOrNull()
 
     private suspend fun awaitSingleActiveRecord(): ReferenceRecord {
         repeat(50) {

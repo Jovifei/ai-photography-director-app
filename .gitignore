@@ -41,6 +41,9 @@ Carthage/Build/
 !.env.example
 Secrets.*
 *.p12
+*.dpapi
+*.dpapi.json
+release-signing-private/
 *.mobileprovision
 *.cer
 *.key

@@ -1,3 +1,10 @@
+import java.security.KeyStore
+import java.security.MessageDigest
+import java.security.PrivateKey
+import java.security.interfaces.RSAPublicKey
+import java.security.cert.X509Certificate
+import java.util.Properties
+
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
@@ -13,14 +20,36 @@ android {
         applicationId = "com.jovi.photoai"
         minSdk = 24
         targetSdk = 35
-        versionCode = 1
-        versionName = "0.1.0"
+        versionCode = 2
+        versionName = "0.2.0-beta.1"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+    }
+
+    val releaseStoreFile = System.getenv("PHOTOAI_RELEASE_STORE_FILE")
+    val releaseStorePassword = System.getenv("PHOTOAI_RELEASE_STORE_PASSWORD")
+    val releaseKeyAlias = System.getenv("PHOTOAI_RELEASE_KEY_ALIAS")
+    val releaseKeyPassword = System.getenv("PHOTOAI_RELEASE_KEY_PASSWORD")
+
+    signingConfigs {
+        create("release") {
+            if (
+                !releaseStoreFile.isNullOrBlank() &&
+                !releaseStorePassword.isNullOrBlank() &&
+                !releaseKeyAlias.isNullOrBlank() &&
+                !releaseKeyPassword.isNullOrBlank()
+            ) {
+                storeFile = file(releaseStoreFile)
+                storePassword = releaseStorePassword
+                keyAlias = releaseKeyAlias
+                keyPassword = releaseKeyPassword
+            }
+        }
     }
 
     buildTypes {
         release {
             isMinifyEnabled = false
+            signingConfig = signingConfigs.getByName("release")
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
@@ -56,6 +85,7 @@ dependencies {
 
     // Core / Lifecycle / Activity
     implementation("androidx.core:core-ktx:1.13.1")
+    implementation("androidx.core:core-splashscreen:1.0.1")
     implementation("androidx.activity:activity-compose:1.9.3")
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.8.7")
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.8.7")
@@ -97,4 +127,80 @@ dependencies {
     androidTestImplementation("androidx.test.espresso:espresso-core:3.7.0")
     androidTestImplementation("androidx.test.uiautomator:uiautomator:2.3.0")
     androidTestImplementation("androidx.compose.ui:ui-test-junit4")
+}
+
+tasks.register("verifyReleaseSigning") {
+    doLast {
+        fun required(name: String): String =
+            System.getenv(name)?.takeIf { it.isNotBlank() }
+                ?: throw GradleException("P20_BLOCKED_RELEASE_SIGNING_INPUT: missing $name")
+
+        val identityFile = rootProject.file("release-signing-identity.properties")
+        if (!identityFile.isFile) {
+            throw GradleException("P20_BLOCKED_SIGNING_IDENTITY_CONFLICT: public identity file is unavailable")
+        }
+        val identity = Properties().apply {
+            identityFile.inputStream().use(::load)
+        }
+        fun identityRequired(name: String): String =
+            identity.getProperty(name)?.takeIf { it.isNotBlank() }
+                ?: throw GradleException("P20_BLOCKED_SIGNING_IDENTITY_CONFLICT: missing public identity $name")
+
+        if (identityRequired("packageName") != "com.jovi.photoai" ||
+            identityRequired("role") != "direct-distribution-app-signing") {
+            throw GradleException("P20_BLOCKED_SIGNING_IDENTITY_CONFLICT: public identity package or role mismatch")
+        }
+        val expectedAlias = identityRequired("keyAlias")
+        val expectedFingerprint = identityRequired("certificateSha256")
+            .replace(":", "")
+            .uppercase()
+        if (expectedFingerprint.length != 64 || !expectedFingerprint.matches(Regex("[0-9A-F]{64}"))) {
+            throw GradleException("P20_BLOCKED_SIGNING_IDENTITY_CONFLICT: public certificate fingerprint is invalid")
+        }
+
+        val storeFile = File(required("PHOTOAI_RELEASE_STORE_FILE"))
+        val storePassword = required("PHOTOAI_RELEASE_STORE_PASSWORD")
+        val keyAlias = required("PHOTOAI_RELEASE_KEY_ALIAS")
+        val keyPassword = required("PHOTOAI_RELEASE_KEY_PASSWORD")
+        if (!storeFile.isFile) {
+            throw GradleException("P20_BLOCKED_RELEASE_SIGNING_INPUT: signing store is unavailable")
+        }
+        if (keyAlias != expectedAlias || keyAlias.equals("androiddebugkey", ignoreCase = true)) {
+            throw GradleException("P20_BLOCKED_SIGNING_IDENTITY_CONFLICT: signing alias does not match pinned identity")
+        }
+        try {
+            val keyStore = KeyStore.getInstance("PKCS12")
+            storeFile.inputStream().use { keyStore.load(it, storePassword.toCharArray()) }
+            if (!keyStore.isKeyEntry(keyAlias)) {
+                throw GradleException("P20_BLOCKED_RELEASE_SIGNING_INPUT: signing alias is unavailable")
+            }
+            val privateKey = keyStore.getKey(keyAlias, keyPassword.toCharArray())
+            if (privateKey !is PrivateKey) {
+                throw GradleException("P20_BLOCKED_RELEASE_SIGNING_INPUT: private key password is invalid")
+            }
+            val certificate = keyStore.getCertificate(keyAlias) as? X509Certificate
+                ?: throw GradleException("P20_BLOCKED_SIGNING_IDENTITY_CONFLICT: signing certificate is unavailable")
+            certificate.checkValidity()
+            val publicKey = certificate.publicKey
+            if (publicKey !is RSAPublicKey || publicKey.modulus.bitLength() < 4096) {
+                throw GradleException("P20_BLOCKED_SIGNING_IDENTITY_CONFLICT: RSA-4096 certificate required")
+            }
+            val actualFingerprint = MessageDigest.getInstance("SHA-256")
+                .digest(certificate.encoded)
+                .joinToString("") { "%02X".format(it.toInt() and 0xFF) }
+            if (actualFingerprint != expectedFingerprint) {
+                throw GradleException("P20_BLOCKED_SIGNING_IDENTITY_CONFLICT: certificate fingerprint mismatch")
+            }
+        } catch (error: GradleException) {
+            throw error
+        } catch (_: Exception) {
+            throw GradleException("P20_BLOCKED_RELEASE_SIGNING_INPUT: signing store cannot be opened")
+        }
+    }
+}
+
+tasks.configureEach {
+    if (name == "preReleaseBuild") {
+        dependsOn("verifyReleaseSigning")
+    }
 }

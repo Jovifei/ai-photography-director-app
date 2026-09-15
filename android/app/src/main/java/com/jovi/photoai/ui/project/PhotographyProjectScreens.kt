@@ -105,7 +105,7 @@ internal fun ProjectsHomeScreen(
                 GlassPill(text = "20 张 / 项目 · 逐张处理")
                 Text("把一组照片变成一次可执行的拍摄准备", style = MaterialTheme.typography.headlineSmall)
                 Text(
-                    "每张照片单独私有导入并保留独立状态；项目汇总只会使用未来真实分析完成的结果。",
+                    "每张照片单独私有导入并保留独立状态；只有带可信来源的 READY 结果可用于指导。",
                     style = MaterialTheme.typography.bodyMedium,
                     color = AppColors.TextSecondary,
                 )
@@ -273,16 +273,22 @@ internal fun ProjectBoardScreen(
     onOpenPhoto: (String) -> Unit,
     onSelectPrimary: (String?) -> Unit,
     onDeletePhoto: (String) -> Unit,
+    onImportKnowledgeBundle: () -> Unit,
+    onDeleteProject: () -> Unit,
     onOpenSummary: () -> Unit,
     onStartShooting: () -> Unit,
     onStartAnalysis: () -> Unit,
     onCancelAnalysis: () -> Unit,
     analysisInProgress: Boolean = false,
+    analysisServiceConnected: Boolean = false,
+    projectDeletionFailed: Boolean = false,
 ) {
     var pendingDeletionId by rememberSaveable(project.id) { mutableStateOf<String?>(null) }
+    var confirmProjectDeletion by rememberSaveable(project.id) { mutableStateOf(false) }
     var statusFilterName by rememberSaveable(project.id) { mutableStateOf(ProjectStatusFilter.ALL.name) }
     val statusFilter = ProjectStatusFilter.valueOf(statusFilterName)
     val filteredRecords = records.filter(statusFilter::matches)
+    val primaryRecord = records.firstOrNull { it.photo.id == project.primaryReferenceId }
     ProjectScreenScaffold(title = "项目看板", project = project, onBack = onBack) {
         Text("${records.size}/$MAX_PROJECT_PHOTOS 张照片", style = MaterialTheme.typography.headlineSmall)
         Spacer(Modifier.height(AppDimensions.Space4))
@@ -295,6 +301,23 @@ internal fun ProjectBoardScreen(
             style = MaterialTheme.typography.bodyMedium,
         )
         Spacer(Modifier.height(AppDimensions.Space16))
+        if (!analysisServiceConnected) {
+            GlassSurface(modifier = Modifier.fillMaxWidth(), contentPadding = PaddingValues(AppDimensions.Space16)) {
+                Column(verticalArrangement = Arrangement.spacedBy(AppDimensions.Space4)) {
+                    GlassPill(text = "本机分析服务未连接")
+                    Text(
+                        if (records.any { it.knowledgeBundleProvenance != null }) "离线知识包逐张指导仍可使用" else "可整理项目、导入知识包或无 AI 拍摄",
+                        style = MaterialTheme.typography.titleMedium,
+                    )
+                    Text(
+                        "连接服务后可逐张执行本机分析并生成项目级语义汇总；离线知识包只提供逐张指导。",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = AppColors.TextSecondary,
+                    )
+                }
+            }
+            Spacer(Modifier.height(AppDimensions.Space16))
+        }
         if (records.isEmpty()) {
             EmptyState(
                 title = "项目还没有照片",
@@ -329,8 +352,18 @@ internal fun ProjectBoardScreen(
             Spacer(Modifier.height(AppDimensions.Space12))
         }
         if (records.isNotEmpty()) {
+            if (analysisInProgress) {
+                Text("逐张分析期间暂不导入知识包，请等待完成或先停止分析。")
+            } else {
+                SecondaryActionButton(
+                    text = "导入离线知识包",
+                    onClick = onImportKnowledgeBundle,
+                    modifier = Modifier.fillMaxWidth(),
+                )
+            }
+            Spacer(Modifier.height(AppDimensions.Space12))
             PrimaryActionButton(
-                text = if (analysisInProgress) "停止逐张分析" else "开始逐张分析",
+                text = if (analysisInProgress) "停止逐张分析" else "连接本机并逐张分析",
                 onClick = if (analysisInProgress) onCancelAnalysis else onStartAnalysis,
                 enabled = true,
                 modifier = Modifier.fillMaxWidth(),
@@ -344,10 +377,22 @@ internal fun ProjectBoardScreen(
             Spacer(Modifier.height(AppDimensions.Space12))
         }
         SecondaryActionButton(
-            text = if (project.primaryReferenceId == null) "选择拍摄方式" else "使用主参考进入拍摄",
+            text = projectShootingActionLabel(
+                primaryRecord?.analysisStatus,
+                primaryRecord?.analysisProvenance != null,
+                primaryRecord?.knowledgeBundleProvenance != null,
+            ),
             onClick = onStartShooting,
             modifier = Modifier.fillMaxWidth(),
         )
+        Spacer(Modifier.height(AppDimensions.Space12))
+        TextButton(
+            onClick = { confirmProjectDeletion = true },
+            modifier = Modifier.fillMaxWidth().heightIn(min = AppDimensions.MinTouchTarget),
+        ) { Text("删除整个项目") }
+        if (projectDeletionFailed) {
+            Text("项目文件尚未全部安全删除，已保留项目供稍后重试。", color = AppColors.Warning)
+        }
     }
     pendingDeletionId?.let { id ->
         ProjectPhotoDeletionDialog(
@@ -355,6 +400,20 @@ internal fun ProjectBoardScreen(
             onConfirm = {
                 pendingDeletionId = null
                 onDeletePhoto(id)
+            },
+        )
+    }
+    if (confirmProjectDeletion) {
+        AlertDialog(
+            onDismissRequest = { confirmProjectDeletion = false },
+            title = { Text("删除整个项目？") },
+            text = { Text("这会删除本项目的私有 JPEG、逐张结果、汇总和主参考，不影响其他项目。") },
+            dismissButton = { TextButton(onClick = { confirmProjectDeletion = false }) { Text("取消") } },
+            confirmButton = {
+                TextButton(onClick = {
+                    confirmProjectDeletion = false
+                    onDeleteProject()
+                }) { Text("确认删除项目") }
             },
         )
     }
@@ -369,30 +428,35 @@ internal fun ProjectSummaryScreen(
     onOpenPhoto: (String) -> Unit,
     onSelectPrimary: (String?) -> Unit,
     onStartShooting: () -> Unit,
+    analysisServiceConnected: Boolean = false,
 ) {
     val summary = projectSummaryOf(records, project.failedImportCount, project.primaryReferenceId)
+    val primaryRecord = records.firstOrNull { it.photo.id == project.primaryReferenceId }
     ProjectScreenScaffold(title = "项目汇总", project = project, onBack = onBack) {
         GlassSurface(modifier = Modifier.fillMaxWidth(), contentPadding = PaddingValues(AppDimensions.Space16)) {
             Column(verticalArrangement = Arrangement.spacedBy(AppDimensions.Space8)) {
-                if (summary.providerReadyCount == 0) {
+                if (summary.guidanceReadyCount == 0) {
                     GlassPill(text = "真实分析尚未接入")
                     Text("还不能生成图片内容汇总", style = MaterialTheme.typography.titleLarge)
                     Text(
-                        "本项目有 ${summary.importedCount} 张私有照片；其中 ${summary.exampleGuidanceCount} 张仅有示例指导，" +
-                            "${summary.unavailableCount + summary.failedImportCount} 项未纳入汇总。",
+                        if (analysisServiceConnected) {
+                            "本项目还没有完成的 READY 结果；当前照片未参与汇总。"
+                        } else {
+                            "本机分析服务未连接；本项目的 ${summary.importedCount} 张私有照片当前未参与汇总。"
+                        },
                         style = MaterialTheme.typography.bodyMedium,
                         color = AppColors.TextSecondary,
                     )
                     Text(
-                        "示例指导不会被伪装成图片分析，也不会被混入项目结论。",
+                        "可继续整理项目，或使用主参考进入无 AI 指导拍摄；不会把示例内容混入项目结论。",
                         style = MaterialTheme.typography.labelMedium,
                         color = AppColors.AccentBlue,
                     )
                 } else {
-                    GlassPill(text = "${summary.providerReadyCount} 张真实分析已汇总")
-                    Text("项目拍摄方向", style = MaterialTheme.typography.titleLarge)
+                    GlassPill(text = "${summary.guidanceReadyCount} 张逐张知识可用")
+                    Text("逐张拍摄知识", style = MaterialTheme.typography.titleLarge)
                     Text(
-                        "只组合 ${summary.providerReadyCount} 张已完成的真实 Provider 结果；" +
+                        "本机 Provider ${summary.providerReadyCount} 张 · 离线知识包 ${summary.knowledgeBundleReadyCount} 张；" +
                             "${summary.excludedCount} 项未纳入。",
                         style = MaterialTheme.typography.bodyMedium,
                         color = AppColors.TextSecondary,
@@ -418,8 +482,12 @@ internal fun ProjectSummaryScreen(
                         }
                     }
                     if (persistedSummary?.status != com.jovi.photoai.data.reference.ProjectSummaryStatus.SUCCESS) {
-                        GlassPill(text = "汇总不可用")
-                        Text("已完成的逐张结果仍可查看；项目级汇总未通过 READY-only 校验。", style = MaterialTheme.typography.bodyMedium, color = AppColors.Warning)
+                        GlassPill(text = "项目级语义汇总未提供")
+                        Text(
+                            "逐张知识仍可查看并用于已确认主参考的指导；本知识包不生成模型推荐主参考，请手动选择。",
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = AppColors.Warning,
+                        )
                     }
                 }
             }
@@ -437,11 +505,26 @@ internal fun ProjectSummaryScreen(
         )
         Spacer(Modifier.height(AppDimensions.Space20))
         PrimaryActionButton(
-            text = if (project.primaryReferenceId == null) "选择拍摄方式" else "使用主参考进入拍摄",
+            text = projectShootingActionLabel(
+                primaryRecord?.analysisStatus,
+                primaryRecord?.analysisProvenance != null,
+                primaryRecord?.knowledgeBundleProvenance != null,
+            ),
             onClick = onStartShooting,
             modifier = Modifier.fillMaxWidth(),
         )
     }
+}
+
+internal fun projectShootingActionLabel(
+    primaryStatus: PhotoAnalysisStatus?,
+    hasProviderProvenance: Boolean = false,
+    hasKnowledgeBundleProvenance: Boolean = false,
+): String = when {
+    primaryStatus == null -> "选择拍摄方式"
+    primaryStatus == PhotoAnalysisStatus.READY && (hasProviderProvenance || hasKnowledgeBundleProvenance) ->
+        "使用主参考进入 AI 拍摄"
+    else -> "使用主参考进行无 AI 拍摄"
 }
 
 @Composable
@@ -469,8 +552,10 @@ private enum class ProjectStatusFilter(val label: String) {
         ALL -> true
         EXAMPLE -> record.analysisStatus == PhotoAnalysisStatus.EXAMPLE_GUIDANCE
         IN_PROGRESS -> record.analysisStatus in setOf(PhotoAnalysisStatus.IMPORTED, PhotoAnalysisStatus.QUEUED, PhotoAnalysisStatus.RUNNING)
-        UNAVAILABLE -> record.analysisStatus in setOf(PhotoAnalysisStatus.FAILED, PhotoAnalysisStatus.CANCELLED, PhotoAnalysisStatus.UNAVAILABLE)
-        READY -> record.analysisStatus == PhotoAnalysisStatus.READY
+        UNAVAILABLE -> record.analysisStatus in setOf(PhotoAnalysisStatus.FAILED, PhotoAnalysisStatus.CANCELLED, PhotoAnalysisStatus.UNAVAILABLE) ||
+            (record.analysisStatus == PhotoAnalysisStatus.READY && record.analysisProvenance == null && record.knowledgeBundleProvenance == null)
+        READY -> record.analysisStatus == PhotoAnalysisStatus.READY &&
+            (record.analysisProvenance != null || record.knowledgeBundleProvenance != null)
     }
 }
 
@@ -592,7 +677,7 @@ private fun ProjectPhotoTile(
     onSelectPrimary: (() -> Unit)?,
     onDelete: (() -> Unit)?,
 ) {
-    val status = analysisStatusText(record.analysisStatus)
+    val status = analysisStatusText(record)
     GlassSurface(
         modifier = modifier
             .clickable(role = Role.Button, onClick = onOpen)
@@ -646,12 +731,16 @@ private fun ProjectPhotoTile(
     }
 }
 
-private fun analysisStatusText(status: PhotoAnalysisStatus): String = when (status) {
+private fun analysisStatusText(record: ReferenceRecord): String = when (record.analysisStatus) {
     PhotoAnalysisStatus.EXAMPLE_GUIDANCE -> "示例指导"
     PhotoAnalysisStatus.IMPORTED -> "已导入"
     PhotoAnalysisStatus.QUEUED -> "等待分析"
     PhotoAnalysisStatus.RUNNING -> "分析中"
-    PhotoAnalysisStatus.READY -> "已分析"
+    PhotoAnalysisStatus.READY -> when {
+        record.knowledgeBundleProvenance != null -> "知识包 READY"
+        record.analysisProvenance != null -> "已分析"
+        else -> "来源无效"
+    }
     PhotoAnalysisStatus.FAILED -> "分析失败"
     PhotoAnalysisStatus.CANCELLED -> "已取消"
     PhotoAnalysisStatus.UNAVAILABLE -> "分析不可用"

@@ -1,4 +1,13 @@
 <resources>
+    <style name="Theme.PhotoDirector.Starting" parent="Theme.SplashScreen">
+        <item name="windowSplashScreenBackground">@color/splash_background</item>
+        <item name="windowSplashScreenAnimatedIcon">@drawable/ic_splash</item>
+        <item name="postSplashScreenTheme">@style/Theme.PhotoDirector</item>
+    </style>
+
     <!-- Base theme: no cutout attribute (API 24-26 do not support it). -->
-    <style name="Theme.PhotoDirector" parent="android:Theme.Material.Light.NoActionBar" />
+    <style name="Theme.PhotoDirector" parent="android:Theme.Material.Light.NoActionBar">
+        <item name="android:fontFamily">sans</item>
+        <item name="android:colorAccent">@color/icon_accent</item>
+    </style>
 </resources>

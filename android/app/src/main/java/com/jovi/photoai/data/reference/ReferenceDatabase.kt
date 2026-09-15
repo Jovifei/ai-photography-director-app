@@ -59,6 +59,14 @@ internal data class ReferenceEntity(
     val analysisCreativeRecommendationFields: String?,
     val analysisUncertaintyFlags: String?,
     val analysisWarnings: String?,
+    val knowledgeBundleId: String? = null,
+    val knowledgeBundleReferenceId: String? = null,
+    val knowledgeBundleProducerId: String? = null,
+    val knowledgeBundleOrigin: String? = null,
+    val knowledgeBundleReleaseId: String? = null,
+    val knowledgeBundlePayloadSha256: String? = null,
+    val knowledgeBundleImportedAtEpochMillis: Long? = null,
+    val analysisAttemptId: String? = null,
 )
 
 @Entity(
@@ -126,6 +134,12 @@ internal interface ReferenceDao {
     @Query("SELECT * FROM reference_records")
     suspend fun allOnce(): List<ReferenceEntity>
 
+    @Query("SELECT * FROM reference_records WHERE projectId = :projectId")
+    suspend fun allByProjectOnce(projectId: String): List<ReferenceEntity>
+
+    @Query("SELECT COUNT(*) FROM reference_records WHERE projectId = :projectId")
+    suspend fun recordCountByProject(projectId: String): Int
+
     @Insert(onConflict = OnConflictStrategy.ABORT)
     suspend fun insert(entity: ReferenceEntity)
 
@@ -156,6 +170,9 @@ internal interface ReferenceDao {
     @Query("UPDATE photography_projects SET primaryReferenceId = NULL WHERE primaryReferenceId IS NOT NULL AND primaryReferenceId NOT IN (SELECT id FROM reference_records WHERE storageState = 'ACTIVE')")
     suspend fun clearMissingPrimaryReferences()
 
+    @Query("DELETE FROM photography_projects WHERE id = :projectId")
+    suspend fun deleteProject(projectId: String)
+
     @Query("UPDATE reference_records SET storageState = 'DELETE_PENDING' WHERE id IN (:ids) AND storageState = 'ACTIVE'")
     suspend fun markDeletePending(ids: List<String>)
 
@@ -174,17 +191,17 @@ internal interface ReferenceDao {
     @Query("DELETE FROM project_summaries WHERE projectId = :projectId")
     suspend fun deleteSummary(projectId: String)
 
-    @Query("UPDATE reference_records SET analysisStatus = 'CANCELLED' WHERE projectId = :projectId AND storageState = 'ACTIVE' AND analysisStatus IN ('QUEUED', 'RUNNING', 'ANALYZING')")
+    @Query("UPDATE reference_records SET analysisStatus = 'CANCELLED', analysisAttemptId = NULL WHERE projectId = :projectId AND storageState = 'ACTIVE' AND analysisStatus IN ('QUEUED', 'RUNNING', 'ANALYZING')")
     suspend fun cancelOutstandingAnalysis(projectId: String)
 
     @Query("UPDATE reference_records SET analysisStatus = 'RUNNING' WHERE analysisStatus = 'ANALYZING'")
     suspend fun migrateAnalyzingToRunning()
 
-    @Query("UPDATE reference_records SET analysisStatus = 'CANCELLED' WHERE storageState = 'ACTIVE' AND analysisStatus IN ('QUEUED', 'RUNNING', 'ANALYZING')")
+    @Query("UPDATE reference_records SET analysisStatus = 'CANCELLED', analysisAttemptId = NULL WHERE storageState = 'ACTIVE' AND analysisStatus IN ('QUEUED', 'RUNNING', 'ANALYZING')")
     suspend fun cancelAllOutstandingAnalysis()
 }
 
-@Database(entities = [ReferenceEntity::class, PhotographyProjectEntity::class, ProjectSummaryEntity::class], version = 4, exportSchema = false)
+@Database(entities = [ReferenceEntity::class, PhotographyProjectEntity::class, ProjectSummaryEntity::class], version = 6, exportSchema = false)
 internal abstract class ReferenceLibraryDatabase : RoomDatabase() {
     abstract fun referenceDao(): ReferenceDao
 
@@ -194,7 +211,7 @@ internal abstract class ReferenceLibraryDatabase : RoomDatabase() {
             ReferenceLibraryDatabase::class.java,
             "reference-library.db",
         ).setJournalMode(JournalMode.TRUNCATE)
-            .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4)
+            .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5, MIGRATION_5_6)
             .build()
     }
 }
@@ -260,6 +277,29 @@ private val MIGRATION_3_4 = object : Migration(3, 4) {
     }
 }
 
+internal val MIGRATION_4_5 = object : Migration(4, 5) {
+    override fun migrate(database: SupportSQLiteDatabase) {
+        listOf(
+            "knowledgeBundleId TEXT",
+            "knowledgeBundleReferenceId TEXT",
+            "knowledgeBundleProducerId TEXT",
+            "knowledgeBundleOrigin TEXT",
+            "knowledgeBundleReleaseId TEXT",
+            "knowledgeBundlePayloadSha256 TEXT",
+            "knowledgeBundleImportedAtEpochMillis INTEGER",
+        ).forEach { database.execSQL("ALTER TABLE `reference_records` ADD COLUMN $it") }
+    }
+}
+
+/** Nullable fence; existing records retain all content and provenance. */
+internal val MIGRATION_5_6 = object : Migration(5, 6) {
+    override fun migrate(database: SupportSQLiteDatabase) {
+        database.execSQL("ALTER TABLE `reference_records` ADD COLUMN `analysisAttemptId` TEXT")
+        // v5 summaries may have included Bundle-only READY rows; force a fresh Provider-only summary.
+        database.execSQL("DELETE FROM `project_summaries`")
+    }
+}
+
 internal fun ReferenceEntity.toRecord(): ReferenceRecord = ReferenceRecord(
     photo = ReferencePhoto(
         id = id,
@@ -290,6 +330,7 @@ internal fun ReferenceEntity.toRecord(): ReferenceRecord = ReferenceRecord(
         .getOrDefault(PhotoAnalysisStatus.UNAVAILABLE),
     safeAnalysisErrorCode = safeAnalysisErrorCode,
     analysisProvenance = toAnalysisProvenance(),
+    knowledgeBundleProvenance = toKnowledgeBundleProvenance(),
 ).also { it.requireSafeImageFileName() }
 
 internal fun ReferenceRecord.toEntity(storageState: ReferenceStorageState = ReferenceStorageState.ACTIVE): ReferenceEntity {
@@ -332,6 +373,13 @@ internal fun ReferenceRecord.toEntity(storageState: ReferenceStorageState = Refe
             "${it.key}|${it.value.level.name}|${it.value.basis.name}"
         },
         analysisWarnings = analysisProvenance?.warnings?.joinToString("\n"),
+        knowledgeBundleId = knowledgeBundleProvenance?.bundleId,
+        knowledgeBundleReferenceId = knowledgeBundleProvenance?.producerReferenceId,
+        knowledgeBundleProducerId = knowledgeBundleProvenance?.producerId,
+        knowledgeBundleOrigin = knowledgeBundleProvenance?.origin?.name,
+        knowledgeBundleReleaseId = knowledgeBundleProvenance?.releaseId,
+        knowledgeBundlePayloadSha256 = knowledgeBundleProvenance?.payloadSha256,
+        knowledgeBundleImportedAtEpochMillis = knowledgeBundleProvenance?.importedAtEpochMillis,
     )
 }
 
@@ -375,6 +423,18 @@ private fun ReferenceEntity.toAnalysisProvenance(): ProviderAnalysisProvenance? 
 
 private fun String?.csvFields(): List<String> = this.orEmpty().split(',').filter(String::isNotBlank)
 
+private fun ReferenceEntity.toKnowledgeBundleProvenance(): KnowledgeBundleProvenance? = runCatching {
+    KnowledgeBundleProvenance(
+        bundleId = knowledgeBundleId ?: return null,
+        producerReferenceId = knowledgeBundleReferenceId ?: return null,
+        producerId = knowledgeBundleProducerId ?: return null,
+        origin = KnowledgeBundleOrigin.valueOf(knowledgeBundleOrigin ?: return null),
+        releaseId = knowledgeBundleReleaseId ?: return null,
+        payloadSha256 = knowledgeBundlePayloadSha256 ?: return null,
+        importedAtEpochMillis = knowledgeBundleImportedAtEpochMillis ?: return null,
+    )
+}.getOrNull()
+
 internal fun ReferenceEntity.withAnalysisResult(result: ProviderAnalysisResult): ReferenceEntity = when (result) {
     is ProviderAnalysisResult.Ready -> copy(
         sourceLabel = "本机 VLM",
@@ -406,6 +466,13 @@ internal fun ReferenceEntity.withAnalysisResult(result: ProviderAnalysisResult):
             "${it.key}|${it.value.level.name}|${it.value.basis.name}"
         },
         analysisWarnings = result.provenance.warnings.joinToString("\n"),
+        knowledgeBundleId = null,
+        knowledgeBundleReferenceId = null,
+        knowledgeBundleProducerId = null,
+        knowledgeBundleOrigin = null,
+        knowledgeBundleReleaseId = null,
+        knowledgeBundlePayloadSha256 = null,
+        knowledgeBundleImportedAtEpochMillis = null,
     )
     is ProviderAnalysisResult.Failed -> copy(
         sourceLabel = "分析不可用",
@@ -415,6 +482,7 @@ internal fun ReferenceEntity.withAnalysisResult(result: ProviderAnalysisResult):
         analysisProviderType = null,
         analysisModelId = null,
         analysisModelRevision = null,
+        analysisModelArtifactSha256 = null,
         analysisRuntimeId = null,
         analysisStartedAtEpochMillis = null,
         analysisCompletedAtEpochMillis = null,
@@ -424,6 +492,13 @@ internal fun ReferenceEntity.withAnalysisResult(result: ProviderAnalysisResult):
         analysisCreativeRecommendationFields = null,
         analysisUncertaintyFlags = null,
         analysisWarnings = null,
+        knowledgeBundleId = null,
+        knowledgeBundleReferenceId = null,
+        knowledgeBundleProducerId = null,
+        knowledgeBundleOrigin = null,
+        knowledgeBundleReleaseId = null,
+        knowledgeBundlePayloadSha256 = null,
+        knowledgeBundleImportedAtEpochMillis = null,
     )
     is ProviderAnalysisResult.Unavailable -> copy(
         sourceLabel = "分析不可用",
@@ -443,8 +518,56 @@ internal fun ReferenceEntity.withAnalysisResult(result: ProviderAnalysisResult):
         analysisCreativeRecommendationFields = null,
         analysisUncertaintyFlags = null,
         analysisWarnings = null,
+        knowledgeBundleId = null,
+        knowledgeBundleReferenceId = null,
+        knowledgeBundleProducerId = null,
+        knowledgeBundleOrigin = null,
+        knowledgeBundleReleaseId = null,
+        knowledgeBundlePayloadSha256 = null,
+        knowledgeBundleImportedAtEpochMillis = null,
     )
 }
+
+internal fun ReferenceEntity.withKnowledgeBundleResult(
+    item: PhotoKnowledgeBundleItem,
+    bundle: PhotoKnowledgeBundle,
+    importedAtEpochMillis: Long,
+): ReferenceEntity = copy(
+    sourceLabel = "离线知识包",
+    scene = item.photography.scene,
+    backgroundStory = item.photography.backgroundStory,
+    lighting = item.photography.lighting,
+    composition = item.photography.composition,
+    subjectIntent = item.photography.subjectIntent,
+    emotion = item.photography.emotion,
+    poseTemplate = item.photography.poseTemplate,
+    cameraPosition = item.photography.cameraPosition,
+    directorPrompt = item.photography.directorPrompt,
+    bundleVersion = PHOTO_KNOWLEDGE_BUNDLE_VERSION,
+    analysisStatus = PhotoAnalysisStatus.READY.name,
+    safeAnalysisErrorCode = null,
+    analysisProviderId = null,
+    analysisProviderType = null,
+    analysisModelId = null,
+    analysisModelRevision = null,
+    analysisModelArtifactSha256 = null,
+    analysisRuntimeId = null,
+    analysisStartedAtEpochMillis = null,
+    analysisCompletedAtEpochMillis = null,
+    analysisLatencyMillis = null,
+    analysisDirectObservationFields = null,
+    analysisPhotographicInterpretationFields = null,
+    analysisCreativeRecommendationFields = null,
+    analysisUncertaintyFlags = null,
+    analysisWarnings = null,
+    knowledgeBundleId = bundle.bundleId,
+    knowledgeBundleReferenceId = item.referenceId,
+    knowledgeBundleProducerId = bundle.source.producerId,
+    knowledgeBundleOrigin = bundle.source.origin.name,
+    knowledgeBundleReleaseId = bundle.source.releaseId,
+    knowledgeBundlePayloadSha256 = bundle.payloadSha256,
+    knowledgeBundleImportedAtEpochMillis = importedAtEpochMillis,
+)
 
 internal fun PhotographyProjectEntity.toProject(): PhotographyProject = PhotographyProject(
     id = id,

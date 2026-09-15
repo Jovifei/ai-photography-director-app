@@ -1,0 +1,43 @@
+# Android Closed Beta：5 人测试准备方案
+
+本文件只准备测试，不代表测试已经执行或 APK 已发送。
+
+## 环境与边界
+
+- 测试者只使用 `T01`、`T02`、`T03`、`T04`、`T05` 编号。
+- 全部在同一私有 Wi-Fi 和可达的用户本机 Qwen 服务中进行；不使用公共云。
+- 每人使用 5 张自己的参考图，完成导入、逐张分析、READY-only 汇总、主参考、拍摄、系统另存为和删除。
+- 记录字段仅为任务 PASS/FAIL、完成时间、1–5 分评分和脱敏问题描述。
+- 禁止记录照片、姓名、账号、设备 ID、GPS、URI、文件名、LAN 地址或主机名、一次性配对码、证书 pin、token/凭据、绝对路径、原始日志、原始 AI 输出或截图中的私人内容。
+- 开始前，主持人必须用 `start_photoai_pilot_session.ps1` 对明确指定的 RFC1918 地址执行 `Preflight`；仅当网络配置文件为 Private、端口空闲且离线运行时就绪时，才能运行临时会话。
+- 临时会话仅开放 TCP 8443 的 Windows Private Profile 本地子网规则；主持人在受控现场把地址、一次性配对码和证书 pin 直接输入测试设备，且不把它们写入结果表、证据或聊天记录。
+- 会话结束后脚本会验证并移除临时防火墙规则和短期 TLS 会话目录；任一项未清除都会显示 `P20_PILOT_SESSION_BLOCKED_CLEANUP_REQUIRED`，不得开始下一次测试。
+- 若进程被强制终止，主持人必须在管理员 PowerShell 中仅移除 `PhotoAI Pilot Temporary` 组中的临时规则，并删除本次命令明确指定的仓库外会话目录；随后重新做 Preflight。不要在结果表、证据或聊天记录中记录会话目录、LAN 地址、配对码或证书 pin。
+
+## 测试卡片
+
+`T01`～`T05` 只代表五位测试者；每位测试者都必须完成以下完整流程。
+
+| 编号 | 流程 | 通过条件 |
+|---|---|---|
+| S01 | 安装并启动 | 显示“摄影导演”，可进入空项目状态 |
+| S02 | 创建项目并导入 5 张 | 显示 5/20，单张状态独立且无媒体权限提示 |
+| S03 | 配对与逐张分析 | 仅使用一次性配对；每张结果可区分，失败项可单独重试 |
+| S04 | READY-only 汇总与主参考 | 汇总不包含 FAILED 文本；推荐主参考可由用户覆盖 |
+| S05 | Camera Director 拍摄 | 有参考与无参考入口正确，拍摄完成后出现“保存照片” |
+| S06 | 系统另存为成功 | 选择位置后文件可打开 |
+| S07 | 取消与重试 | 取消或写入失败后缓存保留，允许再次保存 |
+| S08 | 删除与清空 | 删除单项不影响其余项目；清空需要确认 |
+| S09 | 重启与恢复 | 重启后不显示永久 RUNNING/QUEUED，内容先 reconciliation 后展示 |
+
+## 结果模板
+
+每位测试者单独填写：
+
+```text
+tester: T0X
+tasks: S01 PASS/FAIL; S02 PASS/FAIL; S03 PASS/FAIL; S04 PASS/FAIL; S05 PASS/FAIL; S06 PASS/FAIL; S07 PASS/FAIL; S08 PASS/FAIL; S09 PASS/FAIL
+completion_time_minutes: <number>
+rating_1_to_5: <number>
+redacted_issue: <short description or NONE>
+```
