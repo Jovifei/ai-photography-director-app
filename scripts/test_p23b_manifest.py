@@ -3,10 +3,12 @@ from __future__ import annotations
 
 import hashlib
 import json
+import os
 from pathlib import Path
 import subprocess
 import tempfile
 import unittest
+from unittest import mock
 
 from p23b_git import GateError, Git, MAX_BYTES, emit, full_oid, overlaps, relative_path, strict_json
 from p23b_manifest import build, hashes, verify
@@ -16,9 +18,14 @@ class RepoCase(unittest.TestCase):
     def setUp(self):
         self.temporary = tempfile.TemporaryDirectory(prefix="photoai-p23b-test-")
         self.addCleanup(self.temporary.cleanup)
+        env = mock.patch.dict(os.environ, {"HOME": self.temporary.name, "USERPROFILE": self.temporary.name,
+                                            "XDG_CONFIG_HOME": self.temporary.name})
+        env.start()
+        self.addCleanup(env.stop)
         self.root = Path(self.temporary.name) / "repo"
         self.root.mkdir()
         self.command("init", "-b", "main")
+        (self.root / ".git" / "info").mkdir(exist_ok=True)
         self.command("config", "user.email", "fixture@example.invalid")
         self.command("config", "user.name", "Synthetic fixture")
         self.command("config", "core.autocrlf", "false")
@@ -27,8 +34,13 @@ class RepoCase(unittest.TestCase):
         self.git = Git(self.root)
 
     def command(self, *args):
-        return subprocess.run(["git", "-C", str(self.root), *args], check=True,
-                              capture_output=True).stdout.decode().strip()
+        env = {key: value for key, value in os.environ.items() if not key.startswith("GIT_")}
+        env.update(GIT_CONFIG_NOSYSTEM="1", GIT_CONFIG_GLOBAL=os.devnull, GIT_TERMINAL_PROMPT="0")
+        empty = str(Path(self.temporary.name) / "empty-hooks-and-templates")
+        Path(empty).mkdir(exist_ok=True)
+        return subprocess.run(["git", "-c", "core.hooksPath=" + empty, "-c", "init.templateDir=" + empty,
+                               "-c", "commit.gpgsign=false", "-C", str(self.root), *args],
+                              check=True, env=env, capture_output=True).stdout.decode().strip()
 
     def put(self, path, data):
         target = self.root / path
@@ -152,6 +164,11 @@ class ManifestTests(RepoCase):
         candidate = self.commit()
         with self.assertRaisesRegex(GateError, "REGULAR_BLOB"):
             build(self.git, candidate, ["link.txt"])
+
+    def test_partial_clone_is_rejected_before_implicit_network_access(self):
+        self.command("config", "remote.origin.promisor", "true")
+        with self.assertRaisesRegex(GateError, "PARTIAL_CLONE"):
+            Git(self.root)
 
     def test_subdirectory_is_not_accepted_as_repo_root(self):
         (self.root / "child").mkdir()

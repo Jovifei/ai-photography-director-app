@@ -69,6 +69,10 @@ class Git:
         actual = Path(self.run("rev-parse", "--show-toplevel").decode().strip()).resolve()
         if actual != self.root:
             raise GateError("REPOSITORY_ROOT_REQUIRED")
+        partial = self.run("config", "--name-only", "--get-regexp",
+                           r"^(extensions\.partialclone|remote\..*\.promisor)$", allow_one=True)
+        if partial not in {b"", b"NOT_ANCESTOR"}:
+            raise GateError("PARTIAL_CLONE_REQUIRES_FULL_LOCAL_OBJECTS")
 
     def run(self, *args: str, allow_one: bool = False) -> bytes:
         env = os.environ.copy()
@@ -76,7 +80,7 @@ class Git:
         for name in list(env):
             if name.startswith("GIT_"):
                 del env[name]
-        env.update(GIT_OPTIONAL_LOCKS="0", GIT_TERMINAL_PROMPT="0", GIT_NO_REPLACE_OBJECTS="1")
+        env.update(GIT_OPTIONAL_LOCKS="0", GIT_TERMINAL_PROMPT="0", GIT_NO_REPLACE_OBJECTS="1", GIT_NO_LAZY_FETCH="1")
         try:
             result = subprocess.run(
                 ["git", "--no-optional-locks", "-c", "core.fsmonitor=false", "-c", "core.untrackedCache=false",
