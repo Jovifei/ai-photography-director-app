@@ -1,0 +1,51 @@
+{
+  "schema_version": "p23b.stage-state.v1",
+  "date": "2026-09-15",
+  "stage": "P23B_SAFE_LANDING_PREFLIGHT",
+  "status": "P23B_TOOLING_IMPLEMENTED_LOCAL_VALIDATION_PENDING",
+  "branch": "codex/p23b-safe-landing-preflight-20260915",
+  "app_candidate": {
+    "sha": "e4a954b313320944fe751a2388366ee72d3e9083",
+    "review": "OWNER_REPORTED_INDEPENDENT_PASS",
+    "review_reexecuted_here": false
+  },
+  "expected_main": "61a9b26f7a17ae84a2b4ec8d7bb02e18695801b6",
+  "tool_source_commit": "8aa403bac97ef948e291613ccb4c91ea8e7cb3b1",
+  "steps": [
+    {
+      "id": "P23B-01",
+      "status": "COMMITTED",
+      "sha": "48643b4057d775609eca049de097b6c9f39b2dcf",
+      "purpose": "canonical committed-source manifest"
+    },
+    {
+      "id": "P23B-02",
+      "status": "COMMITTED",
+      "sha": "8aa403bac97ef948e291613ccb4c91ea8e7cb3b1",
+      "purpose": "read-only Owner safety preflight"
+    },
+    {
+      "id": "P23B-03",
+      "status": "DOCUMENTED_IN_THIS_COMMIT",
+      "purpose": "report, tool manifest and local handoff"
+    },
+    {
+      "id": "P23B-LOCAL",
+      "status": "PENDING",
+      "purpose": "Windows, real repository, Owner safety and outstanding emulator evidence"
+    }
+  ],
+  "host_unittest": {
+    "passed": 50,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "scope": "SYNTHETIC_LOCAL_GIT_ON_LINUX"
+  },
+  "real_owner_audit": "NOT_RUN",
+  "android_revalidation": "NOT_RUN",
+  "signing": "BLOCKED_OWNER_REPORTED",
+  "main_merge": "NOT_PERFORMED",
+  "production_bundle": "NOT_AUTHORIZED",
+  "next_entry": "docs/handoff/P23B_LOCAL_CODEX_HANDOFF_20260915.md"
+}
