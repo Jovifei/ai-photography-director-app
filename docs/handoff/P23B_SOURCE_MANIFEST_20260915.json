@@ -1,0 +1,49 @@
+{
+  "schema_version": "p23b.git-text-manifest.v1",
+  "source_commit": "8aa403bac97ef948e291613ccb4c91ea8e7cb3b1",
+  "hash_domains": {
+    "git_blob": "SHA-1 of unfiltered committed Git blob",
+    "git_blob_bytes": "Raw committed Git blob byte length",
+    "git_blob_sha256": "SHA-256 of raw committed Git blob bytes",
+    "bytes": "CRLF-to-LF-normalized UTF-8 bytes",
+    "sha256": "SHA-256 after CRLF-to-LF only",
+    "windows_checkout": "NOT_READ; Owner worktree_raw_sha256 belongs to a separate external snapshot"
+  },
+  "files": {
+    "scripts/p23b_git.py": {
+      "git_blob": "1ee68f1f6c7918030a0cd87c70f69490a9aeb86e",
+      "git_blob_bytes": 6461,
+      "git_blob_sha256": "8f06f67468dfb7109f6f9d845b2cdfb87122f295fb27118a42c01b901e244716",
+      "bytes": 6461,
+      "sha256": "8f06f67468dfb7109f6f9d845b2cdfb87122f295fb27118a42c01b901e244716"
+    },
+    "scripts/p23b_manifest.py": {
+      "git_blob": "d45e4c173cc0d18b31df951be935f5ef80e1751a",
+      "git_blob_bytes": 4720,
+      "git_blob_sha256": "8ffd86857dd61f4dfe9f9e4416acd010829fde8f811e73ae84b6937f87198fd2",
+      "bytes": 4720,
+      "sha256": "8ffd86857dd61f4dfe9f9e4416acd010829fde8f811e73ae84b6937f87198fd2"
+    },
+    "scripts/p23b_landing_preflight.py": {
+      "git_blob": "ffbe1728406cb91a494da534c2f6d19676256cda",
+      "git_blob_bytes": 11323,
+      "git_blob_sha256": "784878644aa2d1bf15010edee9c25e1a78cd7588c2ea170f783fa527836eb406",
+      "bytes": 11323,
+      "sha256": "784878644aa2d1bf15010edee9c25e1a78cd7588c2ea170f783fa527836eb406"
+    },
+    "scripts/test_p23b_manifest.py": {
+      "git_blob": "5fa3cda8e53563bfeb2fbee3db040b84b141fbff",
+      "git_blob_bytes": 11276,
+      "git_blob_sha256": "9fcba1ccbb638def25e7f466259a18c4efbdab6540582a4c971a8b5030f10ac9",
+      "bytes": 11276,
+      "sha256": "9fcba1ccbb638def25e7f466259a18c4efbdab6540582a4c971a8b5030f10ac9"
+    },
+    "scripts/test_p23b_landing_preflight.py": {
+      "git_blob": "04ecda697d8dfae8ed61df19184f2c397bb14ff5",
+      "git_blob_bytes": 9730,
+      "git_blob_sha256": "14f3413e616c27715a63cb7c2052e4b9cf87f06786b64064a80acf2b32fb9428",
+      "bytes": 9730,
+      "sha256": "14f3413e616c27715a63cb7c2052e4b9cf87f06786b64064a80acf2b32fb9428"
+    }
+  }
+}
