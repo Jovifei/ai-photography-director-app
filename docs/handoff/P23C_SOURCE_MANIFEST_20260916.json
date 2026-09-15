@@ -1,0 +1,15 @@
+{
+  "stage": "P23C",
+  "base_sha": "f2d6a87f85ba3b2ddd9f83544a6d912890019e7c",
+  "source_commit": "ae29bc32c122830cd6d03b06ec647ca73ae51759",
+  "hash_domain": "Exact UTF-8 LF Git blob bytes; no Unicode normalization. Windows checkout hashes are not this domain.",
+  "remote_blob_verification": "6/6 connector-returned blob OIDs equal the tested source bytes",
+  "files": {
+    "scripts/p23c_bundle_contract.py": {"bytes": 6509, "git_blob": "6c1504b2f9e152565694d57c3252b385b7905acf", "sha256": "81bfcd4326cfa56fcdeb7377a03c16ac499a0824119fc6a73881a5f6b49085af"},
+    "scripts/test_p23c_bundle_contract.py": {"bytes": 7567, "git_blob": "d90c02209d112517e0865ef1f4827d5989868cf9", "sha256": "1ef941aaa4a43cb47362df9f8a66e6195eccbb0c9af1a81243ef25aa1afc30d2"},
+    "android/app/src/androidTest/assets/p23c/roundtrip.bundle.json": {"bytes": 1634, "git_blob": "e436f86f7c984185dc42caaea11d340d326003a5", "sha256": "7f097edebc6a43c90bec45097e69272580de85f71142a3036066e10dca68831e"},
+    "android/app/src/androidTest/java/com/jovi/photoai/p23c/P23CPythonBundleCompatibilityAndroidTest.kt": {"bytes": 2610, "git_blob": "c000aea410e5150c6f1f89e22103d8beeeb17f49", "sha256": "754a221382f6f4f02d2fc5618bb0e56f06c35dd7bae2fa26fd9d7d4e206cbb7c"},
+    "scripts/p23c_prepare_review_pack.py": {"bytes": 12108, "git_blob": "e6a21523de188af4a970c426da7eb43bec5096d8", "sha256": "c6dc5a202588732904694feab3158a4843cb419e0471cba464141e04c93475d1"},
+    "scripts/test_p23c_prepare_review_pack.py": {"bytes": 15206, "git_blob": "55f7ae3bddc014d1c79efb79e9e717a630d64f0d", "sha256": "2e199f1b9ca353ae03bc9a7f643bb887b49fdde0487fb30cfc36775a15ca272d"}
+  }
+}
