@@ -2,7 +2,7 @@
   "schema_version": "p23b.stage-state.v1",
   "date": "2026-09-15",
   "stage": "P23B_SAFE_LANDING_PREFLIGHT",
-  "status": "P23B_TOOLING_IMPLEMENTED_LOCAL_VALIDATION_PENDING",
+  "status": "P23B_BLOCKED_WITH_EXACT_GATES",
   "branch": "codex/p23b-safe-landing-preflight-20260915",
   "app_candidate": {
     "sha": "e4a954b313320944fe751a2388366ee72d3e9083",
@@ -10,7 +10,7 @@
     "review_reexecuted_here": false
   },
   "expected_main": "61a9b26f7a17ae84a2b4ec8d7bb02e18695801b6",
-  "tool_source_commit": "8aa403bac97ef948e291613ccb4c91ea8e7cb3b1",
+  "tool_source_commit": "9db9b1fb41a8b109b427d98fa23d9777562a8ffb",
   "steps": [
     {
       "id": "P23B-01",
@@ -31,21 +31,28 @@
     },
     {
       "id": "P23B-LOCAL",
-      "status": "PENDING",
-      "purpose": "Windows, real repository, Owner safety and outstanding emulator evidence"
+      "status": "BLOCKED_WITH_EXACT_GATES",
+      "purpose": "Windows tools, real repository, Owner safety and bounded emulator evidence"
     }
   ],
   "host_unittest": {
-    "passed": 50,
+    "passed": 49,
     "failures": 0,
     "errors": 0,
-    "skipped": 0,
-    "scope": "SYNTHETIC_LOCAL_GIT_ON_LINUX"
+    "skipped": 2,
+    "scope": "WINDOWS_LOCAL_FIXTURES_AND_SYNTHETIC_GIT"
   },
-  "real_owner_audit": "NOT_RUN",
-  "android_revalidation": "NOT_RUN",
+  "real_owner_audit": "BLOCKED_OWNER_HEAD_AND_TASKS_OVERLAP",
+  "owner_snapshot_before_after": "UNCHANGED",
+  "historical_owner_snapshot_18": "PASS_0_MISMATCH",
+  "android_revalidation": "PARTIAL_WITH_EXACT_NOT_RUN_GATES",
+  "official_local_transport": "PASS_LOCAL_TRANSPORT",
+  "official_d2d": "PASS_D2D_TRANSPORT",
+  "system_font_screenshots": "PASS_100_200",
+  "process_death_imported_source": "PASS_FORCE_STOP_RESTART",
+  "process_death_ready_source_summary": "NOT_RUN",
   "signing": "BLOCKED_OWNER_REPORTED",
   "main_merge": "NOT_PERFORMED",
   "production_bundle": "NOT_AUTHORIZED",
-  "next_entry": "docs/handoff/P23B_LOCAL_CODEX_HANDOFF_20260915.md"
+  "next_entry": "docs/handoff/P23B_LOCAL_PREFLIGHT_HANDOFF_20260915.md"
 }
