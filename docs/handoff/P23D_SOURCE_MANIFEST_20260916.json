@@ -1,0 +1,14 @@
+{
+  "stage": "P23D_DURABLE_READY_RECOVERY",
+  "base_sha": "9db98bad24347d286ded251aef76108ebe8872ba",
+  "source_commit": "2e02bbb7be32cd00f96961d12e4b77c36cba9c3c",
+  "hash_domain": "Git blob OID is authoritative in this remote-authored stage; local qualification must add byte length and SHA-256 from the exact source commit without using CRLF checkout hashes as canonical bytes.",
+  "files": {
+    "android/app/src/androidTest/java/com/jovi/photoai/p23d/P23DReadyStateProcessDeathAndroidTest.kt": {
+      "git_blob": "16568556c64267f32f206f34e595188c872db7d8"
+    },
+    "scripts/qualify_p23d_ready_recovery.ps1": {
+      "git_blob": "c9d935deebc855eea3532043628fe4c237f79d0f"
+    }
+  }
+}

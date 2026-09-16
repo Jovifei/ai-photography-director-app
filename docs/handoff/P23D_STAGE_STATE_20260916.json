@@ -1,0 +1,32 @@
+{
+  "stage": "P23D_DURABLE_READY_RECOVERY",
+  "status": "P23D_IMPLEMENTED_LOCAL_ANDROID_VALIDATION_PENDING",
+  "date": "2026-09-16",
+  "main_sha": "9db98bad24347d286ded251aef76108ebe8872ba",
+  "branch": "codex/p23d-durable-ready-recovery-20260916",
+  "source_commit": "2e02bbb7be32cd00f96961d12e4b77c36cba9c3c",
+  "steps": [
+    {"id": "P23C-REVIEW", "status": "PASS_WITH_REMAINING_GATES", "sha": "9db98bad24347d286ded251aef76108ebe8872ba"},
+    {"id": "P23C-LAND", "status": "MAIN_FAST_FORWARDED_NO_FORCE", "sha": "9db98bad24347d286ded251aef76108ebe8872ba"},
+    {"id": "P23D-01", "status": "IMPLEMENTED_NOT_RUN", "sha": "ab113751ee73c127bfbd52cca77ded47885f2ba2"},
+    {"id": "P23D-02", "status": "PIDOF_STATIC_REMEDIATION_NOT_RUN", "sha": "2e02bbb7be32cd00f96961d12e4b77c36cba9c3c"},
+    {"id": "P23D-03", "status": "HANDOFF_DOCUMENTED", "sha_binding": "containing docs-only commit"}
+  ],
+  "evidence": {
+    "remote_source_review": "PASS",
+    "android_build": "NOT_RUN",
+    "p23d_instrumentation": "NOT_RUN",
+    "external_force_stop_runner": "NOT_RUN",
+    "regression": "NOT_RUN",
+    "release_signing": "BLOCKED_OWNER_REPORTED_MISSING_PHOTOAI_RELEASE_STORE_FILE"
+  },
+  "authority": {
+    "p23d_main_merge": false,
+    "real_photo_access": false,
+    "qwen_or_lan": false,
+    "pipeline_execution": false,
+    "public_content_release": false,
+    "release": false
+  },
+  "next_action": "LOCAL_CODEX_P23D_ANDROID_QUALIFICATION"
+}
