@@ -1,0 +1,295 @@
+{
+  "bundle_id": "synthetic_p23c",
+  "contract_version": "1.0",
+  "integrity": {
+    "algorithm": "SHA-256",
+    "payload_sha256": "bbcf7fd33b1b12f449e9dab6ab078c1f455e61a9fc0c9a936ea2499bcd8f7294"
+  },
+  "references": [
+    {
+      "photography": {
+        "background_story": "合成测试 background_story 0 📷 é",
+        "camera_position": "合成测试 camera_position 0 📷 é",
+        "composition": "合成测试 composition 0 📷 é",
+        "director_prompt": "合成测试 director_prompt 0 📷 é",
+        "emotion": "合成测试 emotion 0 📷 é",
+        "lighting": "合成测试 lighting 0 📷 é",
+        "pose_template": "合成测试 pose_template 0 📷 é",
+        "scene": "合成测试 scene 0 📷 é",
+        "subject_intent": "合成测试 subject_intent 0 📷 é"
+      },
+      "reference_id": "synthetic_00"
+    },
+    {
+      "photography": {
+        "background_story": "合成测试 background_story 1 📷 é",
+        "camera_position": "合成测试 camera_position 1 📷 é",
+        "composition": "合成测试 composition 1 📷 é",
+        "director_prompt": "合成测试 director_prompt 1 📷 é",
+        "emotion": "合成测试 emotion 1 📷 é",
+        "lighting": "合成测试 lighting 1 📷 é",
+        "pose_template": "合成测试 pose_template 1 📷 é",
+        "scene": "合成测试 scene 1 📷 é",
+        "subject_intent": "合成测试 subject_intent 1 📷 é"
+      },
+      "reference_id": "synthetic_01"
+    },
+    {
+      "photography": {
+        "background_story": "合成测试 background_story 2 📷 é",
+        "camera_position": "合成测试 camera_position 2 📷 é",
+        "composition": "合成测试 composition 2 📷 é",
+        "director_prompt": "合成测试 director_prompt 2 📷 é",
+        "emotion": "合成测试 emotion 2 📷 é",
+        "lighting": "合成测试 lighting 2 📷 é",
+        "pose_template": "合成测试 pose_template 2 📷 é",
+        "scene": "合成测试 scene 2 📷 é",
+        "subject_intent": "合成测试 subject_intent 2 📷 é"
+      },
+      "reference_id": "synthetic_02"
+    },
+    {
+      "photography": {
+        "background_story": "合成测试 background_story 3 📷 é",
+        "camera_position": "合成测试 camera_position 3 📷 é",
+        "composition": "合成测试 composition 3 📷 é",
+        "director_prompt": "合成测试 director_prompt 3 📷 é",
+        "emotion": "合成测试 emotion 3 📷 é",
+        "lighting": "合成测试 lighting 3 📷 é",
+        "pose_template": "合成测试 pose_template 3 📷 é",
+        "scene": "合成测试 scene 3 📷 é",
+        "subject_intent": "合成测试 subject_intent 3 📷 é"
+      },
+      "reference_id": "synthetic_03"
+    },
+    {
+      "photography": {
+        "background_story": "合成测试 background_story 4 📷 é",
+        "camera_position": "合成测试 camera_position 4 📷 é",
+        "composition": "合成测试 composition 4 📷 é",
+        "director_prompt": "合成测试 director_prompt 4 📷 é",
+        "emotion": "合成测试 emotion 4 📷 é",
+        "lighting": "合成测试 lighting 4 📷 é",
+        "pose_template": "合成测试 pose_template 4 📷 é",
+        "scene": "合成测试 scene 4 📷 é",
+        "subject_intent": "合成测试 subject_intent 4 📷 é"
+      },
+      "reference_id": "synthetic_04"
+    },
+    {
+      "photography": {
+        "background_story": "合成测试 background_story 5 📷 é",
+        "camera_position": "合成测试 camera_position 5 📷 é",
+        "composition": "合成测试 composition 5 📷 é",
+        "director_prompt": "合成测试 director_prompt 5 📷 é",
+        "emotion": "合成测试 emotion 5 📷 é",
+        "lighting": "合成测试 lighting 5 📷 é",
+        "pose_template": "合成测试 pose_template 5 📷 é",
+        "scene": "合成测试 scene 5 📷 é",
+        "subject_intent": "合成测试 subject_intent 5 📷 é"
+      },
+      "reference_id": "synthetic_05"
+    },
+    {
+      "photography": {
+        "background_story": "合成测试 background_story 6 📷 é",
+        "camera_position": "合成测试 camera_position 6 📷 é",
+        "composition": "合成测试 composition 6 📷 é",
+        "director_prompt": "合成测试 director_prompt 6 📷 é",
+        "emotion": "合成测试 emotion 6 📷 é",
+        "lighting": "合成测试 lighting 6 📷 é",
+        "pose_template": "合成测试 pose_template 6 📷 é",
+        "scene": "合成测试 scene 6 📷 é",
+        "subject_intent": "合成测试 subject_intent 6 📷 é"
+      },
+      "reference_id": "synthetic_06"
+    },
+    {
+      "photography": {
+        "background_story": "合成测试 background_story 7 📷 é",
+        "camera_position": "合成测试 camera_position 7 📷 é",
+        "composition": "合成测试 composition 7 📷 é",
+        "director_prompt": "合成测试 director_prompt 7 📷 é",
+        "emotion": "合成测试 emotion 7 📷 é",
+        "lighting": "合成测试 lighting 7 📷 é",
+        "pose_template": "合成测试 pose_template 7 📷 é",
+        "scene": "合成测试 scene 7 📷 é",
+        "subject_intent": "合成测试 subject_intent 7 📷 é"
+      },
+      "reference_id": "synthetic_07"
+    },
+    {
+      "photography": {
+        "background_story": "合成测试 background_story 8 📷 é",
+        "camera_position": "合成测试 camera_position 8 📷 é",
+        "composition": "合成测试 composition 8 📷 é",
+        "director_prompt": "合成测试 director_prompt 8 📷 é",
+        "emotion": "合成测试 emotion 8 📷 é",
+        "lighting": "合成测试 lighting 8 📷 é",
+        "pose_template": "合成测试 pose_template 8 📷 é",
+        "scene": "合成测试 scene 8 📷 é",
+        "subject_intent": "合成测试 subject_intent 8 📷 é"
+      },
+      "reference_id": "synthetic_08"
+    },
+    {
+      "photography": {
+        "background_story": "合成测试 background_story 9 📷 é",
+        "camera_position": "合成测试 camera_position 9 📷 é",
+        "composition": "合成测试 composition 9 📷 é",
+        "director_prompt": "合成测试 director_prompt 9 📷 é",
+        "emotion": "合成测试 emotion 9 📷 é",
+        "lighting": "合成测试 lighting 9 📷 é",
+        "pose_template": "合成测试 pose_template 9 📷 é",
+        "scene": "合成测试 scene 9 📷 é",
+        "subject_intent": "合成测试 subject_intent 9 📷 é"
+      },
+      "reference_id": "synthetic_09"
+    },
+    {
+      "photography": {
+        "background_story": "合成测试 background_story 10 📷 é",
+        "camera_position": "合成测试 camera_position 10 📷 é",
+        "composition": "合成测试 composition 10 📷 é",
+        "director_prompt": "合成测试 director_prompt 10 📷 é",
+        "emotion": "合成测试 emotion 10 📷 é",
+        "lighting": "合成测试 lighting 10 📷 é",
+        "pose_template": "合成测试 pose_template 10 📷 é",
+        "scene": "合成测试 scene 10 📷 é",
+        "subject_intent": "合成测试 subject_intent 10 📷 é"
+      },
+      "reference_id": "synthetic_10"
+    },
+    {
+      "photography": {
+        "background_story": "合成测试 background_story 11 📷 é",
+        "camera_position": "合成测试 camera_position 11 📷 é",
+        "composition": "合成测试 composition 11 📷 é",
+        "director_prompt": "合成测试 director_prompt 11 📷 é",
+        "emotion": "合成测试 emotion 11 📷 é",
+        "lighting": "合成测试 lighting 11 📷 é",
+        "pose_template": "合成测试 pose_template 11 📷 é",
+        "scene": "合成测试 scene 11 📷 é",
+        "subject_intent": "合成测试 subject_intent 11 📷 é"
+      },
+      "reference_id": "synthetic_11"
+    },
+    {
+      "photography": {
+        "background_story": "合成测试 background_story 12 📷 é",
+        "camera_position": "合成测试 camera_position 12 📷 é",
+        "composition": "合成测试 composition 12 📷 é",
+        "director_prompt": "合成测试 director_prompt 12 📷 é",
+        "emotion": "合成测试 emotion 12 📷 é",
+        "lighting": "合成测试 lighting 12 📷 é",
+        "pose_template": "合成测试 pose_template 12 📷 é",
+        "scene": "合成测试 scene 12 📷 é",
+        "subject_intent": "合成测试 subject_intent 12 📷 é"
+      },
+      "reference_id": "synthetic_12"
+    },
+    {
+      "photography": {
+        "background_story": "合成测试 background_story 13 📷 é",
+        "camera_position": "合成测试 camera_position 13 📷 é",
+        "composition": "合成测试 composition 13 📷 é",
+        "director_prompt": "合成测试 director_prompt 13 📷 é",
+        "emotion": "合成测试 emotion 13 📷 é",
+        "lighting": "合成测试 lighting 13 📷 é",
+        "pose_template": "合成测试 pose_template 13 📷 é",
+        "scene": "合成测试 scene 13 📷 é",
+        "subject_intent": "合成测试 subject_intent 13 📷 é"
+      },
+      "reference_id": "synthetic_13"
+    },
+    {
+      "photography": {
+        "background_story": "合成测试 background_story 14 📷 é",
+        "camera_position": "合成测试 camera_position 14 📷 é",
+        "composition": "合成测试 composition 14 📷 é",
+        "director_prompt": "合成测试 director_prompt 14 📷 é",
+        "emotion": "合成测试 emotion 14 📷 é",
+        "lighting": "合成测试 lighting 14 📷 é",
+        "pose_template": "合成测试 pose_template 14 📷 é",
+        "scene": "合成测试 scene 14 📷 é",
+        "subject_intent": "合成测试 subject_intent 14 📷 é"
+      },
+      "reference_id": "synthetic_14"
+    },
+    {
+      "photography": {
+        "background_story": "合成测试 background_story 15 📷 é",
+        "camera_position": "合成测试 camera_position 15 📷 é",
+        "composition": "合成测试 composition 15 📷 é",
+        "director_prompt": "合成测试 director_prompt 15 📷 é",
+        "emotion": "合成测试 emotion 15 📷 é",
+        "lighting": "合成测试 lighting 15 📷 é",
+        "pose_template": "合成测试 pose_template 15 📷 é",
+        "scene": "合成测试 scene 15 📷 é",
+        "subject_intent": "合成测试 subject_intent 15 📷 é"
+      },
+      "reference_id": "synthetic_15"
+    },
+    {
+      "photography": {
+        "background_story": "合成测试 background_story 16 📷 é",
+        "camera_position": "合成测试 camera_position 16 📷 é",
+        "composition": "合成测试 composition 16 📷 é",
+        "director_prompt": "合成测试 director_prompt 16 📷 é",
+        "emotion": "合成测试 emotion 16 📷 é",
+        "lighting": "合成测试 lighting 16 📷 é",
+        "pose_template": "合成测试 pose_template 16 📷 é",
+        "scene": "合成测试 scene 16 📷 é",
+        "subject_intent": "合成测试 subject_intent 16 📷 é"
+      },
+      "reference_id": "synthetic_16"
+    },
+    {
+      "photography": {
+        "background_story": "合成测试 background_story 17 📷 é",
+        "camera_position": "合成测试 camera_position 17 📷 é",
+        "composition": "合成测试 composition 17 📷 é",
+        "director_prompt": "合成测试 director_prompt 17 📷 é",
+        "emotion": "合成测试 emotion 17 📷 é",
+        "lighting": "合成测试 lighting 17 📷 é",
+        "pose_template": "合成测试 pose_template 17 📷 é",
+        "scene": "合成测试 scene 17 📷 é",
+        "subject_intent": "合成测试 subject_intent 17 📷 é"
+      },
+      "reference_id": "synthetic_17"
+    },
+    {
+      "photography": {
+        "background_story": "合成测试 background_story 18 📷 é",
+        "camera_position": "合成测试 camera_position 18 📷 é",
+        "composition": "合成测试 composition 18 📷 é",
+        "director_prompt": "合成测试 director_prompt 18 📷 é",
+        "emotion": "合成测试 emotion 18 📷 é",
+        "lighting": "合成测试 lighting 18 📷 é",
+        "pose_template": "合成测试 pose_template 18 📷 é",
+        "scene": "合成测试 scene 18 📷 é",
+        "subject_intent": "合成测试 subject_intent 18 📷 é"
+      },
+      "reference_id": "synthetic_18"
+    },
+    {
+      "photography": {
+        "background_story": "合成测试 background_story 19 📷 é",
+        "camera_position": "合成测试 camera_position 19 📷 é",
+        "composition": "合成测试 composition 19 📷 é",
+        "director_prompt": "合成测试 director_prompt 19 📷 é",
+        "emotion": "合成测试 emotion 19 📷 é",
+        "lighting": "合成测试 lighting 19 📷 é",
+        "pose_template": "合成测试 pose_template 19 📷 é",
+        "scene": "合成测试 scene 19 📷 é",
+        "subject_intent": "合成测试 subject_intent 19 📷 é"
+      },
+      "reference_id": "synthetic_19"
+    }
+  ],
+  "source": {
+    "origin": "PIPELINE",
+    "producer_id": "synthetic_test",
+    "release_id": "test_v1"
+  }
+}
