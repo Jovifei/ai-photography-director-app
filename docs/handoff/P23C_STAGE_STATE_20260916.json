@@ -1,24 +1,27 @@
 {
   "stage": "P23C_PUBLIC_PACK_PREPARATION",
-  "status": "P23C_PREPARATION_IMPLEMENTED_LOCAL_VALIDATION_PENDING",
+  "status": "P23C_BLOCKED_WITH_EXACT_GATES",
   "date": "2026-09-16",
   "main_landed_sha": "f2d6a87f85ba3b2ddd9f83544a6d912890019e7c",
   "app_reviewed_sha": "e4a954b313320944fe751a2388366ee72d3e9083",
   "branch": "codex/p23c-public-pack-preparation-20260916",
-  "source_commit": "ae29bc32c122830cd6d03b06ec647ca73ae51759",
+  "source_commit": "7edb307314598c526eabab457f71d152462b8cdf",
   "steps": [
     {"id": "P23B-LAND", "status": "REMOTE_MAIN_UPDATED_NO_FORCE", "sha": "f2d6a87f85ba3b2ddd9f83544a6d912890019e7c"},
     {"id": "P23C-01", "status": "IMPLEMENTED_PYTHON_TESTED", "sha": "b9e52345e5127f587ffe977d85c02ba9b5fe6d95"},
     {"id": "P23C-02", "status": "IMPLEMENTED_PYTHON_TESTED", "sha": "787bbde15b9beaa9f45da761006ab56fb04ae5a5"},
     {"id": "P23C-02b", "status": "CRLF_REGRESSION_TESTED", "sha": "ae29bc32c122830cd6d03b06ec647ca73ae51759"},
+    {"id": "P23C-LOCAL-ANDROID", "status": "TESTED_WITH_ROOM_RESTART_HARNESS", "sha": "7edb307314598c526eabab457f71d152462b8cdf"},
     {"id": "P23C-03", "status": "HANDOFF_DOCUMENTED", "sha_binding": "containing docs-only commit"}
   ],
   "evidence": {
-    "python_unittest": {"executed": 56, "passed": 56, "failed": 0, "skipped": 0, "scope": "Linux synthetic fixtures, not Android or content review"},
-    "source_blobs": "6/6_MATCH",
+    "python_unittest": {"executed": 55, "passed": 55, "failed": 0, "skipped": 1, "scope": "Windows synthetic fixtures, symlink privilege skip not counted as pass"},
+    "source_blobs": "8/8_MATCH",
     "privacy_audit": "PASS_CHANGED_SOURCE_SNAPSHOT_ONLY",
-    "android_compatibility_4": "NOT_RUN",
-    "windows_platform": "NOT_RUN",
+    "android_compatibility_4": "PASS_4_OF_4",
+    "room_twenty_restart": "PASS_PREPARE_FORCE_STOP_VERIFY",
+    "r1_android_regression": "PASS_28_OF_28_AND_38_OF_38",
+    "windows_platform": "PASS_WITH_1_SYMLINK_SKIP",
     "independent_review": "NOT_RUN"
   },
   "remaining": {
@@ -36,5 +39,5 @@
     "public_bundle_import": false,
     "release": false
   },
-  "next_action": "LOCAL_CODEX_P23C_QUALIFICATION_THEN_INDEPENDENT_REVIEW"
+  "next_action": "INDEPENDENT_REVIEW_OF_FINAL_LOCAL_VALIDATION_SHA"
 }
