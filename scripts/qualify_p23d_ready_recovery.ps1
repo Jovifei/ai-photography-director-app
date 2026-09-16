@@ -42,6 +42,16 @@ function Invoke-P23dAdb {
     return $output
 }
 
+function Get-P23dPid {
+    # Android toybox pidof normally exits 1 when the process is absent. That is an expected
+    # state after force-stop, not an ADB failure, so do not use the strict wrapper here.
+    $output = @(& $adb -s $Serial shell pidof $package 2>$null)
+    $exit = $LASTEXITCODE
+    if ($exit -eq 0) { return ([string]::Join(' ', @($output))).Trim() }
+    if ($exit -eq 1) { return '' }
+    throw 'ADB_PIDOF_FAILED'
+}
+
 function Install-P23dApk {
     param([Parameter(Mandatory)][string]$Path)
     $output = @(& $adb -s $Serial install -r -t $Path 2>&1)
@@ -64,7 +74,7 @@ function Wait-P23dPid {
     param([bool]$ShouldExist)
     $deadline = (Get-Date).ToUniversalTime().AddSeconds(15)
     do {
-        $pidText = ([string](Invoke-P23dAdb -Arguments @('shell', 'pidof', $package))).Trim()
+        $pidText = Get-P23dPid
         if ($ShouldExist -and -not [string]::IsNullOrWhiteSpace($pidText)) { return }
         if (-not $ShouldExist -and [string]::IsNullOrWhiteSpace($pidText)) { return }
         Start-Sleep -Milliseconds 250
