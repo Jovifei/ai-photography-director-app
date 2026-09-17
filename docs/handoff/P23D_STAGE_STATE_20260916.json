@@ -1,23 +1,24 @@
 {
   "stage": "P23D_DURABLE_READY_RECOVERY",
-  "status": "P23D_IMPLEMENTED_LOCAL_ANDROID_VALIDATION_PENDING",
+  "status": "P23D_READY_RECOVERY_VALIDATED_AWAITING_INDEPENDENT_REVIEW",
   "date": "2026-09-16",
   "main_sha": "9db98bad24347d286ded251aef76108ebe8872ba",
   "branch": "codex/p23d-durable-ready-recovery-20260916",
-  "source_commit": "2e02bbb7be32cd00f96961d12e4b77c36cba9c3c",
+  "source_commit": "5495d375994653b6ae6a2c739254bf237fad2668",
   "steps": [
     {"id": "P23C-REVIEW", "status": "PASS_WITH_REMAINING_GATES", "sha": "9db98bad24347d286ded251aef76108ebe8872ba"},
     {"id": "P23C-LAND", "status": "MAIN_FAST_FORWARDED_NO_FORCE", "sha": "9db98bad24347d286ded251aef76108ebe8872ba"},
     {"id": "P23D-01", "status": "IMPLEMENTED_NOT_RUN", "sha": "ab113751ee73c127bfbd52cca77ded47885f2ba2"},
     {"id": "P23D-02", "status": "PIDOF_STATIC_REMEDIATION_NOT_RUN", "sha": "2e02bbb7be32cd00f96961d12e4b77c36cba9c3c"},
-    {"id": "P23D-03", "status": "HANDOFF_DOCUMENTED", "sha_binding": "containing docs-only commit"}
+    {"id": "P23D-03", "status": "HANDOFF_DOCUMENTED", "sha_binding": "containing docs-only commit"},
+    {"id": "P23D-04", "status": "LOCAL_ANDROID_QUALIFIED", "evidence_id": "p23d-20260917"}
   ],
   "evidence": {
     "remote_source_review": "PASS",
-    "android_build": "NOT_RUN",
-    "p23d_instrumentation": "NOT_RUN",
-    "external_force_stop_runner": "NOT_RUN",
-    "regression": "NOT_RUN",
+    "android_build": "PASS_WITH_RELEASE_SIGNING_BLOCKED",
+    "p23d_instrumentation": "PASS_3_METHODS",
+    "external_force_stop_runner": "PASS_OS_PROCESS_TERMINATED",
+    "regression": "PASS_P23C_6_R1_28_EXISTING_38_JVM_130",
     "release_signing": "BLOCKED_OWNER_REPORTED_MISSING_PHOTOAI_RELEASE_STORE_FILE"
   },
   "authority": {
@@ -28,5 +29,5 @@
     "public_content_release": false,
     "release": false
   },
-  "next_action": "LOCAL_CODEX_P23D_ANDROID_QUALIFICATION"
+  "next_action": "INDEPENDENT_REVIEW_OF_FINAL_LOCAL_VALIDATION_SHA"
 }
