@@ -87,7 +87,7 @@ class P23DReadyStateProcessDeathAndroidTest {
 
         val summaryRequest = ProjectSummaryRequest(
             projectId = ready.projectId,
-            readyInputs = listOf(ReadySummaryInput(ready.photo.id, ready.bundle)),
+            readyItems = listOf(ReadySummaryInput(ready.photo.id, ready.bundle)),
             failedCount = 0,
         )
         repository.persistProjectSummary(
@@ -147,7 +147,7 @@ class P23DReadyStateProcessDeathAndroidTest {
 
         val expectedDigest = ProjectSummaryRequest(
             projectId = ready.projectId,
-            readyInputs = listOf(ReadySummaryInput(ready.photo.id, ready.bundle)),
+            readyItems = listOf(ReadySummaryInput(ready.photo.id, ready.bundle)),
             failedCount = 0,
         ).inputDigest
         val summary = requireNotNull(repository.projectSummary(ready.projectId))
