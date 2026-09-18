@@ -1,8 +1,8 @@
 {
   "stage": "P23D_DURABLE_READY_RECOVERY",
-  "status": "P23D_READY_RECOVERY_VALIDATED_AWAITING_INDEPENDENT_REVIEW",
-  "date": "2026-09-16",
-  "main_sha": "9db98bad24347d286ded251aef76108ebe8872ba",
+  "status": "P23D_READY_RECOVERY_INDEPENDENTLY_REVIEWED_AND_LANDED",
+  "date": "2026-09-18",
+  "main_sha": "6a42feced043297aac9eabe677bb4ba23b9154fd",
   "branch": "codex/p23d-durable-ready-recovery-20260916",
   "source_commit": "5495d375994653b6ae6a2c739254bf237fad2668",
   "steps": [
@@ -11,7 +11,9 @@
     {"id": "P23D-01", "status": "IMPLEMENTED_NOT_RUN", "sha": "ab113751ee73c127bfbd52cca77ded47885f2ba2"},
     {"id": "P23D-02", "status": "PIDOF_STATIC_REMEDIATION_NOT_RUN", "sha": "2e02bbb7be32cd00f96961d12e4b77c36cba9c3c"},
     {"id": "P23D-03", "status": "HANDOFF_DOCUMENTED", "sha_binding": "containing docs-only commit"},
-    {"id": "P23D-04", "status": "LOCAL_ANDROID_QUALIFIED", "evidence_id": "p23d-20260917"}
+    {"id": "P23D-04", "status": "LOCAL_ANDROID_QUALIFIED", "evidence_id": "p23d-20260917"},
+    {"id": "P23D-05", "status": "INDEPENDENT_REVIEW_PASS", "sha": "6a42feced043297aac9eabe677bb4ba23b9154fd"},
+    {"id": "P23D-06", "status": "MAIN_FAST_FORWARDED_NO_FORCE", "sha": "6a42feced043297aac9eabe677bb4ba23b9154fd"}
   ],
   "evidence": {
     "remote_source_review": "PASS",
@@ -22,12 +24,12 @@
     "release_signing": "BLOCKED_OWNER_REPORTED_MISSING_PHOTOAI_RELEASE_STORE_FILE"
   },
   "authority": {
-    "p23d_main_merge": false,
+    "p23d_main_merge": true,
     "real_photo_access": false,
     "qwen_or_lan": false,
     "pipeline_execution": false,
     "public_content_release": false,
     "release": false
   },
-  "next_action": "INDEPENDENT_REVIEW_OF_FINAL_LOCAL_VALIDATION_SHA"
+  "next_action": "OWNER_NEXT_GATE_DECISION"
 }

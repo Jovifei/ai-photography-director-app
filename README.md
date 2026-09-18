@@ -21,7 +21,7 @@ scripts/
 
 ## 当前 Android 产品状态
 
-当前 P22 候选已经可以作为诚实的离线摄影工具使用：
+`main` 当前已包含 P22 离线产品能力和 P23D 持久化恢复验证；P22 的产品边界仍然是诚实的离线摄影工具：
 
 `新建项目 → 最多 20 张私有导入 → 筛选/删除/选择主参考 → 无 AI 指导拍摄 → 系统另存为`
 
@@ -32,6 +32,13 @@ scripts/
 `连接本机 Qwen 服务 → 逐张 READY 分析 → READY-only 汇总 → AI Camera Director`
 
 Qwen Private LAN 和 Nightly Pipeline artifact 尚未在本候选中启动或接入；Pose、Cloud、iOS 和公开发布也不是当前交付内容。
+
+## P23D 主线状态（2026-09-18）
+
+- `main` 精确 HEAD：`6a42feced043297aac9eabe677bb4ba23b9154fd`。
+- P23D 独立审查结论为 `PASS`，并已从通过审查的候选 fast-forward 合入 `main`；没有 force push、额外 merge commit 或生产 Android/Room/Provider 漂移。
+- P23D 使用合成参考图和合成 Provider metadata，在专用 API 35 emulator 上验证了真实 OS `force-stop` 后的新进程启动、Room 中 Provider-backed `READY`、来源/模型 provenance、项目 summary、primary reference 与 last-active reference 恢复。
+- Release signing 仍受外部 `PHOTOAI_RELEASE_STORE_FILE` 输入约束，缺少该材料时保持 `BLOCKED`；本状态不表示签名发布、真实照片、Qwen/LAN、Pipeline 或公开发布已授权。
 
 ## Android 技术栈
 
@@ -48,6 +55,7 @@ Kotlin、Jetpack Compose、CameraX、系统 Photo Picker、Room、应用私有 J
 - [Android Beta 手机配置与首次使用说明](docs/ANDROID_BETA_PHONE_SETUP.md)
 - [摄影导演 Android Beta 用户指南](docs/BETA_USER_GUIDE.md)
 - [Photo Knowledge Bundle Consumer v1](docs/reference/PHOTO_KNOWLEDGE_BUNDLE_CONSUMER_V1.md)
+- [P23D 持久化恢复与安全合入经验](docs/90-RPT-P23D持久化恢复与安全合入经验-20260918.md)
 - [P22 离线产品资格报告](reports/P22_OFFLINE_PRODUCT_CLOSURE_QUALIFICATION.md)
 - Windows Private 网络只读诊断：`scripts/qualify_windows_private_network.ps1`
 - 实体手机安全安装：`scripts/install_android_beta_phone.ps1`（只执行同签名 `adb install -r`）
@@ -63,7 +71,6 @@ Kotlin、Jetpack Compose、CameraX、系统 Photo Picker、Room、应用私有 J
 
 ## 当前候选与下一步
 
-- 候选分支：`codex/p22-bundle-import-product-landing`
-- 当前状态：`ANDROID_LOCAL_BUNDLE_IMPORT_PRODUCT_READY_AWAITING_APPROVED_PIPELINE_ARTIFACT`
-- 当前候选已完成 Android 静态、API 35、D2D、签名和隐私资格；独立审查按当前执行边界未运行。
+- 当前交付基线是 `main@6a42feced043297aac9eabe677bb4ba23b9154fd`，P23D 独立审查已通过并完成安全合入。
+- 下一阶段仍需单独授权；不要把 P23D 恢复证据外推为 Release signing、真实 Provider、公共知识包、Pipeline、Cloud、iOS 或公开发布完成。
 - 继续 Qwen 前，必须使用受控私有 Wi‑Fi，并通过 Windows Private 网络预检；禁止绕过脚本或使用 FlClash/WSL/VPN 地址。

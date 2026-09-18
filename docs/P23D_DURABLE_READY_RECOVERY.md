@@ -1,6 +1,6 @@
 # P23D — READY / Provider / Summary 持久化进程恢复资格
 
-状态：`P23D_IMPLEMENTED_LOCAL_ANDROID_VALIDATION_PENDING`
+状态：`P23D_READY_RECOVERY_INDEPENDENTLY_REVIEWED_AND_LANDED`
 
 P23D 只补齐 P23C 明确保留的一个证据缺口：**既有 Provider-backed READY、来源信息、主参考和项目 summary 在真正的 OS 进程终止后是否仍可由 App 启动路径安全恢复**。
 
@@ -10,7 +10,8 @@ P23D 只补齐 P23C 明确保留的一个证据缺口：**既有 Provider-backed
 
 - 已合入 `main` 的 P23C 精确 SHA：`9db98bad24347d286ded251aef76108ebe8872ba`
 - P23D 分支：`codex/p23d-durable-ready-recovery-20260916`
-- P23D source boundary：`2e02bbb7be32cd00f96961d12e4b77c36cba9c3c`
+- P23D source boundary：`5495d375994653b6ae6a2c739254bf237fad2668`
+- 独立审查候选：`6a42feced043297aac9eabe677bb4ba23b9154fd`，结论 `PASS`；该候选已 fast-forward 合入 `main`。
 
 ## 新增测试链
 
@@ -38,13 +39,15 @@ prepare / verify 是两个独立 instrumentation invocation；Activity recreatio
 
 `pidof` 在进程不存在时通常返回 exit 1；P23D-02 已将这个“预期不存在”状态从严格 ADB 错误中分离，防止 force-stop 验证误阻断。
 
-## 本地必须验证
+## 本地验证结果
 
-网页端没有 Android SDK / emulator，因此以下均为 `NOT_RUN`：
+本地已在专用 API 35 emulator 上完成真实验证：
 
-- Debug / AndroidTest APK 编译；
-- 3 个 P23D instrumentation 方法；
-- `qualify_p23d_ready_recovery.ps1` 的真正 force-stop 流程；
-- R1/P23C/既有 Android 回归、JVM、lint、合同、service、privacy、diff。
+- P23D instrumentation：3/3 方法通过；prepare、MainActivity 启动、PID 存在、`am force-stop`、PID 消失、新 instrumentation verify、cleanup 全部 PASS。
+- P23C：6/6；R1：28/28；既有 Android：38/38；JVM：130/130。
+- Debug/Test APK、`lintDebug`、`lintRelease`、Bundle contract、Phase 1.5、service、compileall、privacy、diff 均通过。
+- Release signing 仍为 `BLOCKED`：缺少 `PHOTOAI_RELEASE_STORE_FILE`；未生成生产密钥。
+
+精确结果和证据边界见 `reports/P23D_LOCAL_QUALIFICATION_20260917.md` 与 `docs/90-RPT-P23D持久化恢复与安全合入经验-20260918.md`。
 
 本地通过后仍不能推导出 Release signing、真实公共内容审核、Pipeline、Qwen/LAN 或发布已完成。
