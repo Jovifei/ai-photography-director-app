@@ -20,7 +20,7 @@ from p25_validate_editorial_corpus import (
     MAX_CORPUS_BYTES,
     validate as validate_corpus,
 )
-from p23c_prepare_review_pack import publish_new, read_selected
+from p23c_bundle_contract import PackError\nfrom p23c_prepare_review_pack import publish_new, read_selected
 
 PURPOSE = "P25_CLOSED_BETA_CURATED_EDITORIAL"
 REVIEW_VERSION = "1.0"
