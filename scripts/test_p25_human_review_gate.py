@@ -78,6 +78,13 @@ class P25HumanReviewGateTests(unittest.TestCase):
         with self.assertRaisesRegex(ReviewError, "REVIEW_EVIDENCE_ID_DUPLICATE"):
             validate_review(self.corpus_raw, encoded(review))
 
+    def test_cli_maps_safe_io_rejection_to_blocked_exit_2(self):
+        with mock.patch.object(gate, "read_selected", side_effect=PackError("SYMLINK_OR_REPARSE_POINT")):
+            with mock.patch("builtins.print") as output:
+                result = gate.main(["review-template", "input.json", "output.json"])
+        self.assertEqual(2, result)
+        self.assertIn("SYMLINK_OR_REPARSE_POINT", output.call_args.args[0])
+
     def test_pipeline_export_is_explicitly_not_app_bundle(self):
         review_raw = encoded(self.approved())
         exported = pipeline_input(self.corpus_raw, review_raw)
