@@ -5,7 +5,12 @@ import json
 from pathlib import Path
 import unittest
 
-from p25_validate_editorial_corpus import CorpusError, EXPECTED_STATUS, validate
+from p25_validate_editorial_corpus import (
+    CorpusError,
+    EXPECTED_CORPUS_ID,
+    EXPECTED_STATUS,
+    validate,
+)
 
 
 FIXTURE = Path(__file__).parents[1] / "docs" / "reference" / "p25_real_20_editorial_draft.v1.json"
@@ -25,6 +30,12 @@ class P25EditorialCorpusTests(unittest.TestCase):
         self.assertEqual(EXPECTED_STATUS, result["status"])
         self.assertEqual(20, result["reference_count"])
         self.assertFalse(result["public_candidate_authorized"])
+
+    def test_requires_exact_corpus_id(self):
+        document = copy.deepcopy(self.document)
+        document["corpus_id"] = EXPECTED_CORPUS_ID + "-changed"
+        with self.assertRaisesRegex(CorpusError, "CORPUS_ID_INVALID"):
+            validate(self.encoded(document))
 
     def test_requires_exactly_twenty_entries(self):
         document = copy.deepcopy(self.document)
@@ -60,6 +71,29 @@ class P25EditorialCorpusTests(unittest.TestCase):
         raw = self.raw.replace(b'"corpus_version": "1.0",', b'"corpus_version": "1.0", "corpus_version": "1.0",', 1)
         with self.assertRaisesRegex(CorpusError, "DUPLICATE_JSON_KEY"):
             validate(raw)
+
+    def test_rejects_transport_or_path_text(self):
+        document = copy.deepcopy(self.document)
+        document["entries"][0]["photography"]["scene"] = "file:///private/source.jpg"
+        with self.assertRaisesRegex(CorpusError, "TRANSPORT_TEXT_FORBIDDEN"):
+            validate(self.encoded(document))
+
+    def test_rejects_unicode_line_separator(self):
+        document = copy.deepcopy(self.document)
+        document["entries"][0]["photography"]["scene"] = "scene\u2028hidden"
+        with self.assertRaisesRegex(CorpusError, "TEXT_INVALID"):
+            validate(self.encoded(document))
+
+    def test_rejects_escaped_unpaired_surrogate(self):
+        document = copy.deepcopy(self.document)
+        document["entries"][0]["photography"]["scene"] = "\ud800"
+        raw = json.dumps(document, ensure_ascii=True, separators=(",", ":")).encode("utf-8")
+        with self.assertRaisesRegex(CorpusError, "TEXT_INVALID"):
+            validate(raw)
+
+    def test_rejects_utf8_bom(self):
+        with self.assertRaisesRegex(CorpusError, "INVALID_UTF8"):
+            validate(b"\xef\xbb\xbf" + self.raw)
 
 
 if __name__ == "__main__":
