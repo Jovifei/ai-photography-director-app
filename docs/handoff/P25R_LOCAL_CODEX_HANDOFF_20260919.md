@@ -8,7 +8,7 @@
 - 当前 main：1b776ba9932a7fdc96112c8cb85c7258f3f7d6af
 - 原 P25 draft：e06fd01d1282689601b17d1dfecb7cab1cc88773
 - P25R 分支：codex/p25-human-review-gate-20260919
-- P25R source boundary：8135a9de19826394efa80c50e97b1f046bf7451a
+- P25R source boundary：f45618add0a265a5e576eb4c89368a7e0467e371
 
 先 fetch，以实际远端 HEAD 为准。不要回退后续提交，不要在 Owner 主工作树直接开发。
 
@@ -26,7 +26,7 @@ P25R 已实现：
 - export-pipeline-input；
 - PENDING/身份/evidence/hash/20条覆盖 fail-closed；
 - 中间 handoff 明确 NOT_APP_IMPORTABLE；
-- 复用 P23C 的安全本地读取/不覆盖输出机制。
+- 复用 P23C 的安全本地读取/不覆盖输出机制；PackError 必须稳定映射为 BLOCKED/exit 2，不能泄漏 traceback。
 
 ## 本地验证任务
 
@@ -56,7 +56,7 @@ python -m compileall -q scripts
 python scripts/prepush_privacy_audit.py
 git diff --check
 
-网页端的 20 个 Python unittest 是在同结构合成 fixture 上执行的，不是本地真实仓库资格结论。请报告本机真实数量。
+网页端的 21 个 Python unittest 是在同结构合成 fixture 上执行的，不是本地真实仓库资格结论。请报告本机真实数量。
 
 ## 审核模板负路径
 
