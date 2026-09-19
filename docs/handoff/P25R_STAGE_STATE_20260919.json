@@ -5,10 +5,10 @@
   "main_sha": "1b776ba9932a7fdc96112c8cb85c7258f3f7d6af",
   "p25_draft_sha": "e06fd01d1282689601b17d1dfecb7cab1cc88773",
   "branch": "codex/p25-human-review-gate-20260919",
-  "source_commit": "8135a9de19826394efa80c50e97b1f046bf7451a",
+  "source_commit": "f45618add0a265a5e576eb4c89368a7e0467e371",
   "evidence": {
     "remote_actual_corpus_structure": "PASS_20_ENTRIES_NO_FORBIDDEN_TRANSPORT_OR_UNICODE_TEXT",
-    "cloud_logic_unittest": "PASS_20_SYNTHETIC_FIXTURE_METHODS",
+    "cloud_logic_unittest": "PASS_21_SYNTHETIC_FIXTURE_METHODS",
     "full_windows_repo_run": "NOT_RUN",
     "human_content_review": "NOT_RUN",
     "human_rights_review": "NOT_RUN",
