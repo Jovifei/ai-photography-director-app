@@ -72,6 +72,6 @@ Kotlin、Jetpack Compose、CameraX、系统 Photo Picker、Room、应用私有 J
 ## 当前候选与下一步
 
 - 当前交付基线是 `main@6a42feced043297aac9eabe677bb4ba23b9154fd`，P23D 独立审查已通过并完成安全合入。
-- 下一阶段入口固定为 `P24_RELEASE_SIGNING_AND_DISTRIBUTION`：先检查 Owner 是否已有既有签名身份；没有 Owner 明确决定前，不生成新的生产 keystore。
+- P24 已在独立分支完成 signed APK/AAB 本地资格，但仍等待独立审查和 landing；main 未包含新的 signing identity。P25 不启动。
 - 下一阶段仍需单独授权；不要把 P23D 恢复证据外推为 Release signing、真实 Provider、公共知识包、Pipeline、Cloud、iOS 或公开发布完成。
 - 继续 Qwen 前，必须使用受控私有 Wi‑Fi，并通过 Windows Private 网络预检；禁止绕过脚本或使用 FlClash/WSL/VPN 地址。
