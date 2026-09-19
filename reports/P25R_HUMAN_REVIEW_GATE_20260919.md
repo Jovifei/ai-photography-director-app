@@ -7,7 +7,7 @@
 - main：1b776ba9932a7fdc96112c8cb85c7258f3f7d6af
 - 原 P25 编辑底稿：e06fd01d1282689601b17d1dfecb7cab1cc88773
 - 本分支：codex/p25-human-review-gate-20260919
-- source boundary：8135a9de19826394efa80c50e97b1f046bf7451a
+- source boundary：f45618add0a265a5e576eb4c89368a7e0467e371
 
 ## 审核结论
 
@@ -26,11 +26,11 @@ P25 原提交的诚实边界正确：20 条内容仍为 PENDING，未伪造真�
 - 真人审核必须具有 review_id、reviewer_id、总体 rights evidence 和 20 条独立 evidence ID。
 - 20/20 content/rights/privacy 均 APPROVED 后，才返回 P25_REAL_20_CONTENT_REVIEWED。
 - 导出格式固定为 photoai.curated-editorial-input.v1，并明确不是 Android Bundle，app_import_authorized=false。
-- 输出复用 P23C no-overwrite / reparse-safe publish 机制，review/export 文件要求写到仓库外。
+- 输出复用 P23C no-overwrite / reparse-safe publish 机制，review/export 文件要求写到仓库外。\n- P23C 安全 I/O 的 PackError 已显式映射为 P25R CLI 的 BLOCKED/exit 2，避免 traceback 绕过稳定错误语义。
 
 ## 云端验证边界
 
-- 使用与正式脚本相同逻辑的合成 20 条 fixture，20 个 Python unittest 方法通过。
+- 使用与正式脚本相同逻辑的合成 20 条 fixture，21 个 Python unittest 方法通过。
 - 对远端实际 P25 corpus 做只读结构扫描：20 条，未发现 URL/URI/path 或被禁止 Unicode 控制字符。
 - 没有在完整 Windows clone 上运行本分支。
 - 没有真人审核；没有 APPROVED review receipt；没有 Pipeline 执行。
