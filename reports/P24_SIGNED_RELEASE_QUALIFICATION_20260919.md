@@ -24,7 +24,8 @@
 - `verifyReleaseSigning`：PASS。
 - `assembleRelease`：PASS。
 - `bundleRelease`：PASS。
-- `lintRelease`：PASS，24 warnings、0 errors。
+- `lintRelease`：PASS，20 warnings、0 errors。
+- `lintDebug`：PASS，24 warnings、0 errors。
 - `testDebugUnitTest`：130/130，0 failure/error/skip。
 - APK：`debuggable=false`、`apksigner` PASS、package/version 匹配。
 - APK certificate SHA-256：`C62A1EE1F293CB596571135D37C9D51E7523E1639FBFAA01A6AB34D2528B457B`。
