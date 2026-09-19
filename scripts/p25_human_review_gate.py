@@ -20,7 +20,8 @@ from p25_validate_editorial_corpus import (
     MAX_CORPUS_BYTES,
     validate as validate_corpus,
 )
-from p23c_bundle_contract import PackError\nfrom p23c_prepare_review_pack import publish_new, read_selected
+from p23c_bundle_contract import PackError
+from p23c_prepare_review_pack import publish_new, read_selected
 
 PURPOSE = "P25_CLOSED_BETA_CURATED_EDITORIAL"
 REVIEW_VERSION = "1.0"
@@ -231,8 +232,8 @@ def main(argv: list[str] | None = None) -> int:
             }
         else:
             raise ReviewError("USAGE")
-    except (OSError, CorpusError, ReviewError) as error:
-        code = str(error) if isinstance(error, (CorpusError, ReviewError)) else "LOCAL_IO_ERROR"
+    except (OSError, CorpusError, ReviewError, PackError) as error:
+        code = str(error) if isinstance(error, (CorpusError, ReviewError, PackError)) else "LOCAL_IO_ERROR"
         print(json.dumps({"status": "BLOCKED", "code": code}, sort_keys=True))
         return 2
     print(json.dumps(result, sort_keys=True))
