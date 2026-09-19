@@ -1,0 +1,29 @@
+{
+  "stage": "P25R_HUMAN_REVIEW_GATE",
+  "status": "P25R_IMPLEMENTED_LOCAL_VALIDATION_AND_HUMAN_REVIEW_PENDING",
+  "date": "2026-09-19",
+  "main_sha": "1b776ba9932a7fdc96112c8cb85c7258f3f7d6af",
+  "p25_draft_sha": "e06fd01d1282689601b17d1dfecb7cab1cc88773",
+  "branch": "codex/p25-human-review-gate-20260919",
+  "source_commit": "f45618add0a265a5e576eb4c89368a7e0467e371",
+  "evidence": {
+    "remote_actual_corpus_structure": "PASS_20_ENTRIES_NO_FORBIDDEN_TRANSPORT_OR_UNICODE_TEXT",
+    "cloud_logic_unittest": "PASS_21_SYNTHETIC_FIXTURE_METHODS",
+    "full_windows_repo_run": "NOT_RUN",
+    "human_content_review": "NOT_RUN",
+    "human_rights_review": "NOT_RUN",
+    "human_privacy_review": "NOT_RUN",
+    "pipeline_release": "NOT_RUN",
+    "app_import_authorized": false
+  },
+  "authority": {
+    "content_approved": false,
+    "rights_approved": false,
+    "privacy_approved": false,
+    "pipeline_provenance_claimed": false,
+    "app_import_authorized": false,
+    "public_distribution_authorized": false,
+    "release_authorized": false
+  },
+  "next_action": "LOCAL_VALIDATE_P25R_THEN_HUMAN_REVIEW_20_OF_20"
+}

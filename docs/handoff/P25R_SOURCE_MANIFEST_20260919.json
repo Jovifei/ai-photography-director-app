@@ -1,0 +1,26 @@
+{
+  "stage": "P25R_HUMAN_REVIEW_GATE",
+  "base_sha": "e06fd01d1282689601b17d1dfecb7cab1cc88773",
+  "source_commit": "f45618add0a265a5e576eb4c89368a7e0467e371",
+  "hash_domain": "Git blob OID is authoritative for this remote-authored stage. Exact byte counts and SHA-256 must be regenerated from Git objects during local qualification; Windows CRLF checkout bytes are not canonical.",
+  "files": {
+    "docs/P25_REAL_20_CONTENT_REVIEW.md": {
+      "git_blob": "07dc9a9970b4ba59f0cac676a485197f48e09497"
+    },
+    "docs/reference/p25_real_20_editorial_draft.v1.json": {
+      "git_blob": "7774cb53f4e28f52ee08a153b9a1b2662f20bd25"
+    },
+    "scripts/p25_validate_editorial_corpus.py": {
+      "git_blob": "e8e0a245315b7481fabb2ef8c258745244159272"
+    },
+    "scripts/test_p25_validate_editorial_corpus.py": {
+      "git_blob": "28bd32502d9fd285b6c661f54aaedcaaca8302c0"
+    },
+    "scripts/p25_human_review_gate.py": {
+      "git_blob": "689eb9229b197d83a22141bbb18e8bfd480b8db8"
+    },
+    "scripts/test_p25_human_review_gate.py": {
+      "git_blob": "be78220986ea78dc5f99f14bab002b2ad25090c9"
+    }
+  }
+}
