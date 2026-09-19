@@ -1,26 +1,38 @@
 {
   "stage": "P25R_HUMAN_REVIEW_GATE",
   "base_sha": "e06fd01d1282689601b17d1dfecb7cab1cc88773",
-  "source_commit": "f45618add0a265a5e576eb4c89368a7e0467e371",
-  "hash_domain": "Git blob OID is authoritative for this remote-authored stage. Exact byte counts and SHA-256 must be regenerated from Git objects during local qualification; Windows CRLF checkout bytes are not canonical.",
+  "source_commit": "2ff8afe294a3e0a36df7d545ca903a53adcdecc5",
+  "hash_domain": "Git blob OID, exact Git byte count, and SHA-256 are authoritative from the local validation source commit; Windows CRLF checkout bytes are not canonical.",
   "files": {
     "docs/P25_REAL_20_CONTENT_REVIEW.md": {
-      "git_blob": "07dc9a9970b4ba59f0cac676a485197f48e09497"
+      "git_blob": "07dc9a9970b4ba59f0cac676a485197f48e09497",
+      "bytes": 4132,
+      "sha256": "4956d358f84f29fa15a9ee06c19ed350343d020c73f8978b223bee6f40029a0f"
     },
     "docs/reference/p25_real_20_editorial_draft.v1.json": {
-      "git_blob": "7774cb53f4e28f52ee08a153b9a1b2662f20bd25"
+      "git_blob": "7774cb53f4e28f52ee08a153b9a1b2662f20bd25",
+      "bytes": 21067,
+      "sha256": "1670f7101120261f88759bb390d896c34b194d07cbfdcf0eb4defce2c95a275e"
     },
     "scripts/p25_validate_editorial_corpus.py": {
-      "git_blob": "e8e0a245315b7481fabb2ef8c258745244159272"
+      "git_blob": "e8e0a245315b7481fabb2ef8c258745244159272",
+      "bytes": 5002,
+      "sha256": "f93c26b18e4b93e7521efb7077a3a1a374999c5a0b1d1693190075837dc27965"
     },
     "scripts/test_p25_validate_editorial_corpus.py": {
-      "git_blob": "28bd32502d9fd285b6c661f54aaedcaaca8302c0"
+      "git_blob": "28bd32502d9fd285b6c661f54aaedcaaca8302c0",
+      "bytes": 4024,
+      "sha256": "85b3d05f86d74c1d9d89993e27cb9120cb350f945074bae9279dcbeee5c33b38"
     },
     "scripts/p25_human_review_gate.py": {
-      "git_blob": "689eb9229b197d83a22141bbb18e8bfd480b8db8"
+      "git_blob": "6518d3c3f46660f1559cdc909ca528b6b90fae69",
+      "bytes": 9054,
+      "sha256": "1ea79a2c5eb05a070f8d88b9fc4c9ac96a00171149708d1c5698af043805664e"
     },
     "scripts/test_p25_human_review_gate.py": {
-      "git_blob": "be78220986ea78dc5f99f14bab002b2ad25090c9"
+      "git_blob": "bb4eb18104707cbbbee0066d881d903b359dd407",
+      "bytes": 4344,
+      "sha256": "84f1f3229d0ed3165d046ffc98ef42efb6392b1727f73c7c8126ff7b9b221daf"
     }
   }
 }

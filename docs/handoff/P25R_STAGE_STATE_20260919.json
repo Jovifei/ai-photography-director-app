@@ -1,15 +1,22 @@
 {
   "stage": "P25R_HUMAN_REVIEW_GATE",
-  "status": "P25R_IMPLEMENTED_LOCAL_VALIDATION_AND_HUMAN_REVIEW_PENDING",
+  "status": "P25R_LOCAL_VALIDATED_AWAITING_HUMAN_REVIEW",
   "date": "2026-09-19",
   "main_sha": "1b776ba9932a7fdc96112c8cb85c7258f3f7d6af",
   "p25_draft_sha": "e06fd01d1282689601b17d1dfecb7cab1cc88773",
-  "branch": "codex/p25-human-review-gate-20260919",
-  "source_commit": "f45618add0a265a5e576eb4c89368a7e0467e371",
+  "branch": "codex/p25r-local-validation-20260920",
+  "source_commit": "2ff8afe294a3e0a36df7d545ca903a53adcdecc5",
   "evidence": {
     "remote_actual_corpus_structure": "PASS_20_ENTRIES_NO_FORBIDDEN_TRANSPORT_OR_UNICODE_TEXT",
     "cloud_logic_unittest": "PASS_21_SYNTHETIC_FIXTURE_METHODS",
-    "full_windows_repo_run": "NOT_RUN",
+    "local_p25_unittest": "PASS_21_OF_21",
+    "local_p23c_unittest": "PASS_55_SKIP_1_SYMLINK_PRIVILEGE_OF_56",
+    "compileall": "PASS",
+    "privacy_audit": "PASS",
+    "diff_check": "PASS",
+    "windows_negative_paths": "PASS_BLOCKED_16_OF_16",
+    "windows_safe_io": "PASS_BLOCKED_6_SKIP_1_SYMLINK_PRIVILEGE",
+    "pending_template": "PASS_WRITTEN_AND_VALIDATE_BLOCKED_EXIT_2",
     "human_content_review": "NOT_RUN",
     "human_rights_review": "NOT_RUN",
     "human_privacy_review": "NOT_RUN",
@@ -25,5 +32,5 @@
     "public_distribution_authorized": false,
     "release_authorized": false
   },
-  "next_action": "LOCAL_VALIDATE_P25R_THEN_HUMAN_REVIEW_20_OF_20"
+  "next_action": "HUMAN_REVIEW_20_OF_20_THEN_VALIDATE_REVIEW"
 }

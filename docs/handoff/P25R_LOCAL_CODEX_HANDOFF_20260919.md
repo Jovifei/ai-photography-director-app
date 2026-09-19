@@ -128,3 +128,12 @@ P25_REAL_20_CONTENT_REVIEWED_AWAITING_PIPELINE_RELEASE
 P25R_BLOCKED_WITH_EXACT_GATES
 
 本阶段不要自动合并 main，不要启动 Pipeline、Qwen、LAN、真实照片、实体设备、Cloud/iOS 或发布。
+
+## 2026-09-20 Windows 本地验证收口
+
+- 本地验证分支：`codex/p25r-local-validation-20260920`。
+- 最终候选：`2ff8afe294a3e0a36df7d545ca903a53adcdecc5`。
+- P25R 21/21、P23C 55 PASS/1 SKIPPED、compileall、privacy、diff 均已在 Windows 实际运行。
+- PENDING review template 已写入仓库外逻辑证据 ID `p25r-20260920`；直接 validate-review 以 exit 2 拒绝，无 traceback。
+- symlink 只因当前 Windows 权限 SKIPPED；junction/reparse、hardlink、UNC、existing output、repo-inside、文件中途变化均已验证为稳定 BLOCKED。
+- 当前状态：`P25R_LOCAL_VALIDATED_AWAITING_HUMAN_REVIEW`；真人完成数量仍为 `0/20`。
