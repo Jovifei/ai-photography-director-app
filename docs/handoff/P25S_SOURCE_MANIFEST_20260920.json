@@ -1,0 +1,11 @@
+{
+  "stage": "P25S_INTERNAL_HANDOFF_AND_PIPELINE_PREFLIGHT",
+  "source_commit": "2d60e6014c0ffe57e4f97218efcc22ea5a9f71c5",
+  "hash_domain": "Git blob OID, exact Git byte count and SHA-256 from source_commit; Windows checkout bytes are not canonical.",
+  "files": {
+    "scripts/p25_internal_handoff_fixture.py": {"git_blob": "0cdee3e8b92520e7d45280d0c36036630c05607d", "bytes": 2413, "sha256": "95323d2c0ba83e9e638acadd1f89e1c960cd06852e53162074459c7796fdac85"},
+    "scripts/test_p25_internal_handoff_fixture.py": {"git_blob": "cf6f80f68ef0950d5162b96bcca062995ac03559", "bytes": 2748, "sha256": "c1398b99fe9f111677ace0c8034678b9898e9c13f0d25381b3cc640bb1f9ec98"},
+    "android/app/src/androidTest/assets/p25s/internal-handoff-20.bundle.json": {"git_blob": "7a0ad873aeaa00c1fabbb29661bce2914a7af997", "bytes": 21307, "sha256": "173a8c054474ebef447facaa410cb6af0a06a93e13075b7115d672bf30014cec"},
+    "android/app/src/androidTest/java/com/jovi/photoai/p25s/P25SInternalHandoffAndroidTest.kt": {"git_blob": "3a4607fe1a25b3b4f1d45df353eb8817f61c389e", "bytes": 3881, "sha256": "91a43f2fac0270a03b4a5b781e5643d1e6656586efb1ad1962a06717f496a7d4"}
+  }
+}
