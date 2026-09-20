@@ -7,7 +7,7 @@
 ## 精确审核对象
 
 - corpus：`docs/reference/p25_real_20_editorial_draft.v1.json`
-- corpus ID：`P25-CLOSED-BETA-REAL-20-V1`
+- corpus ID：`P25-PORTRAIT-EDITORIAL-20-20260919`
 - Git blob：`c6c4bae87c525f72678a658fc913bdf3ce4e8b97`
 - Git-object SHA-256：`7be88f916da20aaa1801d8eff35f4dbb8de0d5b86f1168bfd813f4023ad4448c`
 - 条目数：20
@@ -55,7 +55,17 @@
 
 ## 操作步骤
 
-在仓库外生成新的 PENDING 模板：
+需要逐条阅读完整九个摄影字段时，先在仓库外生成与当前 corpus 字节绑定的人审包：
+
+```powershell
+python scripts/p25_generate_human_review_packet.py `
+  docs/reference/p25_real_20_editorial_draft.v1.json `
+  E:\project_benchmark_evidence\p25r-owner-review\p25-human-review-packet.md
+```
+
+人审包只用于阅读和记录意见，不是审核回执，也不会写入任何 `APPROVED`。
+
+然后生成新的 PENDING 模板：
 
 ```powershell
 python scripts/p25_human_review_gate.py review-template `
