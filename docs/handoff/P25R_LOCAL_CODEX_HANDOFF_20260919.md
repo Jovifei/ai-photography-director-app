@@ -137,3 +137,10 @@ P25R_BLOCKED_WITH_EXACT_GATES
 - PENDING review template 已写入仓库外逻辑证据 ID `p25r-20260920`；直接 validate-review 以 exit 2 拒绝，无 traceback。
 - symlink 只因当前 Windows 权限 SKIPPED；junction/reparse、hardlink、UNC、existing output、repo-inside、文件中途变化均已验证为稳定 BLOCKED。
 - 当前状态：`P25R_LOCAL_VALIDATED_AWAITING_HUMAN_REVIEW`；真人完成数量仍为 `0/20`。
+
+## 2026-09-20 Owner 审核材料增量
+
+- 新增 `scripts/p25_generate_human_review_packet.py`，从严格验证后的当前 corpus 生成仓库外、PENDING-only 的完整九字段人审包；不填身份、evidence 或 APPROVED，且拒绝覆盖已有输出。
+- 修正 Owner 指南中的 corpus ID 为真实值 `P25-PORTRAIT-EDITORIAL-20-20260919`。
+- source commit 更新为 `342e25acb12da98b4ea2f58261ec561e2b193bb0`；manifest 扩展为 8 项 Git-object 绑定。
+- P25R Windows 测试现为 24/24；最新外部人审包为 20 条 PENDING、0 APPROVED。真人 Gate 仍为 0/20，未启动 Pipeline 或 P26。

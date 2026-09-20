@@ -1,7 +1,7 @@
 {
   "stage": "P25R_HUMAN_REVIEW_GATE",
   "base_sha": "e06fd01d1282689601b17d1dfecb7cab1cc88773",
-  "source_commit": "d69e272cd0cf56858e28c78fb9e5799c0c3b1e25",
+  "source_commit": "342e25acb12da98b4ea2f58261ec561e2b193bb0",
   "hash_domain": "Git blob OID, exact Git byte count, and SHA-256 are authoritative from the local validation source commit; Windows CRLF checkout bytes are not canonical.",
   "files": {
     "docs/P25_REAL_20_CONTENT_REVIEW.md": {
@@ -33,6 +33,16 @@
       "git_blob": "bb4eb18104707cbbbee0066d881d903b359dd407",
       "bytes": 4344,
       "sha256": "84f1f3229d0ed3165d046ffc98ef42efb6392b1727f73c7c8126ff7b9b221daf"
+    },
+    "scripts/p25_generate_human_review_packet.py": {
+      "git_blob": "57be74367a9ba471dbbab285f6e77e020628a732",
+      "bytes": 3567,
+      "sha256": "3ee1f94c052d651db4041d33ce956ad4dde86d74a460e9366823fc31f9fb4b5b"
+    },
+    "scripts/test_p25_generate_human_review_packet.py": {
+      "git_blob": "66769156444a6482b242f63959ed5a094c842ead",
+      "bytes": 1815,
+      "sha256": "64d445f029fad10baece5c9256628731f0c50c3c7e8e8ff4356214273f4e47f4"
     }
   }
 }

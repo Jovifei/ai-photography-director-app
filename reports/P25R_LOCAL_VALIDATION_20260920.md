@@ -9,7 +9,8 @@
 - 本地验证分支：`codex/p25r-local-validation-20260920`
 - 初始修复候选：`2ff8afe294a3e0a36df7d545ca903a53adcdecc5`
 - AI 预审安全措辞修订后的最终候选：`d69e272cd0cf56858e28c78fb9e5799c0c3b1e25`
-- 本地 source manifest 绑定的 source commit：`d69e272cd0cf56858e28c78fb9e5799c0c3b1e25`
+- 人审包生成工具与准确 corpus ID 修订：`342e25acb12da98b4ea2f58261ec561e2b193bb0`
+- 本地 source manifest 绑定的 source commit：`342e25acb12da98b4ea2f58261ec561e2b193bb0`
 - 逻辑证据 ID：`p25r-20260920`
 
 ## 本轮最小修复
@@ -28,7 +29,7 @@ Windows 首次本地编译暴露两处 P25R 实际缺陷：
 | Gate | 实际结果 |
 |---|---|
 | P25 validator | PASS，20 条；PENDING；content/rights/privacy/public_candidate 全 false |
-| P25R unittest | PASS，21/21 |
+| P25R unittest | PASS，24/24（含 3 项人审包生成、拒绝覆盖与安全 I/O 映射测试） |
 | P23C unittest | 55 PASS、1 SKIPPED、0 failure/error，共 56；skip 为 Windows symlink privilege unavailable |
 | `compileall -q scripts` | PASS |
 | `prepush_privacy_audit.py` | PASS |
@@ -36,7 +37,8 @@ Windows 首次本地编译暴露两处 P25R 实际缺陷：
 | 负路径 | 16/16 BLOCKED：URL、URI、file/content、Windows path、sdcard/storage、traversal、BOM、surrogate、U+2028/U+2029、duplicate key、错误 ID、重复 source evidence、缺字段 |
 | Windows 安全 I/O | hardlink、junction/reparse、existing output、repo-inside、UNC、文件中途变化均 BLOCKED；symlink 因权限 SKIPPED |
 | PENDING 模板 | 仓库外模板生成 PASS；20 条三项 PENDING、20 evidence null；直接 validate-review exit 2，无 traceback |
-| Git object manifest | 6/6 OID、byte count、SHA-256 PASS |
+| PENDING 人审包 | 仓库外生成 PASS；当前 20 条完整九字段、20 PENDING、0 APPROVED；不构成 review receipt |
+| Git object manifest | 8/8 OID、byte count、SHA-256 PASS |
 
 ## 未完成边界
 
