@@ -17,6 +17,8 @@
     "windows_negative_paths": "PASS_BLOCKED_16_OF_16",
     "windows_safe_io": "PASS_BLOCKED_6_SKIP_1_SYMLINK_PRIVILEGE",
     "pending_template": "PASS_WRITTEN_AND_VALIDATE_BLOCKED_EXIT_2",
+    "independent_ai_safety_pre_review": "PASS_PRELIMINARY_20_OF_20_NOT_HUMAN_APPROVAL",
+    "owner_review_guide": "PASS_READY_FOR_FINAL_HUMAN_REVIEW",
     "human_content_review": "NOT_RUN",
     "human_rights_review": "NOT_RUN",
     "human_privacy_review": "NOT_RUN",
@@ -32,5 +34,5 @@
     "public_distribution_authorized": false,
     "release_authorized": false
   },
-  "next_action": "HUMAN_REVIEW_20_OF_20_THEN_VALIDATE_REVIEW"
+  "next_action": "OWNER_HUMAN_REVIEW_20_OF_20_USING_DOCS_P25R_OWNER_FINAL_REVIEW_GUIDE_THEN_VALIDATE_REVIEW"
 }
