@@ -132,7 +132,7 @@ P25R_BLOCKED_WITH_EXACT_GATES
 ## 2026-09-20 Windows 本地验证收口
 
 - 本地验证分支：`codex/p25r-local-validation-20260920`。
-- 最终候选：`2ff8afe294a3e0a36df7d545ca903a53adcdecc5`。
+- 初始修复候选：`2ff8afe294a3e0a36df7d545ca903a53adcdecc5`；安全措辞修订后最终候选：`d69e272cd0cf56858e28c78fb9e5799c0c3b1e25`。
 - P25R 21/21、P23C 55 PASS/1 SKIPPED、compileall、privacy、diff 均已在 Windows 实际运行。
 - PENDING review template 已写入仓库外逻辑证据 ID `p25r-20260920`；直接 validate-review 以 exit 2 拒绝，无 traceback。
 - symlink 只因当前 Windows 权限 SKIPPED；junction/reparse、hardlink、UNC、existing output、repo-inside、文件中途变化均已验证为稳定 BLOCKED。

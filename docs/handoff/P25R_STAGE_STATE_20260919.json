@@ -5,11 +5,11 @@
   "main_sha": "1b776ba9932a7fdc96112c8cb85c7258f3f7d6af",
   "p25_draft_sha": "e06fd01d1282689601b17d1dfecb7cab1cc88773",
   "branch": "codex/p25r-local-validation-20260920",
-  "source_commit": "2ff8afe294a3e0a36df7d545ca903a53adcdecc5",
+  "source_commit": "d69e272cd0cf56858e28c78fb9e5799c0c3b1e25",
   "evidence": {
     "remote_actual_corpus_structure": "PASS_20_ENTRIES_NO_FORBIDDEN_TRANSPORT_OR_UNICODE_TEXT",
     "cloud_logic_unittest": "PASS_21_SYNTHETIC_FIXTURE_METHODS",
-    "local_p25_unittest": "PASS_21_OF_21",
+    "local_p25_unittest": "PASS_21_OF_21_AFTER_SAFETY_EDIT",
     "local_p23c_unittest": "PASS_55_SKIP_1_SYMLINK_PRIVILEGE_OF_56",
     "compileall": "PASS",
     "privacy_audit": "PASS",

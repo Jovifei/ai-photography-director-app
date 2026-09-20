@@ -7,8 +7,9 @@
 - 基线 main：`1b776ba9932a7fdc96112c8cb85c7258f3f7d6af`
 - 远端 P25R 输入：`759e1a9099c82097d566e8b387518683d55f3ad4`
 - 本地验证分支：`codex/p25r-local-validation-20260920`
-- 本地最终候选：`2ff8afe294a3e0a36df7d545ca903a53adcdecc5`
-- 本地 source manifest 绑定的 source commit：`2ff8afe294a3e0a36df7d545ca903a53adcdecc5`
+- 初始修复候选：`2ff8afe294a3e0a36df7d545ca903a53adcdecc5`
+- AI 预审安全措辞修订后的最终候选：`d69e272cd0cf56858e28c78fb9e5799c0c3b1e25`
+- 本地 source manifest 绑定的 source commit：`d69e272cd0cf56858e28c78fb9e5799c0c3b1e25`
 - 逻辑证据 ID：`p25r-20260920`
 
 ## 本轮最小修复
@@ -19,6 +20,8 @@ Windows 首次本地编译暴露两处 P25R 实际缺陷：
 2. `PackError` 未被 CLI 捕获，安全 I/O 拒绝会泄漏 traceback；测试文件也缺少对应 mock、gate 和异常导入。
 
 已在 `2ff8afe` 修正；没有修改 Bundle v1、Android、Room、Provider、签名配置或 Owner 文件。
+
+独立 AI 预审随后指出 007、008、009、011、016、017、019 的站位安全措辞和 020 的私密话题措辞需要收紧；已在 `d69e272` 修改。该预审不是真人审核，旧 review 绑定自动失效。
 
 ## 实际验证结果
 
