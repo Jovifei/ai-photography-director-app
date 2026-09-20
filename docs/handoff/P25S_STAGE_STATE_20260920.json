@@ -20,7 +20,7 @@
     "jvm": "PASS_130_OF_130",
     "debug_and_test_apk": "PASS",
     "lint": "PASS_UNSIGNED_STATIC_0_ERRORS",
-    "android_instrumentation": "BLOCKED_EMULATOR_ADB_REGISTRATION",
+    "android_instrumentation": "BLOCKED_HOST_EMULATOR_ADB_BRIDGE_AFTER_EXPLICIT_COLD_AND_PORT_RETRY",
     "release_signing": "BLOCKED_MISSING_PROCESS_INPUT",
     "pipeline_curated_input": "MISSING",
     "pipeline_pkb1_exporter": "MISSING_AND_LOCKED"

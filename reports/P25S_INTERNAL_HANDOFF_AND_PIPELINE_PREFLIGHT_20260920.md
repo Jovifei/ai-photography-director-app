@@ -58,12 +58,20 @@ Jovi 暂时批准当前 20 条 corpus 用于内部工程验证。正式内容、
 | JVM | PASS `130/130` |
 | Debug APK / Test APK | PASS |
 | lintDebug / lintRelease（排除 signing guard） | PASS，0 errors；24/23 warnings |
-| API35 emulator instrumentation | `BLOCKED`：两套 AVD 均报告 boot complete，但未向 ADB 注册 serial 后退出 |
+| API35 emulator instrumentation | `BLOCKED`：2026-09-21 对专用 API35 AVD 重复冷启动；普通窗口、`-wipe-data`、`-no-snapshot-load/-no-snapshot-save`、显式 `-ports 5556,5557 -no-direct-adb -adb-path` 均报告 boot complete，但 5556/5557 无监听且 ADB 未注册 serial |
 | 实体 OnePlus | `NOT_RUN`；未 install、未 instrumentation |
 | release signing | `BLOCKED`：当前进程缺少 `PHOTOAI_RELEASE_STORE_FILE` |
 | Pipeline production release | `NOT_RUN` / `LOCKED` |
 
 模拟器原始日志仅保存在仓库外逻辑证据目录 `p25s-internal-handoff-20260920`，不提交设备标识或私人路径。
+
+### 2026-09-21 宿主复验结论
+
+- Android Emulator：`36.6.11.0 (build_id 15507667)`；Windows Hypervisor Platform 检查通过。
+- AVD：`MateLink_P0_Qualification_API35`，目标 API 35，启动日志显示 `Boot completed`。
+- 复验矩阵：普通窗口启动、`-no-window`、`-wipe-data`、显式 `-no-snapshot-load/-no-snapshot-save`、显式 console/ADB 双端口与 `-no-direct-adb`，全部相同结果。
+- 观测：`adb devices -l` 始终没有 `emulator-5556`；`Get-NetTCPConnection` 没有 5556/5557 listener；emulator 日志反复报告 `adb.exe ... emulator-5556 ... device not found`。
+- 判断：这是宿主 Emulator↔ADB bridge 注册故障。没有运行 instrumentation，也没有把实体设备当作替代品；需要恢复 ADB/Emulator 安装或换用已确认可用的专用 API35 AVD 后再继续。
 
 ## 剩余正式 release 条件
 
