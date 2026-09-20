@@ -1,15 +1,15 @@
 # P25S 本地接力
 
-当前边界：内部交接工程实现已完成，但宿主 API35 emulator↔ADB bridge 在多种明确冷启动参数下均未注册 serial，使新增 Android runtime 测试保持 `BLOCKED`。正式 20/20 内容、权利、隐私审核仍为 `NOT_RUN`，Pipeline N5/N7 仍 `LOCKED`。
+当前边界：P25S 内部交接与 Android 本地验证已完成，最终候选等待独立审查。正式 20/20 内容、权利、隐私审核仍为 `NOT_RUN`，Pipeline N5/N7 仍 `LOCKED`。
 
 接力顺序：
 
 1. 从本分支最新远端 SHA 建立隔离工作树，验证 P25S source manifest。
-2. 修复或更换明确专用的 API35 emulator；核对 serial 前缀、SDK=35、`ro.kernel.qemu=1`。
-3. 仅对该 serial 运行 `com.jovi.photoai.p25s.P25SInternalHandoffAndroidTest`（2 个方法）与 `com.jovi.photoai.p23c.P23CPythonBundleRoomAndroidTest`（2 个阶段，含真实 force-stop/new instrumentation）。
-4. fresh 重跑 P25/P23C Python、JVM、Debug/Test APK、lint、privacy 和 diff。
+2. 已使用 fresh 专用 API35 emulator `emulator-5560`，核对 serial、SDK=35、`ro.kernel.qemu=1`。
+3. 已对该 serial 运行 P25S `2/2`、P23C Parser `4/4`、P23C Room/重启 `2/2`。
+4. 已 fresh 重跑 P25/P23C Python、JVM、Debug/Test APK、lint、privacy 和 diff。
 5. 对最终精确 SHA 做独立审查；不得把模拟回执、测试 fixture 或 App 侧映射器写成真实 Pipeline provenance。
 
-2026-09-21 宿主复验：Emulator `36.6.11.0`、WHPX 和 API35 AVD 启动均成功报告 boot complete；普通窗口、wipe-data、显式 snapshot 禁用、`-ports 5556,5557`、`-no-direct-adb` 均未产生 5556/5557 listener，`adb devices` 无 emulator serial。该阻塞属于宿主 ADB bridge，不是 Android 测试失败；未触碰实体设备。
+2026-09-21 先前旧 AVD 的 ADB bridge 阻塞已通过创建 fresh AVD `P25S_API35_Fresh_20260921` 解除。最终 Android 证据绑定 `emulator-5560`；未触碰实体设备。
 
 Pipeline 的 producer 缺口与验收条件见 `reports/P25S_INTERNAL_HANDOFF_AND_PIPELINE_PREFLIGHT_20260920.md`。真实 release 必须由获得授权后的 Pipeline 实现；随后才进入使用独立知识包 signing identity 的 P26。

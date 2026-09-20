@@ -1,6 +1,6 @@
 # P25S 内部交接验证与 Pipeline 只读预检
 
-状态：`P25S_INTERNAL_HANDOFF_ENGINEERING_COMPLETE_ANDROID_RUNTIME_BLOCKED`。
+状态：`P25S_LOCAL_VALIDATED_AWAITING_INDEPENDENT_REVIEW`。
 
 ## 决定与边界
 
@@ -58,7 +58,7 @@ Jovi 暂时批准当前 20 条 corpus 用于内部工程验证。正式内容、
 | JVM | PASS `130/130` |
 | Debug APK / Test APK | PASS |
 | lintDebug / lintRelease（排除 signing guard） | PASS，0 errors；24/23 warnings |
-| API35 emulator instrumentation | `BLOCKED`：2026-09-21 对专用 API35 AVD 重复冷启动；普通窗口、`-wipe-data`、`-no-snapshot-load/-no-snapshot-save`、显式 `-ports 5556,5557 -no-direct-adb -adb-path` 均报告 boot complete，但 5556/5557 无监听且 ADB 未注册 serial |
+| API35 emulator instrumentation | PASS：fresh 专用 AVD `emulator-5560`，P25S `2/2`、P23C Parser `4/4`、P23C Room/重启 `2/2` |
 | 实体 OnePlus | `NOT_RUN`；未 install、未 instrumentation |
 | release signing | `BLOCKED`：当前进程缺少 `PHOTOAI_RELEASE_STORE_FILE` |
 | Pipeline production release | `NOT_RUN` / `LOCKED` |
@@ -80,4 +80,16 @@ Jovi 暂时批准当前 20 条 corpus 用于内部工程验证。正式内容、
 - 专用 API35 emulator 恢复后，运行新增 P25S 2 个方法及既有 P23C process-restart 链；
 - P26 独立知识包签名身份与 App 验签设计，不复用 Android APK signing identity。
 
-当前只可描述为“内部交接工程实现完成，Android 运行 Gate 阻塞，等待正式 release 条件”，不得描述为生产知识包已发布。
+当前可描述为“内部交接验证完成，等待独立审查和正式 release 条件”，不得描述为生产知识包已发布。
+
+## 2026-09-21 fresh Android qualification
+
+创建全新的专用 AVD `P25S_API35_Fresh_20260921`，绕开旧 AVD 的 ADB bridge 状态；仅使用 `emulator-5560`，未对 OnePlus 实体设备执行 install 或 instrumentation。
+
+- 设备绑定：serial `emulator-5560`、SDK `35`、`ro.kernel.qemu=1`、`sys.boot_completed=1`。
+- P25S：`2/2 PASS`。
+- P23C Python Parser：`4/4 PASS`。
+- P23C Python→Room→重启读取：`2/2 PASS`。
+- fresh Debug/Test APK 安装：`PASS`。
+
+Android runtime 阻塞已解除；剩余停止点是独立 Reviewer、正式人审、Pipeline 生产者实现和 signing 输入，不是本地 Android 测试失败。

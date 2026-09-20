@@ -1,6 +1,6 @@
 {
   "stage": "P25S_INTERNAL_HANDOFF_AND_PIPELINE_PREFLIGHT",
-  "status": "P25S_INTERNAL_HANDOFF_ENGINEERING_COMPLETE_ANDROID_RUNTIME_BLOCKED",
+  "status": "P25S_LOCAL_VALIDATED_AWAITING_INDEPENDENT_REVIEW",
   "date": "2026-09-20",
   "base_candidate": "0d0d72e8c658cecde416e77405fefbbb37b32b22",
   "source_commit": "2d60e6014c0ffe57e4f97218efcc22ea5a9f71c5",
@@ -20,10 +20,10 @@
     "jvm": "PASS_130_OF_130",
     "debug_and_test_apk": "PASS",
     "lint": "PASS_UNSIGNED_STATIC_0_ERRORS",
-    "android_instrumentation": "BLOCKED_HOST_EMULATOR_ADB_BRIDGE_AFTER_EXPLICIT_COLD_AND_PORT_RETRY",
+    "android_instrumentation": "PASS_8_OF_8_EMULATOR_5560",
     "release_signing": "BLOCKED_MISSING_PROCESS_INPUT",
     "pipeline_curated_input": "MISSING",
     "pipeline_pkb1_exporter": "MISSING_AND_LOCKED"
   },
-  "next_action": "RESTORE_DEDICATED_API35_EMULATOR_AND_COMPLETE_P25S_ANDROID_RUNTIME_THEN_INDEPENDENT_REVIEW"
+  "next_action": "INDEPENDENT_REVIEW_FINAL_SHA_THEN_OWNER_RELEASE_DECISION"
 }
