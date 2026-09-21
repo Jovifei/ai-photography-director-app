@@ -5,7 +5,7 @@
 ## 候选与范围
 
 - 远端分支：`codex/p25s-internal-handoff-validation-20260920`
-- 当前交接候选：`a6b4cbeff3ae6da5c98ed0ebff280c4d238c4fd2`
+- 最终交接候选：`69db7bf9b1015d045861a7e8b142539a1614af36`
 - 本轮源码提交：`e17d7fe79a4c8e3d9178a249ccf31e61eafc4250`
 - 源码 manifest：17 项，绑定 `e17d7fe` Git objects
 - Android 设备：fresh 专用 `emulator-5560`，SDK 35，`ro.kernel.qemu=1`，系统启动完成

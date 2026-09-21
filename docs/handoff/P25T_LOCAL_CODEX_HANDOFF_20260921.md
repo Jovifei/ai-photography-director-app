@@ -8,6 +8,7 @@
 继续同一远端分支：`codex/p25s-internal-handoff-validation-20260920`。
 起始审查 SHA：`61a7c1da92c51b791aac4ea094e6efa56adf474e`。
 本轮源码候选：`e17d7fe79a4c8e3d9178a249ccf31e61eafc4250`；之后有 docs-only 交接提交，以 fetch 后实际 HEAD 为准。
+最终候选：`69db7bf9b1015d045861a7e8b142539a1614af36`。
 预期 main：`1b776ba9932a7fdc96112c8cb85c7258f3f7d6af`，本轮未更新。
 
 已提交代码：

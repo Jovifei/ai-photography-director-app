@@ -4,6 +4,7 @@
   "date": "2026-09-22",
   "branch": "codex/p25s-internal-handoff-validation-20260920",
   "base_sha": "61a7c1da92c51b791aac4ea094e6efa56adf474e",
+  "candidate_sha": "69db7bf9b1015d045861a7e8b142539a1614af36",
   "source_commit": "e17d7fe79a4c8e3d9178a249ccf31e61eafc4250",
   "main_observed": "1b776ba9932a7fdc96112c8cb85c7258f3f7d6af",
   "pipeline_main_observed": "ffc4130823c1308f089b835c766e341ec2173e82",
