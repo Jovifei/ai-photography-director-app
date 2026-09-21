@@ -23,6 +23,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.key
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
@@ -52,27 +53,25 @@ internal fun PhotoKnowledgeBundleImportScreen(
     onBack: () -> Unit,
 ) {
     val documentPicker = rememberLauncherForActivityResult(OpenDocument(), onDocumentSelected)
-    val eligibleRecords = records.filter { isKnowledgeBundleTargetEligible(it.analysisStatus) }
+    // A caller may still hold rows from the previous project during a Flow switch.
+    val currentRecords = records.filter { it.projectId == project.id }
+    val eligibleRecords = currentRecords.filter {
+        isKnowledgeBundleTargetEligible(it.analysisStatus) && it.knowledgeBundleProvenance == null
+    }
     val eligibleIds = eligibleRecords.map { it.photo.id }.toSet()
     val mappedTargetsAvailable = state.bindings.values.all { it in eligibleIds }
-    // Always delegate to the parent's synchronous tryLeave gate, including the same frame
-    // that apply() begins. An observed isApplying value may still be from the previous frame.
+    // Always delegate to the parent's synchronous tryLeave gate, including same-frame Back.
     BackHandler { onBack() }
     Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(AppColors.AppBackground)
-            .safeDrawingPadding()
-            .verticalScroll(rememberScrollState())
-            .padding(horizontal = AppDimensions.PagePadding),
+        modifier = Modifier.fillMaxSize().background(AppColors.AppBackground).safeDrawingPadding()
+            .verticalScroll(rememberScrollState()).padding(horizontal = AppDimensions.PagePadding),
         verticalArrangement = Arrangement.spacedBy(AppDimensions.Space12),
     ) {
         TextButton(onClick = onBack, enabled = !state.isApplying) { Text("返回项目") }
         Text("导入离线知识包", style = MaterialTheme.typography.displaySmall)
         Text(
-            "只读取你通过系统文件选择器明确选择的结构化 JSON。不会读取照片、路径、EXIF，也不会按顺序猜测照片对应关系。",
-            style = MaterialTheme.typography.bodyMedium,
-            color = AppColors.TextSecondary,
+            "知识包只读取你明确选择的 JSON；缩略图来自当前项目已有的私有副本。不会按编号、文件名或顺序自动匹配照片。",
+            style = MaterialTheme.typography.bodyMedium, color = AppColors.TextSecondary,
         )
         GlassSurface(modifier = Modifier.fillMaxWidth(), contentPadding = PaddingValues(AppDimensions.Space16)) {
             Column(verticalArrangement = Arrangement.spacedBy(AppDimensions.Space8)) {
@@ -81,13 +80,10 @@ internal fun PhotoKnowledgeBundleImportScreen(
                     PrimaryActionButton(
                         text = if (state.isReading) "正在验证知识包" else "选择 JSON 知识包",
                         onClick = { documentPicker.launch(arrayOf("application/json", "text/json")) },
-                        enabled = !state.isReading,
-                        modifier = Modifier.fillMaxWidth(),
+                        enabled = !state.isReading, modifier = Modifier.fillMaxWidth(),
                     )
                 }
-                if (state.isReading) {
-                    SecondaryActionButton("取消读取", onReset, Modifier.fillMaxWidth())
-                }
+                if (state.isReading) SecondaryActionButton("取消读取", onReset, Modifier.fillMaxWidth())
                 if (state.applyOutcomeUnknown) {
                     Text("提交结果暂时无法确认；请返回项目看板检查，不要立即重复导入。", color = AppColors.Warning)
                     PrimaryActionButton("返回项目看板", onBack, Modifier.fillMaxWidth())
@@ -96,9 +92,7 @@ internal fun PhotoKnowledgeBundleImportScreen(
                     Text(bundleParseErrorText(it), color = AppColors.Warning, style = MaterialTheme.typography.bodyMedium)
                     SecondaryActionButton("重新选择", { documentPicker.launch(arrayOf("application/json", "text/json")) }, Modifier.fillMaxWidth())
                 }
-                state.applyError?.let {
-                    Text(bundleApplyErrorText(it), color = AppColors.Warning, style = MaterialTheme.typography.bodyMedium)
-                }
+                state.applyError?.let { Text(bundleApplyErrorText(it), color = AppColors.Warning, style = MaterialTheme.typography.bodyMedium) }
                 state.appliedCount?.let { count ->
                     Text("已将 $count 条知识逐张写入项目。", style = MaterialTheme.typography.titleMedium)
                     Text("项目级语义汇总和模型推荐主参考未由此知识包提供；请手动选择主参考。", style = MaterialTheme.typography.bodyMedium)
@@ -106,79 +100,63 @@ internal fun PhotoKnowledgeBundleImportScreen(
                 }
             }
         }
-
         state.bundle?.let { bundle ->
-            Text(
-                "格式与摘要校验通过 · ${bundle.references.size} 条",
-                style = MaterialTheme.typography.titleMedium,
-            )
+            Text("格式与摘要校验通过 · ${bundle.references.size} 条", style = MaterialTheme.typography.titleMedium)
             Text("来源：${bundle.source.origin.name} · ${bundle.source.producerId}", style = MaterialTheme.typography.bodySmall)
             Text("版本：${bundle.contractVersion} · ${bundle.source.releaseId}", style = MaterialTheme.typography.bodySmall)
             Text("知识包：${bundle.bundleId}", style = MaterialTheme.typography.bodySmall)
             Text("SHA-256：${bundle.payloadSha256}", style = MaterialTheme.typography.bodySmall)
-            Text(
-                "摘要一致不代表发布者身份认证或内容质量审核。请只导入你确认来源的知识包。",
-                style = MaterialTheme.typography.bodyMedium,
-                color = AppColors.Warning,
-            )
+            Text("摘要一致不代表发布者身份认证或内容质量审核。请只导入你确认来源的知识包。",
+                style = MaterialTheme.typography.bodyMedium, color = AppColors.Warning)
             Text("已绑定 ${state.bindings.size} / ${bundle.references.size} 条", style = MaterialTheme.typography.titleMedium)
-            Text(
-                "每条知识须绑定一张尚未 READY、也不在分析中的照片。再次点击已选照片可解除绑定。",
-                style = MaterialTheme.typography.bodyMedium,
-                color = AppColors.TextSecondary,
-            )
+            Text("每条知识须绑定一张尚未 READY、也不在分析中的照片。可先查看完整指导，再看图选择；支持解除绑定。",
+                style = MaterialTheme.typography.bodyMedium, color = AppColors.TextSecondary)
             bundle.references.forEachIndexed { index, item ->
-                GlassSurface(modifier = Modifier.fillMaxWidth(), contentPadding = PaddingValues(AppDimensions.Space12)) {
-                    Column(verticalArrangement = Arrangement.spacedBy(AppDimensions.Space8)) {
-                        Text("知识条目 ${index + 1} · ${item.photography.scene}", style = MaterialTheme.typography.titleMedium)
-                        Text(item.photography.lighting, style = MaterialTheme.typography.bodySmall, color = AppColors.TextSecondary)
-                        Text(item.photography.directorPrompt, style = MaterialTheme.typography.bodyMedium)
-                        FlowRow(
-                            horizontalArrangement = Arrangement.spacedBy(AppDimensions.Space8),
-                            verticalArrangement = Arrangement.spacedBy(AppDimensions.Space8),
-                        ) {
-                            eligibleRecords.forEach { record ->
-                                val selected = state.bindings[item.referenceId] == record.photo.id
-                                val usedByOther = state.bindings.any { (producerId, localId) ->
-                                    producerId != item.referenceId && localId == record.photo.id
+                key(project.id, bundle.bundleId, bundle.payloadSha256, item.referenceId) {
+                    GlassSurface(modifier = Modifier.fillMaxWidth(), contentPadding = PaddingValues(AppDimensions.Space12)) {
+                        Column(verticalArrangement = Arrangement.spacedBy(AppDimensions.Space8)) {
+                            Text("知识条目 ${index + 1} · ${item.photography.scene}", style = MaterialTheme.typography.titleMedium)
+                            Text(item.photography.lighting, style = MaterialTheme.typography.bodySmall, color = AppColors.TextSecondary)
+                            Text(item.photography.directorPrompt, style = MaterialTheme.typography.bodyMedium)
+                            KnowledgeBundleMappingTools(
+                                scopeKey = "${project.id}:${bundle.bundleId}:${bundle.payloadSha256}",
+                                item = item, records = currentRecords, bindings = state.bindings,
+                                busy = state.isApplying || state.isReading, onBind = onBind,
+                            )
+                            // Keep quick numbered selection for tiny projects; do not render 400 chips.
+                            if (eligibleRecords.size <= 3) {
+                                FlowRow(horizontalArrangement = Arrangement.spacedBy(AppDimensions.Space8),
+                                    verticalArrangement = Arrangement.spacedBy(AppDimensions.Space8)) {
+                                    eligibleRecords.forEach { record ->
+                                        val selected = state.bindings[item.referenceId] == record.photo.id
+                                        val usedByOther = state.bindings.any { (producerId, localId) ->
+                                            producerId != item.referenceId && localId == record.photo.id
+                                        }
+                                        FilterChip(
+                                            selected = selected, enabled = !usedByOther && !state.isApplying && !state.isReading,
+                                            onClick = { onBind(item.referenceId, record.photo.id) },
+                                            label = { Text("第 ${record.ordinal + 1} 张") },
+                                            modifier = Modifier.heightIn(min = AppDimensions.MinTouchTarget).semantics {
+                                                contentDescription = if (selected) "解除知识条目 ${index + 1} 与项目照片第 ${record.ordinal + 1} 张的绑定"
+                                                    else "将知识条目 ${index + 1} 绑定到项目照片第 ${record.ordinal + 1} 张"
+                                            },
+                                        )
+                                    }
                                 }
-                                FilterChip(
-                                    selected = selected,
-                                    enabled = !usedByOther && !state.isApplying,
-                                    onClick = { onBind(item.referenceId, record.photo.id) },
-                                    label = { Text("第 ${record.ordinal + 1} 张") },
-                                    modifier = Modifier
-                                        .heightIn(min = AppDimensions.MinTouchTarget)
-                                        .semantics {
-                                            contentDescription = if (selected) {
-                                                "解除知识条目 ${index + 1} 与项目照片第 ${record.ordinal + 1} 张的绑定"
-                                            } else {
-                                                "将知识条目 ${index + 1} 绑定到项目照片第 ${record.ordinal + 1} 张"
-                                            }
-                                        },
-                                )
                             }
                         }
                     }
                 }
             }
-            if (eligibleRecords.size < bundle.references.size) {
-                Text("可绑定照片不足；READY 或分析中的照片不会被覆盖。", color = AppColors.Warning)
-            }
-            if (!mappedTargetsAvailable) {
-                Text("已选照片已删除或状态已变化，请重新绑定。", color = AppColors.Warning)
-            }
+            if (eligibleRecords.size < bundle.references.size) Text("可绑定照片不足；READY 或分析中的照片不会被覆盖。", color = AppColors.Warning)
+            if (!mappedTargetsAvailable) Text("已选照片已删除或状态已变化，请重新绑定。", color = AppColors.Warning)
             PrimaryActionButton(
-                text = if (state.isApplying) "正在原子写入" else "确认全部绑定并导入",
-                onClick = onApply,
+                text = if (state.isApplying) "正在原子写入" else "确认全部绑定并导入", onClick = onApply,
                 enabled = state.isComplete && mappedTargetsAvailable && !state.isApplying && !state.isReading,
                 modifier = Modifier.fillMaxWidth(),
             )
-            if (state.isApplying) {
-                Text("写入期间暂不退出，完成后将显示结果。", style = MaterialTheme.typography.bodyMedium)
-            } else {
-                SecondaryActionButton("放弃本次知识包", onReset, Modifier.fillMaxWidth())
-            }
+            if (state.isApplying) Text("写入期间暂不退出，完成后将显示结果。", style = MaterialTheme.typography.bodyMedium)
+            else SecondaryActionButton("放弃本次知识包", onReset, Modifier.fillMaxWidth())
         }
         Spacer(Modifier.height(AppDimensions.Space24))
     }
