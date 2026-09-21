@@ -1,0 +1,33 @@
+{
+  "stage": "P25T_VISUAL_MAPPING_AND_DIRECTOR_PREPARATION",
+  "status": "P25T_IMPLEMENTED_HOST_VERIFIED_ANDROID_VALIDATION_PENDING",
+  "date": "2026-09-21",
+  "branch": "codex/p25s-internal-handoff-validation-20260920",
+  "base_sha": "61a7c1da92c51b791aac4ea094e6efa56adf474e",
+  "source_commit": "9ea075a95891faa68db45cd436096ea9c94a21d8",
+  "main_observed": "1b776ba9932a7fdc96112c8cb85c7258f3f7d6af",
+  "pipeline_main_observed": "ffc4130823c1308f089b835c766e341ec2173e82",
+  "pipeline_real20_r0_observed": "50d9ffac597570ceba3bfea44ff9dc6448ba85c0",
+  "steps": [
+    {"id": "T0_FIXTURE_AND_MAPPING_REMEDIATION", "sha": "d720640ecc5d170f6867e1fff5912776cd3a9630"},
+    {"id": "T1_VISIBLE_UI_IMPLEMENTATION", "sha": "6569ef623a38eae4f900315fb2deed45d5ce77df"},
+    {"id": "T1_ANDROID_TEST_AUTHORING", "sha": "9ea075a95891faa68db45cd436096ea9c94a21d8"}
+  ],
+  "fresh_evidence": {
+    "python_fixture_methods": {"passed": 16, "failed": 0, "skipped": 0},
+    "actual_kotlin_policy_assertions": {"passed": 34, "scope": "HOST_ONLY"},
+    "privacy": "PASS_MATERIALIZED_SOURCE_SNAPSHOT_ONLY",
+    "diff": "PASS_MATERIALIZED_SOURCE_SNAPSHOT_ONLY",
+    "android_new_methods": {"authored": 7, "compiled": false, "executed": false},
+    "full_repo_windows_gradle": "NOT_RUN"
+  },
+  "authority": {
+    "main_updated": false,
+    "pipeline_modified_or_executed": false,
+    "real_human_review_completed": false,
+    "new_production_content_released": false,
+    "real_photos_or_physical_devices_used": false
+  },
+  "next": "LOCAL_P25T_UI_AND_REAL_ROOM_QUALIFICATION_THEN_INDEPENDENT_REVIEW",
+  "next_product_increment": "T2_CAPTURE_RESULT_PREVIEW_PROJECT_ASSOCIATION_EXPORT_RECOVERY"
+}
