@@ -45,7 +45,9 @@ class P25InternalHandoffFixtureTests(unittest.TestCase):
 
     def test_committed_android_fixture_matches_current_corpus_and_generator(self):
         expected = encoded_json(build_test_bundle(self.curated))
-        self.assertEqual(expected, ANDROID_FIXTURE.read_bytes())
+        # Normalize checkout line endings for this checked-in JSON test asset only.
+        # Raw user-selected corpus/review bytes remain exact-hash-bound at runtime.
+        self.assertEqual(expected, ANDROID_FIXTURE.read_bytes().replace(b"\r\n", b"\n"))
 
     def test_non_handoff_or_authorized_input_is_rejected(self):
         wrong = dict(self.curated)
