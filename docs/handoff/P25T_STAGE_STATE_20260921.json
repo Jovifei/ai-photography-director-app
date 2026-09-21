@@ -1,10 +1,10 @@
 {
   "stage": "P25T_VISUAL_MAPPING_AND_DIRECTOR_PREPARATION",
-  "status": "P25T_IMPLEMENTED_HOST_VERIFIED_ANDROID_VALIDATION_PENDING",
-  "date": "2026-09-21",
+  "status": "P25T_ANDROID_VALIDATED_AWAITING_INDEPENDENT_REVIEW",
+  "date": "2026-09-22",
   "branch": "codex/p25s-internal-handoff-validation-20260920",
   "base_sha": "61a7c1da92c51b791aac4ea094e6efa56adf474e",
-  "source_commit": "9ea075a95891faa68db45cd436096ea9c94a21d8",
+  "source_commit": "e17d7fe79a4c8e3d9178a249ccf31e61eafc4250",
   "main_observed": "1b776ba9932a7fdc96112c8cb85c7258f3f7d6af",
   "pipeline_main_observed": "ffc4130823c1308f089b835c766e341ec2173e82",
   "pipeline_real20_r0_observed": "50d9ffac597570ceba3bfea44ff9dc6448ba85c0",
@@ -14,12 +14,17 @@
     {"id": "T1_ANDROID_TEST_AUTHORING", "sha": "9ea075a95891faa68db45cd436096ea9c94a21d8"}
   ],
   "fresh_evidence": {
-    "python_fixture_methods": {"passed": 16, "failed": 0, "skipped": 0},
-    "actual_kotlin_policy_assertions": {"passed": 34, "scope": "HOST_ONLY"},
-    "privacy": "PASS_MATERIALIZED_SOURCE_SNAPSHOT_ONLY",
-    "diff": "PASS_MATERIALIZED_SOURCE_SNAPSHOT_ONLY",
-    "android_new_methods": {"authored": 7, "compiled": false, "executed": false},
-    "full_repo_windows_gradle": "NOT_RUN"
+    "p25_python_methods": {"passed": 43, "failed": 0, "skipped": 0},
+    "p23c_python_methods": {"passed": 55, "failed": 0, "skipped": 1},
+    "jvm": {"passed": 131, "failed": 0, "errors": 0, "skipped": 0},
+    "android_related_methods": {"passed": 49, "failed": 0, "skipped": 0, "serial": "emulator-5560"},
+    "p25t_real_jpeg_methods": {"passed": 2, "failed": 0, "skipped": 0},
+    "font_scale_screenshots": "PASS_100_AND_200_SYSTEM_FONT_SCALE",
+    "p23d_os_process_death": "PASS",
+    "privacy": "PASS",
+    "diff": "PASS",
+    "source_manifest": "PASS_17_OF_17",
+    "full_repo_windows_gradle": "PASS_DEBUG_TEST_JVM_LINT"
   },
   "authority": {
     "main_updated": false,
@@ -28,6 +33,6 @@
     "new_production_content_released": false,
     "real_photos_or_physical_devices_used": false
   },
-  "next": "LOCAL_P25T_UI_AND_REAL_ROOM_QUALIFICATION_THEN_INDEPENDENT_REVIEW",
+  "next": "INDEPENDENT_REVIEW_FINAL_CANDIDATE_THEN_OWNER_RELEASE_DECISION",
   "next_product_increment": "T2_CAPTURE_RESULT_PREVIEW_PROJECT_ASSOCIATION_EXPORT_RECOVERY"
 }

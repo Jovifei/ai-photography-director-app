@@ -1,7 +1,7 @@
 {
   "stage": "P25T_VISUAL_MAPPING_AND_DIRECTOR_PREPARATION",
   "base_sha": "61a7c1da92c51b791aac4ea094e6efa56adf474e",
-  "source_commit": "9ea075a95891faa68db45cd436096ea9c94a21d8",
+  "source_commit": "e17d7fe79a4c8e3d9178a249ccf31e61eafc4250",
   "hash_domain": "Exact UTF-8 Git blob bytes; no Windows checkout or Unicode normalization",
   "verification_scope": "Expected source identities; verify against source_commit and final candidate via Git objects. Host executions cover the named Python/Kotlin helpers only.",
   "files": {
@@ -74,6 +74,21 @@
       "git_blob": "9a13440587693ac3ad3ad45adbd46c6ac736deae",
       "bytes": 1947,
       "sha256": "0cf64ba4096ad56f68b88c6c3be61ffc2f58f2292daa335568abd53b0430a5d5"
+    },
+    "android/app/src/androidTest/java/com/jovi/photoai/ui1/SyntheticPickerMediaFactory.kt": {
+      "git_blob": "a44abe55292596d36643d9b9f9a2c12a861ee30f",
+      "bytes": 6163,
+      "sha256": "7a8709e3b79f39382c284922b39c282fdda895edfb75a33b03fef0ab20d30042"
+    },
+    "android/app/src/androidTest/java/com/jovi/photoai/p25t/P25TRealPhotoMappingAndroidTest.kt": {
+      "git_blob": "cc7c1fa159aa9afbd595c1813ec1e15d1f8d8e0f",
+      "bytes": 9755,
+      "sha256": "1ba85b49327d3506f9ddf57440b127131ad9ee082a9f9a4e9273feafad2bedfb"
+    },
+    "android/app/src/androidTest/java/com/jovi/photoai/p25t/P25TFontScaleScreenshotAndroidTest.kt": {
+      "git_blob": "dc253a02c7d643929074b243f94e05c92b467202",
+      "bytes": 2945,
+      "sha256": "760b2c118c9b62c5457730c17e5917373e404a7866cb89628613073c4d7b078b"
     }
   }
 }

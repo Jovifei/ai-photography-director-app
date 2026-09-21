@@ -7,7 +7,7 @@
 仓库：`Jovifei/ai-photography-director-app`。
 继续同一远端分支：`codex/p25s-internal-handoff-validation-20260920`。
 起始审查 SHA：`61a7c1da92c51b791aac4ea094e6efa56adf474e`。
-本轮源码候选：`9ea075a95891faa68db45cd436096ea9c94a21d8`；之后有 docs-only 交接提交，以 fetch 后实际 HEAD 为准。
+本轮源码候选：`e17d7fe79a4c8e3d9178a249ccf31e61eafc4250`；之后有 docs-only 交接提交，以 fetch 后实际 HEAD 为准。
 预期 main：`1b776ba9932a7fdc96112c8cb85c7258f3f7d6af`，本轮未更新。
 
 已提交代码：
@@ -32,10 +32,10 @@
 
 ## 2. 字节与测试身份
 
-新 manifest 14 项绑定 source commit `9ea075a...`。从 Git object 读取，而不是 Windows CRLF checkout，核对 Git blob/原始 bytes/SHA-256；再确认最终 candidate 中这些源码未漂移。
+更新后 manifest 17 项绑定 source commit `e17d7fe...`。从 Git object 读取，而不是 Windows CRLF checkout，核对 Git blob/原始 bytes/SHA-256；最终 candidate 已验证 17/17。
 历史 P25/P25R/P25S 清单继续绑定各自历史提交，不能强行让它们匹配新代码或抹掉历史证据。
 
-网页真实已运行：16 个 Python fixture 单元测试、34 个实际 Kotlin preparation 断言、物化源码快照的 compileall/privacy/diff。完整 Windows/Gradle/Compose/Android 尚未执行；不要照抄历史 130/130 或此处数字为新候选 PASS。
+本地真实执行：P25 Python 43/43、P23C Python 55 PASS/1 SKIP、JVM 131/131、Debug/Test APK、lint、49 个相关 Android 方法；不照抄历史 130/130。
 
 ## 3. Python 和核心策略
 
