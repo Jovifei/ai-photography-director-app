@@ -103,7 +103,7 @@ internal fun KnowledgeBundleMappingTools(
             title = { Text("选择当前项目照片") },
             text = {
                 // Decode only visible rows, not 20 x 20 thumbnails in the parent screen.
-                LazyColumn(Modifier.fillMaxWidth().heightIn(max = 360.dp),
+                LazyColumn(Modifier.fillMaxWidth().heightIn(max = 360.dp).testTag("bundle-target-list"),
                     verticalArrangement = Arrangement.spacedBy(8.dp)) {
                     this.item { Text("请按内容手动对应；不会按编号或文件顺序自动匹配。") }
                     items(records, key = { it.photo.id }) { record ->
