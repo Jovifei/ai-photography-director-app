@@ -8,6 +8,7 @@ import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.test.performScrollTo
+import androidx.compose.ui.test.performClick
 import androidx.compose.ui.graphics.asAndroidBitmap
 import androidx.test.platform.app.InstrumentationRegistry
 import com.jovi.photoai.MainActivity
@@ -34,6 +35,7 @@ class P25TFontScaleScreenshotAndroidTest {
             Settings.System.FONT_SCALE,
         )
         val label = if (scale >= 1.5f) "200" else "100"
+        var entered = false
         rule.activity.runOnUiThread {
             rule.activity.setContent {
                 PhotoDirectorTheme {
@@ -46,7 +48,7 @@ class P25TFontScaleScreenshotAndroidTest {
                         ),
                         sourceLabel = "离线知识包",
                         onBack = {},
-                        onEnterCameraDirector = {},
+                        onEnterCameraDirector = { entered = true },
                     )
                 }
             }
@@ -64,5 +66,13 @@ class P25TFontScaleScreenshotAndroidTest {
         }
         bitmap.recycle()
         assertTrue(output.isFile)
+        rule.onNodeWithText("进入 Camera Director").performScrollTo().assertIsDisplayed()
+        val bottom = rule.onRoot().captureToImage().asAndroidBitmap()
+        File(output.parentFile, "p25t-font-$label-bottom.png").outputStream().use {
+            assertTrue(bottom.compress(android.graphics.Bitmap.CompressFormat.PNG, 100, it))
+        }
+        bottom.recycle()
+        rule.onNodeWithText("进入 Camera Director").performClick()
+        rule.runOnIdle { assertTrue(entered) }
     }
 }

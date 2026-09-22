@@ -3,8 +3,20 @@ package com.jovi.photoai.p25t
 import android.content.Context
 import android.graphics.BitmapFactory
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.collectAsState
+import android.content.ContentValues
+import android.provider.MediaStore
+import androidx.lifecycle.ViewModelStore
+import androidx.test.uiautomator.By
+import androidx.test.uiautomator.UiDevice
+import androidx.test.uiautomator.Until
+import androidx.compose.ui.test.onNodeWithText
+import androidx.compose.ui.test.captureToImage
+import androidx.compose.ui.test.onRoot
+import androidx.compose.ui.graphics.asAndroidBitmap
+import com.jovi.photoai.data.reference.PhotoKnowledgeBundleImportViewModel
+import com.jovi.photoai.data.reference.PhotoKnowledgeBundleParser
+import com.jovi.photoai.data.reference.PhotoKnowledgeBundleParseResult
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsNotEnabled
 import androidx.compose.ui.test.hasTestTag
@@ -102,6 +114,24 @@ class P25TRealPhotoMappingAndroidTest {
     fun realPrivateThumbnails_areVisibleForExplicitReverseBindingAndUnbinding() = runBlocking {
         val repository = ReferenceRepository.create(context)
         val project = repository.createProject("P25T 看图绑定合成项目")
+        val store = ViewModelStore()
+        val model = PhotoKnowledgeBundleImportViewModel(repository, context.contentResolver)
+        val bytes = InstrumentationRegistry.getInstrumentation().context.assets
+            .open("p25s/internal-handoff-20.bundle.json").use { it.readBytes() }
+        val expected = (PhotoKnowledgeBundleParser.parse(bytes) as PhotoKnowledgeBundleParseResult.Success).bundle
+        val name = "p25t-${java.util.UUID.randomUUID()}.json"
+        val document = requireNotNull(context.contentResolver.insert(MediaStore.Downloads.EXTERNAL_CONTENT_URI,
+            ContentValues().apply {
+                put(MediaStore.MediaColumns.DISPLAY_NAME, name)
+                put(MediaStore.MediaColumns.MIME_TYPE, "application/json")
+                put(MediaStore.MediaColumns.RELATIVE_PATH, "Download")
+                put(MediaStore.MediaColumns.IS_PENDING, 1)
+            }))
+        context.contentResolver.openOutputStream(document)!!.use { it.write(bytes) }
+        context.contentResolver.update(document, ContentValues().apply {
+            put(MediaStore.MediaColumns.IS_PENDING, 0)
+        }, null, null)
+        rule.runOnUiThread { store.put("real-mapping", model) }
         try {
             val records = buildList {
                 SyntheticPickerMediaFactory(context).use { media ->
@@ -120,47 +150,80 @@ class P25TRealPhotoMappingAndroidTest {
                     }
                 }
             }
-            var state by mutableStateOf(KnowledgeBundleImportUiState(bundle = bundle(20)))
             rule.setContent {
                 PhotoDirectorTheme {
+                    val state by model.state.collectAsState()
                     PhotoKnowledgeBundleImportScreen(
                         project = project,
                         records = records,
                         state = state,
-                        onDocumentSelected = {},
-                        onBind = { producer, local ->
-                            state = state.copy(
-                                bindings = if (state.bindings[producer] == local) {
-                                    state.bindings - producer
-                                } else {
-                                    state.bindings + (producer to local)
-                                },
-                            )
-                        },
-                        onApply = {},
-                        onReset = {},
+                        onDocumentSelected = model::readDocument,
+                        onBind = model::bind,
+                        onApply = { model.apply(project.id) },
+                        onReset = model::reset,
                         onBack = {},
                     )
                 }
             }
             val target20 = records[19].photo.id
             val target19 = records[18].photo.id
-            rule.onNodeWithTag("bundle-choose-producer_0").performScrollTo().performClick()
+            rule.onNodeWithText("选择 JSON 知识包").performClick()
+            val device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation())
+            var node = device.wait(Until.findObject(By.text(name)), 15000)
+            if (node == null) {
+                (device.findObject(By.text("下载")) ?: device.findObject(By.text("Downloads")))?.click()
+                node = device.wait(Until.findObject(By.text(name)), 15000)
+            }
+            requireNotNull(node) { "P25T_SYSTEM_DOCUMENT_NOT_VISIBLE" }.click()
+            rule.waitUntil(10000) { model.state.value.bundle != null }
+            val firstId = expected.references[0].referenceId
+            val secondId = expected.references[1].referenceId
+            rule.onNodeWithTag("bundle-choose-$firstId").performScrollTo().performClick()
             rule.onNodeWithTag("bundle-target-list").performScrollToNode(hasTestTag("bundle-target-$target20"))
             rule.waitUntil(5_000) {
                 rule.onAllNodesWithContentDescription("候选照片第 20 张").fetchSemanticsNodes().isNotEmpty()
             }
+            val scale = android.provider.Settings.System.getFloat(context.contentResolver, "font_scale")
+            val image = rule.onNodeWithTag("bundle-target-list").captureToImage().asAndroidBitmap()
+            java.io.File(context.getExternalFilesDir(null), "p25t-mapping-$scale.png").outputStream().use {
+                assertTrue(image.compress(android.graphics.Bitmap.CompressFormat.PNG, 100, it))
+            }
+            image.recycle()
             rule.onNodeWithTag("bundle-target-$target20").assertIsDisplayed().performClick()
-            rule.onNodeWithTag("bundle-choose-producer_1").performScrollTo().performClick()
+            rule.onNodeWithTag("bundle-choose-$secondId").performScrollTo().performClick()
             rule.onNodeWithTag("bundle-target-list").performScrollToNode(hasTestTag("bundle-target-$target20"))
             rule.onNodeWithTag("bundle-target-$target20").assertIsNotEnabled()
             rule.onNodeWithTag("bundle-target-$target19").performClick()
-            rule.onNodeWithTag("bundle-unbind-producer_0").performScrollTo().performClick()
+            rule.onNodeWithTag("bundle-unbind-$firstId").performScrollTo().performClick()
             rule.runOnIdle {
-                assertEquals(target19, state.bindings["producer_1"])
-                assertTrue("unbind must remove the first mapping", "producer_0" !in state.bindings)
+                assertEquals(target19, model.state.value.bindings[secondId])
+                assertTrue("unbind must remove the first mapping", firstId !in model.state.value.bindings)
+            }
+            expected.references.forEachIndexed { index, item ->
+                if (index != 1) {
+                    val id = records[19 - index].photo.id
+                    rule.onNodeWithTag("bundle-choose-${item.referenceId}").performScrollTo().performClick()
+                    rule.onNodeWithTag("bundle-target-list").performScrollToNode(hasTestTag("bundle-target-$id"))
+                    rule.onNodeWithTag("bundle-target-$id").performClick()
+                }
+            }
+            rule.onNodeWithText("确认全部绑定并导入").performScrollTo().performClick()
+            rule.waitUntil(10000) { model.state.value.appliedCount == 20 }
+            val ready = repository.activeRecordsForProject(project.id).first().associateBy { it.photo.id }
+            expected.references.forEachIndexed { index, item ->
+                val row = ready.getValue(records[19 - index].photo.id)
+                val p = item.photography
+                val b = row.bundle
+                assertEquals(listOf(p.scene, p.backgroundStory, p.lighting, p.composition, p.subjectIntent,
+                    p.emotion, p.poseTemplate, p.cameraPosition, p.directorPrompt),
+                    listOf(b.scene, b.backgroundStory, b.lighting, b.composition, b.subjectIntent,
+                        b.emotion, b.poseTemplate, b.cameraPosition, b.directorPrompt))
+                assertEquals(item.referenceId, row.knowledgeBundleProvenance?.producerReferenceId)
+                assertEquals(PhotoAnalysisStatus.READY, row.analysisStatus)
             }
         } finally {
+            rule.runOnUiThread { store.clear() }
+            context.contentResolver.delete(document, null, null)
             repository.deleteProject(project.id)
         }
     }
