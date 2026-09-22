@@ -7,8 +7,10 @@
 仓库：`Jovifei/ai-photography-director-app`。
 继续同一远端分支：`codex/p25s-internal-handoff-validation-20260920`。
 起始审查 SHA：`61a7c1da92c51b791aac4ea094e6efa56adf474e`。
-本轮源码候选：`e17d7fe79a4c8e3d9178a249ccf31e61eafc4250`；之后有 docs-only 交接提交，以 fetch 后实际 HEAD 为准。
-最终候选：`69db7bf9b1015d045861a7e8b142539a1614af36`。
+本轮源码候选：`4c8adfa5cffed9fbc40405a3ed0b4b1d57b55795`；之后有 docs-only 交接提交，以 fetch 后实际 HEAD 为准。
+交付候选：读取本文件所在提交及最新远端分支 HEAD；历史 69db7bf 不是最终审查对象。
+
+2026-09-22 补验：最新源码 4c8adfa5cffed9fbc40405a3ed0b4b1d57b55795，详见 reports/P25T_LOCAL_QUALIFICATION_20260922.md。原 20260921 清单恢复为 14 项历史绑定；当前新增 P25T_LOCAL_SOURCE_MANIFEST_20260922.json 为 17 项。已完成真实系统文件选择、生产 ViewModel 反向二十张映射和九字段检查、系统字体底部按钮、既有 P24 签名、Local/D2D 及拍摄导出回归。旧 49 方法批次已包含真实 JPEG 两方法，不重复计为 51 个不同方法。
 预期 main：`1b776ba9932a7fdc96112c8cb85c7258f3f7d6af`，本轮未更新。
 
 已提交代码：
@@ -33,7 +35,7 @@
 
 ## 2. 字节与测试身份
 
-更新后 manifest 17 项绑定 source commit `e17d7fe...`。从 Git object 读取，而不是 Windows CRLF checkout，核对 Git blob/原始 bytes/SHA-256；最终 candidate 已验证 17/17。
+历史 P25T_SOURCE_MANIFEST_20260921.json 的 14 项保持绑定 9ea075a；本地 P25T_LOCAL_SOURCE_MANIFEST_20260922.json 的 17 项绑定 4c8adfa。均从 Git object 核对 blob/原始 bytes/SHA-256，不使用 CRLF checkout 字节替代。
 历史 P25/P25R/P25S 清单继续绑定各自历史提交，不能强行让它们匹配新代码或抹掉历史证据。
 
 本地真实执行：P25 Python 43/43、P23C Python 55 PASS/1 SKIP、JVM 131/131、Debug/Test APK、lint、49 个相关 Android 方法；不照抄历史 130/130。

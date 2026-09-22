@@ -4,28 +4,62 @@
   "date": "2026-09-22",
   "branch": "codex/p25s-internal-handoff-validation-20260920",
   "base_sha": "61a7c1da92c51b791aac4ea094e6efa56adf474e",
-  "candidate_sha": "69db7bf9b1015d045861a7e8b142539a1614af36",
-  "source_commit": "e17d7fe79a4c8e3d9178a249ccf31e61eafc4250",
+  "source_commit": "4c8adfa5cffed9fbc40405a3ed0b4b1d57b55795",
   "main_observed": "1b776ba9932a7fdc96112c8cb85c7258f3f7d6af",
   "pipeline_main_observed": "ffc4130823c1308f089b835c766e341ec2173e82",
   "pipeline_real20_r0_observed": "50d9ffac597570ceba3bfea44ff9dc6448ba85c0",
   "steps": [
-    {"id": "T0_FIXTURE_AND_MAPPING_REMEDIATION", "sha": "d720640ecc5d170f6867e1fff5912776cd3a9630"},
-    {"id": "T1_VISIBLE_UI_IMPLEMENTATION", "sha": "6569ef623a38eae4f900315fb2deed45d5ce77df"},
-    {"id": "T1_ANDROID_TEST_AUTHORING", "sha": "9ea075a95891faa68db45cd436096ea9c94a21d8"}
+    {
+      "id": "T0_FIXTURE_AND_MAPPING_REMEDIATION",
+      "sha": "d720640ecc5d170f6867e1fff5912776cd3a9630"
+    },
+    {
+      "id": "T1_VISIBLE_UI_IMPLEMENTATION",
+      "sha": "6569ef623a38eae4f900315fb2deed45d5ce77df"
+    },
+    {
+      "id": "T1_ANDROID_TEST_AUTHORING",
+      "sha": "9ea075a95891faa68db45cd436096ea9c94a21d8"
+    }
   ],
   "fresh_evidence": {
-    "p25_python_methods": {"passed": 43, "failed": 0, "skipped": 0},
-    "p23c_python_methods": {"passed": 55, "failed": 0, "skipped": 1},
-    "jvm": {"passed": 131, "failed": 0, "errors": 0, "skipped": 0},
-    "android_related_methods": {"passed": 49, "failed": 0, "skipped": 0, "serial": "emulator-5560"},
-    "p25t_real_jpeg_methods": {"passed": 2, "failed": 0, "skipped": 0},
+    "p25_python_methods": {
+      "passed": 43,
+      "failed": 0,
+      "skipped": 0
+    },
+    "p23c_python_methods": {
+      "passed": 55,
+      "failed": 0,
+      "skipped": 1
+    },
+    "jvm": {
+      "passed": 131,
+      "failed": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "android_related_methods": {
+      "passed": 49,
+      "failed": 0,
+      "scope": "Initial batch; includes two generated JPEG methods."
+    },
+    "p25t_real_jpeg_methods": {
+      "passed": 2,
+      "failed": 0,
+      "scope": "Strengthened real OpenDocument/ViewModel/Room; repeated at both system font scales."
+    },
     "font_scale_screenshots": "PASS_100_AND_200_SYSTEM_FONT_SCALE",
     "p23d_os_process_death": "PASS",
     "privacy": "PASS",
     "diff": "PASS",
     "source_manifest": "PASS_17_OF_17",
-    "full_repo_windows_gradle": "PASS_DEBUG_TEST_JVM_LINT"
+    "full_repo_windows_gradle": "PASS_DEBUG_TEST_JVM_LINT",
+    "release_signing": "PASS_EXISTING_P24_IDENTITY_APK_CERTIFICATE_VERIFIED",
+    "backup": "PASS_LOCAL_TRANSPORT_AND_D2D",
+    "bundle_contract": 12,
+    "phase1_5_contract": 75,
+    "service": 5
   },
   "authority": {
     "main_updated": false,
@@ -35,5 +69,6 @@
     "real_photos_or_physical_devices_used": false
   },
   "next": "INDEPENDENT_REVIEW_FINAL_CANDIDATE_THEN_OWNER_RELEASE_DECISION",
-  "next_product_increment": "T2_CAPTURE_RESULT_PREVIEW_PROJECT_ASSOCIATION_EXPORT_RECOVERY"
+  "next_product_increment": "T2_CAPTURE_RESULT_PREVIEW_PROJECT_ASSOCIATION_EXPORT_RECOVERY",
+  "candidate_binding": "Delivery HEAD containing this state; resolve remote branch before review."
 }
