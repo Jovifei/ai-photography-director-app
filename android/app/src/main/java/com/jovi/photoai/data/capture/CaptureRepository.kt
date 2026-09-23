@@ -56,7 +56,14 @@ internal class CaptureRepository private constructor(
         persistenceScope.launch {
             val row = try {
                 if (saved) engine.complete(id) else { engine.failed(id); null }
-            } catch (_: Exception) { null }
+            } catch (_: Exception) {
+                // A rename may have succeeded before the ledger acknowledgement failed.
+                // Reconcile only this capture; never reset all in-flight captures here.
+                try {
+                    engine.failed(id)
+                    database.captureDao().read(id)?.record()?.takeIf { it.fileState == CaptureFileState.AVAILABLE }
+                } catch (_: Exception) { null }
+            }
             withContext(Dispatchers.Main.immediate) { onSettled(row) }
         }
     }
@@ -99,8 +106,18 @@ internal class CaptureRepository private constructor(
         internal fun decodableJpeg(file: File): Boolean {
             val options = BitmapFactory.Options().apply { inJustDecodeBounds = true }
             BitmapFactory.decodeFile(file.absolutePath, options)
-            return options.outMimeType == "image/jpeg" && options.outWidth in 1..16_384 &&
-                options.outHeight in 1..16_384 && options.outWidth.toLong() * options.outHeight <= 100_000_000L
+            if (options.outMimeType != "image/jpeg" || options.outWidth !in 1..16_384 ||
+                options.outHeight !in 1..16_384 || options.outWidth.toLong() * options.outHeight > 100_000_000L) return false
+            var sample = 1
+            while (options.outWidth / sample > 512 || options.outHeight / sample > 512) sample *= 2
+            return try {
+                val bitmap = BitmapFactory.decodeFile(file.absolutePath, BitmapFactory.Options().apply {
+                    inSampleSize = sample
+                    inPreferredConfig = android.graphics.Bitmap.Config.RGB_565
+                }) ?: return false
+                bitmap.recycle()
+                true
+            } catch (_: OutOfMemoryError) { false }
         }
     }
 }
