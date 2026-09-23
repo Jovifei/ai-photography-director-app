@@ -121,7 +121,7 @@ internal fun CameraScreen(
                 !libraryState.ready -> "正在恢复成片，请稍候"
                 libraryState.capturing -> "正在拍摄并持久保存"
                 else -> latest?.let(::captureExportMessage)
-            }, onSave = { latest?.let { library.requestExport(it.id) } }, onBack = onBack)
+            }, onSave = { latest?.let { library.openGallery(it.projectId, it.id) } }, onBack = onBack)
     } else PermissionContent(onBack = onBack, onRequest = { permissionLauncher.launch(Manifest.permission.CAMERA) })
     // Allows isolated CameraScreen tests/hosts without duplicating the App-level host.
     if (captureLibrary == null) CaptureLibraryHost(library, emptyList())

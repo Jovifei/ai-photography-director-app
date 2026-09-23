@@ -1,9 +1,7 @@
 package com.jovi.photoai.ui.capture
 
-import android.content.Context
-import android.content.ContextWrapper
 import android.graphics.Bitmap
-import androidx.activity.ComponentActivity
+import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -20,7 +18,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
@@ -33,6 +30,7 @@ import kotlinx.coroutines.CancellationException
 import java.io.File
 import java.text.DateFormat
 import java.util.Date
+import java.util.concurrent.atomic.AtomicReference
 
 /** Adds an explicit entry without changing project/reference screens or their ownership. */
 @Composable
@@ -51,19 +49,11 @@ internal fun CaptureEntryFrame(label: String, onOpen: () -> Unit, content: @Comp
 @Composable
 internal fun CaptureLibraryHost(model: CaptureLibraryViewModel, projects: List<PhotographyProject>) {
     val state by model.state.collectAsState()
-    val activity = LocalContext.current.captureActivity()
-    val ticket = state.pendingExport
-    if (ticket != null && activity != null) {
-        DisposableEffect(activity, ticket.token) {
-            val immutableToken = ticket.token
-            val launcher = activity.activityResultRegistry.register(
-                "photoai-capture-export:$immutableToken", ActivityResultContracts.CreateDocument("image/jpeg"),
-            ) { uri -> model.acceptExportResult(immutableToken, uri) }
-            model.launchExportOnce(immutableToken) {
-                launcher.launch("photo-director-${ticket.captureId.take(12)}.jpg")
-            }
-            onDispose { launcher.unregister() }
-        }
+    val activeExportToken = remember { AtomicReference<String?>(null) }
+    val exportLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.CreateDocument("image/jpeg"),
+    ) { uri ->
+        activeExportToken.get()?.let { token -> model.acceptExportResult(token, uri) }
     }
     if (state.galleryVisible) {
         Dialog(onDismissRequest = model::closeGallery, properties = DialogProperties(usePlatformDefaultWidth = false)) {
@@ -74,19 +64,18 @@ internal fun CaptureLibraryHost(model: CaptureLibraryViewModel, projects: List<P
                 onClose = model::closeGallery,
                 onSelect = model::select,
                 onUnassigned = model::showUnassigned,
-                onExport = model::requestExport,
+                onExport = { id ->
+                    model.requestExport(id) { ticket ->
+                        activeExportToken.set(ticket.token)
+                        exportLauncher.launch("photo-director-${ticket.captureId.take(12)}.jpg")
+                    }
+                },
                 onDelete = model::delete,
                 onAbandon = model::abandonExport,
                 onRetry = model::initialize,
             )
         }
     }
-}
-
-private tailrec fun Context.captureActivity(): ComponentActivity? = when (this) {
-    is ComponentActivity -> this
-    is ContextWrapper -> baseContext.captureActivity()
-    else -> null
 }
 
 @Composable

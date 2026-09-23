@@ -134,18 +134,32 @@ internal class CaptureLibraryViewModel(private val application: Application, pri
         if (mutable.value.selectedId == id) select(null)
     }
     fun projectDeleted(id: String) = operation { repository().detachProject(id) }
-    fun requestExport(id: String) = operation { repository().reserveExport(id) }
+    fun requestExport(
+        id: String,
+        onReserved: (CaptureExportTicket) -> Unit = {},
+    ) {
+        viewModelScope.launch {
+            var ticket: CaptureExportTicket? = null
+            try {
+                val repo = repository()
+                val reserved = repo.reserveExport(id)
+                ticket = reserved
+                if (!repo.armExport(reserved.token)) throw CaptureProblem("EXPORT_ARM_FAILED")
+                onReserved(reserved.copy(phase = ExportPhase.SELECTING))
+            } catch (cancelled: CancellationException) {
+                ticket?.let { runCatching { repository().abandonExport(it.token) } }
+                throw cancelled
+            } catch (_: Exception) {
+                ticket?.let { runCatching { repository().abandonExport(it.token) } }
+                mutable.update { it.copy(message = "操作未能确认完成，请检查当前状态；没有自动删除原片或重复保存。") }
+            }
+        }
+    }
     fun abandonExport(token: String) = operation { repository().abandonExport(token) }
     fun cancelSelection(token: String) = operation { repository().cancelSelection(token) }
     fun acceptExportResult(token: String, destination: Uri?) = operation {
         if (destination == null) repository().cancelSelection(token)
         else repository().export(token, destination)
-    }
-    fun launchExportOnce(token: String, launch: () -> Unit) = operation {
-        val repo = repository()
-        if (repo.armExport(token)) {
-            try { launch() } catch (_: Exception) { repo.abandonExport(token) }
-        }
     }
     suspend fun previewFile(record: CaptureRecord) = repository().previewFile(record)
 
