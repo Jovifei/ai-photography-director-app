@@ -1,10 +1,13 @@
 {
   "stage": "P25T_VISUAL_MAPPING_AND_DIRECTOR_PREPARATION",
-  "status": "P25T_ANDROID_VALIDATED_AWAITING_INDEPENDENT_REVIEW",
-  "date": "2026-09-22",
+  "status": "P25T_REVIEW_FINDINGS_REMEDIATED_AWAITING_INDEPENDENT_REVIEW",
+  "date": "2026-09-23",
   "branch": "codex/p25s-internal-handoff-validation-20260920",
   "base_sha": "61a7c1da92c51b791aac4ea094e6efa56adf474e",
   "source_commit": "4c8adfa5cffed9fbc40405a3ed0b4b1d57b55795",
+  "review_remediation_test_commit": "ea8a03687345601916080cec108e89cebaaaec62",
+  "review_remediation_guard_commit": "78fdcd4baefbe779c989f4d02ef87b35c2b5748f",
+  "review_remediation_source_manifest": "docs/handoff/P25T_REVIEW_REMEDIATION_SOURCE_MANIFEST_20260923.json",
   "main_observed": "1b776ba9932a7fdc96112c8cb85c7258f3f7d6af",
   "pipeline_main_observed": "ffc4130823c1308f089b835c766e341ec2173e82",
   "pipeline_real20_r0_observed": "50d9ffac597570ceba3bfea44ff9dc6448ba85c0",
@@ -61,6 +64,46 @@
     "phase1_5_contract": 75,
     "service": 5
   },
+  "review_remediation_evidence": {
+    "evidence_id": "p25t-review-remediation-20260923",
+    "evidence_index": "review-evidence-index-final.json",
+    "evidence_index_sha256": "9fe30172bb260cc1bb6397ff7d35f08b0772e2895d545a54f96eec1a4ef6ca3a",
+    "code_commit": "78fdcd4baefbe779c989f4d02ef87b35c2b5748f",
+    "debug_and_jvm": {
+      "assembleDebug": "PASS",
+      "assembleDebugAndroidTest": "PASS",
+      "testDebugUnitTest": {
+        "passed": 131,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "lintDebug": "PASS_0_ERRORS_24_WARNINGS",
+      "lintRelease": "PASS_0_ERRORS_24_WARNINGS"
+    },
+    "font_scale": {
+      "scale_1_0": "PASS_1_OF_1",
+      "scale_2_0": "PASS_1_OF_1",
+      "unsupported_1_5_negative_control": "PASS_REJECTED",
+      "screenshots": "PASS_100_AND_200_PERCENT",
+      "restored_scale": "1.0"
+    },
+    "release": {
+      "verifyReleaseSigning": "PASS",
+      "assembleRelease": "PASS",
+      "bundleRelease": "PASS",
+      "lintRelease": "PASS",
+      "apk_certificate": "PASS_EXISTING_P24_IDENTITY",
+      "aab_jarsigner": "PASS_EXIT_0_WITH_HOST_WARNINGS"
+    },
+    "p23d_os_process_death": "PASS",
+    "backup_local_transport_and_d2d": "PASS",
+    "unfiltered_instrumentation_observation": {
+      "tests_run": 92,
+      "failures": 5,
+      "qualification_gate": "NOT_ACCEPTED_UNFILTERED_RUN; SEE REMEDIATION REPORT"
+    }
+  },
   "authority": {
     "main_updated": false,
     "pipeline_modified_or_executed": false,
@@ -68,7 +111,7 @@
     "new_production_content_released": false,
     "real_photos_or_physical_devices_used": false
   },
-  "next": "INDEPENDENT_REVIEW_FINAL_CANDIDATE_THEN_OWNER_RELEASE_DECISION",
+  "next": "INDEPENDENT_REVIEW_REMEDIATED_FINAL_CANDIDATE_THEN_OWNER_RELEASE_DECISION",
   "next_product_increment": "T2_CAPTURE_RESULT_PREVIEW_PROJECT_ASSOCIATION_EXPORT_RECOVERY",
-  "candidate_binding": "Delivery HEAD containing this state; resolve remote branch before review."
+  "candidate_binding": "Final delivery HEAD containing this state; resolve remote branch and verify remediation source manifest before review."
 }
