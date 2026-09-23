@@ -48,6 +48,10 @@ import com.jovi.photoai.reference.toDirectorCard
 import com.jovi.photoai.reference.toGuidanceItems
 import com.jovi.photoai.ui.analysis.AnalysisDetailScreen
 import com.jovi.photoai.ui.capture.CaptureEntryScreen
+import com.jovi.photoai.ui.capture.CaptureEntryFrame
+import com.jovi.photoai.ui.capture.CaptureLibraryHost
+import com.jovi.photoai.ui.capture.CaptureLibraryViewModel
+import com.jovi.photoai.ui.capture.CaptureLibraryViewModelFactory
 import com.jovi.photoai.ui.home.HomeReferenceItem
 import com.jovi.photoai.ui.home.HomeScreen
 import com.jovi.photoai.ui.importphoto.ImportReferenceScreen
@@ -98,6 +102,9 @@ fun PhotographyDirectorApp() {
     )
     val knowledgeBundleViewModel: PhotoKnowledgeBundleImportViewModel = viewModel(
         factory = remember(application, repository) { PhotoKnowledgeBundleImportViewModelFactory(application, repository) },
+    )
+    val captureLibrary: CaptureLibraryViewModel = viewModel(
+        factory = remember(application) { CaptureLibraryViewModelFactory(application) },
     )
     val knowledgeBundleState by knowledgeBundleViewModel.state.collectAsState()
     var destinationName by rememberSaveable { mutableStateOf(AppDestination.HOME.name) }
@@ -359,6 +366,9 @@ fun PhotographyDirectorApp() {
         projectDeletionFailed = false
         scope.launch {
             if (repository.deleteProject(project.id)) {
+                // Separate output ledger: detach without deleting originals. Startup also
+                // reconciles missing projects if this cross-store notification is interrupted.
+                captureLibrary.projectDeleted(project.id)
                 libraryPreferences.clearLastActiveReferenceId()
                 activeReference = null
                 selectedProjectId = null
@@ -417,12 +427,14 @@ fun PhotographyDirectorApp() {
     if (!referenceContentVisible(startupState)) {
         ReferenceStartupRecoveryScreen()
     } else when (presentationDestination) {
-        AppDestination.HOME -> ProjectsHomeScreen(
-            projects = projectHomeItems,
-            onCreateProject = ::createProject,
-            onOpenProject = ::openProject,
-            onOpenCapture = ::openCaptureEntry,
-        )
+        AppDestination.HOME -> CaptureEntryFrame("查看全部成片", onOpen = { captureLibrary.openGallery() }) {
+            ProjectsHomeScreen(
+                projects = projectHomeItems,
+                onCreateProject = ::createProject,
+                onOpenProject = ::openProject,
+                onOpenCapture = ::openCaptureEntry,
+            )
+        }
 
         AppDestination.PROJECT_IMPORT -> selectedProject?.let { project ->
             BatchProjectImportScreen(
@@ -457,28 +469,30 @@ fun PhotographyDirectorApp() {
         }
 
         AppDestination.PROJECT_BOARD -> selectedProject?.let { project ->
-            ProjectBoardScreen(
-                project = project,
-                records = selectedProjectRecords,
-                onBack = { navigateTo(AppDestination.HOME) },
-                onAddPhotos = { navigateTo(AppDestination.PROJECT_IMPORT) },
-                onOpenPhoto = { id ->
-                    selectedProjectRecords.firstOrNull { it.photo.id == id }?.let { record ->
-                        openAnalysis(toAppReference(record), AppDestination.PROJECT_BOARD)
-                    }
-                },
-                onSelectPrimary = ::selectProjectPrimary,
-                onDeletePhoto = ::deleteReference,
-                onImportKnowledgeBundle = ::openKnowledgeBundleImport,
-                onDeleteProject = ::deleteSelectedProject,
-                projectDeletionFailed = projectDeletionFailed,
-                onOpenSummary = { navigateTo(AppDestination.PROJECT_SUMMARY) },
-                onStartShooting = ::startProjectShooting,
-                onStartAnalysis = { startProjectAnalysis(project.id) },
-                onCancelAnalysis = ::cancelProjectAnalysis,
-                analysisInProgress = analysisProjectId == project.id,
-                analysisServiceConnected = localConnection != null,
-            )
+            CaptureEntryFrame("查看本项目成片", onOpen = { captureLibrary.openGallery(project.id) }) {
+                ProjectBoardScreen(
+                    project = project,
+                    records = selectedProjectRecords,
+                    onBack = { navigateTo(AppDestination.HOME) },
+                    onAddPhotos = { navigateTo(AppDestination.PROJECT_IMPORT) },
+                    onOpenPhoto = { id ->
+                        selectedProjectRecords.firstOrNull { it.photo.id == id }?.let { record ->
+                            openAnalysis(toAppReference(record), AppDestination.PROJECT_BOARD)
+                        }
+                    },
+                    onSelectPrimary = ::selectProjectPrimary,
+                    onDeletePhoto = ::deleteReference,
+                    onImportKnowledgeBundle = ::openKnowledgeBundleImport,
+                    onDeleteProject = ::deleteSelectedProject,
+                    projectDeletionFailed = projectDeletionFailed,
+                    onOpenSummary = { navigateTo(AppDestination.PROJECT_SUMMARY) },
+                    onStartShooting = ::startProjectShooting,
+                    onStartAnalysis = { startProjectAnalysis(project.id) },
+                    onCancelAnalysis = ::cancelProjectAnalysis,
+                    analysisInProgress = analysisProjectId == project.id,
+                    analysisServiceConnected = localConnection != null,
+                )
+            }
         }
 
         AppDestination.PROJECT_SUMMARY -> selectedProject?.let { project ->
@@ -566,6 +580,9 @@ fun PhotographyDirectorApp() {
         AppDestination.CAMERA_DIRECTOR -> activeReference?.let { reference ->
             val card: DirectorCard = reference.bundle.toDirectorCard()
             CameraScreen(
+                captureLibrary = captureLibrary,
+                projectId = records.firstOrNull { it.photo.id == reference.photo.id }?.projectId,
+                referenceId = reference.photo.id,
                 guidanceItems = card.toGuidanceItems(),
                 referenceGuidance = reference.bundle.toCameraDirectorGuidance(
                     referenceTitle = reference.photo.title,
@@ -576,11 +593,15 @@ fun PhotographyDirectorApp() {
         }
 
         AppDestination.DIRECT_CAPTURE -> CameraScreen(
+            captureLibrary = captureLibrary,
+            projectId = captureProjectId,
             guidanceItems = emptyList(),
             directCaptureMode = true,
             onBack = { navigateTo(AppDestination.CAPTURE_ENTRY) },
         )
     }
+
+    CaptureLibraryHost(captureLibrary, projects)
 
     recoverySummaryToShow?.let { summary ->
         RecoverySummaryDialog(

@@ -348,7 +348,7 @@ private fun CameraBottomControls(
                 )
             } else {
                 Text(
-                    "Reference Guidance · Demo Analysis · 未启用实时 Pose",
+                    "参考内容指导 · 未启用实时 Pose",
                     color = AppColors.CameraChromeText,
                     style = MaterialTheme.typography.labelSmall,
                 )
@@ -404,7 +404,7 @@ private fun CameraBottomControls(
                 Text("保存照片")
             }
             Text(
-                text = saveStatus ?: "拍摄结果先保存在应用缓存；保存照片时由系统选择位置",
+                text = saveStatus ?: "原片先存入本机成片库；保存副本时由系统选择位置",
                 color = AppColors.CameraChromeSecondaryText,
                 style = MaterialTheme.typography.labelSmall,
                 modifier = Modifier.padding(top = AppDimensions.Space4),
@@ -413,7 +413,7 @@ private fun CameraBottomControls(
                 text = if (uiState.captureInFlight) {
                     "保存中…"
                 } else {
-                    "已拍 ${uiState.captureCount} 张 · 缓存由应用管理"
+                    "本次取景已拍 ${uiState.captureCount} 张 · 原片请查看成片库"
                 },
                 color = AppColors.CameraChromeSecondaryText,
                 style = MaterialTheme.typography.labelSmall,
