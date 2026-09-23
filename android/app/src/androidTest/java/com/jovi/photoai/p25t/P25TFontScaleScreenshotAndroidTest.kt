@@ -34,7 +34,11 @@ class P25TFontScaleScreenshotAndroidTest {
             instrumentation.targetContext.contentResolver,
             Settings.System.FONT_SCALE,
         )
-        val label = if (scale >= 1.5f) "200" else "100"
+        val expectedScale = requireNotNull(
+            InstrumentationRegistry.getArguments().getString("expectedFontScale"),
+        ) { "EXPECTED_FONT_SCALE_ARGUMENT_REQUIRED" }.toFloat()
+        org.junit.Assert.assertEquals("system font_scale", expectedScale, scale, 0.01f)
+        val label = if (expectedScale == 2f) "200" else "100"
         var entered = false
         rule.activity.runOnUiThread {
             rule.activity.setContent {
