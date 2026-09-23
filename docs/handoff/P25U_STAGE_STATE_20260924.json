@@ -1,0 +1,47 @@
+{
+  "stage": "P25U_CAPTURE_RESULTS",
+  "status": "P25U_ANDROID_VALIDATED_AWAITING_INDEPENDENT_REVIEW",
+  "date": "2026-09-24",
+  "branch": "codex/p25u-local-android-qualification-20260924",
+  "delivery_target": "codex/p25s-internal-handoff-validation-20260920",
+  "base_sha": "11342a3a441cb03826b85f46f3932a98bd98930f",
+  "remote_observed": "9df16203512f91c79150058afd02858c9a292bb3",
+  "source_commit": "525725115f595bf53b795109928d691854b04d6b",
+  "source_manifest": "docs/handoff/P25U_LOCAL_SOURCE_MANIFEST_20260924.json",
+  "main_observed": "1b776ba9932a7fdc96112c8cb85c7258f3f7d6af",
+  "evidence_id": "p25u-local-android-qualification-20260924",
+  "evidence": {
+    "p25u_host_core": "NOT_RUN_NO_KOTLINC",
+    "p25_python": "43/43_PASS",
+    "p23c_python": "55_PASS_1_SKIP_SYMLINK_PRIVILEGE",
+    "jvm": "137/137_PASS",
+    "debug_and_android_test": "PASS",
+    "lint_debug": "PASS_0_ERRORS_25_WARNINGS",
+    "lint_release": "BLOCKED_P20_BLOCKED_RELEASE_SIGNING_INPUT",
+    "p25u_repository_android": "7/7_PASS",
+    "p25u_ui_android": "3/3_PASS",
+    "p25u_camerax_android": "1/1_PASS",
+    "p25u_disk_process_recovery": "3/3_PASS",
+    "default_app_capture_recovery": "prepare_verify_cleanup_1/1_EACH_PASS",
+    "documents_ui_export": "cancel_1/1_PASS_success_1/1_PASS",
+    "source_manifest": "24/24_PASS",
+    "privacy_and_diff": "PASS"
+  },
+  "decisions": {
+    "capture_database_version": 1,
+    "reference_database_version_unchanged": 6,
+    "capture_storage": "DEVICE_LOCAL_NO_BACKUP_WITH_EXPLICIT_SAVE_COPY",
+    "automatic_capture_backup_or_d2d": false,
+    "cross_store_atomicity_claimed": false
+  },
+  "authority": {
+    "main_updated": false,
+    "human_content_approval_changed": false,
+    "pipeline_written_or_executed": false,
+    "physical_device_used": false,
+    "qwen_or_lan_used": false,
+    "public_release": false,
+    "independent_review": false
+  },
+  "next": "INDEPENDENT_REVIEW_FINAL_P25U_CANDIDATE_THEN_OWNER_LANDING_DECISION"
+}

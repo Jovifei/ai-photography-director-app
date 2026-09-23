@@ -1,0 +1,130 @@
+ {
+   "stage": "P25U_CAPTURE_RESULTS_LOCAL_ANDROID_QUALIFICATION",
+   "base_sha": "11342a3a441cb03826b85f46f3932a98bd98930f",
+   "source_commit": "525725115f595bf53b795109928d691854b04d6b",
+   "source_tree": "ec2dccb94dbbd6ffab5d0922703f861c547b756c",
+   "hash_domain": "Exact Git object bytes; no Windows checkout or Unicode normalization",
+   "file_count": 24,
+   "files": {
+     "android/app/src/androidTest/java/com/jovi/photoai/p25u/P25UCameraCaptureAndroidTest.kt": {
+       "git_blob": "7cfa8f36bb965158ce586af02005d4713fb662ec",
+       "bytes": 3484,
+       "sha256": "b65d06910ecaf0bb9ecce50ca10936fb46ca6e11f08625b4d8bbf776b65a62f6"
+     },
+     "android/app/src/androidTest/java/com/jovi/photoai/p25u/P25UCaptureExportAndroidTest.kt": {
+       "git_blob": "f73b197eff51bc284b073593e454b877d5797fb0",
+       "bytes": 5887,
+       "sha256": "f7c2e37f89efb0440a3c20d9c8f9a67cb731e78ac6aa09e52d3d1c7b2c34f0a0"
+     },
+     "android/app/src/androidTest/java/com/jovi/photoai/p25u/P25UCaptureFixture.kt": {
+       "git_blob": "c36e515bcf923370225669943a9fd11f9368da37",
+       "bytes": 2054,
+       "sha256": "07dfc5ce7954f6b2a72cef7090dcf42b3cf306b6c1b290a6488caecfd5f35ac9"
+     },
+     "android/app/src/androidTest/java/com/jovi/photoai/p25u/P25UCaptureRepositoryAndroidTest.kt": {
+       "git_blob": "7ab402c9d28c188dc258060cd50831e09e135a1f",
+       "bytes": 6257,
+       "sha256": "5af4e0094367541e482537020aaf990d86b29dfd04852e8381bca0af60a73ace"
+     },
+     "android/app/src/androidTest/java/com/jovi/photoai/p25u/P25UCaptureUiAndroidTest.kt": {
+       "git_blob": "30747a85eccbecd5e07db498fdd3fac257c314a6",
+       "bytes": 4249,
+       "sha256": "574f224d8ca899bc0f351c21b40eda394d17717755e3d3cb3e88a94282ae186f"
+     },
+     "android/app/src/androidTest/java/com/jovi/photoai/p25u/P25UDefaultAppCaptureRecoveryAndroidTest.kt": {
+       "git_blob": "6e4c7e1ba84cdba675f4be0dac1562c9d2696ee3",
+       "bytes": 3594,
+       "sha256": "51647d37eebefc001300010476ffad152ed9055797eb95735088a3a35ecfe034"
+     },
+     "android/app/src/androidTest/java/com/jovi/photoai/p25u/P25UDefaultAppCaptureVerifyAndroidTest.kt": {
+       "git_blob": "c7e0850a962b1183c375d786969a2aab8f3c38dc",
+       "bytes": 1599,
+       "sha256": "0ca652e2b32de44c426f9af04ae7647a5d124533216a07153c9ba65d77321906"
+     },
+     "android/app/src/androidTest/java/com/jovi/photoai/p25u/P25UDiskProcessRecoveryAndroidTest.kt": {
+       "git_blob": "ca168c552622099ff6709ff779579865fa098d2b",
+       "bytes": 3693,
+       "sha256": "246e962f9f6078e6a8fe07cf903d746c6c79069166fe3cc4b8f6a08c8a7675b1"
+     },
+     "android/app/src/main/java/com/jovi/photoai/camera/CameraXManager.kt": {
+       "git_blob": "69f778314beddaf1c604b4e246e4ed7924509607",
+       "bytes": 4003,
+       "sha256": "1ec823dcd69677377e460863d2e862e25d64856bfa8baf7e63054ca06539d84e"
+     },
+     "android/app/src/main/java/com/jovi/photoai/camera/CaptureExporter.kt": {
+       "git_blob": "1bda61fd24185010773c77d268c83f3351f68d8b",
+       "bytes": 1210,
+       "sha256": "1cc1f8425450afb27b6624d3ae090a92f93803f6ea5a2a4c465a31bc21b9fdf3"
+     },
+     "android/app/src/main/java/com/jovi/photoai/data/capture/CaptureDatabase.kt": {
+       "git_blob": "295faa40f61e463a0c99dcd5de3a664cdc3173c1",
+       "bytes": 3806,
+       "sha256": "4f2e9fa680148f5ea05b9c6d547557f0a8aa1fadde39aa6c755a17ec028291d4"
+     },
+     "android/app/src/main/java/com/jovi/photoai/data/capture/CaptureEngine.kt": {
+       "git_blob": "761df722516ac0fa96602fab180eca1402df778d",
+       "bytes": 10981,
+       "sha256": "59a298c4fe0f20373c9ce810f829a59f730c14e827017a01a803848554e8ba49"
+     },
+     "android/app/src/main/java/com/jovi/photoai/data/capture/CaptureFiles.kt": {
+       "git_blob": "6190a8a8f88b2f9a9faf051f199eccb59c6040b9",
+       "bytes": 4161,
+       "sha256": "042cc43e2a8ad0bda22d0047231feb12d759f94f8eb56b71a1725ca2631f0574"
+     },
+     "android/app/src/main/java/com/jovi/photoai/data/capture/CaptureModels.kt": {
+       "git_blob": "f47fb26401cabee62493a1a94d2ed4362fbc802e",
+       "bytes": 2376,
+       "sha256": "22f3e910afbb0bd8d0fa7105c3b2f0efa05ed0199482a186d9c829820f02c43b"
+     },
+     "android/app/src/main/java/com/jovi/photoai/data/capture/CaptureRepository.kt": {
+       "git_blob": "ae6f1ae39344e2479c0c5d41fe53da1cd59a9d64",
+       "bytes": 6465,
+       "sha256": "247f4d31b4fdc38dcdabfb072a8938b9a680728ee1c676b7fab5e6667ca8b074"
+     },
+     "android/app/src/main/java/com/jovi/photoai/ui/CameraScreen.kt": {
+       "git_blob": "6c906c4c4239c5f2da0bcf0ba9b0f0cc80dd34b5",
+       "bytes": 10766,
+       "sha256": "49edb8c6a45d90ed58214b0bd1d328d6a688e5cc243aa7e8e53107c27161aa78"
+     },
+     "android/app/src/main/java/com/jovi/photoai/ui/PhotographyDirectorApp.kt": {
+       "git_blob": "55f30576c5a4a6b1bfeab3be5ea05fc67b03a99e",
+       "bytes": 32789,
+       "sha256": "62103fe0b83ee731a45645a5ff355529849225dbd0236efab40655b78220f0ac"
+     },
+     "android/app/src/main/java/com/jovi/photoai/ui/camera/CameraDirectorChrome.kt": {
+       "git_blob": "08d61d47b2bab11ec5a35c3952f1b798b8c1fbfd",
+       "bytes": 27754,
+       "sha256": "5eee35b26216fecac8ce99328f4bd05c96891060301d080d63a171b1afe1cb59"
+     },
+     "android/app/src/main/java/com/jovi/photoai/ui/capture/CaptureImageDecoder.kt": {
+       "git_blob": "e8c745888e55d26dee5cec97c15c7e14fd1e42d7",
+       "bytes": 2256,
+       "sha256": "c67da743bf27b4142b16ee4e029800a9b6e8a01fee72dad058f394ba7a8898b8"
+     },
+     "android/app/src/main/java/com/jovi/photoai/ui/capture/CaptureLibraryScreen.kt": {
+       "git_blob": "5562209caaf90bdbaf3521248de926718b85bf41",
+       "bytes": 12491,
+       "sha256": "89d0efbc5d71ef249140666200ee0b54ca0685485c7646479c40af1c2a143eb2"
+     },
+     "android/app/src/main/java/com/jovi/photoai/ui/capture/CaptureLibraryViewModel.kt": {
+       "git_blob": "3433153ea9343d00e2c1e0c285f764aef5cf8678",
+       "bytes": 8340,
+       "sha256": "51395828b55d47f9cc9a3d6fbbe2276290db230b1b4cb810627f0146a934b8cc"
+     },
+     "android/app/src/test/java/com/jovi/photoai/data/capture/CaptureCoreCases.kt": {
+       "git_blob": "5a413aea7736cc0d31924fc2b66b8d51118e117e",
+       "bytes": 14236,
+       "sha256": "bb22e96652e86556d061bbe4f41987b35d43b256d7f07f71e283e488df0e7709"
+     },
+     "android/app/src/test/java/com/jovi/photoai/data/capture/CaptureCoreTest.kt": {
+       "git_blob": "606edfc7627aa0c0fa90902f37caeea1ebd78542",
+       "bytes": 580,
+       "sha256": "0fbf8906f226a31c34781d30e2641fbde5d0397d58e13479e213a499fd90f5ad"
+     },
+     "scripts/test_p25u_capture_core.py": {
+       "git_blob": "7c25e10f50689272d2e9e0e1f8ee04ed4c8ab442",
+       "bytes": 1641,
+       "sha256": "afef9e8864610aed0817491614e86f1d08faed33bc590159efbb472e7af896b0"
+     }
+   }
+ }
