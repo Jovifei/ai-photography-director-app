@@ -1,6 +1,6 @@
 {
   "stage": "P25U_CAPTURE_RESULTS",
-  "status": "P25U_ANDROID_REMEDIATED_AWAITING_FRESH_INDEPENDENT_REVIEW",
+  "status": "P25U_ANDROID_INDEPENDENT_REVIEW_PASS_AWAITING_OWNER_LANDING",
   "date": "2026-09-24",
   "branch": "codex/p25u-local-android-qualification-20260924",
   "delivery_target": "codex/p25s-internal-handoff-validation-20260920",
@@ -42,11 +42,12 @@
     "physical_device_used": false,
     "qwen_or_lan_used": false,
     "public_release": false,
-    "independent_review": false
+    "independent_review": true
   },
   "review_state": {
     "first_review": "BLOCKED_P1_P2_REMEDIATED",
-    "fresh_review": "PENDING"
+    "fresh_review": "PASS_FINDINGS_NONE_OWNER_LANDING_ALLOWED",
+    "reviewed_delivery_commit": "753163efddfd8e28a6b267ac70af95cdd86c282e"
   },
-  "next": "FRESH_INDEPENDENT_REVIEW_OF_REMEDIATED_DELIVERY_THEN_OWNER_LANDING_DECISION"
+  "next": "OWNER_LANDING_DECISION_NO_AUTO_MERGE"
 }

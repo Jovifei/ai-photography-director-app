@@ -1,6 +1,6 @@
 # P25U 本地 Android 成片资格验证｜2026-09-24
 
-状态：P25U_ANDROID_REMEDIATED_AWAITING_FRESH_INDEPENDENT_REVIEW。
+状态：P25U_ANDROID_INDEPENDENT_REVIEW_PASS_AWAITING_OWNER_LANDING。
 
 ## 精确绑定
 
@@ -41,6 +41,8 @@
 - 旧实现红测：`P25UCaptureExport-recreation-old-behavior-red.log`, `7514821b2b6d0d5640b5c427cc276c4c7560f087bc29806f8fbba73ad1424070`
 - 修复后导出 3/3：`P25UCaptureExport-final-remediation.log`, `42e2f1afbcd02b980f137baf1f02bf2cd3aacdd44bf92ca1c56988cbe1f93839`
 
+最终独立审查：delivery `753163efddfd8e28a6b267ac70af95cdd86c282e` 为 PASS，FINDINGS=NONE，OWNER_LANDING=ALLOWED。该结论允许进入 Owner landing 决策，不代表 PR 自动合并。
+
 ## 验证结果
 
 | Gate | 结果 |
@@ -64,6 +66,6 @@ Android 目标始终是 emulator-5554、SDK 35、ro.kernel.qemu=1；物理设备
 
 ## 未完成边界
 
-- 首次独立 Reviewer 为 BLOCKED，发现的 P1/P2 已整改；等待 Reviewer 对新交付 SHA 复核。
+- 首次独立 Reviewer 的 P1/P2 与证据 hash 问题均已整改；最终独立审查通过，等待 Owner 决定是否 landing。
 - 未执行真实照片、Qwen、LAN、Pipeline、知识包签名、实体设备、Cloud、iOS、公开发布或 main 合入。
 - P25R 真人内容/权利/隐私审核仍是独立的 0/20 Gate。

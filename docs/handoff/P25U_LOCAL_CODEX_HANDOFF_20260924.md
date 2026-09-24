@@ -3,12 +3,13 @@
 ## 接力目标
 
 唯一 Gate：P25U_LOCAL_ANDROID_CAPTURE_QUALIFICATION_AND_REMEDIATION。
-本地候选已完成 Android 资格验证和首次审查整改，等待对最终交付 SHA 的新一轮独立审查。
+本地候选已完成 Android 资格验证和独立审查；Owner landing 决策待定。
 
 ## 当前候选
 
 - 分支：codex/p25u-local-android-qualification-20260924
 - 源码提交：d26f3cf81c57936da7d144dd17c5258f2d70d66a
+- 独立审查通过的 delivery HEAD：753163efddfd8e28a6b267ac70af95cdd86c282e
 - 交付目标：codex/p25s-internal-handoff-validation-20260920
 - 源码提交父项/当前目标分支：832a87af933157741bb01ce77a5c54ef8940369c
 - main：1b776ba9932a7fdc96112c8cb85c7258f3f7d6af，未修改
@@ -28,15 +29,12 @@
 
 - P25U host core 因没有现有 kotlinc 为 NOT_RUN；未安装工具链。
 - Release signing 为 P20_BLOCKED_RELEASE_SIGNING_INPUT；未生成新密钥。
-- 首次独立 Reviewer 为 BLOCKED；P1/P2 已整改，fresh review 尚待完成。
+- 首次独立 Reviewer 的 P1/P2 与证据 hash 问题已整改；最终 Reviewer 对 `753163ef` 返回 PASS、FINDINGS=NONE、OWNER_LANDING=ALLOWED。
 - main landing、真实照片/Qwen/LAN/Pipeline、实体设备和发布仍不在本地 Android Gate 范围内。
 - 物理设备不得作为测试目标。
 
 ## 下一步
 
-1. 运行 pre-push privacy audit，并确认原目标分支仍是源码提交父项的后继。
-2. non-force 推送交付分支并更新 Draft PR #6。
-3. 对最终 delivery HEAD 发起 fresh read-only independent review，复核 P1/P2 修复、24 项 manifest、capture ID 绑定和外部 PID 证据摘要。
-4. Reviewer PASS 后，另行等待 Owner 的 main landing 决策；不自动合 main。
+Owner 可依据 Reviewer PASS 决定是否 landing 到 main；本任务没有执行合并。
 
 外部逻辑证据 ID：p25u-local-android-qualification-20260924。
