@@ -1,11 +1,14 @@
 package com.jovi.photoai.p25u
 
 import android.Manifest
-import androidx.activity.compose.setContent
+import android.app.Activity
+import android.app.Application
+import android.os.Bundle
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsEnabled
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onAllNodesWithContentDescription
+import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
@@ -18,16 +21,16 @@ import androidx.test.uiautomator.UiDevice
 import androidx.test.uiautomator.Until
 import com.jovi.photoai.MainActivity
 import com.jovi.photoai.data.capture.CaptureFileState
-import com.jovi.photoai.ui.CameraScreen
-import com.jovi.photoai.ui.capture.CaptureLibraryHost
 import com.jovi.photoai.ui.capture.CaptureLibraryViewModel
 import com.jovi.photoai.ui.capture.CaptureLibraryViewModelFactory
-import com.jovi.photoai.ui.design.PhotoDirectorTheme
+import org.junit.Assert.assertNotSame
 import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
+import java.util.concurrent.CountDownLatch
+import java.util.concurrent.TimeUnit
 
 @RunWith(AndroidJUnit4::class)
 class P25UCaptureExportAndroidTest {
@@ -72,26 +75,54 @@ class P25UCaptureExportAndroidTest {
         }
     }
 
-    private fun openCapturedGallery(): String {
-        lateinit var library: CaptureLibraryViewModel
-        compose.runOnUiThread {
-            library = ViewModelProvider(
-                compose.activity,
-                CaptureLibraryViewModelFactory(compose.activity.application),
-            )[CaptureLibraryViewModel::class.java]
-            activeLibrary = library
-            library.closeGallery()
-            compose.activity.setContent {
-                PhotoDirectorTheme {
-                    CameraScreen(
-                        guidanceItems = emptyList(),
-                        directCaptureMode = true,
-                        captureLibrary = library,
-                    )
-                    CaptureLibraryHost(library, emptyList())
-                }
+    @Test
+    fun realCapture_activityRecreationKeepsSaveResultAndRetryEnabled() {
+        val id = openCapturedGallery()
+        val original = compose.activity
+        val recreated = CountDownLatch(1)
+        val callbacks = object : Application.ActivityLifecycleCallbacks {
+            override fun onActivityCreated(activity: Activity, state: Bundle?) {
+                if (activity is MainActivity && activity !== original) recreated.countDown()
             }
+            override fun onActivityStarted(activity: Activity) = Unit
+            override fun onActivityResumed(activity: Activity) = Unit
+            override fun onActivityPaused(activity: Activity) = Unit
+            override fun onActivityStopped(activity: Activity) = Unit
+            override fun onActivitySaveInstanceState(activity: Activity, state: Bundle) = Unit
+            override fun onActivityDestroyed(activity: Activity) = Unit
         }
+        val app = compose.activity.application
+        app.registerActivityLifecycleCallbacks(callbacks)
+        try {
+            compose.onNodeWithText("保存副本").performClick()
+            assertTrue(device().wait(Until.hasObject(By.pkg("com.google.android.documentsui")), TIMEOUT))
+            compose.runOnUiThread { original.recreate() }
+            assertTrue("MainActivity was not recreated behind DocumentsUI",
+                recreated.await(TIMEOUT, TimeUnit.MILLISECONDS))
+            device().pressBack()
+            compose.activityRule.scenario.onActivity { assertNotSame(original, it) }
+            compose.waitUntil(TIMEOUT) {
+                runCatching {
+                    compose.onNodeWithText("已取消另存为，应用内原片保留").assertIsDisplayed()
+                    true
+                }.getOrDefault(false)
+            }
+            compose.onNodeWithText("保存副本").assertIsEnabled()
+            assertTrue(activeLibrary.state.value.records.any {
+                it.id == id && it.fileState == CaptureFileState.AVAILABLE
+            })
+        } finally {
+            app.unregisterActivityLifecycleCallbacks(callbacks)
+            delete(id)
+        }
+    }
+
+    private fun openCapturedGallery(): String {
+        val library = ViewModelProvider(
+            compose.activity,
+            CaptureLibraryViewModelFactory(compose.activity.application),
+        )[CaptureLibraryViewModel::class.java]
+        activeLibrary = library
         compose.waitUntil(TIMEOUT) { library.state.value.ready }
         compose.waitUntil(TIMEOUT) { library.state.value.records.isNotEmpty() }
         library.state.value.pendingExport?.let { pending ->
@@ -99,6 +130,12 @@ class P25UCaptureExportAndroidTest {
         }
         compose.waitUntil(TIMEOUT) { library.state.value.pendingExport == null }
         val before = library.state.value.records.map { it.id }.toSet()
+        compose.waitUntil(TIMEOUT) {
+            compose.onAllNodesWithText("拍摄", useUnmergedTree = true)
+                .fetchSemanticsNodes().isNotEmpty()
+        }
+        compose.onNodeWithText("拍摄", useUnmergedTree = true).performClick()
+        compose.onNodeWithContentDescription("无指导直接拍摄", useUnmergedTree = true).performClick()
         compose.waitUntil(TIMEOUT) {
             compose.onAllNodesWithContentDescription("拍摄", useUnmergedTree = true)
                 .fetchSemanticsNodes().isNotEmpty()

@@ -30,7 +30,6 @@ import kotlinx.coroutines.CancellationException
 import java.io.File
 import java.text.DateFormat
 import java.util.Date
-import java.util.concurrent.atomic.AtomicReference
 
 /** Adds an explicit entry without changing project/reference screens or their ownership. */
 @Composable
@@ -49,11 +48,13 @@ internal fun CaptureEntryFrame(label: String, onOpen: () -> Unit, content: @Comp
 @Composable
 internal fun CaptureLibraryHost(model: CaptureLibraryViewModel, projects: List<PhotographyProject>) {
     val state by model.state.collectAsState()
-    val activeExportToken = remember { AtomicReference<String?>(null) }
+    var activeExportToken by rememberSaveable { mutableStateOf<String?>(null) }
     val exportLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.CreateDocument("image/jpeg"),
     ) { uri ->
-        activeExportToken.get()?.let { token -> model.acceptExportResult(token, uri) }
+        val token = activeExportToken
+        activeExportToken = null
+        token?.let { model.acceptExportResult(it, uri) }
     }
     if (state.galleryVisible) {
         Dialog(onDismissRequest = model::closeGallery, properties = DialogProperties(usePlatformDefaultWidth = false)) {
@@ -66,7 +67,7 @@ internal fun CaptureLibraryHost(model: CaptureLibraryViewModel, projects: List<P
                 onUnassigned = model::showUnassigned,
                 onExport = { id ->
                     model.requestExport(id) { ticket ->
-                        activeExportToken.set(ticket.token)
+                        activeExportToken = ticket.token
                         exportLauncher.launch("photo-director-${ticket.captureId.take(12)}.jpg")
                     }
                 },
