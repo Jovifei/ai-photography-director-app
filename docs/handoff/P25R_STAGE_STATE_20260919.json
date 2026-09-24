@@ -1,0 +1,39 @@
+{
+  "stage": "P25R_HUMAN_REVIEW_GATE",
+  "status": "P25R_LOCAL_VALIDATED_AWAITING_HUMAN_REVIEW",
+  "date": "2026-09-19",
+  "main_sha": "1b776ba9932a7fdc96112c8cb85c7258f3f7d6af",
+  "p25_draft_sha": "e06fd01d1282689601b17d1dfecb7cab1cc88773",
+  "branch": "codex/p25r-local-validation-20260920",
+  "source_commit": "342e25acb12da98b4ea2f58261ec561e2b193bb0",
+  "evidence": {
+    "remote_actual_corpus_structure": "PASS_20_ENTRIES_NO_FORBIDDEN_TRANSPORT_OR_UNICODE_TEXT",
+    "cloud_logic_unittest": "PASS_21_SYNTHETIC_FIXTURE_METHODS",
+    "local_p25_unittest": "PASS_24_OF_24_WITH_REVIEW_PACKET_GENERATOR",
+    "local_p23c_unittest": "PASS_55_SKIP_1_SYMLINK_PRIVILEGE_OF_56",
+    "compileall": "PASS",
+    "privacy_audit": "PASS",
+    "diff_check": "PASS",
+    "windows_negative_paths": "PASS_BLOCKED_16_OF_16",
+    "windows_safe_io": "PASS_BLOCKED_6_SKIP_1_SYMLINK_PRIVILEGE",
+    "pending_template": "PASS_WRITTEN_AND_VALIDATE_BLOCKED_EXIT_2",
+    "independent_ai_safety_pre_review": "PASS_PRELIMINARY_20_OF_20_NOT_HUMAN_APPROVAL",
+    "owner_review_guide": "PASS_READY_FOR_FINAL_HUMAN_REVIEW",
+    "human_review_packet": "PASS_20_PENDING_0_APPROVED_EXTERNAL_ONLY",
+    "human_content_review": "NOT_RUN",
+    "human_rights_review": "NOT_RUN",
+    "human_privacy_review": "NOT_RUN",
+    "pipeline_release": "NOT_RUN",
+    "app_import_authorized": false
+  },
+  "authority": {
+    "content_approved": false,
+    "rights_approved": false,
+    "privacy_approved": false,
+    "pipeline_provenance_claimed": false,
+    "app_import_authorized": false,
+    "public_distribution_authorized": false,
+    "release_authorized": false
+  },
+  "next_action": "OWNER_HUMAN_REVIEW_20_OF_20_USING_DOCS_P25R_OWNER_FINAL_REVIEW_GUIDE_THEN_VALIDATE_REVIEW"
+}

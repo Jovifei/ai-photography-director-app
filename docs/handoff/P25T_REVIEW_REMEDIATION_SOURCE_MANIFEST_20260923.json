@@ -1,0 +1,13 @@
+{
+  "stage": "P25T_REVIEW_FINDINGS_REMEDIATION",
+  "source_commit": "78fdcd4baefbe779c989f4d02ef87b35c2b5748f",
+  "hash_domain": "Exact Git blob bytes from source_commit; no Windows checkout or Unicode normalization",
+  "verification_scope": "The Android instrumentation change made after the 9fad15e review; verify the Git blob, byte count, and SHA-256 from source_commit and confirm the same blob in the final delivery candidate.",
+  "files": {
+    "android/app/src/androidTest/java/com/jovi/photoai/p25t/P25TFontScaleScreenshotAndroidTest.kt": {
+      "git_blob": "1d0a8740f161fbb7684d4089ff04f2de6a5ac361",
+      "bytes": 3955,
+      "sha256": "4aae97912441ac5b2c6ec201343c00a8a6fa1806d8088bd0018f77909e3b0540"
+    }
+  }
+}

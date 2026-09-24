@@ -1,36 +1,18 @@
 package com.jovi.photoai.ui
 
 import android.Manifest
+import android.app.Application
 import android.content.pm.PackageManager
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.camera.view.PreviewView
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.mapSaver
 import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -40,27 +22,21 @@ import androidx.core.content.ContextCompat
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.jovi.photoai.camera.CameraXManager
-import com.jovi.photoai.camera.CaptureExporter
+import com.jovi.photoai.data.capture.CaptureFileState
+import com.jovi.photoai.data.capture.captureExportMessage
 import com.jovi.photoai.domain.model.GuidanceItem
 import com.jovi.photoai.reference.CameraDirectorGuidance
-import com.jovi.photoai.ui.camera.CameraDirectorChrome
-import com.jovi.photoai.ui.camera.CameraPermission
-import com.jovi.photoai.ui.camera.CameraUiEvent
-import com.jovi.photoai.ui.camera.CameraUiSnapshot
-import com.jovi.photoai.ui.camera.CameraUiState
-import com.jovi.photoai.ui.camera.CaptureSaveOutcome
-import com.jovi.photoai.ui.camera.cameraGuidanceFor
-import com.jovi.photoai.ui.camera.captureSaveStatus
-import com.jovi.photoai.ui.camera.reduceCameraUiState
-import com.jovi.photoai.ui.camera.restoreCameraUiState
-import com.jovi.photoai.ui.camera.toSnapshot
+import com.jovi.photoai.ui.camera.*
+import com.jovi.photoai.ui.capture.CaptureLibraryHost
+import com.jovi.photoai.ui.capture.CaptureLibraryViewModel
+import com.jovi.photoai.ui.capture.CaptureLibraryViewModelFactory
 import com.jovi.photoai.ui.design.AppColors
 import com.jovi.photoai.ui.design.AppDimensions
-import java.io.File
 
 private val CameraUiStateSaver = mapSaver(
-    save = { state ->
+    save = { state: CameraUiState ->
         val snapshot = state.toSnapshot()
         mapOf(
             "version" to snapshot.version,
@@ -92,100 +68,63 @@ private val CameraUiStateSaver = mapSaver(
     },
 )
 
-/** UI0 product shell around the frozen AH0 CameraX baseline. */
+/** CameraX preview + durable output capture. No live image/Pose analysis is added. */
 @Composable
-fun CameraScreen(
+internal fun CameraScreen(
     guidanceItems: List<GuidanceItem>,
     referenceGuidance: CameraDirectorGuidance? = null,
     directCaptureMode: Boolean = false,
     onBack: () -> Unit = {},
+    projectId: String? = null,
+    referenceId: String? = null,
+    captureLibrary: CaptureLibraryViewModel? = null,
 ) {
     val context = LocalContext.current
+    val application = context.applicationContext as Application
+    val library: CaptureLibraryViewModel = captureLibrary ?: viewModel(
+        factory = remember(application) { CaptureLibraryViewModelFactory(application) },
+    )
+    val libraryState by library.state.collectAsState()
     val lifecycleOwner = LocalLifecycleOwner.current
-    var latestCapture by remember { mutableStateOf<File?>(null) }
-    var pendingSave by remember { mutableStateOf<File?>(null) }
-    var saveStatus by remember { mutableStateOf<String?>(null) }
-    val saveLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.CreateDocument("image/jpeg"),
-    ) { destination ->
-        val source = pendingSave
-        pendingSave = null
-        saveStatus = when {
-            destination == null -> captureSaveStatus(CaptureSaveOutcome.CANCELLED)
-            source != null && CaptureExporter.copyTo(context.contentResolver, source, destination) ->
-                captureSaveStatus(CaptureSaveOutcome.SUCCESS)
-            else -> captureSaveStatus(CaptureSaveOutcome.FAILED)
-        }
-    }
     var uiState by rememberSaveable(stateSaver = CameraUiStateSaver) { mutableStateOf(CameraUiState()) }
-    val dispatch: (CameraUiEvent) -> Unit = { event ->
-        uiState = reduceCameraUiState(uiState, event)
-    }
+    val dispatch: (CameraUiEvent) -> Unit = { event -> uiState = reduceCameraUiState(uiState, event) }
     var hasCameraPermission by remember {
-        mutableStateOf(
-            ContextCompat.checkSelfPermission(context, Manifest.permission.CAMERA) ==
-                PackageManager.PERMISSION_GRANTED,
-        )
+        mutableStateOf(ContextCompat.checkSelfPermission(context, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED)
     }
-
-    val permissionLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.RequestPermission(),
-    ) { granted -> hasCameraPermission = granted }
-
-    LaunchedEffect(Unit) {
-        if (!hasCameraPermission) permissionLauncher.launch(Manifest.permission.CAMERA)
+    val permissionLauncher = rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) {
+        hasCameraPermission = it
     }
+    LaunchedEffect(Unit) { if (!hasCameraPermission) permissionLauncher.launch(Manifest.permission.CAMERA) }
     LaunchedEffect(hasCameraPermission) {
-        dispatch(
-            CameraUiEvent.PermissionObserved(
-                if (hasCameraPermission) CameraPermission.GRANTED else CameraPermission.DENIED,
-            ),
-        )
+        dispatch(CameraUiEvent.PermissionObserved(if (hasCameraPermission) CameraPermission.GRANTED else CameraPermission.DENIED))
     }
-    LaunchedEffect(guidanceItems) {
-        dispatch(CameraUiEvent.GuidanceUpdated(cameraGuidanceFor(guidanceItems)))
-    }
-
+    LaunchedEffect(guidanceItems) { dispatch(CameraUiEvent.GuidanceUpdated(cameraGuidanceFor(guidanceItems))) }
     DisposableEffect(lifecycleOwner) {
         val observer = LifecycleEventObserver { _, event ->
             if (event == Lifecycle.Event.ON_RESUME) {
-                hasCameraPermission = ContextCompat.checkSelfPermission(
-                    context,
-                    Manifest.permission.CAMERA,
-                ) == PackageManager.PERMISSION_GRANTED
+                hasCameraPermission = ContextCompat.checkSelfPermission(context, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED
             }
         }
         lifecycleOwner.lifecycle.addObserver(observer)
         onDispose { lifecycleOwner.lifecycle.removeObserver(observer) }
     }
-
-    if (hasCameraPermission) {
-        CameraContent(
-            uiState = uiState,
-            dispatch = dispatch,
-            referenceGuidance = referenceGuidance,
-            directCaptureMode = directCaptureMode,
-            latestCapture = latestCapture,
-            saveStatus = saveStatus,
-            onSave = {
-                latestCapture?.takeIf(File::isFile)?.let { source ->
-                    pendingSave = source
-                    saveStatus = null
-                    saveLauncher.launch(CaptureExporter.defaultFileName(uiState.captureCount))
-                }
-            },
-            onCaptureSaved = { file ->
-                latestCapture = file
-                saveStatus = null
-            },
-            onBack = onBack,
-        )
-    } else {
-        PermissionContent(
-            onBack = onBack,
-            onRequest = { permissionLauncher.launch(Manifest.permission.CAMERA) },
-        )
-    }
+    // Dispose the viewfinder while reviewing; a new CameraXManager is created on return.
+    if (libraryState.galleryVisible) {
+        Box(Modifier.fillMaxSize().background(AppColors.AppBackground))
+    } else if (hasCameraPermission) {
+        val latest = libraryState.records.firstOrNull {
+            it.projectId == projectId && it.fileState == CaptureFileState.AVAILABLE
+        }
+        CameraContent(uiState, dispatch, referenceGuidance, directCaptureMode, library,
+            projectId, referenceId, saveEnabled = latest != null && libraryState.pendingExport == null,
+            saveStatus = libraryState.message ?: when {
+                !libraryState.ready -> "正在恢复成片，请稍候"
+                libraryState.capturing -> "正在拍摄并持久保存"
+                else -> latest?.let(::captureExportMessage)
+            }, onSave = { latest?.let { library.openGallery(it.projectId, it.id) } }, onBack = onBack)
+    } else PermissionContent(onBack = onBack, onRequest = { permissionLauncher.launch(Manifest.permission.CAMERA) })
+    // Allows isolated CameraScreen tests/hosts without duplicating the App-level host.
+    if (captureLibrary == null) CaptureLibraryHost(library, emptyList())
 }
 
 @Composable
@@ -194,43 +133,33 @@ private fun CameraContent(
     dispatch: (CameraUiEvent) -> Unit,
     referenceGuidance: CameraDirectorGuidance?,
     directCaptureMode: Boolean,
-    latestCapture: File?,
+    library: CaptureLibraryViewModel,
+    projectId: String?,
+    referenceId: String?,
+    saveEnabled: Boolean,
     saveStatus: String?,
     onSave: () -> Unit,
-    onCaptureSaved: (File) -> Unit,
     onBack: () -> Unit,
 ) {
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
-    val manager = remember { CameraXManager(context.applicationContext) }
+    val manager = remember(lifecycleOwner) { CameraXManager(context.applicationContext) }
     val previewView = remember { PreviewView(context) }
-
-    DisposableEffect(lifecycleOwner) {
-        // CameraContent is only composed after the platform permission is granted, but the
-        // parent PermissionObserved effect can race this first frame. Seed the pure reducer
-        // with the already-verified permission before requesting CameraX startup so a valid
-        // CameraReady callback cannot be discarded as stale.
+    DisposableEffect(lifecycleOwner, manager) {
         dispatch(CameraUiEvent.PermissionObserved(CameraPermission.GRANTED))
         dispatch(CameraUiEvent.CameraStartRequested)
         manager.initialize(
             onReady = {
-                manager.bindToLifecycle(lifecycleOwner, previewView)
-                manager.setAnalyzer { imageProxy ->
-                    // Preserve AH0 KEEP_ONLY_LATEST behavior: every frame is always closed.
-                    imageProxy.close()
-                }
-                dispatch(CameraUiEvent.CameraReady)
+                if (manager.bindToLifecycle(lifecycleOwner, previewView)) {
+                    manager.setAnalyzer { it.close() }
+                    dispatch(CameraUiEvent.CameraReady)
+                } else dispatch(CameraUiEvent.CameraFailed)
             },
             onError = { dispatch(CameraUiEvent.CameraFailed) },
         )
         onDispose { manager.shutdown() }
     }
-
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(AppColors.TextPrimary),
-    ) {
+    Box(Modifier.fillMaxSize().background(AppColors.TextPrimary)) {
         AndroidView(factory = { previewView }, modifier = Modifier.fillMaxSize())
         CameraDirectorChrome(
             uiState = uiState,
@@ -238,25 +167,16 @@ private fun CameraContent(
             onBack = onBack,
             referenceGuidance = referenceGuidance,
             directCaptureMode = directCaptureMode,
-            saveEnabled = latestCapture?.isFile == true,
+            saveEnabled = saveEnabled,
             saveStatus = saveStatus,
             onSave = onSave,
             onCapture = {
                 if (uiState.canCapture) {
-                    dispatch(CameraUiEvent.CaptureStarted)
-                    val file = File(
-                        context.cacheDir,
-                        "captures/capture_${System.currentTimeMillis()}.jpg",
-                    )
-                    file.parentFile?.mkdirs()
-                    manager.takePicture(
-                        outputFile = file,
-                        onSaved = {
-                            onCaptureSaved(file)
-                            dispatch(CameraUiEvent.CaptureSucceeded)
-                        },
-                        onError = { dispatch(CameraUiEvent.CaptureFailed) },
-                    )
+                    manager.imageCapture.targetRotation = previewView.display?.rotation ?: android.view.Surface.ROTATION_0
+                    if (library.capture(projectId, referenceId, driver = manager::takePicture,
+                        onSettled = { success -> dispatch(if (success) CameraUiEvent.CaptureSucceeded else CameraUiEvent.CaptureFailed) })) {
+                        dispatch(CameraUiEvent.CaptureStarted)
+                    }
                 }
             },
         )
@@ -265,62 +185,30 @@ private fun CameraContent(
 
 @Composable
 private fun PermissionContent(onBack: () -> Unit, onRequest: () -> Unit) {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(AppColors.AppBackground)
-            .padding(AppDimensions.PagePadding),
-    ) {
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
+    Column(Modifier.fillMaxSize().background(AppColors.AppBackground).padding(AppDimensions.PagePadding)) {
+        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
             TextButton(onClick = onBack) { Text("返回") }
             Text("相机权限", style = MaterialTheme.typography.titleMedium)
             Spacer(Modifier.height(AppDimensions.MinTouchTarget))
         }
-        Column(
-            modifier = Modifier
-                .weight(1f)
-                .fillMaxWidth(),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center,
-        ) {
-            Surface(
-                shape = RoundedCornerShape(AppDimensions.RadiusLarge),
+        Column(Modifier.weight(1f).fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center) {
+            Surface(shape = RoundedCornerShape(AppDimensions.RadiusLarge),
                 color = AppColors.SurfacePrimary.copy(alpha = 0.88f),
-                border = androidx.compose.foundation.BorderStroke(1.dp, AppColors.Divider),
-            ) {
-                Column(
-                    modifier = Modifier.padding(24.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                ) {
+                border = androidx.compose.foundation.BorderStroke(1.dp, AppColors.Divider)) {
+                Column(Modifier.padding(24.dp), horizontalAlignment = Alignment.CenterHorizontally) {
                     Text("需要相机权限", style = MaterialTheme.typography.headlineSmall)
                     Spacer(Modifier.height(12.dp))
-                    Text(
-                        "相机仅用于实时预览与拍摄。照片先保存在应用缓存；点击“保存照片”时由 Android 系统选择保存位置。私有参考图分析只连接你主动配对的局域网服务。",
-                        color = AppColors.TextSecondary,
-                        style = MaterialTheme.typography.bodyMedium,
-                    )
+                    Text("相机用于预览与拍摄。原片保存在本机应用内，拍摄后可预览、归档和另存副本。卸载、清除数据或换机前请保存外部副本。参考图分析仅连接你主动配对的服务。",
+                        color = AppColors.TextSecondary, style = MaterialTheme.typography.bodyMedium)
                     Spacer(Modifier.height(24.dp))
-                    Button(
-                        onClick = onRequest,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(AppDimensions.PrimaryButtonHeight),
-                        colors = ButtonDefaults.buttonColors(containerColor = AppColors.AccentBlue),
-                    ) {
-                        Text("授予权限")
-                    }
+                    Button(onClick = onRequest, modifier = Modifier.fillMaxWidth().height(AppDimensions.PrimaryButtonHeight),
+                        colors = ButtonDefaults.buttonColors(containerColor = AppColors.AccentBlue)) { Text("授予权限") }
                 }
             }
         }
     }
 }
 
-/** Static permission state for Compose tooling. */
 @Composable
-fun CameraPermissionPreviewContent() {
-    PermissionContent(onBack = {}, onRequest = {})
-}
+fun CameraPermissionPreviewContent() { PermissionContent(onBack = {}, onRequest = {}) }

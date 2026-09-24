@@ -15,84 +15,78 @@ import java.io.File
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 
-/**
- * AH0 baseline CameraX wrapper: Preview + ImageCapture + ImageAnalysis
- * (STRATEGY_KEEP_ONLY_LATEST). No write/move/delete on source photos; only
- * ImageCapture output to app cache. Analyzer must close() each ImageProxy.
- */
+/** CameraX driver. Caller owns output reservation, finalization and persistence. */
 class CameraXManager(private val context: Context) {
-
     companion object { private const val TAG = "CameraXManager" }
-
     private var cameraProvider: ProcessCameraProvider? = null
+    private var preview: Preview? = null
+    private var closed = false
     private val analysisExecutor: ExecutorService = Executors.newSingleThreadExecutor()
-
     val imageCapture: ImageCapture = ImageCapture.Builder()
-        .setCaptureMode(ImageCapture.CAPTURE_MODE_MINIMIZE_LATENCY)
-        .build()
-
-    private val imageAnalysis: ImageAnalysis = ImageAnalysis.Builder()
-        .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
-        .build()
+        .setCaptureMode(ImageCapture.CAPTURE_MODE_MINIMIZE_LATENCY).build()
+    private val imageAnalysis = ImageAnalysis.Builder()
+        .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST).build()
 
     fun initialize(onReady: (ProcessCameraProvider) -> Unit, onError: (Throwable) -> Unit = {}) {
         val future = ProcessCameraProvider.getInstance(context)
         future.addListener({
-            try {
-                val provider = future.get()
-                cameraProvider = provider
-                onReady(provider)
-            } catch (t: Throwable) {
-                Log.e(TAG, "ProcessCameraProvider init failed", t)
-                onError(t)
+            if (!closed) {
+                try {
+                    val provider = future.get()
+                    cameraProvider = provider
+                    onReady(provider)
+                } catch (error: Exception) {
+                    Log.e(TAG, "Camera initialization failed")
+                    onError(error)
+                }
             }
         }, ContextCompat.getMainExecutor(context))
     }
 
-    fun bindToLifecycle(
-        lifecycleOwner: LifecycleOwner,
-        previewView: PreviewView,
-        lensFacing: Int = CameraSelector.LENS_FACING_BACK
-    ) {
-        val provider = cameraProvider ?: return
-        val preview = Preview.Builder().build().also { p ->
-            p.setSurfaceProvider(previewView.surfaceProvider)
-        }
+    /** Return actual binding outcome. A failed bind must never become CameraReady. */
+    fun bindToLifecycle(lifecycleOwner: LifecycleOwner, previewView: PreviewView,
+        lensFacing: Int = CameraSelector.LENS_FACING_BACK): Boolean {
+        if (closed) return false
+        val provider = cameraProvider ?: return false
+        val nextPreview = Preview.Builder().build().also { it.setSurfaceProvider(previewView.surfaceProvider) }
         val selector = CameraSelector.Builder().requireLensFacing(lensFacing).build()
-        try {
-            provider.unbindAll()
-            provider.bindToLifecycle(lifecycleOwner, selector, preview, imageCapture, imageAnalysis)
-        } catch (t: Throwable) {
-            Log.e(TAG, "bindToLifecycle failed", t)
+        return try {
+            unbind()
+            preview = nextPreview
+            provider.bindToLifecycle(lifecycleOwner, selector, nextPreview, imageCapture, imageAnalysis)
+            true
+        } catch (_: Exception) {
+            Log.e(TAG, "Camera binding failed")
+            false
         }
     }
 
     fun setAnalyzer(analyzer: ImageAnalysis.Analyzer) {
-        imageAnalysis.setAnalyzer(analysisExecutor, analyzer)
+        if (!closed) imageAnalysis.setAnalyzer(analysisExecutor, analyzer)
     }
-
     fun takePicture(outputFile: File, onSaved: (File) -> Unit, onError: (Throwable) -> Unit) {
+        if (closed) { onError(IllegalStateException("CAMERA_CLOSED")); return }
         val options = ImageCapture.OutputFileOptions.Builder(outputFile).build()
-        imageCapture.takePicture(
-            options,
-            ContextCompat.getMainExecutor(context),
+        imageCapture.takePicture(options, ContextCompat.getMainExecutor(context),
             object : ImageCapture.OnImageSavedCallback {
-                override fun onImageSaved(output: ImageCapture.OutputFileResults) {
-                    onSaved(outputFile)
-                }
+                override fun onImageSaved(output: ImageCapture.OutputFileResults) { onSaved(outputFile) }
                 override fun onError(exc: ImageCaptureException) {
-                    Log.e(TAG, "takePicture failed", exc)
+                    Log.e(TAG, "Image capture failed")
                     onError(exc)
                 }
-            }
-        )
+            })
     }
-
     fun unbind() {
-        cameraProvider?.unbindAll()
+        val provider = cameraProvider ?: return
+        val ownPreview = preview
+        if (ownPreview == null) provider.unbind(imageCapture, imageAnalysis)
+        else provider.unbind(ownPreview, imageCapture, imageAnalysis)
+        preview = null
     }
-
     fun shutdown() {
+        if (closed) return
+        closed = true
+        imageAnalysis.clearAnalyzer()
         unbind()
         analysisExecutor.shutdown()
     }

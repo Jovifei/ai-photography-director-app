@@ -30,9 +30,10 @@ internal class SyntheticPickerMediaFactory(
         width: Int = 96,
         height: Int = 64,
         orientation: Int = ExifInterface.ORIENTATION_NORMAL,
+        color: Int = Color.rgb(0x5B, 0xA4, 0xD9),
         displayName: String = "ui1-fixture-${UUID.randomUUID()}.jpg",
     ): Fixture {
-        val bytes = jpegBytes(width, height, orientation)
+        val bytes = jpegBytes(width, height, orientation, color)
         val expectedAspect = when (orientation) {
             ExifInterface.ORIENTATION_ROTATE_90,
             ExifInterface.ORIENTATION_ROTATE_270,
@@ -126,11 +127,11 @@ internal class SyntheticPickerMediaFactory(
         }
     }
 
-    private fun jpegBytes(width: Int, height: Int, orientation: Int): ByteArray {
+    private fun jpegBytes(width: Int, height: Int, orientation: Int, color: Int): ByteArray {
         val temporary = File(context.cacheDir, "ui1-fixture-${UUID.randomUUID()}.jpg")
         val bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
         try {
-            bitmap.eraseColor(Color.rgb(0x5B, 0xA4, 0xD9))
+            bitmap.eraseColor(color)
             FileOutputStream(temporary).use { output ->
                 check(bitmap.compress(Bitmap.CompressFormat.JPEG, 92, output))
                 output.fd.sync()
