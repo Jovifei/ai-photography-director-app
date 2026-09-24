@@ -39,7 +39,7 @@
 - `P25UDefaultAppCaptureVerify.final.verify.log`: `100cd6fe8bc3c0aa104945b321630da4d7c449a372351fd4b9c6c9812a749abf`
 - `P25UDefaultAppCaptureRecovery.final.cleanup.log`: `5acdcec251cc5f960d595e499d0ad25e1e110c7438eca0b07c830024d666ea5e`
 - 旧实现红测：`P25UCaptureExport-recreation-old-behavior-red.log`, `7514821b2b6d0d5640b5c427cc276c4c7560f087bc29806f8fbba73ad1424070`
-- 修复后导出 3/3：`P25UCaptureExport-final-remediation.log`, `42e2f1afcd02b980f137ba9f1f02bf2cd3aacdd44bf92ca1c56988cbe1f93839`
+- 修复后导出 3/3：`P25UCaptureExport-final-remediation.log`, `42e2f1afbcd02b980f137baf1f02bf2cd3aacdd44bf92ca1c56988cbe1f93839`
 
 ## 验证结果
 
