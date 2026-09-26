@@ -25,13 +25,16 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Slider
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -40,6 +43,7 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.disabled
 import androidx.compose.ui.semantics.semantics
@@ -51,6 +55,8 @@ import com.jovi.photoai.domain.model.OverlayMode
 import com.jovi.photoai.reference.CameraDirectorGuidance
 import com.jovi.photoai.ui.design.AppColors
 import com.jovi.photoai.ui.design.AppDimensions
+import java.util.Locale
+import kotlin.math.roundToInt
 
 /** Preview-only adapter. Runtime panel state is always [GuidePanel] in [CameraUiState]. */
 enum class DirectorGuidePanel { ENVIRONMENT, SUBJECT }
@@ -66,8 +72,20 @@ fun CameraDirectorChrome(
     saveStatus: String? = null,
     referenceGuidance: CameraDirectorGuidance? = null,
     directCaptureMode: Boolean = false,
+    referenceCardVisible: Boolean = false,
+    exposureRange: IntRange? = null,
+    exposureStepEv: Float = 0f,
+    exposureIndex: Int = 0,
+    pendingExposureIndex: Int? = null,
+    controlsEnabled: Boolean = false,
+    exposureStatus: String? = null,
+    onExposureSelected: (Int) -> Unit = {},
     modifier: Modifier = Modifier,
 ) {
+    var showExposure by remember { mutableStateOf(false) }
+    var sliderIndex by remember(exposureRange, exposureIndex, pendingExposureIndex) {
+        mutableFloatStateOf((pendingExposureIndex ?: exposureIndex).toFloat())
+    }
     val closePanelOrBack = {
         if (cameraBackClosesPanel(uiState)) {
             onEvent(CameraUiEvent.ClosePanel)
@@ -96,7 +114,7 @@ fun CameraDirectorChrome(
             directCaptureMode = directCaptureMode,
             modifier = Modifier
                 .align(Alignment.TopCenter)
-                .padding(top = 144.dp),
+                .padding(top = if (referenceCardVisible) 180.dp else 144.dp),
         )
 
         if (!directCaptureMode) {
@@ -133,6 +151,12 @@ fun CameraDirectorChrome(
             saveStatus = saveStatus,
             referenceGuidance = referenceGuidance,
             directCaptureMode = directCaptureMode,
+            exposureAvailable = exposureRange != null,
+            exposureIndex = exposureIndex,
+            exposureStepEv = exposureStepEv,
+            controlsEnabled = controlsEnabled,
+            exposureStatus = exposureStatus,
+            onShowExposure = { showExposure = true },
             modifier = Modifier.align(Alignment.BottomCenter),
         )
 
@@ -152,7 +176,34 @@ fun CameraDirectorChrome(
             )
         }
     }
+    if (showExposure && exposureRange != null) AlertDialog(
+        onDismissRequest = { showExposure = false },
+        title = { Text("曝光补偿") },
+        text = {
+            Column {
+                Text("当前：${exposureLabel(exposureIndex, exposureStepEv)}")
+                Slider(value = sliderIndex,
+                    modifier = Modifier.testTag("exposure-slider"),
+                    onValueChange = { sliderIndex = it.roundToInt().coerceIn(exposureRange).toFloat() },
+                    valueRange = exposureRange.first.toFloat()..exposureRange.last.toFloat(),
+                    steps = (exposureRange.last - exposureRange.first - 1).coerceAtLeast(0),
+                    enabled = controlsEnabled,
+                    onValueChangeFinished = { onExposureSelected(sliderIndex.roundToInt()) })
+                Text("待设置：${exposureLabel(sliderIndex.roundToInt(), exposureStepEv)}")
+                if (pendingExposureIndex != null) Text("正在确认曝光设置…")
+                exposureStatus?.let { Text(it) }
+            }
+        },
+        confirmButton = { TextButton(onClick = { showExposure = false }) { Text("完成") } },
+        dismissButton = { TextButton(onClick = {
+            sliderIndex = 0f
+            onExposureSelected(0)
+        }, enabled = controlsEnabled) { Text("重置") } },
+    )
 }
+
+private fun exposureLabel(index: Int, stepEv: Float): String =
+    if (index == 0) "0 EV" else String.format(Locale.ROOT, "%+.1f EV", index * stepEv)
 
 @Composable
 private fun CameraTopBar(
@@ -323,6 +374,12 @@ private fun CameraBottomControls(
     saveStatus: String?,
     referenceGuidance: CameraDirectorGuidance?,
     directCaptureMode: Boolean,
+    exposureAvailable: Boolean,
+    exposureIndex: Int,
+    exposureStepEv: Float,
+    controlsEnabled: Boolean,
+    exposureStatus: String?,
+    onShowExposure: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Surface(
@@ -335,6 +392,12 @@ private fun CameraBottomControls(
             modifier = Modifier.padding(horizontal = AppDimensions.Space16, vertical = AppDimensions.Space12),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
+            if (exposureAvailable) TextButton(onClick = onShowExposure, enabled = controlsEnabled) {
+                Text("曝光")
+                Text(" · ${exposureLabel(exposureIndex, exposureStepEv)}")
+            }
+            exposureStatus?.let { Text(it, color = AppColors.CameraChromeText,
+                style = MaterialTheme.typography.labelSmall) }
             if (directCaptureMode) {
                 Text(
                     "基础拍摄 · 无参考指导",

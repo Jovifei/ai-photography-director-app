@@ -31,11 +31,13 @@ internal fun PrivateReferenceImage(
     contentDescription: String,
     modifier: Modifier = Modifier,
     contentScale: ContentScale = ContentScale.Crop,
+    maxDimensionPx: Int = 720,
+    failureContent: (@Composable () -> Unit)? = null,
 ) {
     val context = LocalContext.current
-    var state by remember(imageFileName) { mutableStateOf<ReferencePreviewState>(ReferencePreviewState.Loading) }
-    LaunchedEffect(imageFileName) {
-        state = decodeSampledBitmap(File(context.filesDir, "references/$imageFileName"), maxDimensionPx = 720)
+    var state by remember(imageFileName, maxDimensionPx) { mutableStateOf<ReferencePreviewState>(ReferencePreviewState.Loading) }
+    LaunchedEffect(imageFileName, maxDimensionPx) {
+        state = decodeSampledBitmap(File(context.filesDir, "references/$imageFileName"), maxDimensionPx)
     }
     val bitmap = (state as? ReferencePreviewState.Ready)?.bitmap
     if (bitmap != null) {
@@ -50,7 +52,8 @@ internal fun PrivateReferenceImage(
             modifier = modifier.background(AppColors.AccentBlueSoft),
             contentAlignment = Alignment.Center,
         ) {
-            Text(
+            if (state is ReferencePreviewState.Failed && failureContent != null) failureContent()
+            else Text(
                 text = if (state is ReferencePreviewState.Failed) "图片不可用" else "加载参考图…",
                 modifier = Modifier.padding(AppDimensions.Space12),
                 style = MaterialTheme.typography.labelMedium,

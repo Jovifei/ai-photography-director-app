@@ -579,16 +579,22 @@ fun PhotographyDirectorApp() {
 
         AppDestination.CAMERA_DIRECTOR -> activeReference?.let { reference ->
             val card: DirectorCard = reference.bundle.toDirectorCard()
+            val cameraProjectId = records.firstOrNull { it.photo.id == reference.photo.id }?.projectId
             CameraScreen(
                 captureLibrary = captureLibrary,
-                projectId = records.firstOrNull { it.photo.id == reference.photo.id }?.projectId,
+                projectId = cameraProjectId,
                 referenceId = reference.photo.id,
+                referenceImageFileName = reference.imageFileName,
                 guidanceItems = card.toGuidanceItems(),
                 referenceGuidance = reference.bundle.toCameraDirectorGuidance(
                     referenceTitle = reference.photo.title,
                     sourceLabel = reference.photo.sourceLabel,
                 ),
                 onBack = { navigateTo(AppDestination.DIRECTOR_CARD) },
+                onReturnToProject = {
+                    if (cameraProjectId != null) selectedProjectId = cameraProjectId
+                    navigateTo(if (cameraProjectId != null) AppDestination.PROJECT_BOARD else AppDestination.HOME)
+                },
             )
         }
 
