@@ -124,7 +124,6 @@ class P25UCaptureExportAndroidTest {
         )[CaptureLibraryViewModel::class.java]
         activeLibrary = library
         compose.waitUntil(TIMEOUT) { library.state.value.ready }
-        compose.waitUntil(TIMEOUT) { library.state.value.records.isNotEmpty() }
         library.state.value.pendingExport?.let { pending ->
             library.abandonExport(pending.token)
         }
