@@ -10,7 +10,7 @@ Remote plan `c2c_f8b2` selected this contract-only, image-free, human-free dry-r
 - [x] Add synthetic manifest, schemas and JSON-only harness.
 - [x] Add deterministic synthetic fixtures and negative tests.
 - [x] Update status authority only after harness validation passes.
-- [ ] Run T6/T7 regressions, contracts/privacy/scope and bounded Android smoke.
+- [x] Run T6/T7 regressions, contracts/privacy/scope and bounded Android smoke.
 - [ ] Perform exact review, push stacked Draft PR and obtain remote evidence review.
 
 ## T7 evaluation governance readiness — 2026-09-27
