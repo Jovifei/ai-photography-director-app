@@ -68,6 +68,7 @@ def validate(root: Path) -> None:
     require(status.get("current_stage") == "T5_PROGRAM_STATUS_ROADMAP_AUTHORITY_CONSOLIDATION_VALIDATED", "current stage drift")
     require(status.get("next_authorized_stage") == "OWNER_REVIEWED_NEXT_GATE_SELECTION", "next stage drift")
     require(status.get("external_gates") == REQUIRED_EXTERNAL_GATES, "external gate state drift")
+    require(status.get("t5_qualification", {}).get("scope_guard") == "PASS_18_APPROVED_PATHS", "T5 scope count drift")
 
     current = read_text(root, "docs/CURRENT_PROGRAM_STATUS.md")
     matrix = read_text(root, "docs/NEXT_GATE_MATRIX.md")

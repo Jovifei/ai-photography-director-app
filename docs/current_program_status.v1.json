@@ -29,7 +29,7 @@
     "candidate_before_receipt_commit": "d64ad4c7e03563c57766b2673b2d734511f0a2b9",
     "scope": "documentation/status validators only",
     "program_status_tests": "PASS",
-    "scope_guard": "PASS_16_APPROVED_PATHS",
+    "scope_guard": "PASS_18_APPROVED_PATHS",
     "contract_tests": "PASS",
     "privacy_audit": "PASS",
     "jvm_smoke": "141/141_PASS",

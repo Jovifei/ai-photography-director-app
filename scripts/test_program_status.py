@@ -87,6 +87,25 @@ class ProgramStatusTests(unittest.TestCase):
         finally:
             holder["temp"].cleanup()
 
+    def test_rejects_false_main_merge_claim(self) -> None:
+        self.assert_rejects_forward_claim("README.md", "主线已合并")
+
+    def test_rejects_false_pipeline_claim(self) -> None:
+        self.assert_rejects_forward_claim("docs/CURRENT_PROGRAM_STATUS.md", "Pipeline 已集成")
+
+    def test_rejects_false_physical_device_claim(self) -> None:
+        self.assert_rejects_forward_claim("docs/NEXT_GATE_MATRIX.md", "实体设备 PASS")
+
+    def assert_rejects_forward_claim(self, relative: str, claim: str) -> None:
+        root, holder = self.make_fixture()
+        try:
+            path = root / relative
+            path.write_text(path.read_text(encoding="utf-8") + f"\n{claim}\n", encoding="utf-8")
+            with self.assertRaises(StatusError):
+                validate(root)
+        finally:
+            holder["temp"].cleanup()
+
 
 if __name__ == "__main__":
     unittest.main()
