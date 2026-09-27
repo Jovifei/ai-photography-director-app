@@ -4,7 +4,7 @@
 
 **Machine-readable record:** [`current_program_status.v1.json`](current_program_status.v1.json)
 
-**Next-stage plan:** [`tasks/plans/2026-09-27-t5-program-status-consolidation.md`](../tasks/plans/2026-09-27-t5-program-status-consolidation.md)
+**Next-stage plan:** [`tasks/plans/2026-09-27-t6-p1b-authorization-readiness.md`](../tasks/plans/2026-09-27-t6-p1b-authorization-readiness.md)
 **Gate matrix:** [`NEXT_GATE_MATRIX.md`](NEXT_GATE_MATRIX.md)
 
 ## Current authority
@@ -14,6 +14,14 @@ The current Android delivery is the T4 offline product-flow stack. Its delivery 
 T4 qualification is synthetic/API 35 emulator evidence. The final receipt records T4 7/7, T3 7/7, root 2/2, P25U camera 1/1, export 3/3, force-stop recovery prepare/verify/cleanup 1/1 each, JVM 141/141, lint 0 errors, contract and privacy checks PASS. Local exact-SHA independent review is PASS. The bound C2C connector still reads the dirty Owner `main`, so its code-diff review is explicitly `C2C_CODE_DIFF_REVIEW_NOT_POSSIBLE`; the remote evidence review must not be read as a connector-performed code review.
 
 This delivery proves an offline Android product flow: project references, all-project reference browsing, source/state labels, persistent project naming, truthful guided/direct Camera entry, Camera controls, private captures and explicit export. It does not prove real-photo quality, a physical device, Qwen/Private LAN, Pipeline, human editorial acceptance, signing, beta or public release.
+
+## T6 P1B authorization readiness
+
+T6 has prepared a metadata-only P1B authorization packet from exact T5 head `0b04abdc57a3fa332689cfe664f9bcb997160e5e`. [`p1b_readiness_manifest.v1.json`](phase1_5/p1b/p1b_readiness_manifest.v1.json) binds the reviewed P1A model, revision, expected artifact bytes/hash, corpus r3 counts and contract identities without rewriting the frozen evidence. The packet is `P1B_AUTHORIZATION_PACKET_READY — EXECUTION_NOT_AUTHORIZED`.
+
+The primary candidate remains `Qwen/Qwen3-VL-2B-Instruct` at immutable revision `89644892e4d85e24eaac8bacfd4f463576704203`; download, runtime, inference, App, Pipeline and private-media authorization flags remain false. Legal review remains `NOT_LEGAL_APPROVED`, artifact redirect verification remains unresolved, and no Owner decision is tracked. The stdlib-only validator returns `READY_FOR_OWNER_DECISION`; its execution-authority probe is required to return `BLOCKED_OWNER_AUTHORIZATION_REQUIRED`.
+
+T6 does not mean Qwen is qualified or Provider-ready. Artifact acquisition, runtime/inference, real photos, physical device, Private LAN, Pipeline, human editorial, signing, beta/public release and main merge remain separate `NOT_RUN`/`BLOCKED`/`FROZEN` gates.
 
 ## Product goal
 
@@ -27,4 +35,4 @@ The following remain useful evidence or design constraints but are not current e
 
 ## Next stage
 
-T5 has consolidated this status into one machine-checkable authority, labelled forward-facing documents, recorded the next-gate matrix and added drift validation. Its qualification changed no Android runtime code, shared contracts, models, network, Pipeline code, signing settings or Owner decisions. The next stage is selected only after Owner review of the matrix.
+T5 consolidated this status into one machine-checkable authority, and T6 added a machine-verifiable P1B readiness boundary without activating it. T6 changed no Android runtime code, shared contracts, models, network, Pipeline code, signing settings or Owner decisions. The next executable step is an Owner decision or another separately planned non-runtime Gate; no Qwen artifact or runtime action follows automatically.

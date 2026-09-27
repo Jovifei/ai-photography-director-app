@@ -1,0 +1,55 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://photoai.local/phase1_5/p1b/p1b_owner_decision.v1.schema.json",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "decision_id", "readiness_id", "decision", "recorded_at", "scope"],
+  "properties": {
+    "schema_version": {"const": "1.0.0"},
+    "decision_id": {"type": "string", "pattern": "^[a-z0-9][a-z0-9-]{0,127}$"},
+    "readiness_id": {"type": "string", "minLength": 1},
+    "decision": {"enum": ["DEFER", "REJECT_PRIMARY", "AUTHORIZE_ARTIFACT_QUARANTINE_ONLY"]},
+    "recorded_at": {"type": "string", "format": "date-time"},
+    "scope": {"$ref": "#/$defs/scope"},
+    "artifact_binding": {"$ref": "#/$defs/artifact_binding"}
+  },
+  "allOf": [
+    {
+      "if": {"properties": {"decision": {"const": "AUTHORIZE_ARTIFACT_QUARANTINE_ONLY"}}, "required": ["decision"]},
+      "then": {"required": ["artifact_binding"], "properties": {"scope": {"properties": {"artifact_quarantine_only": {"const": true}}}}}
+    },
+    {
+      "if": {"properties": {"decision": {"enum": ["DEFER", "REJECT_PRIMARY"]}}, "required": ["decision"]},
+      "then": {"properties": {"scope": {"properties": {"artifact_quarantine_only": {"const": false}}}}}
+    }
+  ],
+  "$defs": {
+    "scope": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["artifact_quarantine_only", "download_authorized", "runtime_authorized", "inference_authorized", "app_integration_authorized", "pipeline_integration_authorized", "private_media_authorized"],
+      "properties": {
+        "artifact_quarantine_only": {"type": "boolean"},
+        "download_authorized": {"const": false},
+        "runtime_authorized": {"const": false},
+        "inference_authorized": {"const": false},
+        "app_integration_authorized": {"const": false},
+        "pipeline_integration_authorized": {"const": false},
+        "private_media_authorized": {"const": false}
+      }
+    },
+    "artifact_binding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["model_id", "immutable_revision", "weight_filename", "weight_bytes", "weight_lfs_sha256", "readiness_manifest_sha256"],
+      "properties": {
+        "model_id": {"const": "Qwen/Qwen3-VL-2B-Instruct"},
+        "immutable_revision": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+        "weight_filename": {"const": "model.safetensors"},
+        "weight_bytes": {"type": "integer", "minimum": 1},
+        "weight_lfs_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+        "readiness_manifest_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+      }
+    }
+  }
+}
