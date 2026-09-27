@@ -59,6 +59,7 @@ def validate(root: Path) -> None:
     require(status["delivery_head"] == "e88d2ab1eb0c9c5cf9f891c5107d951fbbbe15cb", "delivery head drift")
     require(status["reviewed_product_source"] == "a69ede68f3e54e5ab006dbfd7a65c33040590f93", "product source drift")
     require(status["t3_base"] == "14a56f49e1220eb8139bf7280c747124118fdb21", "T3 base drift")
+    require(status.get("t5_content_candidate") == "b2565885382902d2f51ac2099436eddd69946f95", "T5 candidate drift")
     require(status.get("delivery_pr_number") == 8, "unexpected delivery PR")
     require(status.get("delivery_pr_state") == "DRAFT_UNMERGED", "delivery PR is not explicitly Draft/unmerged")
     require(status.get("qualification_state") == "T4_SYNTHETIC_API35_VALIDATED", "qualification state drift")
