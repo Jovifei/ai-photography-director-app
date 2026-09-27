@@ -10,7 +10,7 @@ Remote plan `c2c_7a6d` selected this metadata-only stage from exact T5 head `0b0
 - [x] Add P1B readiness packet and future decision schema.
 - [x] Add fail-closed validator and negative safety tests.
 - [x] Update status authority only after readiness validation passes.
-- [ ] Run T6 scope, contract, privacy, validator, and bounded Android smoke checks.
+- [x] Run T6 scope, contract, privacy, validator, and bounded Android smoke checks.
 - [ ] Perform exact-diff review, push stacked Draft PR, and obtain remote evidence review.
 
 T5 documentation qualification: program-status tests PASS, scope guard PASS for 18 approved paths, contract/privacy PASS, JVM 141/141, lint 0 errors/10 warnings, Debug assemble PASS, Android source unchanged.
