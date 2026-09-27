@@ -10,7 +10,7 @@ Remote plan `c2c_d4e1` selected this provider-neutral, metadata-only stage from 
 - [x] Add machine-readable governance and future review-packet schemas.
 - [x] Add deterministic adjudication/privacy/uncertainty/provider-neutral validators and negative tests.
 - [x] Update status authority only after validators pass.
-- [ ] Run regressions, scope/privacy/contract checks and bounded Android smoke.
+- [x] Run regressions, scope/privacy/contract checks and bounded Android smoke.
 - [ ] Perform exact-diff review, push stacked Draft PR and obtain remote evidence review.
 
 ## T6 P1B authorization readiness — 2026-09-27
