@@ -48,7 +48,7 @@ def main(argv: list[str] | None = None) -> int:
         android_environment["ANDROID_SDK_ROOT"] = str(sdk)
     checks["ANDROID_JVM_SMOKE"] = run_command(
         root / "android",
-        ["gradlew.bat", ":app:testDebugUnitTest", "--no-daemon", "--max-workers=1"],
+        [str(root / "android" / "gradlew.bat"), ":app:testDebugUnitTest", "--no-daemon", "--max-workers=1"],
         android_environment,
     )
     lines = [
