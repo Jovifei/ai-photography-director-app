@@ -1,8 +1,10 @@
 # Current program status
 
-**As of:** 2026-09-27  
-**Machine-readable record:** [`current_program_status.v1.json`](current_program_status.v1.json)  
-**Next-stage plan:** [`tasks/plans/2026-09-27-t5-program-status-consolidation.md`](../tasks/plans/2026-09-27-t5-program-status-consolidation.md)  
+**As of:** 2026-09-27
+
+**Machine-readable record:** [`current_program_status.v1.json`](current_program_status.v1.json)
+
+**Next-stage plan:** [`tasks/plans/2026-09-27-t5-program-status-consolidation.md`](../tasks/plans/2026-09-27-t5-program-status-consolidation.md)
 **Gate matrix:** [`NEXT_GATE_MATRIX.md`](NEXT_GATE_MATRIX.md)
 
 ## Current authority
