@@ -1,4 +1,10 @@
-# P25U review remediation
+# Current authority — 2026-09-27
+
+Read [`docs/CURRENT_PROGRAM_STATUS.md`](../docs/CURRENT_PROGRAM_STATUS.md) and [`docs/NEXT_GATE_MATRIX.md`](../docs/NEXT_GATE_MATRIX.md) before using any older task entry. The current delivery stack is T4 `e88d2ab1eb0c9c5cf9f891c5107d951fbbbe15cb` with reviewed product source `a69ede68f3e54e5ab006dbfd7a65c33040590f93`, PR #8 Draft/unmerged. T5 is documentation/status authority consolidation; it does not authorize runtime, network, real-photo, device, Pipeline, signing or release work. `C2C_CODE_DIFF_REVIEW_NOT_POSSIBLE` remains an explicit remote-review limitation.
+
+T5 documentation qualification: program-status tests PASS, scope guard PASS for 18 approved paths, contract/privacy PASS, JVM 141/141, lint 0 errors/10 warnings, Debug assemble PASS, Android source unchanged.
+
+## P25U review remediation
 
 ## T4 offline product-flow integration — 2026-09-27
 
@@ -13,7 +19,7 @@
 
 ### T4 Review
 
-- First exact candidate `fef13a1`: Debug/AndroidTest builds, JVM 141/141, lint 0 errors, T4 5/5, T3 + root + P25U capture/export 13/13, force-stop prepare/verify/cleanup, contract tests, privacy audit and diff check passed on the dedicated API 35 emulator. Independent exact-SHA review identified missing live-state coverage, so this candidate is not T4 PASS. Two isolated root-flow state-transition tests now pass (T4 focused 7 total), and the replacement exact candidate/full rerun are pending.
+- First exact candidate `fef13a1`: Debug/AndroidTest builds, JVM 141/141, lint 0 errors, T4 5/5, T3 + root + P25U capture/export 13/13, force-stop prepare/verify/cleanup, contract tests, privacy audit and diff check passed on the dedicated API 35 emulator. Independent exact-SHA review identified missing live-state coverage; this candidate is superseded by the replacement exact candidate below.
 - Later Gradle JVM/lint attempts hit host virtual-memory pressure before completing; single-worker, bounded-JVM per-command reruns passed JVM 141/141, AndroidTest compilation and lintDebug. Generated `android/.kotlin/` is ignored rather than deleted; no system setting or other task process was changed. These interrupted attempts remain diagnostic failures, not PASS.
 - Replacement exact source `a69ede68f3e54e5ab006dbfd7a65c33040590f93` qualified with T4 7/7, T3 7/7, root 2/2, P25U camera 1/1/export 3/3/recovery 3/3, JVM 141/141, build/lint/contract/privacy/diff PASS. Independent exact-SHA read-only review returned PASS with zero actionable findings; evidence and APK hashes matched. Draft PR #8 is open on the T3 branch, unmerged.
 - Real photos, physical device, Qwen/LAN, Pipeline, signing and release are outside T4.

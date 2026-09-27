@@ -1,0 +1,50 @@
+{
+  "status_version": "1.0.0",
+  "as_of_date": "2026-09-27",
+  "program": "ai-photography-director-app",
+  "current_stage": "T5_PROGRAM_STATUS_ROADMAP_AUTHORITY_CONSOLIDATION_VALIDATED",
+  "delivery_head": "e88d2ab1eb0c9c5cf9f891c5107d951fbbbe15cb",
+  "reviewed_product_source": "a69ede68f3e54e5ab006dbfd7a65c33040590f93",
+  "t5_content_candidate": "b2565885382902d2f51ac2099436eddd69946f95",
+  "t3_base": "14a56f49e1220eb8139bf7280c747124118fdb21",
+  "delivery_pr_number": 8,
+  "delivery_pr_state": "DRAFT_UNMERGED",
+  "qualification_state": "T4_SYNTHETIC_API35_VALIDATED",
+  "local_independent_review_state": "PASS_EXACT_SHA",
+  "c2c_review_limit": "C2C_CODE_DIFF_REVIEW_NOT_POSSIBLE",
+  "current_product_state": "OFFLINE_ANDROID_PRODUCT_FLOW_VALIDATED",
+  "external_gates": {
+    "real_photos": "NOT_RUN",
+    "physical_device": "NOT_RUN",
+    "qwen_private_lan": "NOT_RUN",
+    "pipeline": "NOT_RUN",
+    "human_editorial_rights_privacy": "NOT_RUN",
+    "signing": "NOT_RUN",
+    "beta_public_release": "NOT_RUN",
+    "main_merge": "NOT_RUN",
+    "pose": "FROZEN"
+  },
+  "next_authorized_stage": "OWNER_REVIEWED_NEXT_GATE_SELECTION",
+  "t5_qualification": {
+    "candidate_before_receipt_commit": "d64ad4c7e03563c57766b2673b2d734511f0a2b9",
+    "scope": "documentation/status validators only",
+    "program_status_tests": "PASS",
+    "scope_guard": "PASS_18_APPROVED_PATHS",
+    "contract_tests": "PASS",
+    "privacy_audit": "PASS",
+    "jvm_smoke": "141/141_PASS",
+    "lint_debug": "0_ERRORS_10_WARNINGS",
+    "debug_assemble": "PASS",
+    "android_source_changed": false
+  },
+  "authority_rule": "Exact Git/evidence plus this status record determine current execution state; historical documents and external notes do not override them.",
+  "forbidden_in_t5": [
+    "real photos",
+    "private filesystem paths",
+    "device serials",
+    "LAN addresses or pairing material",
+    "model weights",
+    "raw provider outputs",
+    "signing secrets"
+  ]
+}

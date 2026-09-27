@@ -1,5 +1,7 @@
 # 摄影导演 Android Beta 用户指南
 
+> **Historical pilot reference:** this guide preserves a prior product/pilot flow. It is not current release, device or Qwen authorization. Follow [`CURRENT_PROGRAM_STATUS.md`](CURRENT_PROGRAM_STATUS.md) and [`NEXT_GATE_MATRIX.md`](NEXT_GATE_MATRIX.md).
+
 首次配置手机、Windows 本机 Qwen 服务、Private Wi‑Fi、一次性配对码和证书 pin，请先阅读：[Android Beta 手机配置与首次使用说明](ANDROID_BETA_PHONE_SETUP.md)。
 
 ## 无服务时也可完整使用的摄影流程

@@ -12,7 +12,7 @@ AI 摄影现场导演 App。**首发 Android，iOS 第二阶段。**
 ## 推荐结构
 
 ```text
-android/          # AH0 批准后创建
+android/          # 当前 Android 交付源；AH0 文档仅为历史 bootstrap 计划
 # ios/            # Android Gate 后才允许创建
 shared-contract/
 docs/
@@ -21,7 +21,11 @@ scripts/
 
 ## 当前 Android 产品状态
 
-当前 P22 候选已经可以作为诚实的离线摄影工具使用：
+当前权威入口是 [`docs/CURRENT_PROGRAM_STATUS.md`](docs/CURRENT_PROGRAM_STATUS.md)，机器可校验记录是 [`docs/current_program_status.v1.json`](docs/current_program_status.v1.json)，下一 Gate 矩阵是 [`docs/NEXT_GATE_MATRIX.md`](docs/NEXT_GATE_MATRIX.md)。本 README 不重复维护 SHA、PR 或 Gate 状态。
+
+当前 T4 delivery stack 已通过合成输入与专用 API 35 模拟器资格；这不等于合并到 `main`、真实 AI、实体设备或发布。请按当前状态页区分验证过的产品能力和仍未运行的外部门禁。
+
+已验证的离线摄影工具流程是：
 
 `新建项目 → 最多 20 张私有导入 → 筛选/删除/选择主参考 → 无 AI 指导拍摄 → 系统另存为`
 
@@ -45,8 +49,8 @@ Kotlin、Jetpack Compose、CameraX、系统 Photo Picker、Room、应用私有 J
 
 ## 使用入口
 
-- [Android Beta 手机配置与首次使用说明](docs/ANDROID_BETA_PHONE_SETUP.md)
-- [摄影导演 Android Beta 用户指南](docs/BETA_USER_GUIDE.md)
+- [历史试点手机配置说明](docs/ANDROID_BETA_PHONE_SETUP.md)（不代表当前授权或试点 PASS）
+- [历史 Beta 用户指南](docs/BETA_USER_GUIDE.md)（不代表当前授权或试点 PASS）
 - [Photo Knowledge Bundle Consumer v1](docs/reference/PHOTO_KNOWLEDGE_BUNDLE_CONSUMER_V1.md)
 - [P22 离线产品资格报告](reports/P22_OFFLINE_PRODUCT_CLOSURE_QUALIFICATION.md)
 - Windows Private 网络只读诊断：`scripts/qualify_windows_private_network.ps1`
@@ -54,17 +58,13 @@ Kotlin、Jetpack Compose、CameraX、系统 Photo Picker、Room、应用私有 J
 
 ## 测试与参考仓库
 
-- 运行测试：AH0 批准后在 `android/` 目录执行 `./gradlew test`；`shared-contract/` 的 Schema/Fixture 由 App 与 Pipeline 两侧各自实现并互验。
+- 运行当前 Android smoke：在 `android/` 目录执行对应阶段计划中的 Gradle 命令；`shared-contract/` 的 Schema/Fixture 由 App 与 Pipeline 两侧各自实现并互验。当前状态和 Gate 以 [`docs/CURRENT_PROGRAM_STATUS.md`](docs/CURRENT_PROGRAM_STATUS.md) 为准。
 - 获取参考仓库（只本地、不入 Git）：`python scripts/fetch_reference_repos.py --profile core`，浅克隆到 `docs/references/repos/` 并写入 `docs/references/REFERENCE_LOCK.json`。只提交 `REFERENCE_LOCK.json`、来源、Commit 与研究结论，不提交第三方源码。
 
 ## 不入 Git 的内容
 
 见 `.gitignore`。关键禁提交项：私人照片与用户素材（`private-data/`、`reference-images-private/`）、RAW/HEIC、`.env` 与 Token/密钥、模型权重（`*.pt/*.onnx/*.safetensors` 等）、SQLite 与运行数据库（`*.db/*.sqlite`）、日志（`*.log`）、Android `local.properties`、`build/`、`.gradle/`、`.idea/`、`docs/references/repos/` 第三方克隆、未来 iOS 签名与 `DerivedData/`。
 
-## 当前候选与下一步
+## 历史计划与下一步
 
-- App 与长期 Android signing identity 已落到 `main@1b776ba9932a7fdc96112c8cb85c7258f3f7d6af`；这不等于公开发布授权。
-- 当前候选分支：`codex/p25r-local-validation-20260920`；当前状态：`P25R_LOCAL_VALIDATED_AWAITING_HUMAN_REVIEW`。
-- 第一组 20 条原创摄影知识已通过严格结构校验、Windows 安全 I/O 验证和独立 AI 安全预审；AI 预审不能替代真人内容、权利和隐私决定。
-- 下一步仅是 Owner/真人完成绑定精确 corpus SHA 的 20/20 审核。通过后才可导出 `photoai.curated-editorial-input.v1`；该导出仍不可直接导入 App，也不授权公开分发。
-- 直接审核入口见 `docs/P25R_OWNER_FINAL_REVIEW_GUIDE.md`。真实 Pipeline release、P26 trust、Qwen/LAN、实体设备试点和发布仍是后续独立 Gate。
+G0/AH0、AA0、P21/P22、P25R/P25T 和 UI1/P1B 文档保留为历史证据或约束。它们不覆盖当前状态页，也不自动授权模型、网络、Pipeline、实体设备、签名、合并或发布。下一阶段 T5 只做状态/路线权威收口；完成后再根据 `NEXT_GATE_MATRIX.md` 和新的 Owner 授权选择运行时 Gate。

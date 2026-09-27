@@ -1,8 +1,10 @@
 # P25R Owner 最终审核指南
 
+> **Historical scope note:** this guide governs the P25 editorial corpus review only. It is not the sole current project Gate and does not override the [current status](CURRENT_PROGRAM_STATUS.md) or [next-gate matrix](NEXT_GATE_MATRIX.md).
+
 状态：`READY_FOR_OWNER_HUMAN_REVIEW`。
 
-这份指南把当前唯一未完成 Gate 集中到一处。它不包含审核决定，也不授权 Pipeline、App 导入或公开分发。
+这份历史指南记录 P25 editorial corpus review 这一项独立 Gate。它不包含审核决定，也不授权 Pipeline、App 导入或公开分发；当前项目 Gate 以 [`CURRENT_PROGRAM_STATUS.md`](CURRENT_PROGRAM_STATUS.md) 和 [`NEXT_GATE_MATRIX.md`](NEXT_GATE_MATRIX.md) 为准。
 
 ## 精确审核对象
 
