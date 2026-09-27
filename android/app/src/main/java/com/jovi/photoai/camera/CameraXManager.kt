@@ -2,7 +2,9 @@ package com.jovi.photoai.camera
 
 import android.content.Context
 import android.util.Log
+import androidx.camera.core.Camera
 import androidx.camera.core.CameraSelector
+import androidx.camera.core.FocusMeteringAction
 import androidx.camera.core.ImageAnalysis
 import androidx.camera.core.ImageCapture
 import androidx.camera.core.ImageCaptureException
@@ -14,13 +16,23 @@ import androidx.lifecycle.LifecycleOwner
 import java.io.File
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
+import java.util.concurrent.TimeUnit
+
+internal data class ExposureCapability(
+    val minIndex: Int,
+    val maxIndex: Int,
+    val stepEv: Float,
+    val currentIndex: Int,
+)
 
 /** CameraX driver. Caller owns output reservation, finalization and persistence. */
 class CameraXManager(private val context: Context) {
     companion object { private const val TAG = "CameraXManager" }
     private var cameraProvider: ProcessCameraProvider? = null
+    private var camera: Camera? = null
     private var preview: Preview? = null
     private var closed = false
+    private val controlFence = CameraControlFence()
     private val analysisExecutor: ExecutorService = Executors.newSingleThreadExecutor()
     val imageCapture: ImageCapture = ImageCapture.Builder()
         .setCaptureMode(ImageCapture.CAPTURE_MODE_MINIMIZE_LATENCY).build()
@@ -53,7 +65,7 @@ class CameraXManager(private val context: Context) {
         return try {
             unbind()
             preview = nextPreview
-            provider.bindToLifecycle(lifecycleOwner, selector, nextPreview, imageCapture, imageAnalysis)
+            camera = provider.bindToLifecycle(lifecycleOwner, selector, nextPreview, imageCapture, imageAnalysis)
             true
         } catch (_: Exception) {
             Log.e(TAG, "Camera binding failed")
@@ -63,6 +75,49 @@ class CameraXManager(private val context: Context) {
 
     fun setAnalyzer(analyzer: ImageAnalysis.Analyzer) {
         if (!closed) imageAnalysis.setAnalyzer(analysisExecutor, analyzer)
+    }
+
+    internal fun exposureCapability(): ExposureCapability? {
+        val state = camera?.cameraInfo?.exposureState ?: return null
+        val range = state.exposureCompensationRange
+        val step = state.exposureCompensationStep.toFloat()
+        if (!state.isExposureCompensationSupported || range.lower >= range.upper ||
+            !step.isFinite() || step <= 0f) return null
+        return ExposureCapability(range.lower, range.upper, step, state.exposureCompensationIndex)
+    }
+
+    internal fun focusAt(previewView: PreviewView, x: Float, y: Float, onResult: (Boolean) -> Unit) {
+        val active = camera ?: return onResult(false)
+        val request = controlFence.focusRequest()
+        try {
+            val point = previewView.meteringPointFactory.createPoint(x, y)
+            val action = FocusMeteringAction.Builder(point,
+                FocusMeteringAction.FLAG_AF or FocusMeteringAction.FLAG_AE)
+                .setAutoCancelDuration(3, TimeUnit.SECONDS).build()
+            val future = active.cameraControl.startFocusAndMetering(action)
+            future.addListener({
+                val success = runCatching { future.get().isFocusSuccessful }.getOrDefault(false)
+                if (!closed && camera === active && controlFence.currentFocus(request)) onResult(success)
+            }, ContextCompat.getMainExecutor(context))
+        } catch (_: Exception) {
+            if (!closed && camera === active && controlFence.currentFocus(request)) onResult(false)
+        }
+    }
+
+    internal fun setExposure(index: Int, onResult: (Int?) -> Unit) {
+        val active = camera ?: return onResult(null)
+        val range = active.cameraInfo.exposureState.exposureCompensationRange
+        if (index !in range.lower..range.upper) return onResult(null)
+        val request = controlFence.exposureRequest()
+        try {
+            val future = active.cameraControl.setExposureCompensationIndex(index)
+            future.addListener({
+                val confirmed = runCatching { future.get() }.getOrNull()
+                if (!closed && camera === active && controlFence.currentExposure(request)) onResult(confirmed)
+            }, ContextCompat.getMainExecutor(context))
+        } catch (_: Exception) {
+            if (!closed && camera === active && controlFence.currentExposure(request)) onResult(null)
+        }
     }
     fun takePicture(outputFile: File, onSaved: (File) -> Unit, onError: (Throwable) -> Unit) {
         if (closed) { onError(IllegalStateException("CAMERA_CLOSED")); return }
@@ -77,6 +132,8 @@ class CameraXManager(private val context: Context) {
             })
     }
     fun unbind() {
+        controlFence.invalidate()
+        camera = null
         val provider = cameraProvider ?: return
         val ownPreview = preview
         if (ownPreview == null) provider.unbind(imageCapture, imageAnalysis)
