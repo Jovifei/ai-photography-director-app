@@ -5,11 +5,11 @@
   "branch": "codex/t3-reference-camera-controls",
   "delivery_target": "codex/p25s-internal-handoff-validation-20260920",
   "base_sha": "7b2c09d189b598e1517af784f06d89eb4ea62320",
-  "source_commit": "7ddfdb66fc0d6725b1af67db2a9bf53a35615ee9",
+  "source_commit": "47c2d8f192f2d92a4fd07539bd9ff3bf28b1ecfa",
   "source_manifest": "docs/handoff/T3_LOCAL_SOURCE_MANIFEST_20260927.json",
   "main_observed": "1b776ba9932a7fdc96112c8cb85c7258f3f7d6af",
-  "evidence_id": "t3-reference-camera-controls-20260926/0871703be1de4a7cb895b6eefd397e4b",
-  "evidence_root": "E:\\project_benchmark_evidence\\t3-reference-camera-controls-20260926\\0871703be1de4a7cb895b6eefd397e4b",
+  "evidence_id": "t3-reference-camera-controls-20260926/5750a52b8c9e4507a4f5b162a8799cba",
+  "evidence_root": "E:\\project_benchmark_evidence\\t3-reference-camera-controls-20260926\\5750a52b8c9e4507a4f5b162a8799cba",
   "evidence": {
     "device": "emulator-5554 API 35 ro.kernel.qemu=1",
     "t3_reference_and_camera_controls": "7/7_PASS",
@@ -17,21 +17,21 @@
     "p25u_camerax_capture": "1/1_PASS",
     "p25u_capture_export": "3/3_PASS",
     "default_app_recovery_prepare_verify_cleanup": "1/1_EACH_PASS_CAPTURE_ID_BOUND",
-    "force_stop_pid": "6309_TO_EMPTY",
+    "force_stop_pid": "8352_TO_EMPTY",
     "jvm": "138/138_PASS_0_FAILURE_0_ERROR_0_SKIP",
     "assemble_debug_and_android_test": "PASS",
     "lint_debug": "0_ERRORS_25_WARNINGS",
     "debug_apk_sha256": "1cc39f492d4153b05f4a66a6a99b684d3de42f1688f19419692b37f5dcad62f7",
     "evidence_artifacts": {
-      "build.log": "8fd0c1c3b0b6ba193c4d150cf2a7feaf5c2cab62ad7f225fa3fd752f769bd87b",
-      "director-root.log": "f8c4a8468e1301a86b1522176c2c0697e3dc52423901e0e2459de76c9326febf",
-      "p25u-camera.log": "d853e62e6dd4a52525554ff0c6c3987c06ce71f6c1d891e097bb226ff7729aec",
-      "p25u-export.log": "5e5b0cb7b28f7cb79f7264be6a2e3079ad289b60a1a2e9343e08fb735c098549",
-      "recovery-cleanup.log": "febca0b6937fb0033ea3d56c666e2e8700fde669fb109abe79f42d040e25b8cc",
-      "recovery-prepare.log": "4f72c424efbb16f3eb8407dfccc8429222966075f5086bee899e5628b191c5fc",
-      "recovery-verify.log": "768ed7bb5e699656d2c6a5bce270bd77dc4fef11c43d098e7b0338bfc0f64a7a",
-      "recovery.json": "b40f2bf5e9ea66262e3e8c4ff59095ce04bfd474d31c85a60dc4a70dfaba7e2b",
-      "t3-ui.log": "3b004eb3dc177f1154c7e49161dc2a68fc569bf0e82f267cd736fc8859d432f7"
+      "build.log": "84ad6bedd0c5e21975a94dba9e6180d7b576c7c56fc2046f092e121c832e322f",
+      "director-root.log": "72ac8dd3008bbaf99abd3e29b6cf73a2f45e9b480c9959554e36f6f7e78e896e",
+      "p25u-camera.log": "b3c7cff13cb12f4813a39fba2a5e514db8e28e7b06e3db179c5a3c97be35fe8e",
+      "p25u-export.log": "02a7748ca6fcb053411de5e725b8d1ea97ccf4f1d6b4b897e92a48a29c127a40",
+      "recovery-cleanup.log": "5acdcec251cc5f960d595e499d0ad25e1e110c7438eca0b07c830024d666ea5e",
+      "recovery-prepare.log": "73aed81b14b6348b5f2f5faf42e3a67a9f1ff90494163ce09d1302c38dc8f617",
+      "recovery-verify.log": "24ee0edcbab413dfc379b656d257ae31576a8a60368deaecb4f73e208648f539",
+      "recovery.json": "f2479be15000a6a6f9cfab9ec0e2ef769bfbdb8714257948632a6e4d9ca6c9f5",
+      "t3-ui.log": "c7c883f2dadc9f3a3ac03b02e8d9d36b3c649eff333cf81c0a2126061e4b5e6e"
     }
   },
   "decisions": {
@@ -49,8 +49,15 @@
     "pipeline_executed": false,
     "release_signing": false,
     "public_release": false,
-    "independent_review": "PENDING",
+    "independent_review": "PENDING_RE_REVIEW",
     "merge": false
   },
-  "next": "push isolated branch and open Draft PR against P25U delivery target; request independent read-only review"
+  "review_state": {
+    "first_review": "FINDINGS_IMPORTANT_P25U_EXPORT_TEST_BASELINE_RACE",
+    "reviewed_head": "f26f98b875ae8506ded7e0634a3fc7a45b6251e7",
+    "remediation_commit": "47c2d8f192f2d92a4fd07539bd9ff3bf28b1ecfa",
+    "full_requalification": "PASS",
+    "final_head_review": "PENDING"
+  },
+  "next": "run final privacy audit, push updated branch, and obtain independent read-only review of the updated Draft PR head"
 }

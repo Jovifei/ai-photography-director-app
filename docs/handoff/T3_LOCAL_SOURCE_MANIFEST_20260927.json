@@ -1,15 +1,15 @@
 {
   "stage": "T3_REFERENCE_COMPARISON_CAMERA_CONTROLS",
   "base_sha": "7b2c09d189b598e1517af784f06d89eb4ea62320",
-  "source_commit": "7ddfdb66fc0d6725b1af67db2a9bf53a35615ee9",
-  "source_tree": "ed863a7e8ff4b3cb5591b842e0e3234300be7de0",
+  "source_commit": "47c2d8f192f2d92a4fd07539bd9ff3bf28b1ecfa",
+  "source_tree": "460093c00b82b96ed56ca8d9dd1eb882f26671e6",
   "hash_domain": "Exact Git object bytes; no Windows checkout or Unicode normalization",
   "file_count": 10,
   "files": {
     "android/app/src/androidTest/java/com/jovi/photoai/p25u/P25UCaptureExportAndroidTest.kt": {
-      "git_blob": "21d2433db01d7e5881d7e02b043fb928f46d9cb9",
-      "bytes": 7834,
-      "sha256": "f1332b9cf8899186ef0f14ebc064617429bb243ed25aeb16bb9bfe6073df7575"
+      "git_blob": "3fa1b61df82b1dd62ec53c5f39a048befb8f400f",
+      "bytes": 8823,
+      "sha256": "dac2b3e743b5608164e314a33100fd978e93fc83d2a622b947f775a28d58c3a1"
     },
     "android/app/src/androidTest/java/com/jovi/photoai/t3/T3CameraReferenceAndroidTest.kt": {
       "git_blob": "b889a690f8d371cdef4ce49076a2db68460457ae",
