@@ -1,0 +1,108 @@
+{
+  "schema_version": "1.0.0",
+  "governance_id": "phase1-5-t7-evaluation-governance-20260927",
+  "status": "EVALUATION_GOVERNANCE_PACKET_READY_HUMAN_REVIEW_NOT_AUTHORIZED",
+  "t6_base": "3233313af8be946cc43245daf15f24f853933d88",
+  "rubric": {
+    "path": "docs/phase1_5/VLM_EVALUATION_RUBRIC.md",
+    "sha256": "e009955715dd001c3001fa37b8fcbd28707cc59d78fb5e892768ff7f993d088a",
+    "bytes": 2771,
+    "status": "PROPOSED_OWNER_THRESHOLD_NOT_MEASURED",
+    "criteria_count": 18,
+    "human_criteria": 17,
+    "automated_criteria": [18],
+    "human_score_min": 0,
+    "human_score_max": 2,
+    "maximum_raw_score": 36,
+    "normalized_score_scale": "0_100_QUALITY_AGGREGATE_NOT_CONFIDENCE",
+    "owner_thresholds_approved": false
+  },
+  "criteria": [
+    {"id": 1, "name": "scene_correctness", "verifier": "HUMAN"},
+    {"id": 2, "name": "background_story_plausibility", "verifier": "HUMAN"},
+    {"id": 3, "name": "lighting_direction", "verifier": "HUMAN"},
+    {"id": 4, "name": "lighting_quality", "verifier": "HUMAN"},
+    {"id": 5, "name": "composition_description", "verifier": "HUMAN"},
+    {"id": 6, "name": "subject_intent", "verifier": "HUMAN"},
+    {"id": 7, "name": "emotion_interpretation", "verifier": "HUMAN"},
+    {"id": 8, "name": "pose_advice", "verifier": "HUMAN"},
+    {"id": 9, "name": "camera_position", "verifier": "HUMAN"},
+    {"id": 10, "name": "director_prompt_executability", "verifier": "HUMAN"},
+    {"id": 11, "name": "advice_specificity", "verifier": "HUMAN"},
+    {"id": 12, "name": "advice_noncontradiction", "verifier": "HUMAN"},
+    {"id": 13, "name": "severe_hallucination", "verifier": "HUMAN"},
+    {"id": 14, "name": "honest_uncertainty", "verifier": "HUMAN"},
+    {"id": 15, "name": "natural_chinese", "verifier": "HUMAN"},
+    {"id": 16, "name": "photographic_professionalism", "verifier": "HUMAN"},
+    {"id": 17, "name": "repetition_empty_language", "verifier": "HUMAN"},
+    {"id": 18, "name": "schema_legality_required_fields_bounds_source_version", "verifier": "AUTOMATED"}
+  ],
+  "review_policy": {
+    "provider_model_blinded": true,
+    "provider_provenance_retained_in_envelope": true,
+    "initial_reviewer_slots": ["R1", "R2"],
+    "third_reviewer_slot": "R3",
+    "third_reviewer_when": ["CRITERION_DIFFERENCE_GREATER_THAN_ONE", "SEVERE_HALLUCINATION_FLAG"],
+    "per_criterion_aggregate": "MEDIAN",
+    "unresolved_adjudication_blocks_final_result": true,
+    "human_review_authorized": false
+  },
+  "thresholds": {
+    "status": "PROPOSED_NOT_APPROVED",
+    "owner_thresholds_approved": false,
+    "schema_valid_required_field_rate": "100_PERCENT_PROPOSED_HARD_GATE",
+    "privacy_license_violation": "ZERO_PROPOSED_HARD_GATE",
+    "severe_hallucination_rate": "AT_MOST_ONE_PERCENT_NO_UNRESOLVED_CRITICAL_PROPOSED_HARD_GATE",
+    "director_usefulness_median": "AT_LEAST_1_5_OF_2_PROPOSED_COMPARATIVE",
+    "lighting_composition_usefulness": "AT_LEAST_1_5_OF_2_EACH_PROPOSED_COMPARATIVE",
+    "latency_vram_determinism": "REPORT_DISTRIBUTION_OWNER_CEILING_UNSET"
+  },
+  "severe_hallucination_categories": ["SUBJECT_COUNT", "SCENE_EVENT", "IDENTITY", "EXACT_LOCATION", "SAFETY", "LIVE_MEASUREMENT", "BIOGRAPHY", "SPECULATIVE_STORY_OR_EMOTION_AS_FACT", "UNPROVEN_PRIVACY_OR_LICENSE_CLAIM", "UNSAFE_RECOMMENDATION"],
+  "uncertainty": {
+    "contract_path": "docs/phase1_5/VLM_UNCERTAINTY_CONTRACT.md",
+    "contract_sha256": "4fccebf422630c49ca3b4010beaa9697a91677378f344188e4166dd50705aca0",
+    "field_count": 9,
+    "global_confidence_forbidden": true,
+    "allowed_bases": ["DIRECT_OBSERVATION", "PHOTOGRAPHIC_INTERPRETATION", "CREATIVE_RECOMMENDATION", "INSUFFICIENT_EVIDENCE"]
+  },
+  "provider_neutrality": {
+    "allowed_provider_types": ["LOCAL_VLM", "PIPELINE", "CLOUD", "ON_DEVICE"],
+    "provider_qualification_authorized": false,
+    "runtime_authorized": false,
+    "pipeline_integration_authorized": false
+  },
+  "pipeline_boundary": {
+    "mapping_path": "docs/phase1_5/PIPELINE_APP_FIELD_MAPPING.md",
+    "mapping_sha256": "81f8768011a2805d722f74c3571bed1257117cb96841bd633a3fb0141db60675",
+    "status": "PIPELINE_TO_REFERENCEBUNDLE_DIRECT_INTEGRATION_BLOCKED_BY_CONTRACT_AND_STAGE_EVIDENCE",
+    "compatibility_claim_allowed": false,
+    "missing_safe_mapping_remains_blocked": true
+  },
+  "privacy_boundary": {
+    "reviewer_identity": "ROLE_SLOT_ONLY",
+    "media_bytes_allowed": false,
+    "media_paths_allowed": false,
+    "private_media_allowed": false,
+    "reviewer_pii_allowed": false,
+    "synthetic_review_records_tracked": false
+  },
+  "authorization": {
+    "human_review_authorized": false,
+    "provider_qualification_authorized": false,
+    "pipeline_integration_authorized": false,
+    "private_media_authorized": false,
+    "runtime_authorized": false,
+    "owner_thresholds_approved": false
+  },
+  "contract_identities": {
+    "reference_bundle": "docs/reference/reference_bundle.v1.schema.json",
+    "provider_envelope": "docs/reference/provider_analysis_envelope.v1.schema.json",
+    "error_policy": "docs/phase1_5/error_policy.v1.json"
+  },
+  "stop_conditions": [
+    "Any rubric criterion, verifier class, threshold status or uncertainty basis changes without a separate reviewed plan.",
+    "Any human, image, private-media, provider, Pipeline, device, network or runtime action becomes necessary.",
+    "Any proposed threshold is promoted to approved or provider PASS.",
+    "Any T6 authority, contract, privacy, scope or exact-diff check fails."
+  ]
+}

@@ -4,7 +4,7 @@
 
 **Machine-readable record:** [`current_program_status.v1.json`](current_program_status.v1.json)
 
-**Next-stage plan:** [`tasks/plans/2026-09-27-t6-p1b-authorization-readiness.md`](../tasks/plans/2026-09-27-t6-p1b-authorization-readiness.md)
+**Next-stage plan:** [`tasks/plans/2026-09-27-t7-evaluation-governance-readiness.md`](../tasks/plans/2026-09-27-t7-evaluation-governance-readiness.md)
 **Gate matrix:** [`NEXT_GATE_MATRIX.md`](NEXT_GATE_MATRIX.md)
 
 ## Current authority
@@ -23,6 +23,12 @@ The primary candidate remains `Qwen/Qwen3-VL-2B-Instruct` at immutable revision 
 
 T6 does not mean Qwen is qualified or Provider-ready. Artifact acquisition, runtime/inference, real photos, physical device, Private LAN, Pipeline, human editorial, signing, beta/public release and main merge remain separate `NOT_RUN`/`BLOCKED`/`FROZEN` gates.
 
+## T7 evaluation governance readiness
+
+T7 has prepared a provider-neutral evaluation-governance packet from exact T6 head `3233313af8be946cc43245daf15f24f853933d88`. [`evaluation_governance.v1.json`](phase1_5/t7/evaluation_governance.v1.json) encodes the existing 18-criterion rubric, blinded reviewer slots, deterministic R3 adjudication, severe-hallucination categories, uncertainty semantics and the still-blocked Pipeline mapping. The state is `EVALUATION_GOVERNANCE_PACKET_READY — HUMAN_REVIEW_NOT_AUTHORIZED`.
+
+The existing rubric remains `PROPOSED_OWNER_THRESHOLD — NOT_MEASURED`; proposed thresholds are not launch or Provider PASS criteria. T7 creates no human-review records, image/media payloads, reviewer identities, provider result, Pipeline adapter or Android change. Human-review execution, Provider qualification, Pipeline compatibility, real photos, physical device, signing, release and main merge remain closed.
+
 ## Product goal
 
 `参考图 → 来源明确的逐图状态 → READY-only 可信指导 → Camera Director 或无指导拍摄 → 私有成片 → 系统导出`
@@ -35,4 +41,4 @@ The following remain useful evidence or design constraints but are not current e
 
 ## Next stage
 
-T5 consolidated this status into one machine-checkable authority, and T6 added a machine-verifiable P1B readiness boundary without activating it. T6 changed no Android runtime code, shared contracts, models, network, Pipeline code, signing settings or Owner decisions. The next executable step is an Owner decision or another separately planned non-runtime Gate; no Qwen artifact or runtime action follows automatically.
+T5 consolidated this status into one machine-checkable authority, T6 added a machine-verifiable P1B readiness boundary, and T7 added a provider-neutral evaluation-governance boundary without executing it. T7 changed no Android runtime code, shared contracts, models, network, Pipeline code, signing settings, human-review records or Owner decisions. The next executable step is an Owner decision or another separately planned non-runtime Gate; no artifact, provider, human review or Pipeline action follows automatically.
