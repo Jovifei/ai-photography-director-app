@@ -28,6 +28,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.FilterChip
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -41,11 +42,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.jovi.photoai.data.reference.BatchImportUiState
 import com.jovi.photoai.data.reference.MAX_PROJECT_PHOTOS
+import com.jovi.photoai.data.reference.MAX_PROJECT_TITLE_LENGTH
 import com.jovi.photoai.data.reference.PhotoAnalysisStatus
 import com.jovi.photoai.data.reference.PersistedProjectSummary
 import com.jovi.photoai.data.reference.PhotographyProject
@@ -71,10 +74,12 @@ internal data class ProjectHomeItem(
 @Composable
 internal fun ProjectsHomeScreen(
     projects: List<ProjectHomeItem>,
-    onCreateProject: () -> Unit,
+    onCreateProject: (String) -> Unit,
     onOpenProject: (String) -> Unit,
     onOpenCapture: () -> Unit,
+    onOpenLibrary: () -> Unit,
 ) {
+    var showCreateDialog by rememberSaveable { mutableStateOf(false) }
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -95,6 +100,9 @@ internal fun ProjectsHomeScreen(
             }
             TextButton(onClick = onOpenCapture) { Text("拍摄") }
         }
+        TextButton(onClick = onOpenLibrary, modifier = Modifier.heightIn(min = AppDimensions.MinTouchTarget)) {
+            Text("查看全部参考图")
+        }
         Spacer(Modifier.height(AppDimensions.Space20))
         GlassSurface(
             modifier = Modifier.fillMaxWidth(),
@@ -111,7 +119,7 @@ internal fun ProjectsHomeScreen(
                 )
                 PrimaryActionButton(
                     text = "新建拍摄项目",
-                    onClick = onCreateProject,
+                    onClick = { showCreateDialog = true },
                     modifier = Modifier.fillMaxWidth(),
                 )
             }
@@ -124,7 +132,7 @@ internal fun ProjectsHomeScreen(
                 title = "还没有拍摄项目",
                 message = "新建项目后，一次可导入并整理最多 20 张照片。",
                 actionLabel = "新建拍摄项目",
-                onAction = onCreateProject,
+                onAction = { showCreateDialog = true },
             )
         } else {
             projects.forEach { item ->
@@ -133,6 +141,17 @@ internal fun ProjectsHomeScreen(
             }
         }
         Spacer(Modifier.height(AppDimensions.Space32))
+    }
+    if (showCreateDialog) {
+        ProjectNameDialog(
+            title = "新建拍摄项目",
+            initialName = "",
+            onDismiss = { showCreateDialog = false },
+            onConfirm = { name ->
+                showCreateDialog = false
+                onCreateProject(name)
+            },
+        )
     }
 }
 
@@ -275,6 +294,8 @@ internal fun ProjectBoardScreen(
     onDeletePhoto: (String) -> Unit,
     onImportKnowledgeBundle: () -> Unit,
     onDeleteProject: () -> Unit,
+    onRenameProject: (String) -> Unit,
+    canRenameProject: Boolean = true,
     onOpenSummary: () -> Unit,
     onStartShooting: () -> Unit,
     onStartAnalysis: () -> Unit,
@@ -285,11 +306,18 @@ internal fun ProjectBoardScreen(
 ) {
     var pendingDeletionId by rememberSaveable(project.id) { mutableStateOf<String?>(null) }
     var confirmProjectDeletion by rememberSaveable(project.id) { mutableStateOf(false) }
+    var showRenameDialog by rememberSaveable(project.id) { mutableStateOf(false) }
     var statusFilterName by rememberSaveable(project.id) { mutableStateOf(ProjectStatusFilter.ALL.name) }
     val statusFilter = ProjectStatusFilter.valueOf(statusFilterName)
     val filteredRecords = records.filter(statusFilter::matches)
     val primaryRecord = records.firstOrNull { it.photo.id == project.primaryReferenceId }
     ProjectScreenScaffold(title = "项目看板", project = project, onBack = onBack) {
+        if (canRenameProject) {
+            TextButton(
+                onClick = { showRenameDialog = true },
+                modifier = Modifier.heightIn(min = AppDimensions.MinTouchTarget),
+            ) { Text("修改项目名称") }
+        }
         Text("${records.size}/$MAX_PROJECT_PHOTOS 张照片", style = MaterialTheme.typography.headlineSmall)
         Spacer(Modifier.height(AppDimensions.Space4))
         Text(
@@ -417,6 +445,47 @@ internal fun ProjectBoardScreen(
             },
         )
     }
+    if (showRenameDialog) {
+        ProjectNameDialog(
+            title = "修改项目名称",
+            initialName = project.title,
+            onDismiss = { showRenameDialog = false },
+            onConfirm = { name ->
+                showRenameDialog = false
+                onRenameProject(name)
+            },
+        )
+    }
+}
+
+@Composable
+private fun ProjectNameDialog(
+    title: String,
+    initialName: String,
+    onDismiss: () -> Unit,
+    onConfirm: (String) -> Unit,
+) {
+    var name by rememberSaveable(initialName) { mutableStateOf(initialName) }
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text(title) },
+        text = {
+            OutlinedTextField(
+                value = name,
+                onValueChange = { name = it.take(MAX_PROJECT_TITLE_LENGTH) },
+                label = { Text("项目名称") },
+                singleLine = true,
+                isError = name.isBlank(),
+                modifier = Modifier.fillMaxWidth().testTag("project-name-input"),
+            )
+        },
+        dismissButton = { TextButton(onClick = onDismiss) { Text("取消") } },
+        confirmButton = {
+            TextButton(onClick = { onConfirm(name.trim()) }, enabled = name.isNotBlank()) {
+                Text("保存")
+            }
+        },
+    )
 }
 
 @Composable

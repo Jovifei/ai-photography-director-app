@@ -1,5 +1,23 @@
 # P25U review remediation
 
+## T4 offline product-flow integration — 2026-09-27
+
+- [x] Bound remote ChatGPT stage PLAN `c2c_a91f`, corrected it against exact T3 code, and saved the revised milestone plan.
+- [x] Created clean isolated branch from `14a56f49e1220eb8139bf7280c747124118fdb21`; origin T3 head matches.
+- [x] Audited library, project naming, navigation, Camera truth boundaries and test inventory.
+- [x] Implement all-project library entry, real search/filter/source/owner and coherent return route.
+- [x] Implement explicit project creation name and persistent rename through existing Room title.
+- [x] Add T4 JVM/Android tests; verify synthetic end-to-end flow and T3 regressions on API 35 emulator.
+- [x] Run the clean exact-commit T4 qualifier, review its evidence and final diff.
+- [x] Commit and deliver exact candidate for independent review; keep external Gates separate.
+
+### T4 Review
+
+- First exact candidate `fef13a1`: Debug/AndroidTest builds, JVM 141/141, lint 0 errors, T4 5/5, T3 + root + P25U capture/export 13/13, force-stop prepare/verify/cleanup, contract tests, privacy audit and diff check passed on the dedicated API 35 emulator. Independent exact-SHA review identified missing live-state coverage, so this candidate is not T4 PASS. Two isolated root-flow state-transition tests now pass (T4 focused 7 total), and the replacement exact candidate/full rerun are pending.
+- Later Gradle JVM/lint attempts hit host virtual-memory pressure before completing; single-worker, bounded-JVM per-command reruns passed JVM 141/141, AndroidTest compilation and lintDebug. Generated `android/.kotlin/` is ignored rather than deleted; no system setting or other task process was changed. These interrupted attempts remain diagnostic failures, not PASS.
+- Replacement exact source `a69ede68f3e54e5ab006dbfd7a65c33040590f93` qualified with T4 7/7, T3 7/7, root 2/2, P25U camera 1/1/export 3/3/recovery 3/3, JVM 141/141, build/lint/contract/privacy/diff PASS. Independent exact-SHA read-only review returned PASS with zero actionable findings; evidence and APK hashes matched. Draft PR #8 is open on the T3 branch, unmerged.
+- Real photos, physical device, Qwen/LAN, Pipeline, signing and release are outside T4.
+
 - [x] Verify independent review findings against the final source and existing evidence.
 - [x] Add an Activity recreation export-result regression and observe the expected failure.
 - [x] Preserve the active export token across Activity recreation and pass the regression.

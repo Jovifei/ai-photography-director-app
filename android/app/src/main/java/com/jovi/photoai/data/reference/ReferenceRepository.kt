@@ -13,6 +13,8 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
 
+internal const val MAX_PROJECT_TITLE_LENGTH = 60
+
 internal sealed interface ReferenceImportResult {
     data class Success(val record: ReferenceRecord) : ReferenceImportResult
     data class Failure(val code: ReferenceImportErrorCode) : ReferenceImportResult
@@ -81,6 +83,14 @@ internal class ReferenceRepository private constructor(
 
     suspend fun project(projectId: String): PhotographyProject? = withContext(Dispatchers.IO) {
         dao.projectById(projectId)?.toProject()
+    }
+
+    suspend fun renameProject(projectId: String, title: String): Boolean = withContext(Dispatchers.IO) {
+        val normalized = title.trim().take(MAX_PROJECT_TITLE_LENGTH)
+        if (projectId.isBlank() || projectId == LEGACY_PROJECT_ID || normalized.isBlank()) {
+            return@withContext false
+        }
+        dao.renameProject(projectId, normalized, now()) == 1
     }
 
     suspend fun importFromPicker(uri: Uri): ReferenceImportResult =
@@ -437,8 +447,6 @@ internal class ReferenceRepository private constructor(
     private class ProjectCapacityReachedException : RuntimeException()
 
     companion object {
-        private const val MAX_PROJECT_TITLE_LENGTH = 60
-
         /** Test caller owns and closes its isolated database. No production failure hooks. */
         @androidx.annotation.VisibleForTesting
         internal fun createForTest(

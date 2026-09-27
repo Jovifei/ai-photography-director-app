@@ -54,6 +54,8 @@ import com.jovi.photoai.ui.capture.CaptureLibraryViewModel
 import com.jovi.photoai.ui.capture.CaptureLibraryViewModelFactory
 import com.jovi.photoai.ui.home.HomeReferenceItem
 import com.jovi.photoai.ui.home.HomeScreen
+import com.jovi.photoai.ui.home.ProjectReferenceFilters
+import com.jovi.photoai.ui.home.filterProjectReferences
 import com.jovi.photoai.ui.importphoto.ImportReferenceScreen
 import com.jovi.photoai.ui.project.BatchProjectImportScreen
 import com.jovi.photoai.ui.project.ProjectBoardScreen
@@ -79,6 +81,7 @@ private data class AppReference(
 )
 
 internal enum class ReferenceStartupState { RECONCILING, READY }
+private enum class ReferenceLibraryMode { BROWSE_ALL_PROJECTS, PICK_FOR_CAPTURE }
 
 internal data class StartupRestoreDecision(
     val destination: AppDestination,
@@ -92,8 +95,18 @@ internal data class StartupRestoreDecision(
 @Composable
 fun PhotographyDirectorApp() {
     val application = androidx.compose.ui.platform.LocalContext.current.applicationContext as Application
-    val repository = remember { ReferenceRepository.create(application) }
-    val libraryPreferences = remember { ReferenceLibraryPreferences(application) }
+    val repository = remember(application) { ReferenceRepository.create(application) }
+    val libraryPreferences = remember(application) { ReferenceLibraryPreferences(application) }
+    PhotographyDirectorAppContent(application, repository, libraryPreferences)
+}
+
+/** The same root flow can be qualified against an isolated synthetic repository and preferences. */
+@Composable
+internal fun PhotographyDirectorAppContent(
+    application: Application,
+    repository: ReferenceRepository,
+    libraryPreferences: ReferenceLibraryPreferences,
+) {
     val records by repository.activeRecords.collectAsState(initial = emptyList())
     val projects by repository.projects.collectAsState(initial = emptyList())
     val scope = rememberCoroutineScope()
@@ -115,10 +128,15 @@ fun PhotographyDirectorApp() {
     var captureNotice by rememberSaveable { mutableStateOf<String?>(null) }
     var pendingProject by remember { mutableStateOf<PhotographyProject?>(null) }
     var activeReference by remember { mutableStateOf<AppReference?>(null) }
+    var observedActiveReferenceId by remember { mutableStateOf<String?>(null) }
     var startupState by remember { mutableStateOf(ReferenceStartupState.RECONCILING) }
     var recoverySummaryToShow by remember { mutableStateOf<ReferenceRecoverySummary?>(null) }
     var searchQuery by rememberSaveable { mutableStateOf("") }
     var selectedScene by rememberSaveable { mutableStateOf<String?>(null) }
+    var selectedSource by rememberSaveable { mutableStateOf<String?>(null) }
+    var selectedStatusName by rememberSaveable { mutableStateOf<String?>(null) }
+    var selectedLibraryProjectId by rememberSaveable { mutableStateOf<String?>(null) }
+    var libraryModeName by rememberSaveable { mutableStateOf(ReferenceLibraryMode.BROWSE_ALL_PROJECTS.name) }
     var localConnection by remember { mutableStateOf<LocalLanAnalysisConnection?>(null) }
     var pairingProjectId by rememberSaveable { mutableStateOf<String?>(null) }
     var pairingError by rememberSaveable { mutableStateOf<String?>(null) }
@@ -172,6 +190,20 @@ fun PhotographyDirectorApp() {
         if (recoverySummary.hasRecoveryNotice) recoverySummaryToShow = recoverySummary
         startupState = ReferenceStartupState.READY
     }
+    LaunchedEffect(records, startupState, activeReference?.photo?.id) {
+        val current = activeReference ?: return@LaunchedEffect
+        if (startupState != ReferenceStartupState.READY || current.imageFileName == null) return@LaunchedEffect
+        val latest = records.firstOrNull { it.photo.id == current.photo.id }
+        // A just-imported row can precede the Flow emission. Clear only a row we have seen.
+        if (latest != null) {
+            observedActiveReferenceId = current.photo.id
+            val refreshed = toAppReference(latest)
+            if (refreshed != current) activeReference = refreshed
+        } else if (observedActiveReferenceId == current.photo.id) {
+            activeReference = null
+            observedActiveReferenceId = null
+        }
+    }
     val presentationDestination = when {
         activeReference == null && destination in setOf(
             AppDestination.ANALYSIS_DETAIL,
@@ -216,10 +248,9 @@ fun PhotographyDirectorApp() {
         destinationName = next.name
     }
 
-    fun createProject() {
+    fun createProject(title: String) {
         scope.launch {
-            val projectNumber = projects.count { it.id != LEGACY_PROJECT_ID } + 1
-            val project = repository.createProject("拍摄项目 $projectNumber")
+            val project = repository.createProject(title)
             pendingProject = project
             selectedProjectId = project.id
             importViewModel.dismissBatchResult()
@@ -228,10 +259,33 @@ fun PhotographyDirectorApp() {
     }
 
     fun openProject(projectId: String) {
+        if (projects.none { it.id == projectId }) {
+            selectedProjectId = null
+            navigateTo(AppDestination.HOME)
+            return
+        }
         pendingProject = null
         selectedProjectId = projectId
         importViewModel.dismissBatchResult()
         navigateTo(AppDestination.PROJECT_BOARD)
+    }
+
+    fun renameSelectedProject(title: String) {
+        val projectId = selectedProjectId ?: return
+        if (projectId == LEGACY_PROJECT_ID) return
+        scope.launch {
+            if (!repository.renameProject(projectId, title)) navigateTo(AppDestination.HOME)
+        }
+    }
+
+    fun openReferenceLibrary(mode: ReferenceLibraryMode) {
+        libraryModeName = mode.name
+        searchQuery = ""
+        selectedScene = null
+        selectedSource = null
+        selectedStatusName = null
+        selectedLibraryProjectId = null
+        navigateTo(AppDestination.REFERENCE_LIBRARY)
     }
 
     fun selectProjectPrimary(referenceId: String?) {
@@ -339,7 +393,10 @@ fun PhotographyDirectorApp() {
         scope.launch {
             repository.delete(id)
             libraryPreferences.clearLastActiveReferenceId(id)
-            if (activeReference?.photo?.id == id) activeReference = null
+            if (activeReference?.photo?.id == id) {
+                activeReference = null
+                observedActiveReferenceId = null
+            }
         }
     }
 
@@ -348,6 +405,7 @@ fun PhotographyDirectorApp() {
             repository.clearAll()
             libraryPreferences.clearLastActiveReferenceId()
             activeReference = null
+            observedActiveReferenceId = null
         }
     }
 
@@ -371,6 +429,7 @@ fun PhotographyDirectorApp() {
                 captureLibrary.projectDeleted(project.id)
                 libraryPreferences.clearLastActiveReferenceId()
                 activeReference = null
+                observedActiveReferenceId = null
                 selectedProjectId = null
                 pendingProject = null
                 navigateTo(AppDestination.HOME)
@@ -402,6 +461,27 @@ fun PhotographyDirectorApp() {
             photoCount = records.count { it.projectId == project.id },
         )
     }
+    val libraryProjectTitles = projects.associate { it.id to it.title }
+    val libraryFilters = ProjectReferenceFilters(
+        query = searchQuery,
+        scene = selectedScene,
+        source = selectedSource,
+        status = selectedStatusName?.let(PhotoAnalysisStatus::valueOf),
+        projectId = selectedLibraryProjectId,
+    )
+    val libraryEntries = records.map { record ->
+        ReferenceLibraryEntry(
+            photo = record.photo,
+            bundle = record.bundle,
+            imageFileName = record.imageFileName,
+            projectId = record.projectId,
+            projectTitle = libraryProjectTitles[record.projectId],
+            analysisStatus = record.analysisStatus,
+        )
+    }
+    val visibleLibraryIds = filterProjectReferences(records, libraryProjectTitles, libraryFilters)
+        .mapTo(hashSetOf()) { it.record.photo.id }
+    val visibleLibraryEntries = libraryEntries.filter { it.photo.id in visibleLibraryIds }
 
     fun findReference(id: String): AppReference? = allReferences.firstOrNull { it.photo.id == id }
 
@@ -415,7 +495,10 @@ fun PhotographyDirectorApp() {
             AppDestination.CAPTURE_ENTRY -> navigateTo(
                 if (captureProjectId == null) AppDestination.HOME else AppDestination.PROJECT_BOARD,
             )
-            AppDestination.REFERENCE_LIBRARY -> navigateTo(AppDestination.HOME)
+            AppDestination.REFERENCE_LIBRARY -> navigateTo(
+                if (libraryModeName == ReferenceLibraryMode.PICK_FOR_CAPTURE.name) AppDestination.CAPTURE_ENTRY
+                else AppDestination.HOME,
+            )
             AppDestination.IMPORT_REFERENCE -> leaveImport()
             AppDestination.ANALYSIS_DETAIL -> navigateTo(AppDestination.valueOf(analysisReturnDestinationName))
             AppDestination.DIRECTOR_CARD -> navigateTo(AppDestination.ANALYSIS_DETAIL)
@@ -433,6 +516,7 @@ fun PhotographyDirectorApp() {
                 onCreateProject = ::createProject,
                 onOpenProject = ::openProject,
                 onOpenCapture = ::openCaptureEntry,
+                onOpenLibrary = { openReferenceLibrary(ReferenceLibraryMode.BROWSE_ALL_PROJECTS) },
             )
         }
 
@@ -484,6 +568,8 @@ fun PhotographyDirectorApp() {
                     onDeletePhoto = ::deleteReference,
                     onImportKnowledgeBundle = ::openKnowledgeBundleImport,
                     onDeleteProject = ::deleteSelectedProject,
+                    onRenameProject = ::renameSelectedProject,
+                    canRenameProject = project.id != LEGACY_PROJECT_ID,
                     projectDeletionFailed = projectDeletionFailed,
                     onOpenSummary = { navigateTo(AppDestination.PROJECT_SUMMARY) },
                     onStartShooting = ::startProjectShooting,
@@ -525,17 +611,42 @@ fun PhotographyDirectorApp() {
                 } else if (records.isEmpty()) {
                     beginFreshImport(AppDestination.CAPTURE_ENTRY)
                 } else {
-                    navigateTo(AppDestination.REFERENCE_LIBRARY)
+                    openReferenceLibrary(ReferenceLibraryMode.PICK_FOR_CAPTURE)
                 }
             },
             onDirectCapture = { navigateTo(AppDestination.DIRECT_CAPTURE) },
         )
 
         AppDestination.REFERENCE_LIBRARY -> ReferenceLibraryScreen(
-            entries = records.map { record -> ReferenceLibraryEntry(record.photo, record.bundle, record.imageFileName) },
-            onBack = { navigateTo(AppDestination.HOME) },
+            entries = libraryEntries,
+            visibleEntries = visibleLibraryEntries,
+            filters = libraryFilters,
+            onFiltersChange = { next ->
+                searchQuery = next.query
+                selectedScene = next.scene
+                selectedSource = next.source
+                selectedStatusName = next.status?.name
+                selectedLibraryProjectId = next.projectId
+            },
+            onBack = {
+                navigateTo(
+                    if (libraryModeName == ReferenceLibraryMode.PICK_FOR_CAPTURE.name) AppDestination.CAPTURE_ENTRY
+                    else AppDestination.HOME,
+                )
+            },
             onImportReference = { beginFreshImport(AppDestination.REFERENCE_LIBRARY) },
-            onOpenReference = { id -> findReference(id)?.let { openAnalysis(it, AppDestination.REFERENCE_LIBRARY) } },
+            onOpenReference = { id ->
+                records.firstOrNull { it.photo.id == id }?.let { record ->
+                    val browseOwner = libraryModeName == ReferenceLibraryMode.BROWSE_ALL_PROJECTS.name &&
+                        projects.any { it.id == record.projectId }
+                    if (browseOwner) selectedProjectId = record.projectId
+                    openAnalysis(
+                        toAppReference(record),
+                        if (browseOwner) AppDestination.PROJECT_BOARD else AppDestination.REFERENCE_LIBRARY,
+                    )
+                }
+            },
+            onOpenProject = { projectId -> openProject(projectId) },
             onDeleteReference = ::deleteReference,
             onClearAll = ::clearReferences,
         )

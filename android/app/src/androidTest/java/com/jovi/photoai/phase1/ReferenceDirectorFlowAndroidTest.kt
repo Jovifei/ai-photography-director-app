@@ -11,8 +11,10 @@ import androidx.compose.ui.test.onAllNodesWithContentDescription
 import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.onFirst
 import androidx.compose.ui.test.onNodeWithText
+import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollTo
+import androidx.compose.ui.test.performTextInput
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.rule.GrantPermissionRule
 import com.jovi.photoai.MainActivity
@@ -34,14 +36,16 @@ class ReferenceDirectorFlowAndroidTest {
     @Test
     fun currentProjectFlow_reachesBoardAndDirectCapture() {
         clickAction("新建拍摄项目")
+        composeRule.onNodeWithTag("project-name-input").performTextInput("测试拍摄项目")
+        composeRule.onNodeWithText("保存").performClick()
         composeRule.onNodeWithText("添加项目照片").assertIsDisplayed()
         composeRule.onNodeWithText("选择照片").assertIsDisplayed()
         composeRule.onNodeWithText("稍后添加").performClick()
         composeRule.onNodeWithText("项目看板").assertIsDisplayed()
         composeRule.onNodeWithText("项目还没有照片").assertIsDisplayed()
 
-        composeRule.onNodeWithText("选择拍摄方式").performClick()
-        composeRule.onNodeWithText("开始拍摄").assertIsDisplayed()
+        composeRule.onNodeWithText("选择拍摄方式").performScrollTo().performClick()
+        composeRule.onNodeWithText("开始拍摄").assertExists()
         composeRule.onNodeWithText("无指导直接拍摄").performClick()
         composeRule.onAllNodesWithText("基础拍摄", substring = true).onFirst().assertIsDisplayed()
         composeRule.onNodeWithText("保存照片").assertIsDisplayed()

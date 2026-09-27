@@ -3,8 +3,8 @@ package com.jovi.photoai.data.reference
 import android.content.Context
 
 /** Stores only the opaque ID needed to restore a valid private reference after startup recovery. */
-internal class ReferenceLibraryPreferences(context: Context) {
-    private val preferences = context.applicationContext.getSharedPreferences(FILE_NAME, Context.MODE_PRIVATE)
+internal class ReferenceLibraryPreferences(context: Context, fileName: String = FILE_NAME) {
+    private val preferences = context.applicationContext.getSharedPreferences(fileName, Context.MODE_PRIVATE)
 
     fun lastActiveReferenceId(): String? {
         val storedId = preferences.getString(LAST_ACTIVE_REFERENCE_ID, null) ?: return null
