@@ -1,0 +1,10 @@
+{
+  "fixture_class": "CONTRACT_ONLY_SYNTHETIC_NO_PROVIDER_EXECUTED",
+  "provider_outcome": "FAILED",
+  "contract_valid": true,
+  "reference_id": "synthetic-reference-004",
+  "blinded_candidate_id": "candidate-synthetic-d",
+  "provider_metadata": {"provider_id": "synthetic-contract-provider", "provider_type": "LOCAL_VLM", "model_id": "synthetic-model", "model_revision": "synthetic-revision", "runtime_id": "synthetic-runtime"},
+  "error_code": "PROVIDER_UNAVAILABLE",
+  "review_packets": []
+}

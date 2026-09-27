@@ -1,0 +1,12 @@
+{
+  "fixture_class": "CONTRACT_ONLY_SYNTHETIC_NO_PROVIDER_EXECUTED",
+  "provider_outcome": "SUCCESS",
+  "contract_valid": true,
+  "reference_id": "synthetic-reference-001",
+  "blinded_candidate_id": "candidate-synthetic-a",
+  "provider_metadata": {"provider_id": "synthetic-contract-provider", "provider_type": "LOCAL_VLM", "model_id": "synthetic-model", "model_revision": "synthetic-revision", "runtime_id": "synthetic-runtime"},
+  "review_packets": [
+    {"reviewer_slot": "R1", "scores": 2, "severe": false},
+    {"reviewer_slot": "R2", "scores": 2, "severe": false}
+  ]
+}

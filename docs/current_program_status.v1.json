@@ -2,7 +2,7 @@
   "status_version": "1.0.0",
   "as_of_date": "2026-09-27",
   "program": "ai-photography-director-app",
-  "current_stage": "T7_EVALUATION_GOVERNANCE_PACKET_READY_HUMAN_REVIEW_NOT_AUTHORIZED",
+  "current_stage": "SYNTHETIC_EVALUATION_HARNESS_READY_REAL_EVALUATION_NOT_AUTHORIZED",
   "delivery_head": "e88d2ab1eb0c9c5cf9f891c5107d951fbbbe15cb",
   "reviewed_product_source": "a69ede68f3e54e5ab006dbfd7a65c33040590f93",
   "t5_content_candidate": "b2565885382902d2f51ac2099436eddd69946f95",
@@ -47,6 +47,17 @@
     "provider_qualification_authorized": false,
     "pipeline_compatibility_claim_allowed": false,
     "review_records_tracked": false
+  },
+  "t8_harness": {
+    "status": "SYNTHETIC_EVALUATION_HARNESS_READY_REAL_EVALUATION_NOT_AUTHORIZED",
+    "base": "61cb6776b2b6f00d6965789e0589c5337536d258",
+    "manifest": "docs/phase1_5/t8/synthetic_evaluation_manifest.v1.json",
+    "fixture_class": "CONTRACT_ONLY_SYNTHETIC",
+    "real_provider_executed": false,
+    "human_review_executed": false,
+    "pipeline_accessed": false,
+    "media_accessed": false,
+    "thresholds_approved": false
   },
   "t5_qualification": {
     "candidate_before_receipt_commit": "d64ad4c7e03563c57766b2673b2d734511f0a2b9",

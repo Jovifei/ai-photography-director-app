@@ -1,0 +1,17 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://photoai.local/phase1_5/t8/synthetic_evaluation_manifest.v1.schema.json",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "harness_id", "status", "t7_base", "fixture_class", "cases", "authority", "stop_conditions"],
+  "properties": {
+    "schema_version": {"const": "1.0.0"},
+    "harness_id": {"type": "string", "minLength": 1},
+    "status": {"const": "CONTRACT_ONLY_SYNTHETIC_NO_PROVIDER_EXECUTED"},
+    "t7_base": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+    "fixture_class": {"const": "CONTRACT_ONLY_SYNTHETIC"},
+    "cases": {"type": "array", "minItems": 6, "items": {"type": "object", "additionalProperties": false, "required": ["id", "path", "expected"], "properties": {"id": {"type": "string"}, "path": {"type": "string", "pattern": "^docs/phase1_5/t8/fixtures/[a-z0-9_-]+\\.json$"}, "expected": {"type": "string"}}}},
+    "authority": {"type": "object", "additionalProperties": false, "required": ["provider_runtime_authorized", "human_review_authorized", "pipeline_authorized", "private_media_authorized", "thresholds_approved"], "properties": {"provider_runtime_authorized": {"const": false}, "human_review_authorized": {"const": false}, "pipeline_authorized": {"const": false}, "private_media_authorized": {"const": false}, "thresholds_approved": {"const": false}}},
+    "stop_conditions": {"type": "array", "minItems": 1, "items": {"type": "string"}}
+  }
+}

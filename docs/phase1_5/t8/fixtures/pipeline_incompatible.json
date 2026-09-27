@@ -1,0 +1,10 @@
+{
+  "fixture_class": "CONTRACT_ONLY_SYNTHETIC_NO_PROVIDER_EXECUTED",
+  "provider_outcome": "FAILED",
+  "contract_valid": true,
+  "reference_id": "synthetic-reference-006",
+  "blinded_candidate_id": "candidate-synthetic-f",
+  "provider_metadata": {"provider_id": "synthetic-contract-provider", "provider_type": "PIPELINE", "model_id": "synthetic-model", "model_revision": "synthetic-revision", "runtime_id": "synthetic-runtime"},
+  "error_code": "PIPELINE_BUNDLE_INCOMPATIBLE",
+  "review_packets": []
+}
