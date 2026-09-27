@@ -4,18 +4,42 @@
 from __future__ import annotations
 
 import argparse
+import copy
 import json
 import re
 import sys
 from pathlib import Path
 from typing import Any
 
+from jsonschema import Draft202012Validator, FormatChecker
+from referencing import Registry, Resource
+
 ROOT = Path(__file__).resolve().parent.parent
 MANIFEST_REL = Path("docs/phase1_5/t8/synthetic_evaluation_manifest.v1.json")
-T7_GOV_REL = Path("docs/phase1_5/t7/evaluation_governance.v1.json")
+ENVELOPE_SCHEMA_REL = Path("docs/reference/provider_analysis_envelope.v1.schema.json")
+BUNDLE_SCHEMA_REL = Path("docs/reference/reference_bundle.v1.schema.json")
+ERROR_POLICY_REL = Path("docs/phase1_5/error_policy.v1.json")
 T7_BASE = "61cb6776b2b6f00d6965789e0589c5337536d258"
+LEGACY_SYNTHETIC_PROVIDER_TYPES = {"LOCAL_VLM", "PIPELINE", "CLOUD", "ON_DEVICE"}
+PROVIDER_PROVENANCE_FIELDS = {
+    "provider_id", "provider_type", "model_id", "model_revision",
+    "model_artifact_sha256", "runtime_id", "producer_release", "provenance",
+}
+
 sys.path.insert(0, str(ROOT / "scripts"))
-from validate_phase1_5_t7_evaluation import T7ValidationError, aggregate_review_packets, read_json, validate_governance, validate_review_packet  # noqa: E402
+from phase1_5_contract_semantics import (  # noqa: E402
+    load_error_policy,
+    validate_error_policy,
+    validate_provider_envelope_semantics,
+    validate_reference_bundle_semantics,
+)
+from validate_phase1_5_t7_evaluation import (  # noqa: E402
+    T7ValidationError,
+    aggregate_review_packets,
+    read_json,
+    validate_governance,
+    validate_review_packet,
+)
 
 
 class T8ValidationError(ValueError):
@@ -37,6 +61,47 @@ def unsafe(value: Any) -> bool:
     return False
 
 
+def _schema_error(error: Any) -> str:
+    path = ".".join(str(part) for part in error.absolute_path)
+    return f"{path or '$'}: {error.message}"
+
+
+def load_contract_validators(root: Path) -> tuple[Draft202012Validator, Draft202012Validator, dict[str, Any]]:
+    """Load the tracked frozen schemas without resolving over the network."""
+    envelope_schema = read_json(root, ENVELOPE_SCHEMA_REL)
+    bundle_schema = read_json(root, BUNDLE_SCHEMA_REL)
+    registry = Registry().with_resource(envelope_schema["$id"], Resource.from_contents(envelope_schema)).with_resource(bundle_schema["$id"], Resource.from_contents(bundle_schema))
+    envelope_validator = Draft202012Validator(
+        envelope_schema,
+        format_checker=FormatChecker(),
+        registry=registry,
+    )
+    bundle_validator = Draft202012Validator(bundle_schema, format_checker=FormatChecker())
+    return envelope_validator, bundle_validator, envelope_schema
+
+
+def validate_frozen_envelope(
+    envelope: dict[str, Any],
+    envelope_validator: Draft202012Validator,
+    bundle_validator: Draft202012Validator,
+    policy: dict[str, Any],
+) -> None:
+    """Apply schema, cross-field semantics, and the single frozen error policy."""
+    schema_errors = sorted(envelope_validator.iter_errors(envelope), key=lambda item: list(item.absolute_path))
+    require(not schema_errors, "frozen ProviderAnalysisEnvelope schema invalid: " + "; ".join(_schema_error(error) for error in schema_errors))
+    if envelope.get("status") == "SUCCESS":
+        bundle = envelope.get("bundle")
+        bundle_errors = sorted(bundle_validator.iter_errors(bundle), key=lambda item: list(item.absolute_path))
+        require(not bundle_errors, "frozen ReferenceBundle schema invalid: " + "; ".join(_schema_error(error) for error in bundle_errors))
+    semantic_errors = validate_provider_envelope_semantics(envelope)
+    require(not semantic_errors, "frozen envelope semantics invalid: " + json.dumps(semantic_errors, ensure_ascii=False, sort_keys=True))
+    policy_errors = validate_error_policy(envelope, policy)
+    require(not policy_errors, "frozen error policy invalid: " + json.dumps(policy_errors, ensure_ascii=False, sort_keys=True))
+    if envelope.get("status") == "SUCCESS":
+        bundle_semantic_errors = validate_reference_bundle_semantics(envelope["bundle"])
+        require(not bundle_semantic_errors, "frozen Bundle semantics invalid: " + json.dumps(bundle_semantic_errors, ensure_ascii=False, sort_keys=True))
+
+
 def load_manifest(root: Path) -> dict[str, Any]:
     manifest = read_json(root, MANIFEST_REL)
     require(manifest.get("schema_version") == "1.0.0", "synthetic manifest schema drift")
@@ -50,26 +115,72 @@ def load_manifest(root: Path) -> dict[str, Any]:
     return manifest
 
 
-def packet(governance: dict[str, Any], simple: dict[str, Any], slot: str) -> dict[str, Any]:
+def build_blinded_review_payload(validated_success_envelope: dict[str, Any], blinded_candidate_id: str | None = None) -> dict[str, Any]:
+    """Project only review-safe fields; provider provenance is never copied then deleted."""
+    require(validated_success_envelope.get("status") == "SUCCESS", "blinded projection requires SUCCESS")
+    require(isinstance(validated_success_envelope.get("bundle"), dict), "blinded projection requires a Bundle")
+    candidate_id = blinded_candidate_id or f"candidate-{validated_success_envelope['reference_id']}"
+    payload = {
+        "blinded_candidate_id": candidate_id,
+        "reference_id": validated_success_envelope["reference_id"],
+        "bundle": copy.deepcopy(validated_success_envelope["bundle"]),
+        "confidence_summary": copy.deepcopy(validated_success_envelope["confidence_summary"]),
+        "uncertainty_flags": copy.deepcopy(validated_success_envelope["uncertainty_flags"]),
+        "warnings": list(validated_success_envelope["warnings"]),
+        "safety_flags": list(validated_success_envelope["safety_flags"]),
+    }
+    require(not any(field in payload for field in PROVIDER_PROVENANCE_FIELDS), "provider provenance leaked into blinded payload")
+    require(not unsafe(payload), "unsafe value in blinded payload")
+    return payload
+
+
+def packet(governance: dict[str, Any], simple: dict[str, Any], payload: dict[str, Any], fallback_slot: str) -> dict[str, Any]:
     score = int(simple.get("scores", 0))
-    categories = simple.get("categories", [])
-    severe = bool(simple.get("severe", False))
+    criterion_scores = simple.get("criterion_scores") or {f"c{i:02d}": score for i in range(1, 18)}
+    slot = simple.get("reviewer_slot", fallback_slot)
+    adjudication_required = bool(simple.get("adjudication_required", slot == "R3"))
+    review_status = simple.get("review_status", "ADJUDICATION_COMPLETE" if slot == "R3" else "REVIEW_PACKET_VALID")
     return {
         "packet_version": "1.0.0",
-        "sample_id": simple["reference_id"],
-        "blinded_candidate_id": simple["blinded_candidate_id"],
+        "sample_id": payload["reference_id"],
+        "blinded_candidate_id": payload["blinded_candidate_id"],
         "rubric_version": governance["governance_id"],
         "reviewer_slot": slot,
-        "criterion_scores": {f"c{i:02d}": score for i in range(1, 18)},
+        "criterion_scores": criterion_scores,
         "automated_criterion_18": {"status": "PASS", "required_fields_valid": True, "bounds_valid": True, "source_version_consistent": True},
-        "severe_hallucination": severe,
-        "severe_hallucination_categories": categories,
-        "adjudication_required": False,
-        "review_status": "REVIEW_PACKET_VALID",
+        "severe_hallucination": bool(simple.get("severe", False)),
+        "severe_hallucination_categories": simple.get("categories", []),
+        "adjudication_required": adjudication_required,
+        "review_status": review_status,
+        **({"adjudication_note": simple["adjudication_note"]} if "adjudication_note" in simple else {}),
     }
 
 
-def run_case(root: Path, case: dict[str, Any], governance: dict[str, Any]) -> dict[str, Any]:
+def _base_summary(case_id: str, outcome: str, contract_valid: bool, eligible: bool) -> dict[str, Any]:
+    return {
+        "case_id": case_id,
+        "provider_outcome": outcome,
+        "contract_valid": contract_valid,
+        "quality_review_eligible": eligible,
+        "criterion_scores": {},
+        "raw_score": None,
+        "normalized_quality": None,
+        "severe_hallucination_count": 0,
+        "hard_findings": [],
+        "threshold_status": "PROPOSED_NOT_APPROVED",
+        "qualification_state": "NOT_PROVIDER_QUALIFICATION",
+        "demo_fallback_used": False,
+    }
+
+
+def run_case(
+    root: Path,
+    case: dict[str, Any],
+    governance: dict[str, Any],
+    envelope_validator: Draft202012Validator,
+    bundle_validator: Draft202012Validator,
+    policy: dict[str, Any],
+) -> dict[str, Any]:
     fixture = read_json(root, case["path"])
     require(fixture.get("fixture_class") == "CONTRACT_ONLY_SYNTHETIC_NO_PROVIDER_EXECUTED", f"fixture marker drift: {case['id']}")
     require(fixture.get("reference_id", "").startswith("synthetic-reference-"), f"reference identity drift: {case['id']}")
@@ -77,17 +188,37 @@ def run_case(root: Path, case: dict[str, Any], governance: dict[str, Any]) -> di
     metadata = fixture.get("provider_metadata", {})
     require(metadata.get("provider_id") == "synthetic-contract-provider", f"provider provenance is not synthetic: {case['id']}")
     require(metadata.get("model_id") == "synthetic-model" and metadata.get("model_revision") == "synthetic-revision" and metadata.get("runtime_id") == "synthetic-runtime", f"model/runtime provenance is not synthetic: {case['id']}")
-    require(metadata.get("provider_type") in {"LOCAL_VLM", "PIPELINE", "CLOUD", "ON_DEVICE"}, f"provider type invalid: {case['id']}")
+    require(metadata.get("provider_type") in LEGACY_SYNTHETIC_PROVIDER_TYPES, f"provider type invalid: {case['id']}")
     require(not unsafe(fixture), f"unsafe fixture field: {case['id']}")
+    require(fixture.get("threshold_status", "PROPOSED_NOT_APPROVED") == "PROPOSED_NOT_APPROVED", f"threshold promotion: {case['id']}")
+    require(fixture.get("qualification_state", "NOT_PROVIDER_QUALIFICATION") == "NOT_PROVIDER_QUALIFICATION", f"provider qualification promotion: {case['id']}")
     outcome = fixture.get("provider_outcome")
     require(outcome in {"SUCCESS", "FAILED", "CANCELLED"}, f"unsupported outcome: {case['id']}")
+    envelope = fixture.get("envelope")
+    require(isinstance(envelope, dict), f"fixture envelope missing: {case['id']}")
+    require(envelope.get("reference_id") == fixture["reference_id"], f"fixture/envelope reference mismatch: {case['id']}")
+    require(envelope.get("status") == outcome, f"fixture/envelope outcome mismatch: {case['id']}")
+    validate_frozen_envelope(envelope, envelope_validator, bundle_validator, policy)
+
     if outcome != "SUCCESS":
         require(not fixture.get("review_packets"), f"ineligible outcome has review packets: {case['id']}")
-        return {"case_id": case["id"], "provider_outcome": outcome, "contract_valid": bool(fixture.get("contract_valid")), "quality_review_eligible": False, "adjudication_state": "NOT_APPLICABLE", "criterion_scores": {}, "raw_score": None, "normalized_quality": None, "severe_hallucination_count": 0, "hard_findings": [fixture.get("error_code", "PROVIDER_OUTCOME_NOT_SUCCESS")], "threshold_status": "PROPOSED_NOT_APPROVED", "qualification_state": "NOT_PROVIDER_QUALIFICATION"}
+        require(envelope.get("error", {}).get("code") == fixture.get("error_code"), f"error identity drift: {case['id']}")
+        summary = _base_summary(case["id"], outcome, bool(fixture.get("contract_valid")), False)
+        summary.update({
+            "adjudication_state": "NOT_APPLICABLE",
+            "error_code": envelope["error"]["code"],
+            "retryable": envelope["retryable"],
+            "product_action": envelope["error"]["product_action"],
+            "fallback_policy": policy["policies"][0]["demo_fallback_policy"],
+            "hard_findings": [envelope["error"]["code"]],
+        })
+        return summary
+
     require(fixture.get("contract_valid") is True, f"SUCCESS fixture is not contract-valid: {case['id']}")
+    blinded = build_blinded_review_payload(envelope, fixture["blinded_candidate_id"])
     simple_packets = fixture.get("review_packets", [])
-    require(len(simple_packets) == 2, f"SUCCESS fixture must have R1/R2: {case['id']}")
-    packets = [packet(governance, dict(simple, reference_id=fixture["reference_id"], blinded_candidate_id=fixture["blinded_candidate_id"]), slot) for simple, slot in zip(simple_packets, ("R1", "R2"))]
+    require(len(simple_packets) in {2, 3}, f"SUCCESS fixture must have R1/R2 or R1/R2/R3: {case['id']}")
+    packets = [packet(governance, simple, blinded, slot) for simple, slot in zip(simple_packets, ("R1", "R2", "R3"))]
     for candidate in packets:
         validate_review_packet(candidate, governance)
     try:
@@ -95,17 +226,45 @@ def run_case(root: Path, case: dict[str, Any], governance: dict[str, Any]) -> di
     except T7ValidationError as exc:
         if "required R3 adjudication is missing" not in str(exc):
             raise
-        return {"case_id": case["id"], "provider_outcome": outcome, "contract_valid": True, "quality_review_eligible": True, "adjudication_state": "ADJUDICATION_REQUIRED", "criterion_scores": {}, "raw_score": None, "normalized_quality": None, "severe_hallucination_count": sum(1 for simple in simple_packets if simple.get("severe")), "hard_findings": ["SEVERE_HALLUCINATION_FLAGGED"] if any(simple.get("severe") for simple in simple_packets) else ["REVIEWER_DISAGREEMENT_REQUIRES_R3"], "threshold_status": "PROPOSED_NOT_APPROVED", "qualification_state": "NOT_PROVIDER_QUALIFICATION"}
-    raw = sum(result["criterion_medians"].values()) if result["status"] == "REVIEW_PACKET_VALID" else None
+        summary = _base_summary(case["id"], outcome, True, True)
+        summary.update({
+            "adjudication_state": "ADJUDICATION_REQUIRED",
+            "adjudication_result": "REQUIRED",
+            "severe_hallucination_count": sum(1 for simple in simple_packets if simple.get("severe")),
+            "hard_findings": ["SEVERE_HALLUCINATION_FLAGGED"] if any(simple.get("severe") for simple in simple_packets) else ["REVIEWER_DISAGREEMENT_REQUIRES_R3"],
+        })
+        return summary
+    raw = sum(result["criterion_medians"].values()) if result["status"] in {"REVIEW_PACKET_VALID", "ADJUDICATION_COMPLETE"} else None
     normalized = round(raw / 36 * 100, 2) if raw is not None else None
-    return {"case_id": case["id"], "provider_outcome": outcome, "contract_valid": True, "quality_review_eligible": True, "adjudication_state": "METRICS_READY_OWNER_THRESHOLD_NOT_APPROVED" if result["status"] == "REVIEW_PACKET_VALID" else result["status"], "criterion_scores": result["criterion_medians"], "raw_score": raw, "normalized_quality": normalized, "severe_hallucination_count": sum(1 for simple in simple_packets if simple.get("severe")), "hard_findings": ["SEVERE_HALLUCINATION_FLAGGED"] if any(simple.get("severe") for simple in simple_packets) else [], "threshold_status": "PROPOSED_NOT_APPROVED", "qualification_state": "NOT_PROVIDER_QUALIFICATION"}
+    summary = _base_summary(case["id"], outcome, True, True)
+    summary.update({
+        "adjudication_state": "METRICS_READY_OWNER_THRESHOLD_NOT_APPROVED" if raw is not None else result["status"],
+        "adjudication_result": "COMPLETE" if result["status"] == "ADJUDICATION_COMPLETE" else "NOT_TRIGGERED",
+        "criterion_scores": result["criterion_medians"],
+        "raw_score": raw,
+        "normalized_quality": normalized,
+        "severe_hallucination_count": sum(1 for simple in simple_packets if simple.get("severe")),
+        "hard_findings": ["SEVERE_HALLUCINATION_FLAGGED"] if any(simple.get("severe") for simple in simple_packets) else [],
+    })
+    return summary
 
 
 def run(root: Path) -> dict[str, Any]:
     manifest = load_manifest(root)
     governance, _ = validate_governance(root)
-    summaries = [run_case(root, case, governance) for case in manifest["cases"]]
-    return {"summary_version": "1.0.0", "fixture_class": "CONTRACT_ONLY_SYNTHETIC", "qualification_state": "NOT_PROVIDER_QUALIFICATION", "threshold_status": "PROPOSED_NOT_APPROVED", "cases": summaries}
+    envelope_validator, bundle_validator, _ = load_contract_validators(root)
+    policy = load_error_policy(root / ERROR_POLICY_REL)
+    summaries = [run_case(root, case, governance, envelope_validator, bundle_validator, policy) for case in manifest["cases"]]
+    for case, summary in zip(manifest["cases"], summaries):
+        require(case.get("expected") == summary["adjudication_state"], f"case expectation drift: {case['id']}")
+    return {
+        "summary_version": "1.0.0",
+        "fixture_class": "CONTRACT_ONLY_SYNTHETIC",
+        "qualification_state": "NOT_PROVIDER_QUALIFICATION",
+        "threshold_status": "PROPOSED_NOT_APPROVED",
+        "frozen_contracts": {"provider_envelope_schema": "PASS", "reference_bundle_schema": "PASS", "semantic_validators": "PASS", "error_policy": "PASS"},
+        "cases": summaries,
+    }
 
 
 def main(argv: list[str] | None = None) -> int:

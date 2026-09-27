@@ -59,14 +59,108 @@ class T8HarnessTests(unittest.TestCase):
     def test_harness_runs_all_synthetic_classes(self) -> None:
         summary = harness.run(self.fixture)
         self.assertEqual(summary["fixture_class"], "CONTRACT_ONLY_SYNTHETIC")
-        self.assertEqual(len(summary["cases"]), 6)
+        self.assertEqual(len(summary["cases"]), 8)
         states = {item["case_id"]: item["adjudication_state"] for item in summary["cases"]}
         self.assertEqual(states["success-no-adjudication"], "METRICS_READY_OWNER_THRESHOLD_NOT_APPROVED")
         self.assertEqual(states["success-disagreement"], "ADJUDICATION_REQUIRED")
         self.assertEqual(states["success-severe"], "ADJUDICATION_REQUIRED")
+        self.assertEqual(states["success-disagreement-r3"], "METRICS_READY_OWNER_THRESHOLD_NOT_APPROVED")
+        self.assertEqual(states["success-severe-r3"], "METRICS_READY_OWNER_THRESHOLD_NOT_APPROVED")
         self.assertEqual(states["failed-provider"], "NOT_APPLICABLE")
         self.assertEqual(states["cancelled-provider"], "NOT_APPLICABLE")
         self.assertEqual(states["pipeline-incompatible"], "NOT_APPLICABLE")
+
+    def test_frozen_schema_semantics_and_policy_are_executed(self) -> None:
+        mutations = [
+            ("unknown envelope field", lambda envelope: envelope.update({"unexpected": True})),
+            ("provider type", lambda envelope: envelope.update({"provider_type": "LOCAL_VLM"})),
+            ("timestamp order", lambda envelope: envelope.update({"completed_at_utc": "2026-09-26T23:59:59Z"})),
+            ("timestamp format", lambda envelope: envelope.update({"started_at_utc": "not-a-date"})),
+            ("success output version", lambda envelope: envelope.update({"output_schema_version": "9.9"})),
+            ("artifact hash", lambda envelope: envelope.update({"model_artifact_sha256": "not-a-hash"})),
+            ("bundle semantic text", lambda envelope: envelope["bundle"].update({"scene": " leading-space"})),
+        ]
+        for name, mutate in mutations:
+            with self.subTest(name=name):
+                fixture = self.read("docs/phase1_5/t8/fixtures/success_no_adjudication.json")
+                mutate(fixture["envelope"])
+                self.write("docs/phase1_5/t8/fixtures/success_no_adjudication.json", fixture)
+                with self.assertRaises(harness.T8ValidationError):
+                    harness.run(self.fixture)
+                shutil.copy2(ROOT / "docs/phase1_5/t8/fixtures/success_no_adjudication.json", self.fixture / "docs/phase1_5/t8/fixtures/success_no_adjudication.json")
+
+        failed = self.read("docs/phase1_5/t8/fixtures/failed_provider.json")
+        failed["envelope"]["retryable"] = False
+        self.write("docs/phase1_5/t8/fixtures/failed_provider.json", failed)
+        with self.assertRaises(harness.T8ValidationError):
+            harness.run(self.fixture)
+
+    def test_success_reference_identity_and_bundle_version_are_gated(self) -> None:
+        fixture = self.read("docs/phase1_5/t8/fixtures/success_no_adjudication.json")
+        fixture["envelope"]["bundle"]["reference_id"] = "synthetic-reference-other"
+        self.write("docs/phase1_5/t8/fixtures/success_no_adjudication.json", fixture)
+        with self.assertRaises(harness.T8ValidationError):
+            harness.run(self.fixture)
+        shutil.copy2(ROOT / "docs/phase1_5/t8/fixtures/success_no_adjudication.json", self.fixture / "docs/phase1_5/t8/fixtures/success_no_adjudication.json")
+        fixture = self.read("docs/phase1_5/t8/fixtures/success_no_adjudication.json")
+        fixture["envelope"]["bundle"]["version"] = "9.9"
+        self.write("docs/phase1_5/t8/fixtures/success_no_adjudication.json", fixture)
+        with self.assertRaises(harness.T8ValidationError):
+            harness.run(self.fixture)
+
+    def test_blinded_projection_is_allowlist_only_and_provider_invariant(self) -> None:
+        envelope = self.read("docs/phase1_5/t8/fixtures/success_no_adjudication.json")["envelope"]
+        payload = harness.build_blinded_review_payload(envelope, "candidate-synthetic-a")
+        self.assertNotIn("provider_id", payload)
+        self.assertNotIn("provider_type", payload)
+        self.assertNotIn("model_id", payload)
+        self.assertNotIn("model_revision", payload)
+        self.assertNotIn("model_artifact_sha256", payload)
+        self.assertNotIn("runtime_id", payload)
+        self.assertNotIn("provenance", payload)
+        self.assertEqual(payload["blinded_candidate_id"], "candidate-synthetic-a")
+        mutated = copy.deepcopy(envelope)
+        mutated.update({"provider_id": "another-synthetic-provider", "provider_type": "CLOUD", "model_id": "other-model", "model_revision": "other-revision", "model_artifact_sha256": "b" * 64, "runtime_id": "other-runtime"})
+        mutated["provenance"]["producer_release"] = "other-release"
+        self.assertEqual(payload, harness.build_blinded_review_payload(mutated, "candidate-synthetic-a"))
+
+    def test_r1_r2_r3_lifecycle_and_severe_finding_persistence(self) -> None:
+        summaries = {item["case_id"]: item for item in harness.run(self.fixture)["cases"]}
+        self.assertIsNotNone(summaries["success-no-adjudication"]["raw_score"])
+        self.assertIsNone(summaries["success-disagreement"]["raw_score"])
+        self.assertEqual(summaries["success-disagreement"]["adjudication_result"], "REQUIRED")
+        self.assertEqual(summaries["success-disagreement-r3"]["adjudication_result"], "COMPLETE")
+        self.assertEqual(summaries["success-disagreement-r3"]["raw_score"], 17)
+        self.assertIsNone(summaries["success-severe"]["raw_score"])
+        self.assertEqual(summaries["success-severe-r3"]["adjudication_result"], "COMPLETE")
+        self.assertIsNotNone(summaries["success-severe-r3"]["raw_score"])
+        self.assertIn("SEVERE_HALLUCINATION_FLAGGED", summaries["success-severe-r3"]["hard_findings"])
+
+    def test_non_success_outcomes_never_score_or_fallback(self) -> None:
+        summaries = {item["case_id"]: item for item in harness.run(self.fixture)["cases"]}
+        for case_id in ("failed-provider", "cancelled-provider", "pipeline-incompatible"):
+            with self.subTest(case_id=case_id):
+                result = summaries[case_id]
+                self.assertFalse(result["quality_review_eligible"])
+                self.assertIsNone(result["raw_score"])
+                self.assertIsNone(result["normalized_quality"])
+                self.assertFalse(result["demo_fallback_used"])
+        pipeline = summaries["pipeline-incompatible"]
+        self.assertFalse(pipeline["retryable"])
+        self.assertEqual(pipeline["product_action"], "SHOW_UNAVAILABLE")
+        self.assertEqual(pipeline["fallback_policy"], "USER_EXPLICIT_OUT_OF_ENVELOPE_ONLY")
+
+    def test_uncertainty_and_thresholds_remain_fail_closed(self) -> None:
+        envelope = self.read("docs/phase1_5/t8/fixtures/success_no_adjudication.json")["envelope"]
+        envelope["uncertainty_flags"]["emotion"]["level"] = "HIGH"
+        payload = harness.build_blinded_review_payload(envelope, "candidate-synthetic-a")
+        self.assertEqual(payload["uncertainty_flags"]["emotion"]["level"], "HIGH")
+        fixture = self.read("docs/phase1_5/t8/fixtures/success_no_adjudication.json")
+        fixture["threshold_status"] = "APPROVED"
+        self.write("docs/phase1_5/t8/fixtures/success_no_adjudication.json", fixture)
+        with self.assertRaises(harness.T8ValidationError):
+            harness.run(self.fixture)
+        shutil.copy2(ROOT / "docs/phase1_5/t8/fixtures/success_no_adjudication.json", self.fixture / "docs/phase1_5/t8/fixtures/success_no_adjudication.json")
 
     def test_cli_and_negative_authority_probes(self) -> None:
         output = subprocess.run([sys.executable, str(ROOT / "scripts/run_phase1_5_t8_synthetic_evaluation.py"), "--root", str(self.fixture)], capture_output=True, text=True, check=False)

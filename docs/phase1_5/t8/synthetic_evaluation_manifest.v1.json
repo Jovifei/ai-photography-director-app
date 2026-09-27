@@ -8,9 +8,11 @@
     {"id": "success-no-adjudication", "path": "docs/phase1_5/t8/fixtures/success_no_adjudication.json", "expected": "METRICS_READY_OWNER_THRESHOLD_NOT_APPROVED"},
     {"id": "success-disagreement", "path": "docs/phase1_5/t8/fixtures/success_disagreement.json", "expected": "ADJUDICATION_REQUIRED"},
     {"id": "success-severe", "path": "docs/phase1_5/t8/fixtures/success_severe.json", "expected": "ADJUDICATION_REQUIRED"},
-    {"id": "failed-provider", "path": "docs/phase1_5/t8/fixtures/failed_provider.json", "expected": "QUALITY_REVIEW_NOT_ELIGIBLE"},
-    {"id": "cancelled-provider", "path": "docs/phase1_5/t8/fixtures/cancelled_provider.json", "expected": "QUALITY_REVIEW_NOT_ELIGIBLE"},
-    {"id": "pipeline-incompatible", "path": "docs/phase1_5/t8/fixtures/pipeline_incompatible.json", "expected": "QUALITY_REVIEW_NOT_ELIGIBLE"}
+    {"id": "success-disagreement-r3", "path": "docs/phase1_5/t8/fixtures/success_disagreement_r3.json", "expected": "METRICS_READY_OWNER_THRESHOLD_NOT_APPROVED"},
+    {"id": "success-severe-r3", "path": "docs/phase1_5/t8/fixtures/success_severe_r3.json", "expected": "METRICS_READY_OWNER_THRESHOLD_NOT_APPROVED"},
+    {"id": "failed-provider", "path": "docs/phase1_5/t8/fixtures/failed_provider.json", "expected": "NOT_APPLICABLE"},
+    {"id": "cancelled-provider", "path": "docs/phase1_5/t8/fixtures/cancelled_provider.json", "expected": "NOT_APPLICABLE"},
+    {"id": "pipeline-incompatible", "path": "docs/phase1_5/t8/fixtures/pipeline_incompatible.json", "expected": "NOT_APPLICABLE"}
   ],
   "authority": {
     "provider_runtime_authorized": false,

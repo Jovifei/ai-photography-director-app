@@ -13,12 +13,18 @@ Every fixture is marked `CONTRACT_ONLY_SYNTHETIC_NO_PROVIDER_EXECUTED`. Syntheti
 ## Qualification
 
 - Harness normal run: **PASS** (`SYNTHETIC_EVALUATION_HARNESS_READY`).
-- Harness tests: **7/7 PASS** covering all six fixture classes, authority probes, provenance/media/PII drift and static safety.
-- Synthetic cases: SUCCESS no adjudication → `METRICS_READY_OWNER_THRESHOLD_NOT_APPROVED`; disagreement/severe → `ADJUDICATION_REQUIRED`; FAILED/CANCELLED/Pipeline incompatible → `NOT_APPLICABLE`.
+- Harness tests: **13/13 PASS** covering frozen schema and semantic/policy rejection, reference identity, allowlist blinding/provider invariance, all R1/R2/R3 paths, provenance/media/PII drift, threshold promotion and static safety.
+- Synthetic cases: SUCCESS no adjudication → `METRICS_READY_OWNER_THRESHOLD_NOT_APPROVED`; disagreement/severe without R3 → `ADJUDICATION_REQUIRED`; valid R3 → median metrics while preserving severe findings; FAILED/CANCELLED/Pipeline incompatible → `NOT_APPLICABLE` with no score or fallback.
+- Frozen contract checks: ProviderAnalysisEnvelope schema, ReferenceBundle schema, semantic validators and `error_policy.v1.json` all execute in the runner.
 - Human-review/provider/Pipeline negative probes: **PASS as expected blocked results**.
 - T7 governance/T6 P1B regressions: **PASS**.
 - Program status: **8/8 PASS**; contracts/privacy/diff: **PASS**.
 - No images, external corpus root, model bytes, Provider, Pipeline or human reviewer were accessed.
+
+The remote post-submission audit `c2c_aa42` identified the earlier receipt as
+implementation-evidence incomplete. T8-R repairs are recorded in
+[`T8_POST_SUBMISSION_CONFORMANCE_AUDIT.md`](T8_POST_SUBMISSION_CONFORMANCE_AUDIT.md);
+the new remote re-audit remains pending until the repaired exact head is pushed.
 
 ## Non-results and gates
 

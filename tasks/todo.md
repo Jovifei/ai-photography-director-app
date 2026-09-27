@@ -13,6 +13,30 @@ Remote plan `c2c_f8b2` selected this contract-only, image-free, human-free dry-r
 - [x] Run T6/T7 regressions, contracts/privacy/scope and bounded Android smoke.
 - [ ] Perform exact review, push stacked Draft PR and obtain remote evidence review.
 
+## T8-R post-submission conformance repair — 2026-09-27
+
+Remote audit `c2c_aa42` returned `REPAIR_REQUIRED`: the previous T8 receipt proved
+the high-level status but did not prove that the runner executed the frozen
+ProviderAnalysisEnvelope/ReferenceBundle/error-policy validators or the complete
+R1/R2/R3 and non-success exclusion paths. Stay on T8/PR #12; do not start T9.
+
+- [x] Wire the runner to the frozen Draft 2020-12 Envelope and Bundle schemas plus semantic and error-policy validators.
+- [x] Enforce SUCCESS reference identity and validated Bundle eligibility before review packets.
+- [x] Implement an allowlist-only provider-blinded projection and provider-invariance tests.
+- [x] Add complete R1/R2/R3 lifecycle fixtures/tests, including severe finding persistence.
+- [x] Add explicit FAILED/CANCELLED/Pipeline exclusion and frozen retry/fallback policy tests.
+- [x] Add named negative/capability/scope tests without touching frozen contracts or Android.
+- [x] Add a sanitized, readable audit evidence recorder and post-submission conformance table.
+- [x] Re-run focused T8/T7/T6/status/contracts/privacy and bounded Android JVM smoke checks.
+- [ ] Commit/push the repaired T8 candidate and request remote re-audit before planning any next stage.
+
+### T8-R review
+
+Local focused and regression checks are passing. The first Android invocation lacked
+an SDK variable in the isolated checkout; the bounded JVM smoke was rerun with the
+existing user SDK path supplied per command and passed. Exact clean scope/diff,
+privacy-before-push, evidence recording, commit/push and remote re-audit remain.
+
 ## T7 evaluation governance readiness — 2026-09-27
 
 Remote plan `c2c_d4e1` selected this provider-neutral, metadata-only stage from exact T6 head `3233313af8be946cc43245daf15f24f853933d88`. The 18-criterion rubric remains `PROPOSED_OWNER_THRESHOLD — NOT_MEASURED`; T7 must not perform human review, use media, connect Pipeline, qualify a provider or authorize a launch threshold. The detailed checklist is [`tasks/plans/2026-09-27-t7-evaluation-governance-readiness.md`](plans/2026-09-27-t7-evaluation-governance-readiness.md).
