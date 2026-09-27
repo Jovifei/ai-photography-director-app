@@ -17,9 +17,9 @@ PASS: independent review of delivery 753163efddfd8e28a6b267ac70af95cdd86c282e re
 - [x] Bind clean isolated branch to reviewed P25U SHA and confirm baseline build/tests.
 - [x] Add current-primary-reference thumbnail and full-view flow with private-file failure handling.
 - [x] Add lifecycle-fenced tap focus and capability-bound exposure compensation.
-- [ ] Verify real App navigation, camera capture, layout, rotation, and affected P25U regressions on dedicated emulator.
+- [x] Verify real App navigation, camera capture, layout, rotation, and affected P25U regressions on dedicated API 35 emulator.
 - [ ] Record exact source/evidence boundary, run privacy audit, push branch, create Draft PR, and obtain independent review.
 
 ### T3 review
 
-Pending implementation and evidence.
+PASS local emulator qualification on source `7ddfdb66fc0d6725b1af67db2a9bf53a35615ee9`: JVM 138/138; debug and AndroidTest builds pass; lint 0 errors / 25 warnings; T3 UI 7/7, Director root 2/2, P25U camera 1/1, export 3/3, and default-App recovery prepare/verify/cleanup 1/1 each. Evidence run `0871703be1de4a7cb895b6eefd397e4b` is outside the repository and hash-bound in `docs/handoff/T3_STAGE_STATE_20260927.json`. Independent review, privacy audit, push, and Draft PR remain pending.

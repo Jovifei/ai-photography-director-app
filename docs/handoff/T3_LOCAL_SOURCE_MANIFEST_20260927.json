@@ -1,0 +1,60 @@
+{
+  "stage": "T3_REFERENCE_COMPARISON_CAMERA_CONTROLS",
+  "base_sha": "7b2c09d189b598e1517af784f06d89eb4ea62320",
+  "source_commit": "7ddfdb66fc0d6725b1af67db2a9bf53a35615ee9",
+  "source_tree": "ed863a7e8ff4b3cb5591b842e0e3234300be7de0",
+  "hash_domain": "Exact Git object bytes; no Windows checkout or Unicode normalization",
+  "file_count": 10,
+  "files": {
+    "android/app/src/androidTest/java/com/jovi/photoai/p25u/P25UCaptureExportAndroidTest.kt": {
+      "git_blob": "21d2433db01d7e5881d7e02b043fb928f46d9cb9",
+      "bytes": 7834,
+      "sha256": "f1332b9cf8899186ef0f14ebc064617429bb243ed25aeb16bb9bfe6073df7575"
+    },
+    "android/app/src/androidTest/java/com/jovi/photoai/t3/T3CameraReferenceAndroidTest.kt": {
+      "git_blob": "b889a690f8d371cdef4ce49076a2db68460457ae",
+      "bytes": 9479,
+      "sha256": "f063fa1c39962ada470110f536d199bf10337074eb80c48ab8c1e5a7f415a7a5"
+    },
+    "android/app/src/main/java/com/jovi/photoai/camera/CameraControlFence.kt": {
+      "git_blob": "25b3cc6236864b13bee0da5980747d321b66b2ae",
+      "bytes": 707,
+      "sha256": "f12998d3aa9f218347b37a50aff85c9a29585b263f68685527122981255ffbde"
+    },
+    "android/app/src/main/java/com/jovi/photoai/camera/CameraXManager.kt": {
+      "git_blob": "1539d724b49b6e315b76d103bbd2250d6f13c0f8",
+      "bytes": 6765,
+      "sha256": "d794d748e1708a5f8f9c583e516913079b80423e5ec1b83c1140183609cc5dcd"
+    },
+    "android/app/src/main/java/com/jovi/photoai/ui/CameraScreen.kt": {
+      "git_blob": "822f972cb213185dfaf0f642f271044256bce280",
+      "bytes": 19448,
+      "sha256": "fb8f08b85e7449d5de9505c533048e0f1163d2bc9063d4327356c2383bbb9424"
+    },
+    "android/app/src/main/java/com/jovi/photoai/ui/PhotographyDirectorApp.kt": {
+      "git_blob": "36192cf3df2449ea1ab34e22d21308b53e1c812c",
+      "bytes": 33163,
+      "sha256": "3b06e78eba093fadb934ae9a338cacd8ab7546d1f284f161efe595a4ca779505"
+    },
+    "android/app/src/main/java/com/jovi/photoai/ui/camera/CameraDirectorChrome.kt": {
+      "git_blob": "356bbb5655fa6bdaf5c426564a15722841f01fb5",
+      "bytes": 30876,
+      "sha256": "e13e993f33d6a77909d388c0af0d1df9f68887bb734e8986e7b283eb8dc59794"
+    },
+    "android/app/src/main/java/com/jovi/photoai/ui/reference/PrivateReferenceImage.kt": {
+      "git_blob": "317248ce447ef9eb1bf196263c8bd34156045f81",
+      "bytes": 2671,
+      "sha256": "88d21a1e37acf6a99417507ca36e176546be7dd2e01de701e58bb472e039778a"
+    },
+    "android/app/src/test/java/com/jovi/photoai/camera/CameraControlFenceTest.kt": {
+      "git_blob": "bf95b3b12169afcebaf98e6378afa34cc28e384c",
+      "bytes": 765,
+      "sha256": "9d981c8139e0c5cbe78057b3dfbd4ea1db868825051b1ce4bbf43b9e335343d9"
+    },
+    "scripts/qualify_t3_reference_camera_controls.ps1": {
+      "git_blob": "3891d782cc4563751d5c16fa509e7273f463e13f",
+      "bytes": 6986,
+      "sha256": "823e51b9685e92c81db8ce9241ab420fb7e555106a0928f682811843f2d5ff0e"
+    }
+  }
+}
