@@ -37,6 +37,17 @@ an SDK variable in the isolated checkout; the bounded JVM smoke was rerun with t
 existing user SDK path supplied per command and passed. Exact clean scope/diff,
 privacy-before-push, evidence recording, commit/push and remote re-audit remain.
 
+## T8-R3 implementation conformance repair — 2026-09-27
+
+The clean review connector independently found four remaining gaps in the
+existing T8 candidate. Stay on PR #12 and do not start a new phase.
+
+- [x] Add automated criterion 18 as a contract-derived 2-point score; prove 36/36 → 100.00.
+- [x] Execute the tracked T8 manifest schema and per-case evaluation summary schema.
+- [x] Remove unstructured warnings from the reviewer payload and test warning-based provenance leakage.
+- [x] Refresh audit/report binding language for the clean review clone while retaining the old main limitation accurately.
+- [ ] Requalify, push, record sanitized evidence, and request final remote T8-R3 review.
+
 ## T7 evaluation governance readiness — 2026-09-27
 
 Remote plan `c2c_d4e1` selected this provider-neutral, metadata-only stage from exact T6 head `3233313af8be946cc43245daf15f24f853933d88`. The 18-criterion rubric remains `PROPOSED_OWNER_THRESHOLD — NOT_MEASURED`; T7 must not perform human review, use media, connect Pipeline, qualify a provider or authorize a launch threshold. The detailed checklist is [`tasks/plans/2026-09-27-t7-evaluation-governance-readiness.md`](plans/2026-09-27-t7-evaluation-governance-readiness.md).

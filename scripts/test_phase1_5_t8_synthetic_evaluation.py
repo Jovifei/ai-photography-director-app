@@ -110,6 +110,7 @@ class T8HarnessTests(unittest.TestCase):
 
     def test_blinded_projection_is_allowlist_only_and_provider_invariant(self) -> None:
         envelope = self.read("docs/phase1_5/t8/fixtures/success_no_adjudication.json")["envelope"]
+        envelope["warnings"] = ["provider-model metadata must not reach reviewers"]
         payload = harness.build_blinded_review_payload(envelope, "candidate-synthetic-a")
         self.assertNotIn("provider_id", payload)
         self.assertNotIn("provider_type", payload)
@@ -118,6 +119,8 @@ class T8HarnessTests(unittest.TestCase):
         self.assertNotIn("model_artifact_sha256", payload)
         self.assertNotIn("runtime_id", payload)
         self.assertNotIn("provenance", payload)
+        self.assertNotIn("warnings", payload)
+        self.assertNotIn("provider-model metadata", json.dumps(payload, ensure_ascii=False))
         self.assertEqual(payload["blinded_candidate_id"], "candidate-synthetic-a")
         mutated = copy.deepcopy(envelope)
         mutated.update({"provider_id": "another-synthetic-provider", "provider_type": "CLOUD", "model_id": "other-model", "model_revision": "other-revision", "model_artifact_sha256": "b" * 64, "runtime_id": "other-runtime"})
@@ -126,15 +129,36 @@ class T8HarnessTests(unittest.TestCase):
 
     def test_r1_r2_r3_lifecycle_and_severe_finding_persistence(self) -> None:
         summaries = {item["case_id"]: item for item in harness.run(self.fixture)["cases"]}
-        self.assertIsNotNone(summaries["success-no-adjudication"]["raw_score"])
+        self.assertEqual(summaries["success-no-adjudication"]["raw_score"], 36)
+        self.assertEqual(summaries["success-no-adjudication"]["normalized_quality"], 100.0)
         self.assertIsNone(summaries["success-disagreement"]["raw_score"])
         self.assertEqual(summaries["success-disagreement"]["adjudication_result"], "REQUIRED")
         self.assertEqual(summaries["success-disagreement-r3"]["adjudication_result"], "COMPLETE")
-        self.assertEqual(summaries["success-disagreement-r3"]["raw_score"], 17)
+        self.assertEqual(summaries["success-disagreement-r3"]["raw_score"], 19)
         self.assertIsNone(summaries["success-severe"]["raw_score"])
         self.assertEqual(summaries["success-severe-r3"]["adjudication_result"], "COMPLETE")
-        self.assertIsNotNone(summaries["success-severe-r3"]["raw_score"])
+        self.assertEqual(summaries["success-severe-r3"]["raw_score"], 36)
         self.assertIn("SEVERE_HALLUCINATION_FLAGGED", summaries["success-severe-r3"]["hard_findings"])
+
+    def test_automated_criterion_18_is_derived_and_summary_schema_is_enforced(self) -> None:
+        summary = harness.run(self.fixture)
+        normal = next(item for item in summary["cases"] if item["case_id"] == "success-no-adjudication")
+        self.assertEqual(normal["criterion_scores"]["c18"], 2)
+        self.assertEqual(normal["summary_contract"]["raw_score"], 36)
+        self.assertEqual(normal["summary_contract"]["candidate_blind_id"], "candidate-synthetic-a")
+
+        manifest = self.read("docs/phase1_5/t8/synthetic_evaluation_manifest.v1.json")
+        manifest["unexpected"] = True
+        self.write("docs/phase1_5/t8/synthetic_evaluation_manifest.v1.json", manifest)
+        with self.assertRaises(harness.T8ValidationError):
+            harness.run(self.fixture)
+        shutil.copy2(ROOT / "docs/phase1_5/t8/synthetic_evaluation_manifest.v1.json", self.fixture / "docs/phase1_5/t8/synthetic_evaluation_manifest.v1.json")
+
+        fixture = self.read("docs/phase1_5/t8/fixtures/success_no_adjudication.json")
+        fixture["review_packets"][0]["automated_criterion_18"] = {"status": "FAIL"}
+        self.write("docs/phase1_5/t8/fixtures/success_no_adjudication.json", fixture)
+        with self.assertRaises(harness.T8ValidationError):
+            harness.run(self.fixture)
 
     def test_non_success_outcomes_never_score_or_fallback(self) -> None:
         summaries = {item["case_id"]: item for item in harness.run(self.fixture)["cases"]}

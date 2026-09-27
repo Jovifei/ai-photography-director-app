@@ -1,7 +1,7 @@
 # T8 post-submission conformance audit and repair receipt
 
 **Audit task:** `c2c_aa42`
-**Remote audit result received:** `REPAIR_REQUIRED`
+**Remote audit result received:** `REPAIR_REQUIRED` (T8-R2 reconciled; T8-R3 findings remain)
 **Repair scope:** remain on T8/PR #12; no T9, Provider, model, media, Pipeline, device, signing or threshold work.
 **Exact T7 base:** `61cb6776b2b6f00d6965789e0589c5337536d258`
 
@@ -9,7 +9,10 @@ The first T8 receipt proved the high-level synthetic status but did not expose
 implementation-level evidence for the frozen Envelope/Bundle validators,
 provider-blinded projection, complete R1/R2/R3 lifecycle or non-success policy.
 This table records the required repair against concrete local functions and
-tests. It is intentionally separate from the external remote re-audit result.
+tests. The active remote review uses the clean exact-head clone
+`ai-photography-director-app-t8-review`; the dirty Owner `main` remains
+untouched. `C2C_CODE_DIFF_REVIEW_NOT_POSSIBLE` is retained only for the old
+binding's lack of arbitrary base-to-head diff support.
 
 | Item | Required conformance evidence | Local implementation/test evidence | State |
 |---|---|---|---|
@@ -19,15 +22,18 @@ tests. It is intentionally separate from the external remote re-audit result.
 | R1 | Provider envelope semantic validator | `validate_provider_envelope_semantics()` is called before eligibility | PASS |
 | R1 | Frozen error policy validator | `load_error_policy()` and `validate_error_policy()` are called for every envelope | PASS |
 | R1 | Named schema/semantic negatives | `test_frozen_schema_semantics_and_policy_are_executed` covers unknown field, provider type, time format/order, output version, artifact hash and semantic text | PASS |
+| R1 | T8 manifest and per-case summary schemas execute | `load_manifest()` and `run()` validate the tracked manifest and `evaluation_run_summary.v1.schema.json` | GAP — T8-R3 |
 | R2 | SUCCESS reference identity gate | Envelope and fixture IDs are checked; frozen semantic validator rejects `bundle.reference_id` mismatch | PASS |
 | R2 | Bundle version and required-field gate | `test_success_reference_identity_and_bundle_version_are_gated` | PASS |
 | R3 | Allowlist-only provider-blinded projection | `build_blinded_review_payload()` copies review-safe fields only; provider metadata is never copied then deleted | PASS |
 | R3 | Provider metadata invariance | `test_blinded_projection_is_allowlist_only_and_provider_invariant` | PASS |
+| R3 | Unstructured warning text cannot leak provider/model provenance | Remove warnings from reviewer payload and test provider text embedded in warning | GAP — T8-R3 |
 | R4 | R1/R2 agreement produces metrics | `success_no_adjudication` produces raw/normalized metrics with threshold unapproved | PASS |
 | R4 | Disagreement without R3 blocks score | `success_disagreement` remains `ADJUDICATION_REQUIRED` with no raw/normalized score | PASS |
 | R4 | Valid R3 resolves disagreement | `success_disagreement_r3` produces median score and `adjudication_result=COMPLETE` | PASS |
 | R4 | Severe finding blocks until R3 | `success_severe` has no score and retains hard finding | PASS |
 | R4 | Severe finding persists after valid R3 | `success_severe_r3` produces metrics while retaining `SEVERE_HALLUCINATION_FLAGGED` | PASS |
+| R4 | Automated criterion 18 contributes to the 36-point total | Derive c18 from automation and prove 36/36 → 100 | GAP — T8-R3 |
 | R5 | FAILED/CANCELLED/Pipeline pre-score exclusion | All non-success cases reject review packets and return no score, no normalized quality and no Demo fallback | PASS |
 | R5 | Frozen Pipeline retry/fallback policy | Pipeline case is `retryable=false`, `SHOW_UNAVAILABLE`, `USER_EXPLICIT_OUT_OF_ENVELOPE_ONLY` | PASS |
 | R6 | Authority and capability negatives | CLI provider/human/Pipeline probes remain blocked; static source audit remains image/network/model/ADB free | PASS |
@@ -42,6 +48,6 @@ tests. It is intentionally separate from the external remote re-audit result.
 
 All evidence remains synthetic and contract-only. No Provider runtime, model
 weights, private media, external corpus, human reviewer, Pipeline, device,
-network call, signing key or Owner threshold was used. `C2C_CODE_DIFF_REVIEW_NOT_POSSIBLE`
-remains because the connector is attached to the intentionally dirty Owner
-`main`; the clean isolated worktree and exact diff are the local review source.
+network call, signing key or Owner threshold was used. The active review clone is
+clean and exact-head; the old Owner-main connector limitation remains recorded
+as `C2C_CODE_DIFF_REVIEW_NOT_POSSIBLE` for arbitrary base-range rendering.

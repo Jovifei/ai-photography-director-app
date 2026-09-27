@@ -18,6 +18,8 @@ ROOT = Path(__file__).resolve().parent.parent
 MANIFEST_REL = Path("docs/phase1_5/t8/synthetic_evaluation_manifest.v1.json")
 ENVELOPE_SCHEMA_REL = Path("docs/reference/provider_analysis_envelope.v1.schema.json")
 BUNDLE_SCHEMA_REL = Path("docs/reference/reference_bundle.v1.schema.json")
+MANIFEST_SCHEMA_REL = Path("docs/phase1_5/t8/synthetic_evaluation_manifest.v1.schema.json")
+SUMMARY_SCHEMA_REL = Path("docs/phase1_5/t8/evaluation_run_summary.v1.schema.json")
 ERROR_POLICY_REL = Path("docs/phase1_5/error_policy.v1.json")
 T7_BASE = "61cb6776b2b6f00d6965789e0589c5337536d258"
 LEGACY_SYNTHETIC_PROVIDER_TYPES = {"LOCAL_VLM", "PIPELINE", "CLOUD", "ON_DEVICE"}
@@ -66,7 +68,7 @@ def _schema_error(error: Any) -> str:
     return f"{path or '$'}: {error.message}"
 
 
-def load_contract_validators(root: Path) -> tuple[Draft202012Validator, Draft202012Validator, dict[str, Any]]:
+def load_contract_validators(root: Path) -> tuple[Draft202012Validator, Draft202012Validator, Draft202012Validator, Draft202012Validator]:
     """Load the tracked frozen schemas without resolving over the network."""
     envelope_schema = read_json(root, ENVELOPE_SCHEMA_REL)
     bundle_schema = read_json(root, BUNDLE_SCHEMA_REL)
@@ -77,7 +79,9 @@ def load_contract_validators(root: Path) -> tuple[Draft202012Validator, Draft202
         registry=registry,
     )
     bundle_validator = Draft202012Validator(bundle_schema, format_checker=FormatChecker())
-    return envelope_validator, bundle_validator, envelope_schema
+    manifest_validator = Draft202012Validator(read_json(root, MANIFEST_SCHEMA_REL), format_checker=FormatChecker())
+    summary_validator = Draft202012Validator(read_json(root, SUMMARY_SCHEMA_REL), format_checker=FormatChecker())
+    return envelope_validator, bundle_validator, manifest_validator, summary_validator
 
 
 def validate_frozen_envelope(
@@ -102,8 +106,10 @@ def validate_frozen_envelope(
         require(not bundle_semantic_errors, "frozen Bundle semantics invalid: " + json.dumps(bundle_semantic_errors, ensure_ascii=False, sort_keys=True))
 
 
-def load_manifest(root: Path) -> dict[str, Any]:
+def load_manifest(root: Path, manifest_validator: Draft202012Validator) -> dict[str, Any]:
     manifest = read_json(root, MANIFEST_REL)
+    manifest_errors = sorted(manifest_validator.iter_errors(manifest), key=lambda item: list(item.absolute_path))
+    require(not manifest_errors, "synthetic manifest schema invalid: " + "; ".join(_schema_error(error) for error in manifest_errors))
     require(manifest.get("schema_version") == "1.0.0", "synthetic manifest schema drift")
     require(manifest.get("status") == "CONTRACT_ONLY_SYNTHETIC_NO_PROVIDER_EXECUTED", "synthetic marker missing")
     require(manifest.get("t7_base") == T7_BASE, "T7 base drift")
@@ -126,8 +132,6 @@ def build_blinded_review_payload(validated_success_envelope: dict[str, Any], bli
         "bundle": copy.deepcopy(validated_success_envelope["bundle"]),
         "confidence_summary": copy.deepcopy(validated_success_envelope["confidence_summary"]),
         "uncertainty_flags": copy.deepcopy(validated_success_envelope["uncertainty_flags"]),
-        "warnings": list(validated_success_envelope["warnings"]),
-        "safety_flags": list(validated_success_envelope["safety_flags"]),
     }
     require(not any(field in payload for field in PROVIDER_PROVENANCE_FIELDS), "provider provenance leaked into blinded payload")
     require(not unsafe(payload), "unsafe value in blinded payload")
@@ -135,6 +139,7 @@ def build_blinded_review_payload(validated_success_envelope: dict[str, Any], bli
 
 
 def packet(governance: dict[str, Any], simple: dict[str, Any], payload: dict[str, Any], fallback_slot: str) -> dict[str, Any]:
+    require("automated_criterion_18" not in simple, "reviewer cannot override automated criterion 18")
     score = int(simple.get("scores", 0))
     criterion_scores = simple.get("criterion_scores") or {f"c{i:02d}": score for i in range(1, 18)}
     slot = simple.get("reviewer_slot", fallback_slot)
@@ -170,6 +175,26 @@ def _base_summary(case_id: str, outcome: str, contract_valid: bool, eligible: bo
         "threshold_status": "PROPOSED_NOT_APPROVED",
         "qualification_state": "NOT_PROVIDER_QUALIFICATION",
         "demo_fallback_used": False,
+    }
+
+
+def summary_contract_record(fixture: dict[str, Any], summary: dict[str, Any]) -> dict[str, Any]:
+    """Return the strict per-case record required by evaluation_run_summary.v1."""
+    return {
+        "summary_version": "1.0.0",
+        "fixture_class": "CONTRACT_ONLY_SYNTHETIC",
+        "candidate_blind_id": fixture["blinded_candidate_id"],
+        "provider_outcome": summary["provider_outcome"],
+        "contract_valid": summary["contract_valid"],
+        "quality_review_eligible": summary["quality_review_eligible"],
+        "adjudication_state": summary["adjudication_state"],
+        "criterion_scores": summary["criterion_scores"],
+        "raw_score": summary["raw_score"],
+        "normalized_quality": summary["normalized_quality"],
+        "severe_hallucination_count": summary["severe_hallucination_count"],
+        "hard_findings": summary["hard_findings"],
+        "threshold_status": summary["threshold_status"],
+        "qualification_state": summary["qualification_state"],
     }
 
 
@@ -234,13 +259,15 @@ def run_case(
             "hard_findings": ["SEVERE_HALLUCINATION_FLAGGED"] if any(simple.get("severe") for simple in simple_packets) else ["REVIEWER_DISAGREEMENT_REQUIRES_R3"],
         })
         return summary
-    raw = sum(result["criterion_medians"].values()) if result["status"] in {"REVIEW_PACKET_VALID", "ADJUDICATION_COMPLETE"} else None
+    automated_points = 2 if all(candidate["automated_criterion_18"]["status"] == "PASS" for candidate in packets) else 0
+    raw_total = sum(result["criterion_medians"].values()) + automated_points if result["status"] in {"REVIEW_PACKET_VALID", "ADJUDICATION_COMPLETE"} else None
+    raw = int(raw_total) if raw_total is not None and float(raw_total).is_integer() else raw_total
     normalized = round(raw / 36 * 100, 2) if raw is not None else None
     summary = _base_summary(case["id"], outcome, True, True)
     summary.update({
         "adjudication_state": "METRICS_READY_OWNER_THRESHOLD_NOT_APPROVED" if raw is not None else result["status"],
         "adjudication_result": "COMPLETE" if result["status"] == "ADJUDICATION_COMPLETE" else "NOT_TRIGGERED",
-        "criterion_scores": result["criterion_medians"],
+        "criterion_scores": {**result["criterion_medians"], "c18": automated_points},
         "raw_score": raw,
         "normalized_quality": normalized,
         "severe_hallucination_count": sum(1 for simple in simple_packets if simple.get("severe")),
@@ -250,11 +277,19 @@ def run_case(
 
 
 def run(root: Path) -> dict[str, Any]:
-    manifest = load_manifest(root)
+    envelope_validator, bundle_validator, manifest_validator, summary_validator = load_contract_validators(root)
+    manifest = load_manifest(root, manifest_validator)
     governance, _ = validate_governance(root)
-    envelope_validator, bundle_validator, _ = load_contract_validators(root)
     policy = load_error_policy(root / ERROR_POLICY_REL)
-    summaries = [run_case(root, case, governance, envelope_validator, bundle_validator, policy) for case in manifest["cases"]]
+    summaries = []
+    for case in manifest["cases"]:
+        summary = run_case(root, case, governance, envelope_validator, bundle_validator, policy)
+        fixture = read_json(root, case["path"])
+        contract_record = summary_contract_record(fixture, summary)
+        summary_errors = sorted(summary_validator.iter_errors(contract_record), key=lambda item: list(item.absolute_path))
+        require(not summary_errors, "evaluation summary schema invalid: " + "; ".join(_schema_error(error) for error in summary_errors))
+        summary["summary_contract"] = contract_record
+        summaries.append(summary)
     for case, summary in zip(manifest["cases"], summaries):
         require(case.get("expected") == summary["adjudication_state"], f"case expectation drift: {case['id']}")
     return {
@@ -262,7 +297,7 @@ def run(root: Path) -> dict[str, Any]:
         "fixture_class": "CONTRACT_ONLY_SYNTHETIC",
         "qualification_state": "NOT_PROVIDER_QUALIFICATION",
         "threshold_status": "PROPOSED_NOT_APPROVED",
-        "frozen_contracts": {"provider_envelope_schema": "PASS", "reference_bundle_schema": "PASS", "semantic_validators": "PASS", "error_policy": "PASS"},
+        "frozen_contracts": {"provider_envelope_schema": "PASS", "reference_bundle_schema": "PASS", "manifest_schema": "PASS", "evaluation_summary_schema": "PASS", "semantic_validators": "PASS", "error_policy": "PASS"},
         "cases": summaries,
     }
 
