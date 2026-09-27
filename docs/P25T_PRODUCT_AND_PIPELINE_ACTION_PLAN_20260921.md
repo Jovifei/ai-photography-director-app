@@ -1,5 +1,7 @@
 # 从工程验证走向可用摄影产品｜P25T 后续行动
 
+> **Historical stage plan / scope-specific evidence.** T2/T3/T4 ordering in this document predates the current T4 delivery head. Preserve its product and Pipeline constraints, but use [`CURRENT_PROGRAM_STATUS.md`](CURRENT_PROGRAM_STATUS.md) for current state and [`NEXT_GATE_MATRIX.md`](NEXT_GATE_MATRIX.md) for executable future gates.
+
 本计划依据 App `61a7c1da...` 的实际路由/相机/导演卡/导入代码和 Pipeline `ffc41308...`、Real20 `50d9ffac...`。后续执行先重新 fetch；不把本文件中的 SHA 当永久最新。
 
 ## 目标分层
