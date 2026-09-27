@@ -20,23 +20,27 @@ $sourceSha = ((git -C $repo rev-parse HEAD) -join '').Trim()
 $sdkRoot = Join-Path $env:LOCALAPPDATA 'Android\Sdk'
 $adb = Join-Path $sdkRoot 'platform-tools\adb.exe'
 if (-not (Test-Path -LiteralPath $adb)) { throw 'T3_ADB_NOT_FOUND' }
-$boot = ((& $adb -s $Serial shell getprop sys.boot_completed 2>$null) -join '').Trim()
-$sdk = ((& $adb -s $Serial shell getprop ro.build.version.sdk 2>$null) -join '').Trim()
-$qemu = ((& $adb -s $Serial shell getprop ro.kernel.qemu 2>$null) -join '').Trim()
-if ($boot -ne '1' -or $sdk -ne '35' -or $qemu -ne '1') { throw 'T3_API35_EMULATOR_REQUIRED' }
-
+function Assert-EmulatorReady {
+    $state = ((& $adb -s $Serial get-state 2>$null) -join '').Trim()
+    if ($LASTEXITCODE -ne 0 -or $state -ne 'device') { throw 'T3_EMULATOR_OFFLINE' }
+    $boot = ((& $adb -s $Serial shell getprop sys.boot_completed 2>$null) -join '').Trim()
+    $script:sdk = ((& $adb -s $Serial shell getprop ro.build.version.sdk 2>$null) -join '').Trim()
+    $script:qemu = ((& $adb -s $Serial shell getprop ro.kernel.qemu 2>$null) -join '').Trim()
+    if ($boot -ne '1' -or $script:sdk -ne '35' -or $script:qemu -ne '1') { throw 'T3_API35_EMULATOR_REQUIRED' }
+}
 $runId = [guid]::NewGuid().ToString('N')
 $runRoot = (New-Item -ItemType Directory -Path (Join-Path $evidenceParent $runId)).FullName
 $runner = 'com.jovi.photoai.test/androidx.test.runner.AndroidJUnitRunner'
 
 function Invoke-Test([string]$label, [string]$class, [int]$expected, [string[]]$extra = @()) {
+    Assert-EmulatorReady
     & $adb -s $Serial shell am force-stop com.jovi.photoai.test | Out-Null
     Start-Sleep -Seconds 2
     $arguments = @('shell', 'am', 'instrument', '-w', '-r', '-e', 'class', $class) + $extra + @($runner)
-    $lines = @(& $adb -s $Serial @arguments 2>&1 | ForEach-Object { [string]$_ })
-    $exit = $LASTEXITCODE
     $log = Join-Path $runRoot "$label.log"
-    $lines | Set-Content -LiteralPath $log -Encoding utf8
+    & $adb -s $Serial @arguments 2>&1 | Tee-Object -FilePath $log | Out-Null
+    $exit = $LASTEXITCODE
+    $lines = @(Get-Content -LiteralPath $log)
     $passed = @($lines | Where-Object { $_ -eq 'INSTRUMENTATION_STATUS_CODE: 0' }).Count
     $failed = @($lines | Where-Object { $_ -match '^INSTRUMENTATION_STATUS_CODE: (-2|-4)$' }).Count
     $complete = @($lines | Where-Object { $_ -match "^OK \($expected tests?\)$" }).Count
@@ -52,13 +56,15 @@ Push-Location $android
 try {
     $env:ANDROID_HOME = $sdkRoot
     $env:ANDROID_SDK_ROOT = $sdkRoot
-    & $gradle ':app:testDebugUnitTest' ':app:assembleDebug' ':app:assembleDebugAndroidTest' ':app:lintDebug' '--rerun-tasks' *> (Join-Path $runRoot 'build.log')
+    & $gradle ':app:testDebugUnitTest' ':app:assembleDebug' ':app:assembleDebugAndroidTest' ':app:lintDebug' *> (Join-Path $runRoot 'build.log')
     if ($LASTEXITCODE -ne 0) { throw 'T3_BUILD_OR_LINT_FAILED' }
 } finally { Pop-Location }
+Assert-EmulatorReady
 
 $apk = Join-Path $android 'app\build\outputs\apk\debug\app-debug.apk'
 $testApk = Join-Path $android 'app\build\outputs\apk\androidTest\debug\app-debug-androidTest.apk'
 foreach ($package in @($apk, $testApk)) {
+    Assert-EmulatorReady
     & $adb -s $Serial install -r $package | Out-Null
     if ($LASTEXITCODE -ne 0) { throw 'T3_EMULATOR_INSTALL_FAILED' }
 }
@@ -72,6 +78,7 @@ $recoveryArgs = @('-e', 'p25uRun', $runId, '-e', 'p25uDedicatedEmulator', 'true'
 $recoveryFailure = $null
 try {
     Invoke-Test 'recovery-prepare' 'com.jovi.photoai.p25u.P25UDefaultAppCaptureRecoveryAndroidTest#prepare' 1 ($recoveryArgs + @('-e', 'p25uPhase', 'prepare'))
+    Assert-EmulatorReady
     $marker = "/data/user/0/com.jovi.photoai/no_backup/p25u-default-recovery-$runId.txt"
     $captureId = ((& $adb -s $Serial shell run-as com.jovi.photoai cat $marker 2>$null) -join '').Trim()
     if ($captureId -notmatch '^[a-f0-9]{32}$') { throw 'T3_RECOVERY_MARKER_INVALID' }
