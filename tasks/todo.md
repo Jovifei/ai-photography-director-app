@@ -2,6 +2,71 @@
 
 Read [`docs/CURRENT_PROGRAM_STATUS.md`](../docs/CURRENT_PROGRAM_STATUS.md) and [`docs/NEXT_GATE_MATRIX.md`](../docs/NEXT_GATE_MATRIX.md) before using any older task entry. The current delivery stack is T4 `e88d2ab1eb0c9c5cf9f891c5107d951fbbbe15cb` with reviewed product source `a69ede68f3e54e5ab006dbfd7a65c33040590f93`, PR #8 Draft/unmerged. T5 is documentation/status authority consolidation; it does not authorize runtime, network, real-photo, device, Pipeline, signing or release work. `C2C_CODE_DIFF_REVIEW_NOT_POSSIBLE` remains an explicit remote-review limitation.
 
+## T8 synthetic evaluation harness readiness — 2026-09-27
+
+Remote plan `c2c_f8b2` selected this contract-only, image-free, human-free dry-run stage from exact T7 head `61cb6776b2b6f00d6965789e0589c5337536d258`. The harness must prove the future Envelope → blinded review → adjudication evidence flow without executing a Provider or creating human-review evidence. The detailed checklist is [`tasks/plans/2026-09-27-t8-synthetic-evaluation-harness.md`](plans/2026-09-27-t8-synthetic-evaluation-harness.md).
+
+- [x] Verify exact T7 authority and isolation.
+- [x] Add synthetic manifest, schemas and JSON-only harness.
+- [x] Add deterministic synthetic fixtures and negative tests.
+- [x] Update status authority only after harness validation passes.
+- [x] Run T6/T7 regressions, contracts/privacy/scope and bounded Android smoke.
+- [ ] Perform exact review, push stacked Draft PR and obtain remote evidence review.
+
+## T8-R post-submission conformance repair — 2026-09-27
+
+Remote audit `c2c_aa42` returned `REPAIR_REQUIRED`: the previous T8 receipt proved
+the high-level status but did not prove that the runner executed the frozen
+ProviderAnalysisEnvelope/ReferenceBundle/error-policy validators or the complete
+R1/R2/R3 and non-success exclusion paths. Stay on T8/PR #12; do not start T9.
+
+- [x] Wire the runner to the frozen Draft 2020-12 Envelope and Bundle schemas plus semantic and error-policy validators.
+- [x] Enforce SUCCESS reference identity and validated Bundle eligibility before review packets.
+- [x] Implement an allowlist-only provider-blinded projection and provider-invariance tests.
+- [x] Add complete R1/R2/R3 lifecycle fixtures/tests, including severe finding persistence.
+- [x] Add explicit FAILED/CANCELLED/Pipeline exclusion and frozen retry/fallback policy tests.
+- [x] Add named negative/capability/scope tests without touching frozen contracts or Android.
+- [x] Add a sanitized, readable audit evidence recorder and post-submission conformance table.
+- [x] Re-run focused T8/T7/T6/status/contracts/privacy and bounded Android JVM smoke checks.
+- [ ] Commit/push the repaired T8 candidate and request remote re-audit before planning any next stage.
+
+### T8-R review
+
+Local focused and regression checks are passing. The first Android invocation lacked
+an SDK variable in the isolated checkout; the bounded JVM smoke was rerun with the
+existing user SDK path supplied per command and passed. Exact clean scope/diff,
+privacy-before-push, evidence recording, commit/push and remote re-audit remain.
+
+## T8-R3 implementation conformance repair — 2026-09-27
+
+The clean review connector independently found four remaining gaps in the
+existing T8 candidate. Stay on PR #12 and do not start a new phase.
+
+- [x] Add automated criterion 18 as a contract-derived 2-point score; prove 36/36 → 100.00.
+- [x] Execute the tracked T8 manifest schema and per-case evaluation summary schema.
+- [x] Remove unstructured warnings from the reviewer payload and test warning-based provenance leakage.
+- [x] Refresh audit/report binding language for the clean review clone while retaining the old main limitation accurately.
+- [ ] Requalify, push, record sanitized evidence, and request final remote T8-R3 review.
+
+## T8-R4 evidence-state closure — 2026-09-27
+
+Remote source review found the implementation complete and requested only an
+explicit schema self-check plus final report wording reconciliation.
+
+- [ ] Add explicit Draft 2020-12 `check_schema()` evidence lines for manifest and summary schemas.
+- [ ] Mark all repaired conformance rows PASS and remove historical R3-gap wording.
+- [ ] Requalify, push, record the final receipt and obtain remote DONE.
+
+## T8-R5 final receipt correction — 2026-09-27
+
+Remote source review found only two evidence details after R4: the invalid
+schema fail-closed negative was not named, and the report count lagged the
+15-test suite.
+
+- [x] Add invalid T8 schema negative coverage and explicit receipt line.
+- [x] Correct the report to 15/15 and retain all final gate lines.
+- [ ] Requalify, push, record the final receipt and obtain remote DONE.
+
 ## T7 evaluation governance readiness — 2026-09-27
 
 Remote plan `c2c_d4e1` selected this provider-neutral, metadata-only stage from exact T6 head `3233313af8be946cc43245daf15f24f853933d88`. The 18-criterion rubric remains `PROPOSED_OWNER_THRESHOLD — NOT_MEASURED`; T7 must not perform human review, use media, connect Pipeline, qualify a provider or authorize a launch threshold. The detailed checklist is [`tasks/plans/2026-09-27-t7-evaluation-governance-readiness.md`](plans/2026-09-27-t7-evaluation-governance-readiness.md).

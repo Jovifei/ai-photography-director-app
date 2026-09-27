@@ -1,0 +1,139 @@
+{
+  "fixture_class": "CONTRACT_ONLY_SYNTHETIC_NO_PROVIDER_EXECUTED",
+  "provider_outcome": "SUCCESS",
+  "contract_valid": true,
+  "reference_id": "synthetic-reference-001",
+  "blinded_candidate_id": "candidate-synthetic-a",
+  "provider_metadata": {
+    "provider_id": "synthetic-contract-provider",
+    "provider_type": "LOCAL_VLM",
+    "model_id": "synthetic-model",
+    "model_revision": "synthetic-revision",
+    "runtime_id": "synthetic-runtime"
+  },
+  "review_packets": [
+    {
+      "reviewer_slot": "R1",
+      "scores": 2,
+      "severe": false
+    },
+    {
+      "reviewer_slot": "R2",
+      "scores": 2,
+      "severe": false
+    }
+  ],
+  "envelope": {
+    "envelope_version": "1.0",
+    "request_id": "synthetic-request-001",
+    "reference_id": "synthetic-reference-001",
+    "provider_id": "synthetic-contract-provider",
+    "provider_type": "LOCAL_SERVICE",
+    "model_id": "synthetic-model",
+    "model_revision": "synthetic-revision",
+    "model_artifact_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "runtime_id": "synthetic-runtime",
+    "started_at_utc": "2026-09-27T00:00:00Z",
+    "completed_at_utc": "2026-09-27T00:00:01Z",
+    "latency_ms": 1000,
+    "status": "SUCCESS",
+    "output_schema_version": "1.0",
+    "bundle": {
+      "reference_id": "synthetic-reference-001",
+      "scene": "合成城市夜景玻璃幕墙",
+      "background_story": "合同测试中的反射与留白叙事。",
+      "lighting": "侧后方冷色光。",
+      "composition": "三分法，主体位于右侧。",
+      "subject_intent": "身体微侧，肩膀放松。",
+      "emotion": "安静等待。",
+      "pose_template": "文字参考姿态，不进行实时骨架检测。",
+      "camera_position": "略低机位，四十五度侧向取景。",
+      "director_prompt": "先确认反射与主体错开，再保留左侧留白。",
+      "version": "1.0"
+    },
+    "confidence_summary": {
+      "direct_observation_fields": [
+        "scene",
+        "background_story",
+        "lighting"
+      ],
+      "photographic_interpretation_fields": [
+        "composition",
+        "subject_intent",
+        "emotion"
+      ],
+      "creative_recommendation_fields": [
+        "pose_template",
+        "camera_position",
+        "director_prompt"
+      ]
+    },
+    "uncertainty_flags": {
+      "scene": {
+        "level": "LOW",
+        "basis": "DIRECT_OBSERVATION"
+      },
+      "background_story": {
+        "level": "LOW",
+        "basis": "DIRECT_OBSERVATION"
+      },
+      "lighting": {
+        "level": "LOW",
+        "basis": "DIRECT_OBSERVATION"
+      },
+      "composition": {
+        "level": "MEDIUM",
+        "basis": "PHOTOGRAPHIC_INTERPRETATION"
+      },
+      "subject_intent": {
+        "level": "MEDIUM",
+        "basis": "PHOTOGRAPHIC_INTERPRETATION"
+      },
+      "emotion": {
+        "level": "MEDIUM",
+        "basis": "PHOTOGRAPHIC_INTERPRETATION"
+      },
+      "pose_template": {
+        "level": "MEDIUM",
+        "basis": "CREATIVE_RECOMMENDATION"
+      },
+      "camera_position": {
+        "level": "MEDIUM",
+        "basis": "CREATIVE_RECOMMENDATION"
+      },
+      "director_prompt": {
+        "level": "MEDIUM",
+        "basis": "CREATIVE_RECOMMENDATION"
+      }
+    },
+    "warnings": [
+      "CONTRACT_ONLY_SYNTHETIC_NO_PROVIDER_EXECUTED"
+    ],
+    "provenance": {
+      "result_origin": "LOCAL_VLM",
+      "producer_release": "synthetic-contract-release",
+      "input_media_retained": false,
+      "raw_image_available": false,
+      "direct_observation_fields": [
+        "scene",
+        "background_story",
+        "lighting"
+      ],
+      "photographic_interpretation_fields": [
+        "composition",
+        "subject_intent",
+        "emotion"
+      ],
+      "creative_recommendation_fields": [
+        "pose_template",
+        "camera_position",
+        "director_prompt"
+      ]
+    },
+    "safety_flags": [
+      "NO_SAFETY_FLAGS"
+    ],
+    "retryable": false,
+    "error": null
+  }
+}

@@ -4,7 +4,7 @@
 
 **Machine-readable record:** [`current_program_status.v1.json`](current_program_status.v1.json)
 
-**Next-stage plan:** [`tasks/plans/2026-09-27-t7-evaluation-governance-readiness.md`](../tasks/plans/2026-09-27-t7-evaluation-governance-readiness.md)
+**Next-stage plan:** [`tasks/plans/2026-09-27-t8-synthetic-evaluation-harness.md`](../tasks/plans/2026-09-27-t8-synthetic-evaluation-harness.md)
 **Gate matrix:** [`NEXT_GATE_MATRIX.md`](NEXT_GATE_MATRIX.md)
 
 ## Current authority
@@ -29,6 +29,12 @@ T7 has prepared a provider-neutral evaluation-governance packet from exact T6 he
 
 The existing rubric remains `PROPOSED_OWNER_THRESHOLD — NOT_MEASURED`; proposed thresholds are not launch or Provider PASS criteria. T7 creates no human-review records, image/media payloads, reviewer identities, provider result, Pipeline adapter or Android change. Human-review execution, Provider qualification, Pipeline compatibility, real photos, physical device, signing, release and main merge remain closed.
 
+## T8 synthetic evaluation evidence harness readiness
+
+T8 has prepared a contract-only synthetic harness from exact T7 head `61cb6776b2b6f00d6965789e0589c5337536d258`. [`synthetic_evaluation_manifest.v1.json`](phase1_5/t8/synthetic_evaluation_manifest.v1.json) and the JSON-only runner exercise SUCCESS/FAILED/CANCELLED, Pipeline incompatibility, blinded review projections and T7 adjudication states without executing a Provider, human review, Pipeline or media path. The state is `SYNTHETIC_EVALUATION_HARNESS_READY — REAL_EVALUATION_NOT_AUTHORIZED`.
+
+Synthetic metrics are contract evidence only. `METRICS_READY_OWNER_THRESHOLD_NOT_APPROVED` is not Provider qualification, confidence, human acceptance or release readiness. T6 P1B remains execution-not-authorized and T7 human review remains not-authorized.
+
 ## Product goal
 
 `参考图 → 来源明确的逐图状态 → READY-only 可信指导 → Camera Director 或无指导拍摄 → 私有成片 → 系统导出`
@@ -41,4 +47,4 @@ The following remain useful evidence or design constraints but are not current e
 
 ## Next stage
 
-T5 consolidated this status into one machine-checkable authority, T6 added a machine-verifiable P1B readiness boundary, and T7 added a provider-neutral evaluation-governance boundary without executing it. T7 changed no Android runtime code, shared contracts, models, network, Pipeline code, signing settings, human-review records or Owner decisions. The next executable step is an Owner decision or another separately planned non-runtime Gate; no artifact, provider, human review or Pipeline action follows automatically.
+T5 consolidated this status into one machine-checkable authority, T6 added a machine-verifiable P1B readiness boundary, T7 added provider-neutral evaluation governance, and T8 exercised the future evidence flow with contract-only synthetic records. T8 changed no Android runtime code, shared contracts, models, network, Pipeline code, signing settings, human-review records or Owner decisions. The next executable step is an Owner decision or another separately planned non-runtime Gate; no artifact, provider, human review or Pipeline action follows automatically.
