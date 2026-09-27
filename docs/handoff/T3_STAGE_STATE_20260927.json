@@ -54,10 +54,11 @@
   },
   "review_state": {
     "first_review": "FINDINGS_IMPORTANT_P25U_EXPORT_TEST_BASELINE_RACE",
-    "reviewed_head": "f26f98b875ae8506ded7e0634a3fc7a45b6251e7",
+    "reviewed_head": "8e54012641b48d313ebc220b6d937b35dfd0f0af",
     "remediation_commit": "47c2d8f192f2d92a4fd07539bd9ff3bf28b1ecfa",
     "full_requalification": "PASS",
-    "final_head_review": "PENDING"
+    "final_head_review": "FINDINGS_MINOR_REPORT_PID",
+    "after_report_correction": "PENDING_CONFIRMATION"
   },
-  "next": "run final privacy audit, push updated branch, and obtain independent read-only review of the updated Draft PR head"
+  "next": "obtain independent read-only confirmation of the corrected report PID and updated Draft PR head"
 }

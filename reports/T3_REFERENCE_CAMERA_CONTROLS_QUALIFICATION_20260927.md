@@ -20,7 +20,7 @@
 
 ## 独立审查整改
 
-首轮独立 Reviewer 对 PR head `f26f98b875ae8506ded7e0634a3fc7a45b6251e7` 提出一项 Important：P25U 成片导出测试在 `ready=true` 后、Room records 流初次发射前可能读取空基线，随后把已有成片误当新拍记录并在 finally 删除。修复提交 `47c2d8f192f2d92a4fd07539bd9ff3bf28b1ecfa`：测试从真实 Room records/export 流读取初始快照，等待 ViewModel state 与之同步，只接受唯一新增且 AVAILABLE 的 ID，并等待该 ID 删除完成。该 Reviewer 未运行测试；修复后已由本地专用模拟器完整复验。最终 SHA 的独立复审仍 `PENDING`，本阶段尚未达到最终审查关闭。
+首轮独立 Reviewer 对 PR head `f26f98b875ae8506ded7e0634a3fc7a45b6251e7` 提出一项 Important：P25U 成片导出测试在 `ready=true` 后、Room records 流初次发射前可能读取空基线，随后把已有成片误当新拍记录并在 finally 删除。修复提交 `47c2d8f192f2d92a4fd07539bd9ff3bf28b1ecfa`：测试从真实 Room records/export 流读取初始快照，等待 ViewModel state 与之同步，只接受唯一新增且 AVAILABLE 的 ID，并等待该 ID 删除完成。该 Reviewer 未运行测试；修复后已由本地专用模拟器完整复验。对 PR head `8e54012641b48d313ebc220b6d937b35dfd0f0af` 的复审确认 Important 已解决，只指出 PID 摘要应从旧值更正为本轮 evidence 的 `8352`；本报告已更正，最终文档确认仍待 Reviewer。
 
 ## 验证结果
 
@@ -34,7 +34,7 @@
 | P25U CameraX 成片 | 1/1 PASS |
 | P25U 成片导出（同步 records/export 初始快照，唯一新增记录与精确清理） | 3/3 PASS |
 | 默认 App 恢复 prepare / verify / cleanup | 各 1/1 PASS；恢复记录绑定 capture ID |
-| 外部 force-stop | PID `6309 → 空` |
+| 外部 force-stop | PID `8352 → 空` |
 
 资格脚本：`scripts/qualify_t3_reference_camera_controls.ps1`。最终摘要为 `T3_EMULATOR_VALIDATED_AWAITING_INDEPENDENT_REVIEW`，source SHA=`47c2d8f192f2d92a4fd07539bd9ff3bf28b1ecfa`；debug APK SHA-256：`1cc39f492d4153b05f4a66a6a99b684d3de42f1688f19419692b37f5dcad62f7`。
 

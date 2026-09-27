@@ -20,8 +20,9 @@ PASS: independent review of delivery 753163efddfd8e28a6b267ac70af95cdd86c282e re
 - [x] Verify real App navigation, camera capture, layout, rotation, and affected P25U regressions on dedicated API 35 emulator.
 - [x] Fix Reviewer finding: wait for the initial persisted capture/export snapshot, select exactly one new available capture, and wait for exact-record cleanup; focused P25U export instrumentation passes 3/3.
 - [x] Re-run full qualification on the fixed source and refresh exact source/evidence records.
-- [ ] Run final privacy audit, push the update, and obtain an independent review of the final PR head.
+- [x] Run final privacy audit and non-force push the updated branch; refresh Draft PR #7 metadata.
+- [ ] Obtain independent confirmation of the corrected final evidence report and PR head.
 
 ### T3 review
 
-Independent review of the first PR head `f26f98b875ae8506ded7e0634a3fc7a45b6251e7` found an Important race in the export test's pre-capture snapshot and cleanup identity. Fixed in `47c2d8f192f2d92a4fd07539bd9ff3bf28b1ecfa`; focused export instrumentation and full API 35 qualification now pass. Final evidence is outside the repository at `E:\project_benchmark_evidence\t3-reference-camera-controls-20260926\5750a52b8c9e4507a4f5b162a8799cba`, with 9/9 artifact hashes verified and the source manifest refreshed. Independent review of the updated PR head remains pending.
+Independent review of the first PR head `f26f98b875ae8506ded7e0634a3fc7a45b6251e7` found an Important race in the export test's pre-capture snapshot and cleanup identity. Fixed in `47c2d8f192f2d92a4fd07539bd9ff3bf28b1ecfa`; focused export instrumentation and full API 35 qualification now pass. Review of head `8e54012641b48d313ebc220b6d937b35dfd0f0af` confirmed that finding resolved and identified a minor report PID mismatch; corrected from 6309 to 8352, with final document confirmation pending. Evidence is at `E:\project_benchmark_evidence\t3-reference-camera-controls-20260926\5750a52b8c9e4507a4f5b162a8799cba`, with 9/9 artifact hashes verified.
