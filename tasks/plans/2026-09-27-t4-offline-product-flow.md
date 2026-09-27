@@ -51,16 +51,16 @@ Close the existing offline Android journey from project and reference selection 
 - [x] Existing guidance/READY-only/T3 JVM suite passed; added pure tests for cross-project library filtering and isolated root-flow tests for Bundle ID mismatch, FAILED→READY→UNAVAILABLE, live guidance removal, deleted primary and the next reference's direct route. The replacement exact-candidate qualification remains pending.
 - [x] Pure tests cover all-project search and combined scene/source/status/project filters; Room-backed test covers rename persistence and invalid targets.
 - [x] T4-specific API 35 instrumentation covers two synthetic projects, Home→library, search/filter/source/owner, project naming/rename, 200% font and landscape. Existing guided/direct Camera and capture/export tests passed separately; final exact-candidate qualification remains pending.
-- [ ] Dedicated API 35 emulator flow: no-primary/direct entry; synthetic validated Bundle/guided entry; reference switch and back navigation; non-READY/unavailable; capture/library/export where changed; TalkBack/large font/rotation where affected.
-- [ ] Run exact-candidate Debug build, full JVM suite, relevant Android tests, lint, contract tests, privacy audit and `git diff --check`. Save commands, exit codes and short evidence outside Git; label unrun checks accurately.
-- [ ] Assert no INTERNET or broad media permissions, model/Pose dependency, private/generated media, Pipeline contract mutation, or unrelated roadmap cleanup in the diff.
+- [x] Dedicated API 35 emulator flow: no-primary/direct entry; synthetic validated Bundle/guided entry; reference switch and back navigation; non-READY/unavailable; capture/library/export where changed; TalkBack/large font/rotation where affected. The final qualifier also covered live Bundle mismatch, READY→UNAVAILABLE, deleted guided primary and next-reference fallback.
+- [x] Run exact-candidate Debug build, full JVM suite, relevant Android tests, lint, contract tests, privacy audit and `git diff --check`. Save commands, exit codes and short evidence outside Git; label unrun checks accurately.
+- [x] Assert no INTERNET or broad media permissions, model/Pose dependency, private/generated media, Pipeline contract mutation, or unrelated roadmap cleanup in the diff.
 
 ### M4. Evidence, review and delivery
 
-- [ ] Write a T4 result with exact T3 base and T4 candidate SHAs, changed files, test counts, emulator qualification, permissions/dependency diff, and explicit external gates.
-- [ ] Commit the bounded T4 changes after verification. Run `python scripts/prepush_privacy_audit.py` before any non-force push.
-- [ ] If T3 PR #7 remains Draft/unmerged, propose a stacked Draft T4 PR on the T3 branch. Seek independent review of the exact T3..T4 delta, repair findings and rerun final checks on the new SHA.
-- [ ] Stop at T4 PASS for Owner landing decision. Do not infer physical, human, provider, signing, or release PASS.
+- [x] Write a T4 result with exact T3 base and T4 source SHAs, test counts, emulator qualification, permissions/dependency diff, and explicit external gates in `docs/handoff/T4_STAGE_STATE_20260927.json`.
+- [x] Commit the bounded T4 changes after verification. Run `python scripts/prepush_privacy_audit.py` before the non-force push.
+- [x] Stack Draft PR #8 on T3 Draft PR #7, and obtain independent review of the exact T3..T4 source delta; findings were repaired and the final SHA requalified.
+- [x] Stop at T4 synthetic/API35 PASS for Owner landing decision. Do not infer physical, human, provider, signing, or release PASS.
 
 ## Technology follow-up, separate from T4 implementation
 
@@ -70,4 +70,4 @@ Close the existing offline Android journey from project and reference selection 
 
 ## Review
 
-Pending M1 audit and exact-candidate execution evidence. Remote PLAN is a proposal; local code and current Gate evidence decide implementation.
+T4 reviewed source `a69ede68f3e54e5ab006dbfd7a65c33040590f93` passed the clean qualification run `412699bebfe344d5b9aeca1b68135090` and exact-SHA independent read-only review. The qualification recorded JVM 141/141, T4 Android 7/7, T3 Android 7/7, root 2/2, P25U camera 1/1, export 3/3, recovery prepare/verify/cleanup 1/1 each, build/lint/contract/privacy/diff PASS and 16 hashed outputs. Draft PR #8 remains unmerged. Earlier failed exploratory verification and host-memory attempts are retained as diagnostic history, not promoted to PASS. The C2C remote connector reads the dirty Owner `main`, so remote evidence review cannot substitute for the local exact-diff review.

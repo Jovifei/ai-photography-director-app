@@ -27,7 +27,7 @@ The current independent gates remain: real photos and Qwen/Private LAN; human re
 5. No T4-specific API35 end-to-end qualifier existed. T3 camera and P25U capture/export tests cover their earlier scopes, not the new library and naming route.
 6. The dedicated API35 emulator exposed a compact-landscape Camera hint/shutter overlap. T3's former assertion assumed vertical order, although the reference card is correctly to the left of the shutter in landscape. T4 moves the hint into the available top space and tests rectangle non-overlap; this is a scoped responsive fix, not a CameraX dependency change.
 
-The first exact T4 candidate passed its local qualifier, then independent review found that its new tests did not prove live guidance-state changes. A follow-up synthetic root test now uses an isolated Room instance and preferences file to exercise rejected Bundle identity, READY guidance, UNAVAILABLE fallback, deletion of the guided primary, and selection of the next non-READY reference. Only a new exact-commit qualification and review may close that finding.
+The first exact T4 candidate passed its local qualifier, then independent review found that its new tests did not prove live guidance-state changes. A follow-up synthetic root test uses an isolated Room instance and preferences file to exercise rejected Bundle identity, READY guidance, UNAVAILABLE fallback, deletion of the guided primary, and selection of the next non-READY reference. The replacement source `a69ede68f3e54e5ab006dbfd7a65c33040590f93` passed a clean exact-commit qualification and independent read-only review. See `docs/handoff/T4_STAGE_STATE_20260927.json` for the source, test counts and gate limits; Draft PR #8 remains unmerged.
 
 ## Official-source technology review
 
