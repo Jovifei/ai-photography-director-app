@@ -48,6 +48,15 @@ existing T8 candidate. Stay on PR #12 and do not start a new phase.
 - [x] Refresh audit/report binding language for the clean review clone while retaining the old main limitation accurately.
 - [ ] Requalify, push, record sanitized evidence, and request final remote T8-R3 review.
 
+## T8-R4 evidence-state closure — 2026-09-27
+
+Remote source review found the implementation complete and requested only an
+explicit schema self-check plus final report wording reconciliation.
+
+- [ ] Add explicit Draft 2020-12 `check_schema()` evidence lines for manifest and summary schemas.
+- [ ] Mark all repaired conformance rows PASS and remove historical R3-gap wording.
+- [ ] Requalify, push, record the final receipt and obtain remote DONE.
+
 ## T7 evaluation governance readiness — 2026-09-27
 
 Remote plan `c2c_d4e1` selected this provider-neutral, metadata-only stage from exact T6 head `3233313af8be946cc43245daf15f24f853933d88`. The 18-criterion rubric remains `PROPOSED_OWNER_THRESHOLD — NOT_MEASURED`; T7 must not perform human review, use media, connect Pipeline, qualify a provider or authorize a launch threshold. The detailed checklist is [`tasks/plans/2026-09-27-t7-evaluation-governance-readiness.md`](plans/2026-09-27-t7-evaluation-governance-readiness.md).

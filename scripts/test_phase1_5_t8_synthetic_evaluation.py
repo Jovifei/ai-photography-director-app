@@ -160,6 +160,13 @@ class T8HarnessTests(unittest.TestCase):
         with self.assertRaises(harness.T8ValidationError):
             harness.run(self.fixture)
 
+    def test_tracked_t8_schemas_pass_draft202012_self_check(self) -> None:
+        envelope, bundle, manifest, summary = harness.load_contract_validators(self.fixture)
+        self.assertIsInstance(envelope, harness.Draft202012Validator)
+        self.assertIsInstance(bundle, harness.Draft202012Validator)
+        self.assertIsInstance(manifest, harness.Draft202012Validator)
+        self.assertIsInstance(summary, harness.Draft202012Validator)
+
     def test_non_success_outcomes_never_score_or_fallback(self) -> None:
         summaries = {item["case_id"]: item for item in harness.run(self.fixture)["cases"]}
         for case_id in ("failed-provider", "cancelled-provider", "pipeline-incompatible"):

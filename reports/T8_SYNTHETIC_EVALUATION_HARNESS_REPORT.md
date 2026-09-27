@@ -26,8 +26,9 @@ The remote post-submission audit `c2c_aa42` identified the earlier receipt as
 implementation-evidence incomplete. T8-R repairs are recorded in
 [`T8_POST_SUBMISSION_CONFORMANCE_AUDIT.md`](T8_POST_SUBMISSION_CONFORMANCE_AUDIT.md);
 the clean exact-head review clone is now bound to the project connector. The
-current remote re-audit found T8-R3 implementation gaps; the stage remains on
-PR #12 until those gaps are repaired and requalified.
+current remote re-audit source-verified the T8-R3 implementation repairs. The
+final T8-R4 schema self-check and evidence-state receipt are pending before
+remote closure; the stage remains on PR #12.
 
 ## Non-results and gates
 

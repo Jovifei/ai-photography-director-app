@@ -72,6 +72,10 @@ def load_contract_validators(root: Path) -> tuple[Draft202012Validator, Draft202
     """Load the tracked frozen schemas without resolving over the network."""
     envelope_schema = read_json(root, ENVELOPE_SCHEMA_REL)
     bundle_schema = read_json(root, BUNDLE_SCHEMA_REL)
+    manifest_schema = read_json(root, MANIFEST_SCHEMA_REL)
+    summary_schema = read_json(root, SUMMARY_SCHEMA_REL)
+    for schema in (envelope_schema, bundle_schema, manifest_schema, summary_schema):
+        Draft202012Validator.check_schema(schema)
     registry = Registry().with_resource(envelope_schema["$id"], Resource.from_contents(envelope_schema)).with_resource(bundle_schema["$id"], Resource.from_contents(bundle_schema))
     envelope_validator = Draft202012Validator(
         envelope_schema,
@@ -79,8 +83,8 @@ def load_contract_validators(root: Path) -> tuple[Draft202012Validator, Draft202
         registry=registry,
     )
     bundle_validator = Draft202012Validator(bundle_schema, format_checker=FormatChecker())
-    manifest_validator = Draft202012Validator(read_json(root, MANIFEST_SCHEMA_REL), format_checker=FormatChecker())
-    summary_validator = Draft202012Validator(read_json(root, SUMMARY_SCHEMA_REL), format_checker=FormatChecker())
+    manifest_validator = Draft202012Validator(manifest_schema, format_checker=FormatChecker())
+    summary_validator = Draft202012Validator(summary_schema, format_checker=FormatChecker())
     return envelope_validator, bundle_validator, manifest_validator, summary_validator
 
 
