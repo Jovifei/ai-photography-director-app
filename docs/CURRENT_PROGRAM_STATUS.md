@@ -27,4 +27,4 @@ The following remain useful evidence or design constraints but are not current e
 
 ## Next stage
 
-T5 consolidates this status into one machine-checkable authority, labels forward-facing documents, records the next-gate matrix, and adds drift validation. It must not change Android runtime code, shared contracts, models, network, Pipeline code, signing settings or Owner decisions.
+T5 has consolidated this status into one machine-checkable authority, labelled forward-facing documents, recorded the next-gate matrix and added drift validation. Its qualification changed no Android runtime code, shared contracts, models, network, Pipeline code, signing settings or Owner decisions. The next stage is selected only after Owner review of the matrix.

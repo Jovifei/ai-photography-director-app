@@ -83,3 +83,7 @@ The path guard must prove the diff contains only approved documentation, task, s
 ## Data boundary
 
 Allowed: Git SHAs, branch/PR identifiers, test counts/status, contract versions, high-level Gate states, public model/corpus identifiers already tracked in approved docs and historical/current classifications. Forbidden: real/user photos, Picker URIs, private paths, database contents, device serials, LAN/IP details, pairing codes, TLS private material, credentials, tokens, model weights, raw provider output, reviewer personal data and signing secrets.
+
+## Review status
+
+Local T5 qualification is complete through candidate `d64ad4c7e03563c57766b2673b2d734511f0a2b9`: program-status tests, scope guard, contracts, privacy, diff check, JVM 141/141, lint 0 errors/10 warnings and Debug assemble passed. The final receipt-only commit will be pushed as the T5 Draft PR head; local exact-diff review and remote evidence review remain required before T5 is marked DONE.

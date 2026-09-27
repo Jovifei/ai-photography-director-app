@@ -57,8 +57,8 @@ def validate(root: Path) -> None:
     require(status.get("qualification_state") == "T4_SYNTHETIC_API35_VALIDATED", "qualification state drift")
     require(status.get("local_independent_review_state") == "PASS_EXACT_SHA", "local review state drift")
     require(status.get("c2c_review_limit") == "C2C_CODE_DIFF_REVIEW_NOT_POSSIBLE", "remote review limit missing")
-    require(status.get("current_stage") == "T5_PROGRAM_STATUS_ROADMAP_AUTHORITY_CONSOLIDATION", "current stage drift")
-    require(status.get("next_authorized_stage") == "T5_PROGRAM_STATUS_ROADMAP_AUTHORITY_CONSOLIDATION", "next stage drift")
+    require(status.get("current_stage") == "T5_PROGRAM_STATUS_ROADMAP_AUTHORITY_CONSOLIDATION_VALIDATED", "current stage drift")
+    require(status.get("next_authorized_stage") == "OWNER_REVIEWED_NEXT_GATE_SELECTION", "next stage drift")
     require(status.get("external_gates") == REQUIRED_EXTERNAL_GATES, "external gate state drift")
 
     current = (root / "docs" / "CURRENT_PROGRAM_STATUS.md").read_text(encoding="utf-8")
