@@ -21,8 +21,12 @@ import androidx.test.uiautomator.UiDevice
 import androidx.test.uiautomator.Until
 import com.jovi.photoai.MainActivity
 import com.jovi.photoai.data.capture.CaptureFileState
+import com.jovi.photoai.data.capture.CaptureRepository
 import com.jovi.photoai.ui.capture.CaptureLibraryViewModel
 import com.jovi.photoai.ui.capture.CaptureLibraryViewModelFactory
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.runBlocking
 import org.junit.Assert.assertNotSame
 import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertTrue
@@ -124,11 +128,21 @@ class P25UCaptureExportAndroidTest {
         )[CaptureLibraryViewModel::class.java]
         activeLibrary = library
         compose.waitUntil(TIMEOUT) { library.state.value.ready }
-        library.state.value.pendingExport?.let { pending ->
-            library.abandonExport(pending.token)
+        val repository = CaptureRepository.get(compose.activity.application)
+        val (initialRecords, initialPendingExport) = runBlocking {
+            combine(
+                repository.records,
+                repository.pendingExport,
+            ) { records, pending -> records to pending }.first()
         }
+        compose.waitUntil(TIMEOUT) {
+            val state = library.state.value
+            state.records.map { it.id }.toSet() == initialRecords.map { it.id }.toSet() &&
+                state.pendingExport?.token == initialPendingExport?.token
+        }
+        initialPendingExport?.let { pending -> library.abandonExport(pending.token) }
         compose.waitUntil(TIMEOUT) { library.state.value.pendingExport == null }
-        val before = library.state.value.records.map { it.id }.toSet()
+        val before = initialRecords.map { it.id }.toSet()
         compose.waitUntil(TIMEOUT) {
             compose.onAllNodesWithText("拍摄", useUnmergedTree = true)
                 .fetchSemanticsNodes().isNotEmpty()
@@ -140,12 +154,17 @@ class P25UCaptureExportAndroidTest {
                 .fetchSemanticsNodes().isNotEmpty()
         }
         compose.onNodeWithContentDescription("拍摄", useUnmergedTree = true).performClick()
+        var capturedId: String? = null
         compose.waitUntil(TIMEOUT) {
-            library.state.value.records.any {
+            val added = library.state.value.records.filter {
                 it.id !in before && it.fileState == CaptureFileState.AVAILABLE
             }
+            if (added.size != 1) false else {
+                capturedId = added.single().id
+                true
+            }
         }
-        val id = library.state.value.records.first { it.id !in before }.id
+        val id = checkNotNull(capturedId) { "Expected exactly one new available capture" }
         compose.waitUntil(TIMEOUT) { library.state.value.galleryVisible }
         compose.onNodeWithText("成片预览").assertIsDisplayed()
         compose.onNodeWithText("保存副本").assertIsDisplayed()
@@ -154,6 +173,7 @@ class P25UCaptureExportAndroidTest {
 
     private fun delete(id: String) {
         activeLibrary.delete(id)
+        compose.waitUntil(TIMEOUT) { activeLibrary.state.value.records.none { it.id == id } }
     }
 
     private fun chooseDestination() {
