@@ -68,6 +68,7 @@ def validate(root: Path) -> None:
     require(status.get("current_stage") in {
         "T5_PROGRAM_STATUS_ROADMAP_AUTHORITY_CONSOLIDATION_VALIDATED",
         "T6_P1B_AUTHORIZATION_PACKET_READY_EXECUTION_NOT_AUTHORIZED",
+        "T7_EVALUATION_GOVERNANCE_PACKET_READY_HUMAN_REVIEW_NOT_AUTHORIZED",
     }, "current stage drift")
     require(status.get("next_authorized_stage") in {
         "OWNER_REVIEWED_NEXT_GATE_SELECTION",
@@ -80,6 +81,13 @@ def validate(root: Path) -> None:
         require(t6.get("readiness_id") == "phase1-5-p1b-qwen3-vl-2b-authorization-readiness-20260927", "T6 readiness identity drift")
         require(t6.get("execution_authorized") is False, "T6 execution authorization promoted")
         require(t6.get("artifact_download") == "NOT_RUN" and t6.get("qwen_runtime") == "NOT_RUN", "T6 external state promoted")
+    if status.get("current_stage") == "T7_EVALUATION_GOVERNANCE_PACKET_READY_HUMAN_REVIEW_NOT_AUTHORIZED":
+        t7 = status.get("t7_governance", {})
+        require(t7.get("status") == "EVALUATION_GOVERNANCE_PACKET_READY_HUMAN_REVIEW_NOT_AUTHORIZED", "T7 governance status drift")
+        require(t7.get("base") == "3233313af8be946cc43245daf15f24f853933d88", "T7 base drift")
+        require(t7.get("criteria_count") == 18 and t7.get("owner_thresholds_approved") is False, "T7 rubric state drift")
+        require(t7.get("human_review_authorized") is False and t7.get("provider_qualification_authorized") is False, "T7 authorization promoted")
+        require(t7.get("pipeline_compatibility_claim_allowed") is False, "T7 Pipeline claim promoted")
     require(status.get("external_gates") == REQUIRED_EXTERNAL_GATES, "external gate state drift")
     require(status.get("t5_qualification", {}).get("scope_guard") == "PASS_18_APPROVED_PATHS", "T5 scope count drift")
 
@@ -94,7 +102,7 @@ def validate(root: Path) -> None:
     source_in_markdown = re.search(r"reviewed product source `([0-9a-f]{40})`", current)
     require(delivery_in_markdown and delivery_in_markdown.group(1) == status["delivery_head"], "JSON/Markdown delivery head mismatch")
     require(source_in_markdown and source_in_markdown.group(1) == status["reviewed_product_source"], "JSON/Markdown product source mismatch")
-    for marker in ("P1B_AUTHORIZATION_PACKET_READY", "NOT_RUN", "FROZEN"):
+    for marker in ("P1B_AUTHORIZATION_PACKET_READY", "EVALUATION_GOVERNANCE_PACKET_READY", "NOT_RUN", "FROZEN"):
         require(marker in matrix, f"gate matrix lacks {marker}")
 
     readme = read_text(root, "README.md")

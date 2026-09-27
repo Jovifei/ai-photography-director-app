@@ -1,0 +1,21 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://photoai.local/phase1_5/t7/evaluation_review_packet.v1.schema.json",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["packet_version", "sample_id", "blinded_candidate_id", "rubric_version", "reviewer_slot", "criterion_scores", "automated_criterion_18", "severe_hallucination", "severe_hallucination_categories", "adjudication_required", "review_status"],
+  "properties": {
+    "packet_version": {"const": "1.0.0"},
+    "sample_id": {"type": "string", "pattern": "^[a-z0-9][a-z0-9._-]{0,127}$"},
+    "blinded_candidate_id": {"type": "string", "pattern": "^candidate-[a-z0-9-]{1,64}$"},
+    "rubric_version": {"const": "phase1-5-t7-evaluation-governance-20260927"},
+    "reviewer_slot": {"enum": ["R1", "R2", "R3"]},
+    "criterion_scores": {"type": "object", "additionalProperties": false, "required": ["c01", "c02", "c03", "c04", "c05", "c06", "c07", "c08", "c09", "c10", "c11", "c12", "c13", "c14", "c15", "c16", "c17"], "patternProperties": {"^c(0[1-9]|1[0-7])$": {"type": "integer", "minimum": 0, "maximum": 2}}},
+    "automated_criterion_18": {"type": "object", "additionalProperties": false, "required": ["status", "required_fields_valid", "bounds_valid", "source_version_consistent"], "properties": {"status": {"enum": ["PASS", "FAIL", "NOT_RUN"]}, "required_fields_valid": {"type": "boolean"}, "bounds_valid": {"type": "boolean"}, "source_version_consistent": {"type": "boolean"}}},
+    "severe_hallucination": {"type": "boolean"},
+    "severe_hallucination_categories": {"type": "array", "items": {"enum": ["SUBJECT_COUNT", "SCENE_EVENT", "IDENTITY", "EXACT_LOCATION", "SAFETY", "LIVE_MEASUREMENT", "BIOGRAPHY", "SPECULATIVE_STORY_OR_EMOTION_AS_FACT", "UNPROVEN_PRIVACY_OR_LICENSE_CLAIM", "UNSAFE_RECOMMENDATION", "OTHER_CRITICAL"]}},
+    "adjudication_required": {"type": "boolean"},
+    "review_status": {"enum": ["REVIEW_PACKET_VALID", "ADJUDICATION_REQUIRED", "ADJUDICATION_COMPLETE", "UNRESOLVED"]},
+    "adjudication_note": {"type": "string", "maxLength": 1000}
+  }
+}
