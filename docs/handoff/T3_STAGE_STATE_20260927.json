@@ -1,6 +1,6 @@
 {
   "stage": "T3_REFERENCE_COMPARISON_CAMERA_CONTROLS",
-  "status": "T3_EMULATOR_VALIDATED_AWAITING_INDEPENDENT_REVIEW",
+  "status": "T3_EMULATOR_VALIDATED_INDEPENDENT_REVIEW_PASS_DRAFT_PR_OPEN",
   "date": "2026-09-27",
   "branch": "codex/t3-reference-camera-controls",
   "delivery_target": "codex/p25s-internal-handoff-validation-20260920",
@@ -49,16 +49,19 @@
     "pipeline_executed": false,
     "release_signing": false,
     "public_release": false,
-    "independent_review": "PENDING_RE_REVIEW",
+    "independent_review": "PASS_AFTER_REMEDIATION",
     "merge": false
   },
   "review_state": {
     "first_review": "FINDINGS_IMPORTANT_P25U_EXPORT_TEST_BASELINE_RACE",
-    "reviewed_head": "8e54012641b48d313ebc220b6d937b35dfd0f0af",
+    "first_reviewed_head": "f26f98b875ae8506ded7e0634a3fc7a45b6251e7",
     "remediation_commit": "47c2d8f192f2d92a4fd07539bd9ff3bf28b1ecfa",
     "full_requalification": "PASS",
-    "final_head_review": "FINDINGS_MINOR_REPORT_PID",
-    "after_report_correction": "PENDING_CONFIRMATION"
+    "followup_reviewed_head": "8e54012641b48d313ebc220b6d937b35dfd0f0af",
+    "followup_review": "FINDINGS_MINOR_REPORT_PID_CORRECTED_TO_8352",
+    "final_confirmation_head": "663d52991f7e6a436e3c91c82a72e80f411119cd",
+    "final_confirmation": "PASS_FINDINGS_NONE",
+    "closeout_scope": "documentation_only"
   },
-  "next": "obtain independent read-only confirmation of the corrected report PID and updated Draft PR head"
+  "next": "Owner landing decision only; no automatic merge; DPAPI release-signing input and physical/human product gates remain separate"
 }
