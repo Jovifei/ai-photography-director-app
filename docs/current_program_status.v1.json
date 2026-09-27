@@ -2,7 +2,7 @@
   "status_version": "1.0.0",
   "as_of_date": "2026-09-27",
   "program": "ai-photography-director-app",
-  "current_stage": "SYNTHETIC_EVALUATION_HARNESS_READY_REAL_EVALUATION_NOT_AUTHORIZED",
+  "current_stage": "PRODUCT_READY_PROMOTION_GATE_READY_REAL_READY_PROMOTION_NOT_AUTHORIZED",
   "delivery_head": "e88d2ab1eb0c9c5cf9f891c5107d951fbbbe15cb",
   "reviewed_product_source": "a69ede68f3e54e5ab006dbfd7a65c33040590f93",
   "t5_content_candidate": "b2565885382902d2f51ac2099436eddd69946f95",
@@ -58,6 +58,16 @@
     "pipeline_accessed": false,
     "media_accessed": false,
     "thresholds_approved": false
+  },
+  "t9_promotion_gate": {
+    "status": "PRODUCT_READY_PROMOTION_GATE_READY_REAL_READY_PROMOTION_NOT_AUTHORIZED",
+    "base": "acf43a8d734675ec23da534472cade129b7b1068",
+    "policy": "docs/phase1_5/t9/ready_promotion_policy.v1.json",
+    "provider_ready_promotion_authorized": false,
+    "human_review_authorized": false,
+    "thresholds_approved": false,
+    "android_product_change_authorized": false,
+    "offline_bundle_path_preserved": true
   },
   "t5_qualification": {
     "candidate_before_receipt_commit": "d64ad4c7e03563c57766b2673b2d734511f0a2b9",

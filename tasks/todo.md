@@ -13,6 +13,23 @@ Remote plan `c2c_f8b2` selected this contract-only, image-free, human-free dry-r
 - [x] Run T6/T7 regressions, contracts/privacy/scope and bounded Android smoke.
 - [ ] Perform exact review, push stacked Draft PR and obtain remote evidence review.
 
+## T9 Product READY promotion gate — 2026-09-27
+
+Remote plan `c2c_9e31` selected this non-runtime, image-free, provider-neutral
+stage from exact T8 authority `acf43a8d734675ec23da534472cade129b7b1068`.
+T9 defines the future promotion boundary without authorizing Provider execution,
+human review, Pipeline, device, signing, release or merge work.
+
+- [ ] Verify exact T8 authority and isolated T9 branch.
+- [ ] Add machine-readable promotion policy and strict candidate/decision schemas.
+- [ ] Bind frozen Envelope/Bundle/error-policy/T7/T8/offline-bundle identities.
+- [ ] Implement deterministic fail-closed promotion validator and authority probes.
+- [ ] Add synthetic blocked fixtures, Demo truth and hypothetical-only positive branch.
+- [ ] Add negative/capability/privacy/offline-bundle preservation tests.
+- [ ] Update canonical status/matrix/report without changing Android or frozen contracts.
+- [ ] Run T8/T7/T6/knowledge-bundle/contract/privacy/scope and bounded Android regressions.
+- [ ] Perform exact review, commit/push Draft PR stacked on T8, record evidence and request remote review.
+
 ## T8-R post-submission conformance repair — 2026-09-27
 
 Remote audit `c2c_aa42` returned `REPAIR_REQUIRED`: the previous T8 receipt proved
