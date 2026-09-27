@@ -13,7 +13,7 @@ Every fixture is marked `CONTRACT_ONLY_SYNTHETIC_NO_PROVIDER_EXECUTED`. Syntheti
 ## Qualification
 
 - Harness normal run: **PASS** (`SYNTHETIC_EVALUATION_HARNESS_READY`).
-- Harness tests: **14/14 PASS** covering frozen schema and semantic/policy rejection, manifest/summary schema execution, reference identity, allowlist blinding/provider invariance, all R1/R2/R3 paths, provenance/media/PII drift, threshold promotion and static safety.
+- Harness tests: **15/15 PASS** covering frozen schema and semantic/policy rejection, manifest/summary schema execution and invalid-schema fail-closed behavior, reference identity, allowlist blinding/provider invariance, all R1/R2/R3 paths, provenance/media/PII drift, threshold promotion and static safety.
 - Synthetic cases: SUCCESS no adjudication → `METRICS_READY_OWNER_THRESHOLD_NOT_APPROVED`; disagreement/severe without R3 → `ADJUDICATION_REQUIRED`; valid R3 → median metrics while preserving severe findings; FAILED/CANCELLED/Pipeline incompatible → `NOT_APPLICABLE` with no score or fallback.
 - Frozen contract checks: ProviderAnalysisEnvelope schema, ReferenceBundle schema, T8 manifest/summary schemas, semantic validators and `error_policy.v1.json` all execute in the runner.
 - Automated criterion 18 is derived only from contract validation and contributes 2 points, so an all-pass synthetic case is 36/36 and 100.00 normalized quality; this remains quality evidence, never confidence or Provider qualification.

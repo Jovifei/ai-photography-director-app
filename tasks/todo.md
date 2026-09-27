@@ -57,6 +57,16 @@ explicit schema self-check plus final report wording reconciliation.
 - [ ] Mark all repaired conformance rows PASS and remove historical R3-gap wording.
 - [ ] Requalify, push, record the final receipt and obtain remote DONE.
 
+## T8-R5 final receipt correction — 2026-09-27
+
+Remote source review found only two evidence details after R4: the invalid
+schema fail-closed negative was not named, and the report count lagged the
+15-test suite.
+
+- [x] Add invalid T8 schema negative coverage and explicit receipt line.
+- [x] Correct the report to 15/15 and retain all final gate lines.
+- [ ] Requalify, push, record the final receipt and obtain remote DONE.
+
 ## T7 evaluation governance readiness — 2026-09-27
 
 Remote plan `c2c_d4e1` selected this provider-neutral, metadata-only stage from exact T6 head `3233313af8be946cc43245daf15f24f853933d88`. The 18-criterion rubric remains `PROPOSED_OWNER_THRESHOLD — NOT_MEASURED`; T7 must not perform human review, use media, connect Pipeline, qualify a provider or authorize a launch threshold. The detailed checklist is [`tasks/plans/2026-09-27-t7-evaluation-governance-readiness.md`](plans/2026-09-27-t7-evaluation-governance-readiness.md).

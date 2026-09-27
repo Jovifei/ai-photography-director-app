@@ -23,6 +23,7 @@ binding's lack of arbitrary base-to-head diff support.
 | R1 | Frozen error policy validator | `load_error_policy()` and `validate_error_policy()` are called for every envelope | PASS |
 | R1 | Named schema/semantic negatives | `test_frozen_schema_semantics_and_policy_are_executed` covers unknown field, provider type, time format/order, output version, artifact hash and semantic text | PASS |
 | R1 | T8 manifest and per-case summary schemas execute | `load_manifest()` and `run()` validate the tracked manifest and `evaluation_run_summary.v1.schema.json`; `check_schema()` self-checks all four T8 schemas | PASS |
+| R1 | Invalid T8 schema fails closed | `test_tracked_t8_schemas_pass_draft202012_self_check` replaces the manifest schema with an invalid Draft 2020-12 type and expects `T8ValidationError` | PASS |
 | R2 | SUCCESS reference identity gate | Envelope and fixture IDs are checked; frozen semantic validator rejects `bundle.reference_id` mismatch | PASS |
 | R2 | Bundle version and required-field gate | `test_success_reference_identity_and_bundle_version_are_gated` | PASS |
 | R3 | Allowlist-only provider-blinded projection | `build_blinded_review_payload()` copies review-safe fields only; provider metadata is never copied then deleted | PASS |

@@ -12,6 +12,7 @@ from pathlib import Path
 from typing import Any
 
 from jsonschema import Draft202012Validator, FormatChecker
+from jsonschema.exceptions import SchemaError
 from referencing import Registry, Resource
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -74,8 +75,11 @@ def load_contract_validators(root: Path) -> tuple[Draft202012Validator, Draft202
     bundle_schema = read_json(root, BUNDLE_SCHEMA_REL)
     manifest_schema = read_json(root, MANIFEST_SCHEMA_REL)
     summary_schema = read_json(root, SUMMARY_SCHEMA_REL)
-    for schema in (envelope_schema, bundle_schema, manifest_schema, summary_schema):
-        Draft202012Validator.check_schema(schema)
+    try:
+        for schema in (envelope_schema, bundle_schema, manifest_schema, summary_schema):
+            Draft202012Validator.check_schema(schema)
+    except SchemaError as exc:
+        raise T8ValidationError("tracked T8 schema self-check failed") from exc
     registry = Registry().with_resource(envelope_schema["$id"], Resource.from_contents(envelope_schema)).with_resource(bundle_schema["$id"], Resource.from_contents(bundle_schema))
     envelope_validator = Draft202012Validator(
         envelope_schema,

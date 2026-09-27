@@ -166,6 +166,11 @@ class T8HarnessTests(unittest.TestCase):
         self.assertIsInstance(bundle, harness.Draft202012Validator)
         self.assertIsInstance(manifest, harness.Draft202012Validator)
         self.assertIsInstance(summary, harness.Draft202012Validator)
+        manifest_schema = self.read("docs/phase1_5/t8/synthetic_evaluation_manifest.v1.schema.json")
+        manifest_schema["type"] = "not-a-json-schema-type"
+        self.write("docs/phase1_5/t8/synthetic_evaluation_manifest.v1.schema.json", manifest_schema)
+        with self.assertRaises(harness.T8ValidationError):
+            harness.load_contract_validators(self.fixture)
 
     def test_non_success_outcomes_never_score_or_fallback(self) -> None:
         summaries = {item["case_id"]: item for item in harness.run(self.fixture)["cases"]}
