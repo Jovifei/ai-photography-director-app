@@ -57,6 +57,56 @@ class T9PromotionGateTests(unittest.TestCase):
         self.assertTrue(all(case["decision"]["trusted_ready_guidance_allowed"] is False for case in result["cases"]))
         self.assertNotIn("ELIGIBLE_AFTER_ALL_REQUIRED_GATES", {case["decision"]["decision"] for case in result["cases"]})
 
+    def test_demo_and_ordinary_non_success_truth_are_distinct(self) -> None:
+        policy, candidate_validator, decision_validator, _ = gate.load_policy(self.fixture)
+        demo = gate.load_candidate(self.fixture, Path("docs/phase1_5/t9/fixtures/demo_explicit_fallback.json"), candidate_validator)
+        demo_decision = gate.evaluate_promotion(demo, policy, decision_validator)
+        self.assertEqual(demo_decision["source_class"], "DEMO")
+        self.assertEqual(demo_decision["product_action"], "SHOW_DEMO_ONLY")
+        self.assertFalse(demo_decision["trusted_ready_guidance_allowed"])
+        failed = gate.load_candidate(self.fixture, Path("docs/phase1_5/t9/fixtures/failed_provider.json"), candidate_validator)
+        failed_decision = gate.evaluate_promotion(failed, policy, decision_validator)
+        self.assertEqual(failed_decision["source_class"], "UNAVAILABLE")
+        self.assertEqual(failed_decision["product_action"], "SHOW_UNAVAILABLE")
+
+    def test_contract_and_evaluation_invalid_blockers_are_distinct(self) -> None:
+        policy, candidate_validator, decision_validator, _ = gate.load_policy(self.fixture)
+        candidate = self.read("docs/phase1_5/t9/fixtures/synthetic_success_metrics_ready.json")
+        candidate["envelope_contract_valid"] = False
+        contract_decision = gate.evaluate_promotion(candidate, policy, decision_validator)
+        self.assertIn("BLOCKED_CONTRACT_INVALID", contract_decision["blockers"])
+        candidate["envelope_contract_valid"] = True
+        candidate["evaluation_contract_valid"] = False
+        evaluation_decision = gate.evaluate_promotion(candidate, policy, decision_validator)
+        self.assertIn("BLOCKED_EVALUATION_INVALID", evaluation_decision["blockers"])
+
+    def test_downstream_gate_blockers_can_be_isolated_in_unit_only_policy(self) -> None:
+        policy, candidate_validator, decision_validator, _ = gate.load_policy(self.fixture)
+        candidate = self.read("docs/phase1_5/t9/fixtures/synthetic_success_metrics_ready.json")
+        candidate.update({"evidence_class": "REAL_PROVIDER_RESULT", "threshold_status": "APPROVED", "provider_qualification_state": "PROVIDER_QUALIFIED", "human_review_state": "ACCEPTED", "product_promotion_authority": True})
+        unit_policy = copy.deepcopy(policy)
+        for key in unit_policy["authority"]:
+            unit_policy["authority"][key] = True
+        for field, expected in (("threshold_status", "BLOCKED_THRESHOLD_NOT_APPROVED"), ("provider_qualification_state", "BLOCKED_PROVIDER_NOT_QUALIFIED"), ("human_review_state", "BLOCKED_HUMAN_REVIEW_NOT_AUTHORIZED")):
+            isolated = copy.deepcopy(candidate)
+            if field == "threshold_status": isolated[field] = "PROPOSED_NOT_APPROVED"
+            elif field == "provider_qualification_state": isolated[field] = "NOT_PROVIDER_QUALIFICATION"
+            else: isolated[field] = "NOT_AUTHORIZED"
+            self.assertIn(expected, gate.evaluate_promotion(isolated, unit_policy, decision_validator, hypothetical=False)["blockers"])
+        isolated = copy.deepcopy(candidate); isolated["product_promotion_authority"] = False
+        self.assertIn("BLOCKED_PRODUCT_PROMOTION_NOT_AUTHORIZED", gate.evaluate_promotion(isolated, unit_policy, decision_validator)["blockers"])
+
+    def test_pipeline_success_is_blocked_by_pipeline_authority(self) -> None:
+        policy, candidate_validator, decision_validator, _ = gate.load_policy(self.fixture)
+        candidate = self.read("docs/phase1_5/t9/fixtures/synthetic_success_metrics_ready.json")
+        candidate.update({"evidence_class": "REAL_PROVIDER_RESULT", "provider_result_origin": "PIPELINE", "threshold_status": "APPROVED", "provider_qualification_state": "PROVIDER_QUALIFIED", "human_review_state": "ACCEPTED", "product_promotion_authority": True})
+        unit_policy = copy.deepcopy(policy)
+        for key in unit_policy["authority"]:
+            unit_policy["authority"][key] = True
+        unit_policy["authority"]["pipeline_integration_authorized"] = False
+        decision = gate.evaluate_promotion(candidate, unit_policy, decision_validator)
+        self.assertIn("BLOCKED_PIPELINE_COMPATIBILITY_NOT_AUTHORIZED", decision["blockers"])
+
     def test_invalid_t9_schema_fails_closed(self) -> None:
         schema = self.read("docs/phase1_5/t9/ready_promotion_candidate.v1.schema.json")
         schema["type"] = "not-a-json-schema-type"

@@ -16,5 +16,6 @@
   "human_review_state": "NOT_AUTHORIZED",
   "product_promotion_authority": false,
   "demo_fallback_policy": "USER_EXPLICIT_OUT_OF_ENVELOPE_ONLY",
-  "reference_id": "t9-synthetic-reference-10"
+  "reference_id": "t9-synthetic-reference-10",
+  "explicit_demo_fallback_selected": false
 }

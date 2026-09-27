@@ -4,12 +4,12 @@
 
 **Machine-readable record:** [`current_program_status.v1.json`](current_program_status.v1.json)
 
-**Next-stage plan:** [`tasks/plans/2026-09-27-t8-synthetic-evaluation-harness.md`](../tasks/plans/2026-09-27-t8-synthetic-evaluation-harness.md)
+**Next-stage plan:** [`tasks/plans/2026-09-27-t9-product-ready-promotion-gate.md`](../tasks/plans/2026-09-27-t9-product-ready-promotion-gate.md)
 **Gate matrix:** [`NEXT_GATE_MATRIX.md`](NEXT_GATE_MATRIX.md)
 
 ## Current authority
 
-The current Android delivery is the T4 offline product-flow stack. Its delivery head is `e88d2ab1eb0c9c5cf9f891c5107d951fbbbe15cb`, with reviewed product source `a69ede68f3e54e5ab006dbfd7a65c33040590f93`, based on T3 `14a56f49e1220eb8139bf7280c747124118fdb21`. Draft PR #8 is stacked on the T3 branch and remains open, Draft and unmerged.
+The current Android delivery is the T4 offline product-flow stack. Its delivery head is `e88d2ab1eb0c9c5cf9f891c5107d951fbbbe15cb`, with reviewed product source `a69ede68f3e54e5ab006dbfd7a65c33040590f93`, based on T3 `14a56f49e1220eb8139bf7280c747124118fdb21`. Draft PR #8 is stacked on the T3 branch and remains open, Draft and unmerged. Owner `main` remains dirty and untouched; active source review uses the clean exact-head clone. `C2C_CODE_DIFF_REVIEW_NOT_POSSIBLE` refers only to arbitrary historical base-range patch rendering.
 
 T4 qualification is synthetic/API 35 emulator evidence. The final receipt records T4 7/7, T3 7/7, root 2/2, P25U camera 1/1, export 3/3, force-stop recovery prepare/verify/cleanup 1/1 each, JVM 141/141, lint 0 errors, contract and privacy checks PASS. Local exact-SHA independent review is PASS. The bound C2C connector still reads the dirty Owner `main`, so its code-diff review is explicitly `C2C_CODE_DIFF_REVIEW_NOT_POSSIBLE`; the remote evidence review must not be read as a connector-performed code review.
 

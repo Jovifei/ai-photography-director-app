@@ -95,12 +95,25 @@ def load_candidate(root: Path, relative: Path, validator: Draft202012Validator) 
 
 
 def _source_class(candidate: dict[str, Any]) -> str:
+    if candidate["explicit_demo_fallback_selected"]:
+        return "DEMO"
     if candidate["provider_outcome"] != "SUCCESS":
         return "UNAVAILABLE"
     return candidate["evidence_class"]
 
 
 def evaluate_promotion(candidate: dict[str, Any], policy: dict[str, Any], decision_validator: Draft202012Validator, *, hypothetical: bool = False) -> dict[str, Any]:
+    if candidate["explicit_demo_fallback_selected"]:
+        require(candidate["provider_outcome"] != "SUCCESS", "Demo fallback cannot be a SUCCESS result")
+        require(candidate["demo_fallback_policy"] == "USER_EXPLICIT_OUT_OF_ENVELOPE_ONLY", "Demo fallback policy drift")
+        result = {
+            "decision_version": "1.0.0", "reference_id": candidate["reference_id"], "source_class": "DEMO",
+            "decision": "NOT_APPLICABLE_NON_SUCCESS", "trusted_ready_guidance_allowed": False,
+            "blockers": ["NOT_APPLICABLE_NON_SUCCESS"], "product_action": "SHOW_DEMO_ONLY",
+            "demo_fallback_policy": policy["demo_fallback_policy"], "policy_version": policy["policy_version"],
+        }
+        require(not schema_errors(decision_validator, result), "T9 Demo decision schema invalid")
+        return result
     blockers: list[str] = []
     if candidate["provider_outcome"] != "SUCCESS":
         blockers.append("NOT_APPLICABLE_NON_SUCCESS")
@@ -109,7 +122,9 @@ def evaluate_promotion(candidate: dict[str, Any], policy: dict[str, Any], decisi
     if not (candidate["envelope_contract_valid"] and candidate["bundle_contract_valid"] and candidate["reference_identity_valid"]):
         blockers.append("BLOCKED_CONTRACT_INVALID")
     if not candidate["evaluation_contract_valid"]:
-        blockers.append("BLOCKED_CONTRACT_INVALID")
+        blockers.append("BLOCKED_EVALUATION_INVALID")
+    if candidate["provider_result_origin"] == "PIPELINE" and not policy["authority"]["pipeline_integration_authorized"] and not hypothetical:
+        blockers.append("BLOCKED_PIPELINE_COMPATIBILITY_NOT_AUTHORIZED")
     if not candidate["adjudication_complete"]:
         blockers.append("BLOCKED_ADJUDICATION_REQUIRED")
     if candidate["severe_hallucination_unresolved"]:
@@ -137,7 +152,7 @@ def evaluate_promotion(candidate: dict[str, Any], policy: dict[str, Any], decisi
         "decision": decision,
         "trusted_ready_guidance_allowed": eligible,
         "blockers": unique_blockers,
-        "product_action": "ALLOW_READY_GUIDANCE" if eligible else ("SHOW_DEMO_ONLY" if candidate["provider_result_origin"] == "UNAVAILABLE" and candidate["provider_outcome"] == "FAILED" and candidate["evaluation_state"] == "NOT_APPLICABLE" and False else "SHOW_UNAVAILABLE"),
+        "product_action": "ALLOW_READY_GUIDANCE" if eligible else "SHOW_UNAVAILABLE",
         "demo_fallback_policy": policy["demo_fallback_policy"],
         "policy_version": policy["policy_version"],
     }
