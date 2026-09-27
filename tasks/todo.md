@@ -1,5 +1,21 @@
 # P25U review remediation
 
+## T4 offline product-flow integration — 2026-09-27
+
+- [x] Bound remote ChatGPT stage PLAN `c2c_a91f`, corrected it against exact T3 code, and saved the revised milestone plan.
+- [x] Created clean isolated branch from `14a56f49e1220eb8139bf7280c747124118fdb21`; origin T3 head matches.
+- [x] Audited library, project naming, navigation, Camera truth boundaries and test inventory.
+- [x] Implement all-project library entry, real search/filter/source/owner and coherent return route.
+- [x] Implement explicit project creation name and persistent rename through existing Room title.
+- [x] Add T4 JVM/Android tests; verify synthetic end-to-end flow and T3 regressions on API 35 emulator.
+- [ ] Run the clean exact-commit T4 qualifier, review its evidence and final diff.
+- [ ] Commit and deliver exact candidate for independent review; keep external Gates separate.
+
+### T4 Review
+
+- Pre-commit: Debug/AndroidTest builds, JVM 141/141, lint 0 errors/10 warnings, T4 5/5, T3 + root + P25U capture/export 13/13, force-stop prepare/verify/cleanup, contract tests, privacy audit and diff check passed on the dedicated API 35 emulator. The first recovery verify failure was a UI test timing race; the test now waits for the gallery before selecting, and the replacement run completed. These are not exact-commit qualification claims yet.
+- Real photos, physical device, Qwen/LAN, Pipeline, signing and release are outside T4.
+
 - [x] Verify independent review findings against the final source and existing evidence.
 - [x] Add an Activity recreation export-result regression and observe the expected failure.
 - [x] Preserve the active export token across Activity recreation and pass the regression.

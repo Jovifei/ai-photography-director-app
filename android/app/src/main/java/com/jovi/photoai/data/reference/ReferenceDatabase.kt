@@ -155,6 +155,9 @@ internal interface ReferenceDao {
     @Insert(onConflict = OnConflictStrategy.ABORT)
     suspend fun insertProject(entity: PhotographyProjectEntity)
 
+    @Query("UPDATE photography_projects SET title = :title, updatedAtEpochMillis = :updatedAtEpochMillis WHERE id = :projectId")
+    suspend fun renameProject(projectId: String, title: String, updatedAtEpochMillis: Long): Int
+
     @Query("UPDATE photography_projects SET updatedAtEpochMillis = :updatedAtEpochMillis WHERE id = :projectId")
     suspend fun touchProject(projectId: String, updatedAtEpochMillis: Long)
 

@@ -73,8 +73,8 @@ class T3CameraReferenceAndroidTest {
             val reference = compose.onNodeWithText("查看参考图").fetchSemanticsNode().boundsInRoot
             val hint = compose.onNodeWithText("按真实现场调整", substring = true).fetchSemanticsNode().boundsInRoot
             val shutter = compose.onNodeWithContentDescription("拍摄").fetchSemanticsNode().boundsInRoot
-            assertTrue("landscape reference card covers shutter", reference.bottom < shutter.top)
-            assertTrue("landscape guidance covers shutter", hint.bottom < shutter.top)
+            assertTrue("landscape reference card overlaps shutter", !reference.overlaps(shutter))
+            assertTrue("landscape guidance overlaps shutter: hint=$hint shutter=$shutter", !hint.overlaps(shutter))
         } finally {
             device.setOrientationNatural()
         }

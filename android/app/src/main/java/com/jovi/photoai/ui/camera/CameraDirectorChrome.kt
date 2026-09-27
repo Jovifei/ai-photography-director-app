@@ -7,6 +7,7 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -97,7 +98,8 @@ fun CameraDirectorChrome(
         onEvent(CameraUiEvent.ClosePanel)
     }
 
-    Box(modifier = modifier.fillMaxSize()) {
+    BoxWithConstraints(modifier = modifier.fillMaxSize()) {
+        val compactLandscape = maxWidth > maxHeight && maxHeight < 400.dp
         if (!directCaptureMode && referenceGuidance == null) {
             DemoOverlay(mode = uiState.overlayMode, showGrid = uiState.gridVisible)
         }
@@ -114,7 +116,11 @@ fun CameraDirectorChrome(
             directCaptureMode = directCaptureMode,
             modifier = Modifier
                 .align(Alignment.TopCenter)
-                .padding(top = if (referenceCardVisible) 180.dp else 144.dp),
+                .padding(top = when {
+                    compactLandscape -> 92.dp
+                    referenceCardVisible -> 180.dp
+                    else -> 144.dp
+                }),
         )
 
         if (!directCaptureMode) {

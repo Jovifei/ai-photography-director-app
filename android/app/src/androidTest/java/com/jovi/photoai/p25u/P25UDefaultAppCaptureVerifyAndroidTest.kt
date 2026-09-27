@@ -49,6 +49,8 @@ class P25UDefaultAppCaptureVerifyAndroidTest {
             val entry = device.wait(Until.findObject(By.text("查看全部成片")), 15_000)
             assertNotNull("default App did not reopen its root entry", entry)
             entry.click()
+            assertNotNull("default App did not open the capture library",
+                device.wait(Until.findObject(By.text("全部成片")), 15_000))
             scenario.onActivity { activity ->
                 ViewModelProvider(
                     activity,
