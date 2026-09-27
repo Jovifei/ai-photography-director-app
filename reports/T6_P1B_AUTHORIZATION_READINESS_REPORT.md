@@ -3,7 +3,8 @@
 **Stage:** T6 — P1B Provider/Qwen Authorization Readiness  
 **Base:** `0b04abdc57a3fa332689cfe664f9bcb997160e5e`  
 **Implementation candidate:** `b9b9e646d6c72f3eec9f594d265fac8bc9a4f635`  
-**Final receipt head:** recorded by the stacked Draft PR and C2C evidence receipt after this report commit  
+**Previously reviewed final content head:** `e6f34bedfdcd54dc9912db52c86116b8d1dc09cf`
+**Receipt correction:** this report records the pushed Draft PR #10, the local exact-diff PASS, and the remote evidence-review status. The exact receipt SHA is the PR #10 head recorded in the accompanying C2C receipt.
 **Branch:** `codex/t6-p1b-authorization-readiness-20260927`
 
 ## Scope
@@ -48,9 +49,11 @@ No `android/`, `shared-contract/`, Provider/runtime, CameraX, Pipeline, signing 
 
 The future Owner-decision schema permits only `DEFER`, `REJECT_PRIMARY`, or exact artifact quarantine preparation. Its scope keeps download, runtime, inference, App, Pipeline and private-media authorization false. T6 tracks no positive decision.
 
-## Remaining qualification steps
+## Qualification and delivery closure
 
-The bounded JVM/lint/Debug smoke is now complete. The final receipt still requires the clean exact-base scope guard, final exact-diff review, push of the stacked Draft PR, and remote evidence review. The C2C connector reads dirty Owner `main`, so `C2C_CODE_DIFF_REVIEW_NOT_POSSIBLE` must remain; remote evidence review cannot be described as connector code-diff PASS.
+The bounded JVM/lint/Debug smoke, clean exact-base scope guard, local exact-diff review and stacked Draft PR push are complete for the previously reviewed content head `e6f34bedfdcd54dc9912db52c86116b8d1dc09cf`. The first remote evidence review returned `EVIDENCE_REVIEW_COMPLETE_WITH_BLOCKER` only because this report still had pre-delivery wording; this receipt corrects that wording and requests a new evidence review. The C2C connector reads dirty Owner `main`, so `C2C_CODE_DIFF_REVIEW_NOT_POSSIBLE` remains and remote evidence review cannot be described as connector code-diff PASS.
+
+The corrected report now records: PR #10 is pushed, Draft and unmerged; local exact-diff review is `PASS_NO_ACTIONABLE_FINDINGS`; external gates remain closed; and this evidence correction introduces no product/runtime scope.
 
 ## External gates that remain closed
 
