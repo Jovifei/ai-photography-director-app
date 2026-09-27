@@ -20,14 +20,14 @@ stage from exact T8 authority `acf43a8d734675ec23da534472cade129b7b1068`.
 T9 defines the future promotion boundary without authorizing Provider execution,
 human review, Pipeline, device, signing, release or merge work.
 
-- [ ] Verify exact T8 authority and isolated T9 branch.
-- [ ] Add machine-readable promotion policy and strict candidate/decision schemas.
-- [ ] Bind frozen Envelope/Bundle/error-policy/T7/T8/offline-bundle identities.
-- [ ] Implement deterministic fail-closed promotion validator and authority probes.
-- [ ] Add synthetic blocked fixtures, Demo truth and hypothetical-only positive branch.
-- [ ] Add negative/capability/privacy/offline-bundle preservation tests.
-- [ ] Update canonical status/matrix/report without changing Android or frozen contracts.
-- [ ] Run T8/T7/T6/knowledge-bundle/contract/privacy/scope and bounded Android regressions.
+- [x] Verify exact T8 authority and isolated T9 branch.
+- [x] Add machine-readable promotion policy and strict candidate/decision schemas.
+- [x] Bind frozen Envelope/Bundle/error-policy/T7/T8/offline-bundle identities.
+- [x] Implement deterministic fail-closed promotion validator and authority probes.
+- [x] Add synthetic blocked fixtures, Demo truth and hypothetical-only positive branch.
+- [x] Add negative/capability/privacy/offline-bundle preservation tests.
+- [x] Update canonical status/matrix/report without changing Android or frozen contracts.
+- [x] Run T8/T7/T6/knowledge-bundle/contract/privacy/scope and bounded Android regressions.
 - [ ] Perform exact review, commit/push Draft PR stacked on T8, record evidence and request remote review.
 
 ## T8-R post-submission conformance repair — 2026-09-27
