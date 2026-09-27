@@ -64,7 +64,11 @@ Push-Location $android
 try {
     $env:ANDROID_HOME = $sdkRoot
     $env:ANDROID_SDK_ROOT = $sdkRoot
-    & $gradle ':app:testDebugUnitTest' ':app:assembleDebug' ':app:assembleDebugAndroidTest' ':app:lintDebug' *> (Join-Path $runRoot 'build.log')
+    $env:GRADLE_OPTS = '-Xmx256m'
+    & $gradle ':app:testDebugUnitTest' ':app:assembleDebug' ':app:assembleDebugAndroidTest' ':app:lintDebug' `
+        '--offline' '--console=plain' '--max-workers=1' '--no-daemon' `
+        '-Dorg.gradle.jvmargs=-Xmx512m' '-Dkotlin.compiler.execution.strategy=in-process' `
+        *> (Join-Path $runRoot 'build.log')
     if ($LASTEXITCODE -ne 0) { throw 'T4_BUILD_OR_LINT_FAILED' }
 } finally { Pop-Location }
 & python (Join-Path $repo 'scripts/test_phase1_5_contracts.py') *> (Join-Path $runRoot 'contracts.log')
@@ -85,6 +89,7 @@ Invoke-Test 't4-library' 'com.jovi.photoai.t4.T4ReferenceLibraryAndroidTest' 2
 Invoke-Test 't4-root' 'com.jovi.photoai.t4.T4RootNavigationAndroidTest' 1
 Invoke-Test 't4-rename' 'com.jovi.photoai.t4.T4ProjectRenameAndroidTest' 1
 Invoke-Test 't4-all-project' 'com.jovi.photoai.t4.T4AllProjectFlowAndroidTest' 1
+Invoke-Test 't4-guidance-transition' 'com.jovi.photoai.t4.T4GuidanceTransitionAndroidTest' 2
 Invoke-Test 't3-ui' 'com.jovi.photoai.t3.T3CameraReferenceAndroidTest' 7 @('-e', 't3DedicatedEmulator', 'true')
 Invoke-Test 'director-root' 'com.jovi.photoai.phase1.ReferenceDirectorFlowAndroidTest' 2
 Invoke-Test 'p25u-camera' 'com.jovi.photoai.p25u.P25UCameraCaptureAndroidTest' 1 @('-e', 'p25uDedicatedEmulator', 'true')

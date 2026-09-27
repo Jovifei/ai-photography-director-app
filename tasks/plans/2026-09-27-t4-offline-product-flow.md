@@ -48,7 +48,7 @@ Close the existing offline Android journey from project and reference selection 
 
 ### M3. Verify on synthetic inputs
 
-- [x] Existing guidance/READY-only/T3 JVM suite passed; added pure tests for cross-project library filtering. The active-reference live transition was guarded in root state, while the final exact-candidate qualification remains pending.
+- [x] Existing guidance/READY-only/T3 JVM suite passed; added pure tests for cross-project library filtering and isolated root-flow tests for Bundle ID mismatch, FAILED→READY→UNAVAILABLE, live guidance removal, deleted primary and the next reference's direct route. The replacement exact-candidate qualification remains pending.
 - [x] Pure tests cover all-project search and combined scene/source/status/project filters; Room-backed test covers rename persistence and invalid targets.
 - [x] T4-specific API 35 instrumentation covers two synthetic projects, Home→library, search/filter/source/owner, project naming/rename, 200% font and landscape. Existing guided/direct Camera and capture/export tests passed separately; final exact-candidate qualification remains pending.
 - [ ] Dedicated API 35 emulator flow: no-primary/direct entry; synthetic validated Bundle/guided entry; reference switch and back navigation; non-READY/unavailable; capture/library/export where changed; TalkBack/large font/rotation where affected.

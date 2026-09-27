@@ -95,8 +95,18 @@ internal data class StartupRestoreDecision(
 @Composable
 fun PhotographyDirectorApp() {
     val application = androidx.compose.ui.platform.LocalContext.current.applicationContext as Application
-    val repository = remember { ReferenceRepository.create(application) }
-    val libraryPreferences = remember { ReferenceLibraryPreferences(application) }
+    val repository = remember(application) { ReferenceRepository.create(application) }
+    val libraryPreferences = remember(application) { ReferenceLibraryPreferences(application) }
+    PhotographyDirectorAppContent(application, repository, libraryPreferences)
+}
+
+/** The same root flow can be qualified against an isolated synthetic repository and preferences. */
+@Composable
+internal fun PhotographyDirectorAppContent(
+    application: Application,
+    repository: ReferenceRepository,
+    libraryPreferences: ReferenceLibraryPreferences,
+) {
     val records by repository.activeRecords.collectAsState(initial = emptyList())
     val projects by repository.projects.collectAsState(initial = emptyList())
     val scope = rememberCoroutineScope()

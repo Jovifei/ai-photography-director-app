@@ -13,7 +13,8 @@
 
 ### T4 Review
 
-- Pre-commit: Debug/AndroidTest builds, JVM 141/141, lint 0 errors/10 warnings, T4 5/5, T3 + root + P25U capture/export 13/13, force-stop prepare/verify/cleanup, contract tests, privacy audit and diff check passed on the dedicated API 35 emulator. The first recovery verify failure was a UI test timing race; the test now waits for the gallery before selecting, and the replacement run completed. These are not exact-commit qualification claims yet.
+- First exact candidate `fef13a1`: Debug/AndroidTest builds, JVM 141/141, lint 0 errors, T4 5/5, T3 + root + P25U capture/export 13/13, force-stop prepare/verify/cleanup, contract tests, privacy audit and diff check passed on the dedicated API 35 emulator. Independent exact-SHA review identified missing live-state coverage, so this candidate is not T4 PASS. Two isolated root-flow state-transition tests now pass (T4 focused 7 total), and the replacement exact candidate/full rerun are pending.
+- Later Gradle JVM/lint attempts hit host virtual-memory pressure before completing; single-worker, bounded-JVM per-command reruns passed JVM 141/141, AndroidTest compilation and lintDebug. Generated `android/.kotlin/` is ignored rather than deleted; no system setting or other task process was changed. These interrupted attempts remain diagnostic failures, not PASS.
 - Real photos, physical device, Qwen/LAN, Pipeline, signing and release are outside T4.
 
 - [x] Verify independent review findings against the final source and existing evidence.
