@@ -2,6 +2,17 @@
 
 Read [`docs/CURRENT_PROGRAM_STATUS.md`](../docs/CURRENT_PROGRAM_STATUS.md) and [`docs/NEXT_GATE_MATRIX.md`](../docs/NEXT_GATE_MATRIX.md) before using any older task entry. The current delivery stack is T4 `e88d2ab1eb0c9c5cf9f891c5107d951fbbbe15cb` with reviewed product source `a69ede68f3e54e5ab006dbfd7a65c33040590f93`, PR #8 Draft/unmerged. T5 is documentation/status authority consolidation; it does not authorize runtime, network, real-photo, device, Pipeline, signing or release work. `C2C_CODE_DIFF_REVIEW_NOT_POSSIBLE` remains an explicit remote-review limitation.
 
+## T6 P1B authorization readiness — 2026-09-27
+
+Remote plan `c2c_7a6d` selected this metadata-only stage from exact T5 head `0b04abdc57a3fa332689cfe664f9bcb997160e5e`. The tracked P1A evidence remains frozen; no model download, network, image/private-media access, runtime, Android, Pipeline, signing or Owner authorization is permitted. The detailed checklist is [`tasks/plans/2026-09-27-t6-p1b-authorization-readiness.md`](plans/2026-09-27-t6-p1b-authorization-readiness.md).
+
+- [x] Verify exact T5 isolation and re-read current status/matrix.
+- [x] Add P1B readiness packet and future decision schema.
+- [x] Add fail-closed validator and negative safety tests.
+- [x] Update status authority only after readiness validation passes.
+- [x] Run T6 scope, contract, privacy, validator, and bounded Android smoke checks.
+- [ ] Perform exact-diff review, push stacked Draft PR, and obtain remote evidence review.
+
 T5 documentation qualification: program-status tests PASS, scope guard PASS for 18 approved paths, contract/privacy PASS, JVM 141/141, lint 0 errors/10 warnings, Debug assemble PASS, Android source unchanged.
 
 ## P25U review remediation

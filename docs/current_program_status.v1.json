@@ -2,7 +2,7 @@
   "status_version": "1.0.0",
   "as_of_date": "2026-09-27",
   "program": "ai-photography-director-app",
-  "current_stage": "T5_PROGRAM_STATUS_ROADMAP_AUTHORITY_CONSOLIDATION_VALIDATED",
+  "current_stage": "T6_P1B_AUTHORIZATION_PACKET_READY_EXECUTION_NOT_AUTHORIZED",
   "delivery_head": "e88d2ab1eb0c9c5cf9f891c5107d951fbbbe15cb",
   "reviewed_product_source": "a69ede68f3e54e5ab006dbfd7a65c33040590f93",
   "t5_content_candidate": "b2565885382902d2f51ac2099436eddd69946f95",
@@ -24,7 +24,18 @@
     "main_merge": "NOT_RUN",
     "pose": "FROZEN"
   },
-  "next_authorized_stage": "OWNER_REVIEWED_NEXT_GATE_SELECTION",
+  "next_authorized_stage": "OWNER_DECISION_OR_SEPARATE_NON_RUNTIME_GATE",
+  "t6_readiness": {
+    "status": "P1B_AUTHORIZATION_PACKET_READY_EXECUTION_NOT_AUTHORIZED",
+    "base": "0b04abdc57a3fa332689cfe664f9bcb997160e5e",
+    "readiness_id": "phase1-5-p1b-qwen3-vl-2b-authorization-readiness-20260927",
+    "manifest": "docs/phase1_5/p1b/p1b_readiness_manifest.v1.json",
+    "manifest_sha256": "2bca58cc8d35454f7e277023e5af9f2547e2851e9563fdd2154ad4a3cd0756d8",
+    "validator": "scripts/validate_phase1_5_p1b_readiness.py",
+    "execution_authorized": false,
+    "artifact_download": "NOT_RUN",
+    "qwen_runtime": "NOT_RUN"
+  },
   "t5_qualification": {
     "candidate_before_receipt_commit": "d64ad4c7e03563c57766b2673b2d734511f0a2b9",
     "scope": "documentation/status validators only",

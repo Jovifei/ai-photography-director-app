@@ -65,8 +65,21 @@ def validate(root: Path) -> None:
     require(status.get("qualification_state") == "T4_SYNTHETIC_API35_VALIDATED", "qualification state drift")
     require(status.get("local_independent_review_state") == "PASS_EXACT_SHA", "local review state drift")
     require(status.get("c2c_review_limit") == "C2C_CODE_DIFF_REVIEW_NOT_POSSIBLE", "remote review limit missing")
-    require(status.get("current_stage") == "T5_PROGRAM_STATUS_ROADMAP_AUTHORITY_CONSOLIDATION_VALIDATED", "current stage drift")
-    require(status.get("next_authorized_stage") == "OWNER_REVIEWED_NEXT_GATE_SELECTION", "next stage drift")
+    require(status.get("current_stage") in {
+        "T5_PROGRAM_STATUS_ROADMAP_AUTHORITY_CONSOLIDATION_VALIDATED",
+        "T6_P1B_AUTHORIZATION_PACKET_READY_EXECUTION_NOT_AUTHORIZED",
+    }, "current stage drift")
+    require(status.get("next_authorized_stage") in {
+        "OWNER_REVIEWED_NEXT_GATE_SELECTION",
+        "OWNER_DECISION_OR_SEPARATE_NON_RUNTIME_GATE",
+    }, "next stage drift")
+    if status.get("current_stage") == "T6_P1B_AUTHORIZATION_PACKET_READY_EXECUTION_NOT_AUTHORIZED":
+        t6 = status.get("t6_readiness", {})
+        require(t6.get("status") == "P1B_AUTHORIZATION_PACKET_READY_EXECUTION_NOT_AUTHORIZED", "T6 readiness status drift")
+        require(t6.get("base") == "0b04abdc57a3fa332689cfe664f9bcb997160e5e", "T6 base drift")
+        require(t6.get("readiness_id") == "phase1-5-p1b-qwen3-vl-2b-authorization-readiness-20260927", "T6 readiness identity drift")
+        require(t6.get("execution_authorized") is False, "T6 execution authorization promoted")
+        require(t6.get("artifact_download") == "NOT_RUN" and t6.get("qwen_runtime") == "NOT_RUN", "T6 external state promoted")
     require(status.get("external_gates") == REQUIRED_EXTERNAL_GATES, "external gate state drift")
     require(status.get("t5_qualification", {}).get("scope_guard") == "PASS_18_APPROVED_PATHS", "T5 scope count drift")
 
@@ -81,7 +94,7 @@ def validate(root: Path) -> None:
     source_in_markdown = re.search(r"reviewed product source `([0-9a-f]{40})`", current)
     require(delivery_in_markdown and delivery_in_markdown.group(1) == status["delivery_head"], "JSON/Markdown delivery head mismatch")
     require(source_in_markdown and source_in_markdown.group(1) == status["reviewed_product_source"], "JSON/Markdown product source mismatch")
-    for marker in ("BLOCKED_PENDING_SEPARATE_GATE", "NOT_RUN", "FROZEN"):
+    for marker in ("P1B_AUTHORIZATION_PACKET_READY", "NOT_RUN", "FROZEN"):
         require(marker in matrix, f"gate matrix lacks {marker}")
 
     readme = read_text(root, "README.md")
