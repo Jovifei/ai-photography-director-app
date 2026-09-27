@@ -31,6 +31,8 @@ class ProgramStatusTests(unittest.TestCase):
             "docs/P25T_PRODUCT_AND_PIPELINE_ACTION_PLAN_20260921.md",
             "docs/UI1_P1B_ENGINEERING_COMPLETION_PLAN.md",
             "docs/P25R_OWNER_FINAL_REVIEW_GUIDE.md",
+            "docs/ANDROID_BETA_PHONE_SETUP.md",
+            "docs/BETA_USER_GUIDE.md",
         ):
             target = root / relative
             target.parent.mkdir(parents=True, exist_ok=True)
@@ -61,6 +63,27 @@ class ProgramStatusTests(unittest.TestCase):
             status_path.write_text(json.dumps(status), encoding="utf-8")
             with self.assertRaises(StatusError):
                 validate(root)
+        finally:
+            holder["temp"].cleanup()
+
+    def test_rejects_missing_review_limit(self) -> None:
+        root, holder = self.make_fixture()
+        try:
+            path = root / "docs" / "CURRENT_PROGRAM_STATUS.md"
+            text = path.read_text(encoding="utf-8").replace("C2C_CODE_DIFF_REVIEW_NOT_POSSIBLE", "REVIEW_UNSPECIFIED")
+            path.write_text(text, encoding="utf-8")
+            with self.assertRaises(StatusError):
+                validate(root)
+        finally:
+            holder["temp"].cleanup()
+
+    def test_accepts_historical_text_with_current_pointer(self) -> None:
+        root, holder = self.make_fixture()
+        try:
+            path = root / "docs" / "P25R_OWNER_FINAL_REVIEW_GUIDE.md"
+            text = path.read_text(encoding="utf-8") + "\nHistorical P24 note: Qwen was not connected.\n"
+            path.write_text(text, encoding="utf-8")
+            validate(root)
         finally:
             holder["temp"].cleanup()
 

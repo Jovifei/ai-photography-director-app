@@ -2,7 +2,7 @@
 
 Read [`docs/CURRENT_PROGRAM_STATUS.md`](../docs/CURRENT_PROGRAM_STATUS.md) and [`docs/NEXT_GATE_MATRIX.md`](../docs/NEXT_GATE_MATRIX.md) before using any older task entry. The current delivery stack is T4 `e88d2ab1eb0c9c5cf9f891c5107d951fbbbe15cb` with reviewed product source `a69ede68f3e54e5ab006dbfd7a65c33040590f93`, PR #8 Draft/unmerged. T5 is documentation/status authority consolidation; it does not authorize runtime, network, real-photo, device, Pipeline, signing or release work. `C2C_CODE_DIFF_REVIEW_NOT_POSSIBLE` remains an explicit remote-review limitation.
 
-T5 documentation qualification: program-status tests PASS, scope guard PASS for 16 approved paths, contract/privacy PASS, JVM 141/141, lint 0 errors/10 warnings, Debug assemble PASS, Android source unchanged.
+T5 documentation qualification: program-status tests PASS, scope guard PASS for 18 approved paths, contract/privacy PASS, JVM 141/141, lint 0 errors/10 warnings, Debug assemble PASS, Android source unchanged.
 
 ## P25U review remediation
 

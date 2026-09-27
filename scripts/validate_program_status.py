@@ -43,6 +43,13 @@ def require(condition: bool, message: str) -> None:
         raise StatusError(message)
 
 
+def read_text(root: Path, relative: str) -> str:
+    try:
+        return (root / relative).read_text(encoding="utf-8")
+    except OSError as exc:
+        raise StatusError(f"cannot read {relative}: {exc}") from exc
+
+
 def validate(root: Path) -> None:
     status = read_status(root)
     for key in ("delivery_head", "reviewed_product_source", "t3_base"):
@@ -61,24 +68,30 @@ def validate(root: Path) -> None:
     require(status.get("next_authorized_stage") == "OWNER_REVIEWED_NEXT_GATE_SELECTION", "next stage drift")
     require(status.get("external_gates") == REQUIRED_EXTERNAL_GATES, "external gate state drift")
 
-    current = (root / "docs" / "CURRENT_PROGRAM_STATUS.md").read_text(encoding="utf-8")
-    matrix = (root / "docs" / "NEXT_GATE_MATRIX.md").read_text(encoding="utf-8")
+    current = read_text(root, "docs/CURRENT_PROGRAM_STATUS.md")
+    matrix = read_text(root, "docs/NEXT_GATE_MATRIX.md")
     require("current_program_status.v1.json" in current, "current status does not point to JSON")
     require("NEXT_GATE_MATRIX.md" in current, "current status does not point to gate matrix")
     require("C2C_CODE_DIFF_REVIEW_NOT_POSSIBLE" in current, "current status drops C2C review limit")
     require("e88d2ab1eb0c9c5cf9f891c5107d951fbbbe15cb" in current, "current status drops delivery head")
     require("a69ede68f3e54e5ab006dbfd7a65c33040590f93" in current, "current status drops reviewed source")
+    delivery_in_markdown = re.search(r"delivery head is `([0-9a-f]{40})`", current)
+    source_in_markdown = re.search(r"reviewed product source `([0-9a-f]{40})`", current)
+    require(delivery_in_markdown and delivery_in_markdown.group(1) == status["delivery_head"], "JSON/Markdown delivery head mismatch")
+    require(source_in_markdown and source_in_markdown.group(1) == status["reviewed_product_source"], "JSON/Markdown product source mismatch")
     for marker in ("BLOCKED_PENDING_SEPARATE_GATE", "NOT_RUN", "FROZEN"):
         require(marker in matrix, f"gate matrix lacks {marker}")
 
-    readme = (root / "README.md").read_text(encoding="utf-8")
+    readme = read_text(root, "README.md")
     require("docs/CURRENT_PROGRAM_STATUS.md" in readme, "README lacks current status pointer")
     require("docs/NEXT_GATE_MATRIX.md" in readme, "README lacks gate matrix pointer")
+    require("AH0 批准后创建" not in readme and "AH0 批准后在" not in readme, "README retains obsolete AH0 execution entry")
+    require("历史试点" in readme and "历史 Beta" in readme, "README pilot links are not historical")
 
-    handoff = (root / "docs" / "PROGRAM_HANDOFF_REFERENCE.md").read_text(encoding="utf-8")
+    handoff = read_text(root, "docs/PROGRAM_HANDOFF_REFERENCE.md")
     require("CURRENT_PROGRAM_STATUS.md" in handoff and "Historical handoff" in handoff, "handoff is not marked historical")
 
-    todo = (root / "tasks" / "todo.md").read_text(encoding="utf-8")
+    todo = read_text(root, "tasks/todo.md")
     require("CURRENT_PROGRAM_STATUS.md" in todo and "T5" in todo, "task ledger lacks current authority")
 
     historical_docs = (
@@ -87,10 +100,21 @@ def validate(root: Path) -> None:
         "docs/P25T_PRODUCT_AND_PIPELINE_ACTION_PLAN_20260921.md",
         "docs/UI1_P1B_ENGINEERING_COMPLETION_PLAN.md",
         "docs/P25R_OWNER_FINAL_REVIEW_GUIDE.md",
+        "docs/ANDROID_BETA_PHONE_SETUP.md",
+        "docs/BETA_USER_GUIDE.md",
     )
     for relative in historical_docs:
-        text = (root / relative).read_text(encoding="utf-8")
+        text = read_text(root, relative)
         require("CURRENT_PROGRAM_STATUS.md" in text and "historical" in text.lower(), f"historical pointer missing: {relative}")
+
+    p25r = read_text(root, "docs/P25R_OWNER_FINAL_REVIEW_GUIDE.md")
+    require("当前唯一未完成 Gate" not in p25r, "P25R still claims to be the sole current gate")
+
+    # Forward-facing status surfaces must not promote external capability claims.
+    for relative in ("README.md", "docs/CURRENT_PROGRAM_STATUS.md", "docs/NEXT_GATE_MATRIX.md", "tasks/todo.md"):
+        text = read_text(root, relative)
+        require("Qwen 已连接" not in text and "Pipeline 已集成" not in text, f"promoted runtime claim in {relative}")
+        require("实体设备 PASS" not in text and "主线已合并" not in text, f"promoted release claim in {relative}")
 
 
 def main() -> int:

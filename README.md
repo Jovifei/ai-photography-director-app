@@ -12,7 +12,7 @@ AI 摄影现场导演 App。**首发 Android，iOS 第二阶段。**
 ## 推荐结构
 
 ```text
-android/          # AH0 批准后创建
+android/          # 当前 Android 交付源；AH0 文档仅为历史 bootstrap 计划
 # ios/            # Android Gate 后才允许创建
 shared-contract/
 docs/
@@ -49,8 +49,8 @@ Kotlin、Jetpack Compose、CameraX、系统 Photo Picker、Room、应用私有 J
 
 ## 使用入口
 
-- [Android Beta 手机配置与首次使用说明](docs/ANDROID_BETA_PHONE_SETUP.md)
-- [摄影导演 Android Beta 用户指南](docs/BETA_USER_GUIDE.md)
+- [历史试点手机配置说明](docs/ANDROID_BETA_PHONE_SETUP.md)（不代表当前授权或试点 PASS）
+- [历史 Beta 用户指南](docs/BETA_USER_GUIDE.md)（不代表当前授权或试点 PASS）
 - [Photo Knowledge Bundle Consumer v1](docs/reference/PHOTO_KNOWLEDGE_BUNDLE_CONSUMER_V1.md)
 - [P22 离线产品资格报告](reports/P22_OFFLINE_PRODUCT_CLOSURE_QUALIFICATION.md)
 - Windows Private 网络只读诊断：`scripts/qualify_windows_private_network.ps1`
@@ -58,7 +58,7 @@ Kotlin、Jetpack Compose、CameraX、系统 Photo Picker、Room、应用私有 J
 
 ## 测试与参考仓库
 
-- 运行测试：AH0 批准后在 `android/` 目录执行 `./gradlew test`；`shared-contract/` 的 Schema/Fixture 由 App 与 Pipeline 两侧各自实现并互验。
+- 运行当前 Android smoke：在 `android/` 目录执行对应阶段计划中的 Gradle 命令；`shared-contract/` 的 Schema/Fixture 由 App 与 Pipeline 两侧各自实现并互验。当前状态和 Gate 以 [`docs/CURRENT_PROGRAM_STATUS.md`](docs/CURRENT_PROGRAM_STATUS.md) 为准。
 - 获取参考仓库（只本地、不入 Git）：`python scripts/fetch_reference_repos.py --profile core`，浅克隆到 `docs/references/repos/` 并写入 `docs/references/REFERENCE_LOCK.json`。只提交 `REFERENCE_LOCK.json`、来源、Commit 与研究结论，不提交第三方源码。
 
 ## 不入 Git 的内容

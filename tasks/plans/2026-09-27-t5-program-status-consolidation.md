@@ -24,6 +24,7 @@ Update only documentation/task pointers. Preserve old reports and locked decisio
 - `tasks/todo.md`: put T4 delivery and T5 consolidation at the top-level current authority; move August Closed Beta/P21 text under historical context.
 - `docs/00_ANDROID_FIRST_EXECUTION_PLAN.md` and `docs/01_CAMERAX_AND_POSE_SPIKE.md`: label bootstrap/pose plans historical; preserve their constraints.
 - `docs/P25T_PRODUCT_AND_PIPELINE_ACTION_PLAN_20260921.md`, `docs/UI1_P1B_ENGINEERING_COMPLETION_PLAN.md` and `docs/P25R_OWNER_FINAL_REVIEW_GUIDE.md`: label stage-specific plans historical or scope-specific, retaining evidence and Owner decisions.
+- `docs/ANDROID_BETA_PHONE_SETUP.md` and `docs/BETA_USER_GUIDE.md`: mark pilot/Qwen/physical-device instructions as historical references and link current status/gate authority.
 
 Do not retroactively rewrite historical reports or Owner decisions. Do not require an external Obsidian edit for Git qualification; Obsidian P22/P24 notes remain historical support only.
 
