@@ -39,7 +39,7 @@ then required one fail-closed authority guard: tracked fixtures must stay synthe
 - [x] Add a negative test that mutates a tracked fixture to `REAL_PROVIDER_RESULT` and proves `run()` rejects it.
 - [x] Reconcile canonical clean-clone review wording without rewriting historical T4 evidence.
 - [x] Requalify T9, update the report to 13/13 and record `TRACKED_FIXTURE_SYNTHETIC_ONLY=PASS`.
-- [ ] Push the final T9 candidate and obtain remote `DONE` on exact head.
+- [x] Push the final T9 candidate and obtain remote `DONE` on exact head.
 
 ## T8-R post-submission conformance repair — 2026-09-27
 
