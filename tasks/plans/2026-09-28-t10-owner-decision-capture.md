@@ -22,7 +22,7 @@
 - [x] M7: Add `scripts/validate_t10_scope.py` with exact base `dd5d297` and T10 allowlist only.
 - [x] M8: Run T10/P1B/T9/T8/T7/status/contracts/privacy/scope and bounded Android checks.
 - [x] M9: Run negative authority probes; every forbidden authorization must fail closed.
-- [ ] M10: Perform exact review, push a Draft PR stacked on PR #13, record evidence, and request remote review.
+- [x] M10: Perform exact review, push Draft PR #15 stacked on PR #13, record evidence, and obtain remote `DONE`.
 
 ## Acceptance
 
