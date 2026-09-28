@@ -41,6 +41,19 @@ then required one fail-closed authority guard: tracked fixtures must stay synthe
 - [x] Requalify T9, update the report to 13/13 and record `TRACKED_FIXTURE_SYNTHETIC_ONLY=PASS`.
 - [x] Push the final T9 candidate and obtain remote `DONE` on exact head.
 
+## T10 Owner Decision Capture / P1B Route Resolution — 2026-09-28
+
+Remote plan `c2c_4f7b` selected an Owner-decision stage from exact T9 head
+`dd5d297ffa26adc38470bfa5737ac82b94eaa2ec`. Jovi explicitly selected
+`AUTHORIZE_ARTIFACT_QUARANTINE_ONLY`; this stage records and validates that
+choice without downloading or running the artifact.
+
+- [x] Confirm exact Owner decision and exact T9 base.
+- [x] Record the decision with the existing P1B schema and exact artifact binding.
+- [x] Add the T10 validator, tests, status projection, report and scope guard.
+- [x] Run T10/P1B/T9/T8/T7/status/contracts/privacy/scope and bounded Android checks.
+- [ ] Perform exact review, push Draft PR stacked on PR #13, and obtain remote review.
+
 ## T8-R post-submission conformance repair — 2026-09-27
 
 Remote audit `c2c_aa42` returned `REPAIR_REQUIRED`: the previous T8 receipt proved

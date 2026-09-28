@@ -13,12 +13,13 @@ This matrix describes possible future tracks. It records prerequisites; it does 
 | Signing / beta / release | Historical release work | Separate authorization tied to a reviewed candidate and signing identity | `NOT_RUN_FOR_T4_STACK` |
 | More offline Android work | T4 product PASS | A concrete reviewed defect or requirement | `NO_SPECULATIVE_SCOPE` |
 | Product READY promotion gate | T8 synthetic contract evidence and offline Photo Knowledge Bundle consumer contract | Non-runtime policy/schema/validator evidence only; no Provider qualification or product write authorization | `PRODUCT_READY_PROMOTION_GATE_READY — REAL_READY_PROMOTION_NOT_AUTHORIZED` |
+| Owner Decision Capture / P1B Route Resolution | T6 P1B packet, exact T9 authority and explicit Owner choice | Existing P1B schema validation; exact artifact binding; no download/runtime/inference/App/Pipeline/private-media authorization | `P1B_ARTIFACT_QUARANTINE_SCOPE_APPROVED — ARTIFACT_ACQUISITION_NOT_YET_AUTHORIZED` |
 
 The matrix must not promote an old Closed Beta candidate, an emulator result, an HTTP success, an editorial draft or an AI pre-review into a current release or human PASS.
 
 ## Stage-selection rule
 
-Until a new Owner authorization names one of the runtime, editorial, Pipeline, device or signing tracks, the next executable plan remains non-runtime preparation. No model download, inference, real-photo access, network activation, device action or merge follows automatically from this matrix.
+T10 has captured `AUTHORIZE_ARTIFACT_QUARANTINE_ONLY`, but this does not authorize model download, inference, real-photo access, network activation, device action or merge. A separate plan is required before any artifact acquisition or quarantine operation.
 
 T6's `P1B_AUTHORIZATION_PACKET_READY — EXECUTION_NOT_AUTHORIZED` status is metadata coherence only. It does not qualify Qwen or a Provider, approve licensing or transport, authorize artifact acquisition, or open the runtime branch. A future Owner decision must bind the readiness manifest and may only select `DEFER`, `REJECT_PRIMARY`, or exact artifact quarantine preparation; runtime/inference/App/Pipeline/private-media authorization remains a later gate.
 

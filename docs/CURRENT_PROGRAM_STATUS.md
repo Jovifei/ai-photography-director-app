@@ -1,10 +1,10 @@
 # Current program status
 
-**As of:** 2026-09-27
+**As of:** 2026-09-28
 
 **Machine-readable record:** [`current_program_status.v1.json`](current_program_status.v1.json)
 
-**Next-stage plan:** [`tasks/plans/2026-09-27-t9-product-ready-promotion-gate.md`](../tasks/plans/2026-09-27-t9-product-ready-promotion-gate.md)
+**Next-stage plan:** [`tasks/plans/2026-09-28-t10-owner-decision-capture.md`](../tasks/plans/2026-09-28-t10-owner-decision-capture.md)
 **Gate matrix:** [`NEXT_GATE_MATRIX.md`](NEXT_GATE_MATRIX.md)
 
 ## Current authority
@@ -40,6 +40,12 @@ Synthetic metrics are contract evidence only. `METRICS_READY_OWNER_THRESHOLD_NOT
 T9 defines a machine-readable, fail-closed boundary for a future Provider result
 to become trusted product READY guidance. It is `PRODUCT_READY_PROMOTION_GATE_READY — REAL_READY_PROMOTION_NOT_AUTHORIZED` and contains only synthetic, image-free policy fixtures and validators. It does not authorize Provider execution, human review, Pipeline, device, Android READY writes, signing, release or merge. The existing offline Photo Knowledge Bundle consumer READY path remains separate and preserved.
 
+## T10 Owner Decision Capture / P1B Route Resolution
+
+T10 records the explicit Owner decision `AUTHORIZE_ARTIFACT_QUARANTINE_ONLY` against exact T9 head `dd5d297ffa26adc38470bfa5737ac82b94eaa2ec`. The decision binds the exact P1B model, immutable revision, weight filename, byte count, artifact hash and readiness-manifest hash.
+
+The resulting state is `P1B_ARTIFACT_QUARANTINE_SCOPE_APPROVED — ARTIFACT_ACQUISITION_NOT_YET_AUTHORIZED`. Download, runtime, inference, App integration, Pipeline integration and private-media authorization remain `false`. T10 records and validates the decision only; it does not download or execute the artifact. T9 real READY promotion remains unauthorized.
+
 ## Product goal
 
 `参考图 → 来源明确的逐图状态 → READY-only 可信指导 → Camera Director 或无指导拍摄 → 私有成片 → 系统导出`
@@ -52,4 +58,4 @@ The following remain useful evidence or design constraints but are not current e
 
 ## Next stage
 
-T5 consolidated this status into one machine-checkable authority, T6 added a machine-verifiable P1B readiness boundary, T7 added provider-neutral evaluation governance, T8 exercised the future evidence flow with contract-only synthetic records, and T9 defines the future READY-promotion boundary. T9 changes no Android runtime code, shared contracts, models, network, Pipeline code, signing settings, human-review records or Owner decisions. The next executable step is an Owner decision or another separately planned non-runtime Gate; no artifact, provider, human review or Pipeline action follows automatically.
+T5 consolidated this status into one machine-checkable authority, T6 added a machine-verifiable P1B readiness boundary, T7 added provider-neutral evaluation governance, T8 exercised the future evidence flow with contract-only synthetic records, T9 defined the future READY-promotion boundary, and T10 recorded the explicit Owner quarantine-only decision. T10 changes no Android runtime code and does not acquire or execute an artifact. The next executable step, if any, requires a separate plan for artifact acquisition/quarantine; no download, provider, human review, Pipeline or runtime action follows automatically.
