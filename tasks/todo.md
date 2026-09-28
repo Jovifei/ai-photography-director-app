@@ -50,7 +50,7 @@ choice without downloading or running the artifact.
 
 - [x] Confirm exact Owner decision and exact T9 base.
 - [x] Record the decision with the existing P1B schema and exact artifact binding.
-- [x] Add the T10 validator, tests, status projection, report and scope guard.
+- [x] Add the T10 validator, 8/8 tests with 16-case decision-integrity matrix, status projection, report and scope guard.
 - [x] Run T10/P1B/T9/T8/T7/status/contracts/privacy/scope and bounded Android checks.
 - [ ] Perform exact review, push Draft PR stacked on PR #13, and obtain remote review.
 

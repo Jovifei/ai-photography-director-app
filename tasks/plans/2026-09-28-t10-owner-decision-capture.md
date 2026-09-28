@@ -16,7 +16,7 @@
 - [x] M1: Re-read current status, T9, P1B manifest/schema and existing P1B validator; preserve all closed authority flags.
 - [x] M2: Add `docs/phase1_5/p1b/p1b_owner_decision.v1.json` using the existing schema and exact quarantine binding. Keep all download/runtime/inference/App/Pipeline/private-media flags false.
 - [x] M3: Add `scripts/validate_t10_owner_decision.py` by reusing `validate_phase1_5_p1b_readiness.validate_manifest` and `validate_owner_decision`; add exact T9 base and canonical projection checks.
-- [x] M4: Add `scripts/test_t10_owner_decision.py` covering all three legal branches, exact artifact identity, forbidden authority flags, wrong IDs/hashes, and current T9 authority.
+- [x] M4: Add `scripts/test_t10_owner_decision.py` with 8/8 test methods and a 16-case decision-integrity negative matrix covering all three legal branches, exact artifact identity, forbidden authority flags, wrong IDs/hashes, and current T9 authority.
 - [x] M5: Add branch-specific `t10_owner_decision` status projection to the canonical status/matrix without rewriting T9 as Provider-ready.
 - [x] M6: Add `reports/T10_OWNER_DECISION_CAPTURE_REPORT.md` with decision, identities, hashes, closed gates and no-execution boundary.
 - [x] M7: Add `scripts/validate_t10_scope.py` with exact base `dd5d297` and T10 allowlist only.

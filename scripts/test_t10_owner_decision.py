@@ -81,6 +81,31 @@ class T10OwnerDecisionTests(unittest.TestCase):
         with self.assertRaises(gate.T10ValidationError):
             gate.run(self.fixture)
 
+    def test_decision_integrity_negative_matrix(self) -> None:
+        base = self.read("docs/phase1_5/p1b/p1b_owner_decision.v1.json")
+        cases: list[tuple[str, callable]] = [
+            ("wrong_model_id", lambda d: d["artifact_binding"].update(model_id="wrong/model")),
+            ("wrong_revision", lambda d: d["artifact_binding"].update(immutable_revision="0" * 40)),
+            ("wrong_weight_bytes", lambda d: d["artifact_binding"].update(weight_bytes=1)),
+            ("wrong_weight_sha", lambda d: d["artifact_binding"].update(weight_lfs_sha256="0" * 64)),
+            ("wrong_manifest_sha", lambda d: d["artifact_binding"].update(readiness_manifest_sha256="0" * 64)),
+            ("wrong_readiness_id", lambda d: d.update(readiness_id="wrong-readiness")),
+            ("missing_artifact_binding", lambda d: d.pop("artifact_binding")),
+            ("defer_with_binding", lambda d: d.update(decision="DEFER")),
+            ("reject_with_binding", lambda d: d.update(decision="REJECT_PRIMARY")),
+            ("unsupported_decision", lambda d: d.update(decision="AUTHORIZE_RUNTIME")),
+        ]
+        for scope_key in gate.FORBIDDEN_SCOPE:
+            cases.append((f"forbidden_{scope_key}", lambda d, key=scope_key: d["scope"].update({key: True})))
+        for label, mutate in cases:
+            with self.subTest(case=label):
+                candidate = copy.deepcopy(base)
+                mutate(candidate)
+                self.write("docs/phase1_5/p1b/p1b_owner_decision.v1.json", candidate)
+                with self.assertRaises(gate.T10ValidationError):
+                    gate.run(self.fixture)
+                self.write("docs/phase1_5/p1b/p1b_owner_decision.v1.json", base)
+
     def test_canonical_projection_mismatch_fails_closed(self) -> None:
         status = self.read("docs/current_program_status.v1.json")
         status["t10_owner_decision"]["decision"] = "DEFER"

@@ -34,7 +34,7 @@ No artifact was downloaded. No model/runtime/network/device/media/Pipeline actio
 
 ## Qualification
 
-- `scripts/test_t10_owner_decision.py`: 7/7 PASS
+- `scripts/test_t10_owner_decision.py`: 8/8 PASS; decision-integrity negative matrix 16/16 PASS
 - `scripts/validate_t10_owner_decision.py`: PASS
 - P1B validator: `READY_FOR_OWNER_DECISION`; execution probe: `BLOCKED_OWNER_AUTHORIZATION_REQUIRED`
 - T9 tests: 13/13 PASS; T9 validator, T7/T8/status/contracts/privacy/scope checks PASS
