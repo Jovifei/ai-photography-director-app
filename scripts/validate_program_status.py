@@ -70,6 +70,7 @@ def validate(root: Path) -> None:
         "T6_P1B_AUTHORIZATION_PACKET_READY_EXECUTION_NOT_AUTHORIZED",
         "T7_EVALUATION_GOVERNANCE_PACKET_READY_HUMAN_REVIEW_NOT_AUTHORIZED",
         "SYNTHETIC_EVALUATION_HARNESS_READY_REAL_EVALUATION_NOT_AUTHORIZED",
+        "PRODUCT_READY_PROMOTION_GATE_READY_REAL_READY_PROMOTION_NOT_AUTHORIZED",
     }, "current stage drift")
     require(status.get("next_authorized_stage") in {
         "OWNER_REVIEWED_NEXT_GATE_SELECTION",
@@ -96,6 +97,13 @@ def validate(root: Path) -> None:
         require(t8.get("fixture_class") == "CONTRACT_ONLY_SYNTHETIC", "T8 fixture class drift")
         require(t8.get("real_provider_executed") is False and t8.get("human_review_executed") is False, "T8 external execution promoted")
         require(t8.get("pipeline_accessed") is False and t8.get("media_accessed") is False, "T8 external access promoted")
+    if status.get("current_stage") == "PRODUCT_READY_PROMOTION_GATE_READY_REAL_READY_PROMOTION_NOT_AUTHORIZED":
+        t9 = status.get("t9_promotion_gate", {})
+        require(t9.get("status") == "PRODUCT_READY_PROMOTION_GATE_READY_REAL_READY_PROMOTION_NOT_AUTHORIZED", "T9 promotion status drift")
+        require(t9.get("base") == "acf43a8d734675ec23da534472cade129b7b1068", "T9 base drift")
+        require(t9.get("provider_ready_promotion_authorized") is False, "T9 Provider promotion authorized")
+        require(t9.get("human_review_authorized") is False and t9.get("thresholds_approved") is False, "T9 authority promoted")
+        require(t9.get("android_product_change_authorized") is False and t9.get("offline_bundle_path_preserved") is True, "T9 boundary drift")
     require(status.get("external_gates") == REQUIRED_EXTERNAL_GATES, "external gate state drift")
     require(status.get("t5_qualification", {}).get("scope_guard") == "PASS_18_APPROVED_PATHS", "T5 scope count drift")
 
@@ -110,7 +118,7 @@ def validate(root: Path) -> None:
     source_in_markdown = re.search(r"reviewed product source `([0-9a-f]{40})`", current)
     require(delivery_in_markdown and delivery_in_markdown.group(1) == status["delivery_head"], "JSON/Markdown delivery head mismatch")
     require(source_in_markdown and source_in_markdown.group(1) == status["reviewed_product_source"], "JSON/Markdown product source mismatch")
-    for marker in ("P1B_AUTHORIZATION_PACKET_READY", "EVALUATION_GOVERNANCE_PACKET_READY", "SYNTHETIC_EVALUATION_HARNESS_READY", "NOT_RUN", "FROZEN"):
+    for marker in ("P1B_AUTHORIZATION_PACKET_READY", "EVALUATION_GOVERNANCE_PACKET_READY", "SYNTHETIC_EVALUATION_HARNESS_READY", "PRODUCT_READY_PROMOTION_GATE_READY", "NOT_RUN", "FROZEN"):
         require(marker in matrix, f"gate matrix lacks {marker}")
 
     readme = read_text(root, "README.md")

@@ -4,14 +4,14 @@
 
 **Machine-readable record:** [`current_program_status.v1.json`](current_program_status.v1.json)
 
-**Next-stage plan:** [`tasks/plans/2026-09-27-t8-synthetic-evaluation-harness.md`](../tasks/plans/2026-09-27-t8-synthetic-evaluation-harness.md)
+**Next-stage plan:** [`tasks/plans/2026-09-27-t9-product-ready-promotion-gate.md`](../tasks/plans/2026-09-27-t9-product-ready-promotion-gate.md)
 **Gate matrix:** [`NEXT_GATE_MATRIX.md`](NEXT_GATE_MATRIX.md)
 
 ## Current authority
 
-The current Android delivery is the T4 offline product-flow stack. Its delivery head is `e88d2ab1eb0c9c5cf9f891c5107d951fbbbe15cb`, with reviewed product source `a69ede68f3e54e5ab006dbfd7a65c33040590f93`, based on T3 `14a56f49e1220eb8139bf7280c747124118fdb21`. Draft PR #8 is stacked on the T3 branch and remains open, Draft and unmerged.
+The current Android delivery is the T4 offline product-flow stack. Its delivery head is `e88d2ab1eb0c9c5cf9f891c5107d951fbbbe15cb`, with reviewed product source `a69ede68f3e54e5ab006dbfd7a65c33040590f93`, based on T3 `14a56f49e1220eb8139bf7280c747124118fdb21`. Draft PR #8 is stacked on the T3 branch and remains open, Draft and unmerged. Owner `main` remains dirty and untouched; active source review uses the clean exact-head clone. `C2C_CODE_DIFF_REVIEW_NOT_POSSIBLE` refers only to arbitrary historical base-range patch rendering.
 
-T4 qualification is synthetic/API 35 emulator evidence. The final receipt records T4 7/7, T3 7/7, root 2/2, P25U camera 1/1, export 3/3, force-stop recovery prepare/verify/cleanup 1/1 each, JVM 141/141, lint 0 errors, contract and privacy checks PASS. Local exact-SHA independent review is PASS. The bound C2C connector still reads the dirty Owner `main`, so its code-diff review is explicitly `C2C_CODE_DIFF_REVIEW_NOT_POSSIBLE`; the remote evidence review must not be read as a connector-performed code review.
+T4 qualification is synthetic/API 35 emulator evidence. The final receipt records T4 7/7, T3 7/7, root 2/2, P25U camera 1/1, export 3/3, force-stop recovery prepare/verify/cleanup 1/1 each, JVM 141/141, lint 0 errors, contract and privacy checks PASS. Local exact-SHA independent review is PASS. That historical T4 receipt predates the clean review clone; current C2C source review uses the clean exact-head clone while Owner `main` remains dirty and untouched. `C2C_CODE_DIFF_REVIEW_NOT_POSSIBLE` refers only to arbitrary historical base-range patch rendering; remote evidence review must not be read as a connector-performed historical diff review.
 
 This delivery proves an offline Android product flow: project references, all-project reference browsing, source/state labels, persistent project naming, truthful guided/direct Camera entry, Camera controls, private captures and explicit export. It does not prove real-photo quality, a physical device, Qwen/Private LAN, Pipeline, human editorial acceptance, signing, beta or public release.
 
@@ -35,11 +35,16 @@ T8 has prepared a contract-only synthetic harness from exact T7 head `61cb6776b2
 
 Synthetic metrics are contract evidence only. `METRICS_READY_OWNER_THRESHOLD_NOT_APPROVED` is not Provider qualification, confidence, human acceptance or release readiness. T6 P1B remains execution-not-authorized and T7 human review remains not-authorized.
 
+## T9 Product READY promotion gate
+
+T9 defines a machine-readable, fail-closed boundary for a future Provider result
+to become trusted product READY guidance. It is `PRODUCT_READY_PROMOTION_GATE_READY — REAL_READY_PROMOTION_NOT_AUTHORIZED` and contains only synthetic, image-free policy fixtures and validators. It does not authorize Provider execution, human review, Pipeline, device, Android READY writes, signing, release or merge. The existing offline Photo Knowledge Bundle consumer READY path remains separate and preserved.
+
 ## Product goal
 
 `参考图 → 来源明确的逐图状态 → READY-only 可信指导 → Camera Director 或无指导拍摄 → 私有成片 → 系统导出`
 
-The future live director remains a separate route requiring a qualified provider, device evidence and additional authorization. Pose is frozen until its own decision and qualification gate.
+The future live director remains a separate route requiring a qualified provider, device evidence and additional authorization. Pose is frozen until its own decision and qualification gate. The active C2C source review uses the clean exact-head clone; the Owner `main` remains dirty and untouched.
 
 ## Historical material
 
@@ -47,4 +52,4 @@ The following remain useful evidence or design constraints but are not current e
 
 ## Next stage
 
-T5 consolidated this status into one machine-checkable authority, T6 added a machine-verifiable P1B readiness boundary, T7 added provider-neutral evaluation governance, and T8 exercised the future evidence flow with contract-only synthetic records. T8 changed no Android runtime code, shared contracts, models, network, Pipeline code, signing settings, human-review records or Owner decisions. The next executable step is an Owner decision or another separately planned non-runtime Gate; no artifact, provider, human review or Pipeline action follows automatically.
+T5 consolidated this status into one machine-checkable authority, T6 added a machine-verifiable P1B readiness boundary, T7 added provider-neutral evaluation governance, T8 exercised the future evidence flow with contract-only synthetic records, and T9 defines the future READY-promotion boundary. T9 changes no Android runtime code, shared contracts, models, network, Pipeline code, signing settings, human-review records or Owner decisions. The next executable step is an Owner decision or another separately planned non-runtime Gate; no artifact, provider, human review or Pipeline action follows automatically.

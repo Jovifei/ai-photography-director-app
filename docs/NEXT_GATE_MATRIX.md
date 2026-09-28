@@ -12,6 +12,7 @@ This matrix describes possible future tracks. It records prerequisites; it does 
 | Pose | Frozen domain and prior spike evidence | Separate provider decision and real-device qualification | `FROZEN` |
 | Signing / beta / release | Historical release work | Separate authorization tied to a reviewed candidate and signing identity | `NOT_RUN_FOR_T4_STACK` |
 | More offline Android work | T4 product PASS | A concrete reviewed defect or requirement | `NO_SPECULATIVE_SCOPE` |
+| Product READY promotion gate | T8 synthetic contract evidence and offline Photo Knowledge Bundle consumer contract | Non-runtime policy/schema/validator evidence only; no Provider qualification or product write authorization | `PRODUCT_READY_PROMOTION_GATE_READY — REAL_READY_PROMOTION_NOT_AUTHORIZED` |
 
 The matrix must not promote an old Closed Beta candidate, an emulator result, an HTTP success, an editorial draft or an AI pre-review into a current release or human PASS.
 
@@ -24,3 +25,5 @@ T6's `P1B_AUTHORIZATION_PACKET_READY — EXECUTION_NOT_AUTHORIZED` status is met
 T7's `EVALUATION_GOVERNANCE_PACKET_READY — HUMAN_REVIEW_NOT_AUTHORIZED` status is protocol coherence only. It does not mean a reviewer scored any output, a threshold was approved, a Provider passed, or Pipeline compatibility exists. The 18-criterion rubric remains proposed and unmeasured; the human-review rights/privacy gate remains `NOT_RUN`.
 
 T8's `SYNTHETIC_EVALUATION_HARNESS_READY — REAL_EVALUATION_NOT_AUTHORIZED` status proves only that contract-only JSON fixtures can flow through Envelope eligibility, blinded projection and T7 adjudication states. It does not represent Provider execution, human review, image/media processing, confidence, Pipeline compatibility or approved thresholds.
+
+T9's `PRODUCT_READY_PROMOTION_GATE_READY — REAL_READY_PROMOTION_NOT_AUTHORIZED` status proves only that the future promotion boundary is machine-readable and fail-closed. It does not authorize a real Provider result, trusted READY guidance, Android READY writes, human review, Pipeline, device, signing, release or merge. The offline Photo Knowledge Bundle consumer remains a separate preserved READY path.
