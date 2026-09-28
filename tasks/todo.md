@@ -30,6 +30,17 @@ human review, Pipeline, device, signing, release or merge work.
 - [x] Run T8/T7/T6/knowledge-bundle/contract/privacy/scope and bounded Android regressions.
 - [x] Perform exact review, commit/push Draft PR stacked on T8, record evidence and request remote review.
 
+## T9-R2 tracked-fixture authority closure — 2026-09-28
+
+Remote review `c2c_9e31` confirmed the T9 route, PR #13 identity and R1 behavior repairs,
+then required one fail-closed authority guard: tracked fixtures must stay synthetic-only.
+
+- [x] Enforce `SYNTHETIC_CONTRACT_ONLY` for every tracked fixture; keep `REAL_PROVIDER_RESULT` unit-test-only.
+- [x] Add a negative test that mutates a tracked fixture to `REAL_PROVIDER_RESULT` and proves `run()` rejects it.
+- [x] Reconcile canonical clean-clone review wording without rewriting historical T4 evidence.
+- [x] Requalify T9, update the report to 13/13 and record `TRACKED_FIXTURE_SYNTHETIC_ONLY=PASS`.
+- [ ] Push the final T9 candidate and obtain remote `DONE` on exact head.
+
 ## T8-R post-submission conformance repair — 2026-09-27
 
 Remote audit `c2c_aa42` returned `REPAIR_REQUIRED`: the previous T8 receipt proved

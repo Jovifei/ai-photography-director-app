@@ -170,6 +170,10 @@ def run(root: Path) -> dict[str, Any]:
     cases = []
     for path in fixture_paths:
         candidate = load_candidate(root, path.relative_to(root), candidate_validator)
+        require(
+            candidate["evidence_class"] == "SYNTHETIC_CONTRACT_ONLY",
+            f"tracked T9 fixture must remain synthetic-only: {path.name}",
+        )
         decision = evaluate_promotion(candidate, policy, decision_validator)
         cases.append({"fixture": path.name, "decision": decision})
         require(decision["trusted_ready_guidance_allowed"] is False, f"fixture promoted READY: {path.name}")

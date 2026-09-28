@@ -6,7 +6,8 @@
 ## Qualification
 
 - T9 synthetic fixtures: 11; every current decision is blocked or non-success.
-- T9 tests: 12/12 PASS; authority probes are blocked as expected.
+- T9 tests: 13/13 PASS; tracked-fixture synthetic-only guard and authority probes are blocked as expected.
+- `TRACKED_FIXTURE_SYNTHETIC_ONLY=PASS`: every tracked promotion fixture is fail-closed to `SYNTHETIC_CONTRACT_ONLY`; `REAL_PROVIDER_RESULT` remains unit-test-only.
 - Hypothetical all-gates-open branch: unit-test-only and never a tracked authority fixture.
 - Existing offline Photo Knowledge Bundle consumer contract: bound and unchanged.
 - T8/T7/T6/contract/status regressions remain separate closed-gate evidence.

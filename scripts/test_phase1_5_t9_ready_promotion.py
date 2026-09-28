@@ -57,6 +57,14 @@ class T9PromotionGateTests(unittest.TestCase):
         self.assertTrue(all(case["decision"]["trusted_ready_guidance_allowed"] is False for case in result["cases"]))
         self.assertNotIn("ELIGIBLE_AFTER_ALL_REQUIRED_GATES", {case["decision"]["decision"] for case in result["cases"]})
 
+    def test_tracked_fixture_matrix_rejects_real_provider_evidence(self) -> None:
+        candidate = self.read("docs/phase1_5/t9/fixtures/synthetic_success_metrics_ready.json")
+        candidate["evidence_class"] = "REAL_PROVIDER_RESULT"
+        self.write("docs/phase1_5/t9/fixtures/synthetic_success_metrics_ready.json", candidate)
+        with self.assertRaises(gate.T9ValidationError) as raised:
+            gate.run(self.fixture)
+        self.assertIn("tracked T9 fixture must remain synthetic-only", str(raised.exception))
+
     def test_demo_and_ordinary_non_success_truth_are_distinct(self) -> None:
         policy, candidate_validator, decision_validator, _ = gate.load_policy(self.fixture)
         demo = gate.load_candidate(self.fixture, Path("docs/phase1_5/t9/fixtures/demo_explicit_fallback.json"), candidate_validator)
