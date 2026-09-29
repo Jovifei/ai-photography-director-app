@@ -26,11 +26,20 @@ The paused pre-T10-R3 T11 worktree is superseded. This plan uses the fresh manag
 - Owner decision remains AUTHORIZE_ARTIFACT_QUARANTINE_ONLY; artifact_quarantine_only=true; download/runtime/inference/App/Pipeline/private-media flags are all false.
 - Owner decision blob, P1B manifest blob and manifest SHA match the accepted T10-R3 binding.
 - P1B manifest remains authorization.owner_decision=NONE_TRACKED, legal_review_status=NOT_LEGAL_APPROVED, transport_status=REDIRECT_DOMAIN_NOT_INDEPENDENTLY_VERIFIED.
+- Every frozen P1B p1a_sources tuple matches the current Windows checkout; differences from LF Git blobs are CRLF expansion only, and normalized bytes match the blobs. Any non-EOL drift stops T11.
 - P1B validator returns READY_FOR_OWNER_DECISION; its execution probe stays BLOCKED_OWNER_AUTHORIZATION_REQUIRED.
 - T10 PR #15 is Draft/open/unmerged at the accepted head.
 - No T11 implementation files exist at the accepted base.
 
 Any mismatch stops T11 before edits.
+
+## Frozen P1B source-binding and EOL clarification
+
+Remote clarification: the frozen T6 P1B manifest records raw Windows-checkout byte/hash tuples in p1a_sources. On this Windows worktree each listed tuple matches the current checkout exactly and validate_phase1_5_p1b_readiness.validate_manifest passes. The Git blobs store LF bytes; for the observed text files, CRLF-to-LF normalization produces bytes identical to the Git blobs. This is EOL_ONLY_CHECKOUT_REPRESENTATION_DIFFERENCE, not source-content drift and not a T11 hard stop.
+
+T11 must copy/bind the frozen manifest p1a_sources tuples exactly and bind the unchanged P1B manifest SHA. It must not derive replacement authoritative P1B hashes from Git blobs, change P1A/P1B production files or validators, rewrite byte expectations, or normalize tracked files on disk. The T11 report may record normalized/Git-blob hashes as NON_AUTHORITY_DIAGNOSTIC_ONLY for portability and source-drift analysis. If validate_manifest fails or any non-EOL content differs, classify SOURCE_CONTENT_DRIFT — STOP.
+
+T10 Owner decision identity remains different: its accepted live cross-stage authority uses UTF8_TEXT_EOL_NORMALIZED_SHA256_V1 and portable SHA 45e462... . Do not apply this T10 decision mode to redefine frozen P1B source-binding semantics.
 
 ## Non-negotiable boundary
 
@@ -40,7 +49,7 @@ The currently proposed transport domains remain exactly huggingface.co and us.aw
 
 ## Milestones
 
-- [x] M0: Create a fresh branch from exact T10-R3 head, verify binding/origin/clean state, and pass T10/P1B/status validators with portable identity.
+- [x] M0: Create a fresh branch from exact T10-R3 head, verify binding/origin/clean state, pass T10/P1B/status validators with portable identity, and confirm frozen P1B source tuples match the Windows checkout.
 - [x] Read the renewed remote C2C T11 plan and rebind the prior T11 route to the new base.
 - [ ] M1: Add the T11 preflight description, machine-readable manifest and strict schema. Bind exact T11 base, T10 decision path/mode/portable SHA/Git blob, P1B readiness ID/SHA and artifact identity.
 - [ ] M2: Record current blocker set and fail-closed statuses: LEGAL_REVIEW_REQUIRED; TRANSPORT_VERIFICATION_REQUIRED; FRESH_METADATA_REVALIDATION_REQUIRED; QUARANTINE_DESTINATION_REQUIRED; OWNER_ACQUISITION_AUTHORIZATION_REQUIRED. Current legal=NOT_LEGAL_APPROVED, transport=REDIRECT_DOMAIN_NOT_INDEPENDENTLY_VERIFIED, fresh metadata=NOT_RUN, destination=NOT_DECLARED, future Owner acquisition decision=NONE_TRACKED, acquisition_authorized=false, artifact_body_access_authorized=false.
@@ -52,7 +61,7 @@ The currently proposed transport domains remain exactly huggingface.co and us.aw
 - [ ] M8: Implement a deterministic, fail-closed preflight state machine. Current tracked inputs stop at BLOCKED_LEGAL_REVIEW; hypothetical complete external evidence may reach READY_FOR_OWNER_ACQUISITION_DECISION only in unit tests; a hypothetical future Owner authorization may reach READY_FOR_SEPARATE_ACQUISITION_EXECUTION_PLAN only in unit tests.
 - [ ] M9: Prove no tracked positive legal/transport/metadata/destination/acquisition record exists. Positive fixtures remain temporary unit-test objects only.
 - [ ] M10: Keep validator capability-free: no requests/httpx/urllib/socket/Hugging Face clients/Git LFS/curl/wget/model frameworks/torch/transformers/PIL/cv2/ADB/GPU. subprocess is permitted only in the separate Git scope validator.
-- [ ] M11: Add 41 table-driven cases described below. Preserve the current tracked result at BLOCKED_LEGAL_REVIEW and keep positive paths unit-test-only.
+- [ ] M11: Add the 41 table-driven cases below plus explicit source-binding cases: frozen p1a_sources tuples match exactly, EOL-only Git-blob differences are diagnostic, and non-EOL drift is rejected. Preserve the current tracked result at BLOCKED_LEGAL_REVIEW and keep positive paths unit-test-only.
 - [ ] M12: Add four authority probes for artifact access, network probe, runtime and private media; all must return their expected BLOCKED codes.
 - [ ] M13: Update canonical status/matrix after qualification. Preserve current_product_state=OFFLINE_ANDROID_PRODUCT_FLOW_VALIDATED; recommended next_authorized_stage=EXTERNAL_LEGAL_TRANSPORT_DESTINATION_EVIDENCE_OR_OWNER_DEFER. Do not rewrite T9/T10 as Provider-ready.
 - [ ] M14: Add a report that distinguishes preflight readiness from legal approval, transport verification, acquisition authorization and artifact possession; include exact base/head/hash/status, blockers, no-network/no-artifact boundary and regressions.
@@ -142,7 +151,7 @@ Each command must exit nonzero. No probe may turn capability on.
 - Exact branch base and HEAD M0 checks pass; portable T10 identity is valid from fresh LF/CRLF checkout representations.
 - The tracked T11 preflight remains blocked with all five blockers and exact source identities.
 - No positive external evidence or future acquisition decision is tracked.
-- All 41 T11 cases pass; T10/P1B/T9/T8/T7/status/contracts/privacy/scope/diff regressions pass.
+- All 41 T11 cases and the source-binding EOL/content-drift cases pass; T10/P1B/T9/T8/T7/status/contracts/privacy/scope/diff regressions pass.
 - The four authority probes block; P1B execution remains BLOCKED_OWNER_AUTHORIZATION_REQUIRED.
 - Scope passes from exact base with Owner/P1B blobs unchanged and zero Android/source-contract/runtime/Pipeline/security-sensitive delta.
 - Local exact review returns PASS_NO_ACTIONABLE_FINDINGS.
