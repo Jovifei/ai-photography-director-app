@@ -50,7 +50,7 @@ Artifact acquisition, artifact-body access, network, runtime, inference, App, Pi
 | Privacy audit | `PASS` |
 | Five T11 authority probes | `5/5 BLOCKED_AS_EXPECTED` |
 | Android bounded JVM smoke | `BUILD SUCCESSFUL`; `:app:testDebugUnitTest`, 27 tasks executed, no emulator/device |
-| Exact-base scope guard | `PENDING_FINAL_REQUALIFICATION` |
+| Exact-base scope guard | `PASS`; 18 approved paths, Owner/P1B blobs unchanged, T10 validator unchanged |
 | Local exact review | `PASS_NO_ACTIONABLE_FINDINGS` |
 
 The Android test emitted only the existing Kapt warning that language version 2.0 falls back to 1.9; there were no test or build errors.

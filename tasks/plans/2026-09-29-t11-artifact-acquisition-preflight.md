@@ -187,6 +187,6 @@ Strictly decode UTF-8, normalize CRLF and lone CR to LF, perform no JSON reseria
 - [x] Require `manifest_hash_mode=UTF8_TEXT_EOL_NORMALIZED_SHA256_V1` in `artifact_acquisition_owner_decision.v1.schema.json` and its validator-side expected binding.
 - [x] Add LF, CRLF, and mixed-EOL manifest tests proving equal portable identity, equal tracked T11 authority, and equal hypothetical future Owner binding. Add non-EOL mutation and malformed-UTF-8 fail-closed tests.
 - [x] Update the report and plan with the hash mode, computed digest, cross-EOL PASS results, and non-EOL rejection. Any raw checkout SHA is `NON_AUTHORITY_DIAGNOSTIC_ONLY`; the `4aee65...` value is now explicitly the portable normalized digest for the LF representation.
-- [ ] Rerun all T11/T10/P1B/T9/T8/T7/status/contracts/privacy/probe/scope checks and the bounded Android JVM regression. Preserve the 18-path allowlist and do not modify P1A, P1B, T10 validator, Android, runtime, network, or downstream authority.
+- [x] Rerun all T11/T10/P1B/T9/T8/T7/status/contracts/privacy/probe/scope checks and the bounded Android JVM regression. Preserve the 18-path allowlist and do not modify P1A, P1B, T10 validator, Android, runtime, network, or downstream authority.
 
 Acceptance: the exact final PR #16 head passes LF/CRLF/mixed T11 manifest identity tests, `validate_t10_owner_decision.py`, T11 and program-status validators, the exact 18-path scope guard, and the local review. PR #16 remains Draft/open/unmerged; T11 remains `BLOCKED_LEGAL_REVIEW` and authorizes no acquisition.
