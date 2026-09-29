@@ -1,10 +1,10 @@
 # Current program status
 
-**As of:** 2026-09-28
+**As of:** 2026-09-29
 
 **Machine-readable record:** [`current_program_status.v1.json`](current_program_status.v1.json)
 
-**Next-stage plan:** [`tasks/plans/2026-09-28-t10-owner-decision-capture.md`](../tasks/plans/2026-09-28-t10-owner-decision-capture.md)
+**Next-stage plan:** [`tasks/plans/2026-09-29-t11-artifact-acquisition-preflight.md`](../tasks/plans/2026-09-29-t11-artifact-acquisition-preflight.md)
 **Gate matrix:** [`NEXT_GATE_MATRIX.md`](NEXT_GATE_MATRIX.md)
 
 ## Current authority
@@ -46,6 +46,14 @@ T10 records the explicit Owner decision `AUTHORIZE_ARTIFACT_QUARANTINE_ONLY` aga
 
 The resulting state is `P1B_ARTIFACT_QUARANTINE_SCOPE_APPROVED — ARTIFACT_ACQUISITION_NOT_YET_AUTHORIZED`. Download, runtime, inference, App integration, Pipeline integration and private-media authorization remain `false`. T10 records and validates the decision only; it does not download or execute the artifact. T9 real READY promotion remains unauthorized.
 
+## T11 Artifact Acquisition Preflight
+
+T11 adds an artifact-acquisition preflight projection under the existing T9 lifecycle stage. The top-level machine-readable `current_stage` remains `PRODUCT_READY_PROMOTION_GATE_READY_REAL_READY_PROMOTION_NOT_AUTHORIZED`, preserving T10's existing validator contract; the T11 substate is `ARTIFACT_ACQUISITION_PREFLIGHT_READY — EXTERNAL_EVIDENCE_AND_AUTHORIZATION_REQUIRED`, with current blocker `BLOCKED_LEGAL_REVIEW`.
+
+The exact candidate remains Qwen/Qwen3-VL-2B-Instruct at revision `89644892e4d85e24eaac8bacfd4f463576704203`. Legal review is `NOT_LEGAL_APPROVED`, transport is `REDIRECT_DOMAIN_NOT_INDEPENDENTLY_VERIFIED`, fresh metadata is `NOT_RUN`, destination is `NOT_DECLARED`, and a later acquisition Owner decision is `NONE_TRACKED`. Artifact acquisition, artifact-body access, network, runtime, inference, App, Pipeline and private-media authority all remain false. T11 performs no network or artifact access.
+
+P1B retains its T6 checkout-byte/hash bindings under `FROZEN_P1B_CHECKOUT_BINDING_V1`; that identity is not claimed as cross-platform canonical. Git-blob and EOL-normalized identities are diagnostic only. EOL-only differences are classified `EOL_ONLY_CHECKOUT_REPRESENTATION_DIFFERENCE` and do not redefine the frozen P1B record.
+
 ## Product goal
 
 `参考图 → 来源明确的逐图状态 → READY-only 可信指导 → Camera Director 或无指导拍摄 → 私有成片 → 系统导出`
@@ -58,4 +66,4 @@ The following remain useful evidence or design constraints but are not current e
 
 ## Next stage
 
-T5 consolidated this status into one machine-checkable authority, T6 added a machine-verifiable P1B readiness boundary, T7 added provider-neutral evaluation governance, T8 exercised the future evidence flow with contract-only synthetic records, T9 defined the future READY-promotion boundary, and T10 recorded the explicit Owner quarantine-only decision. T10 changes no Android runtime code and does not acquire or execute an artifact. The next executable step, if any, requires a separate plan for artifact acquisition/quarantine; no download, provider, human review, Pipeline or runtime action follows automatically.
+T5 consolidated this status into one machine-checkable authority, T6 added a machine-verifiable P1B readiness boundary, T7 added provider-neutral evaluation governance, T8 exercised the future evidence flow with contract-only synthetic records, T9 defined the future READY-promotion boundary, T10 recorded the explicit Owner quarantine-only decision, and T11 defines the non-network preflight for a separate future acquisition decision. The next authorized stage is `EXTERNAL_LEGAL_TRANSPORT_DESTINATION_EVIDENCE_OR_OWNER_DEFER`; T11 does not collect that evidence or authorize artifact acquisition.

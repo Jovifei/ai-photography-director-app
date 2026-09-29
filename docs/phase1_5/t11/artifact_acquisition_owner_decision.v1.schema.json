@@ -1,0 +1,263 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://photoai.local/phase1_5/t11/artifact_acquisition_owner_decision.v1.schema.json",
+  "title": "Hypothetical T11 Artifact Acquisition Owner Decision",
+  "description": "Schema only. No future T11 acquisition decision is tracked.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "input_kind",
+    "decision_id",
+    "recorded_at",
+    "decision",
+    "t10_authority_binding",
+    "t11_manifest_binding",
+    "artifact_binding",
+    "evidence_binding",
+    "approved_domains",
+    "scope"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "1.0.0"
+    },
+    "input_kind": {
+      "const": "T11_ARTIFACT_ACQUISITION_OWNER_DECISION"
+    },
+    "decision_id": {
+      "type": "string",
+      "pattern": "^decision-[A-Za-z0-9][A-Za-z0-9._-]{5,63}$"
+    },
+    "recorded_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "decision": {
+      "enum": [
+        "DEFER",
+        "REJECT_ACQUISITION",
+        "AUTHORIZE_QUARANTINE_ACQUISITION_ONLY"
+      ]
+    },
+    "t10_authority_binding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "path",
+        "decision_hash_mode",
+        "portable_decision_sha256",
+        "git_blob_sha1"
+      ],
+      "properties": {
+        "path": {
+          "const": "docs/phase1_5/p1b/p1b_owner_decision.v1.json"
+        },
+        "decision_hash_mode": {
+          "const": "UTF8_TEXT_EOL_NORMALIZED_SHA256_V1"
+        },
+        "portable_decision_sha256": {
+          "const": "45e462982d9fafd6444805529138d4fcc082d310dff52e9522e5c6adf233ece9"
+        },
+        "git_blob_sha1": {
+          "const": "74d980e7dccdc67f659836b39126557d91e5460b"
+        }
+      }
+    },
+    "t11_manifest_binding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "path",
+        "manifest_id",
+        "manifest_sha256"
+      ],
+      "properties": {
+        "path": {
+          "const": "docs/phase1_5/t11/artifact_acquisition_preflight.v1.json"
+        },
+        "manifest_id": {
+          "const": "phase1-5-t11-artifact-acquisition-preflight-20260929"
+        },
+        "manifest_sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        }
+      }
+    },
+    "artifact_binding": {
+      "$ref": "#/$defs/artifactIdentity"
+    },
+    "evidence_binding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "legal_review_input_sha256",
+        "transport_verification_input_sha256",
+        "fresh_metadata_input_sha256",
+        "destination_id"
+      ],
+      "properties": {
+        "legal_review_input_sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "transport_verification_input_sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "fresh_metadata_input_sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "destination_id": {
+          "type": "string",
+          "pattern": "^quarantine-[A-Za-z0-9][A-Za-z0-9._-]{5,63}$"
+        }
+      }
+    },
+    "approved_domains": {
+      "type": "array",
+      "minItems": 2,
+      "maxItems": 2,
+      "uniqueItems": true,
+      "items": {
+        "enum": [
+          "huggingface.co",
+          "us.aws.cdn.hf.co"
+        ]
+      },
+      "const": [
+        "huggingface.co",
+        "us.aws.cdn.hf.co"
+      ]
+    },
+    "scope": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "acquisition_authorized",
+        "artifact_body_access_authorized",
+        "runtime_authorized",
+        "inference_authorized",
+        "app_integration_authorized",
+        "pipeline_integration_authorized",
+        "private_media_authorized"
+      ],
+      "properties": {
+        "acquisition_authorized": {
+          "type": "boolean"
+        },
+        "artifact_body_access_authorized": {
+          "type": "boolean"
+        },
+        "runtime_authorized": {
+          "const": false
+        },
+        "inference_authorized": {
+          "const": false
+        },
+        "app_integration_authorized": {
+          "const": false
+        },
+        "pipeline_integration_authorized": {
+          "const": false
+        },
+        "private_media_authorized": {
+          "const": false
+        }
+      }
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "decision": {
+            "const": "AUTHORIZE_QUARANTINE_ACQUISITION_ONLY"
+          }
+        },
+        "required": [
+          "decision"
+        ]
+      },
+      "then": {
+        "properties": {
+          "scope": {
+            "properties": {
+              "acquisition_authorized": {
+                "const": true
+              },
+              "artifact_body_access_authorized": {
+                "const": true
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "decision": {
+            "enum": [
+              "DEFER",
+              "REJECT_ACQUISITION"
+            ]
+          }
+        },
+        "required": [
+          "decision"
+        ]
+      },
+      "then": {
+        "properties": {
+          "scope": {
+            "properties": {
+              "acquisition_authorized": {
+                "const": false
+              },
+              "artifact_body_access_authorized": {
+                "const": false
+              }
+            }
+          }
+        }
+      }
+    }
+  ],
+  "$defs": {
+    "artifactIdentity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "publisher",
+        "model_id",
+        "immutable_revision",
+        "weight_filename",
+        "weight_bytes",
+        "weight_lfs_sha256"
+      ],
+      "properties": {
+        "publisher": {
+          "const": "Qwen"
+        },
+        "model_id": {
+          "const": "Qwen/Qwen3-VL-2B-Instruct"
+        },
+        "immutable_revision": {
+          "const": "89644892e4d85e24eaac8bacfd4f463576704203"
+        },
+        "weight_filename": {
+          "const": "model.safetensors"
+        },
+        "weight_bytes": {
+          "const": 4255140312
+        },
+        "weight_lfs_sha256": {
+          "const": "7de1838c87a5349b016c26a1c3f7d2bc400a3d485f95ef39a7059ffd734977a0"
+        }
+      }
+    }
+  }
+}
