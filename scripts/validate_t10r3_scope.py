@@ -13,6 +13,7 @@ APPROVED_PATHS = frozenset(
     {
         "scripts/validate_t10_owner_decision.py",
         "scripts/test_t10_owner_decision.py",
+        "scripts/test_phase1_5_p1b_readiness.py",
         "scripts/validate_program_status.py",
         "scripts/validate_t10r3_scope.py",
         "docs/current_program_status.v1.json",

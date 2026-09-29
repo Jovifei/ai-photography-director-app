@@ -15,7 +15,7 @@ from jsonschema import Draft202012Validator, FormatChecker
 ROOT = Path(__file__).resolve().parents[1]
 T9_BASE = "dd5d297ffa26adc38470bfa5737ac82b94eaa2ec"
 DECISION_REL = Path("docs/phase1_5/p1b/p1b_owner_decision.v1.json")
-DECISION_HASH_MODE = "UTF8_TEXT_LF_NORMALIZED_SHA256_V1"
+DECISION_HASH_MODE = "UTF8_TEXT_EOL_NORMALIZED_SHA256_V1"
 CANONICAL_DECISION_SHA256 = "45e462982d9fafd6444805529138d4fcc082d310dff52e9522e5c6adf233ece9"
 DECISION_SCHEMA_REL = Path("docs/phase1_5/p1b/p1b_owner_decision.v1.schema.json")
 MANIFEST_REL = Path("docs/phase1_5/p1b/p1b_readiness_manifest.v1.json")

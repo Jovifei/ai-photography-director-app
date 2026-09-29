@@ -74,7 +74,7 @@
     "base": "dd5d297ffa26adc38470bfa5737ac82b94eaa2ec",
     "readiness_id": "phase1-5-p1b-qwen3-vl-2b-authorization-readiness-20260927",
     "decision_file": "docs/phase1_5/p1b/p1b_owner_decision.v1.json",
-    "decision_hash_mode": "UTF8_TEXT_LF_NORMALIZED_SHA256_V1",
+    "decision_hash_mode": "UTF8_TEXT_EOL_NORMALIZED_SHA256_V1",
     "decision_sha256": "45e462982d9fafd6444805529138d4fcc082d310dff52e9522e5c6adf233ece9",
     "readiness_manifest_sha256": "166211e0fd1790e85a4e86bd4d270cc3cefccccbc04502d20f2584dfcf752a6a",
     "decision": "AUTHORIZE_ARTIFACT_QUARANTINE_ONLY",

@@ -145,11 +145,31 @@ class P1BReadinessTests(unittest.TestCase):
         with self.assertRaises(validator.ValidationError):
             validator.validate_owner_decision(invalid, manifest, manifest_sha)
 
-    def test_schema_is_strict_and_no_positive_decision_is_tracked(self) -> None:
+    def test_schema_is_strict_and_separate_tracked_t10_decision_is_contract_valid(self) -> None:
         schema = self.read("docs/phase1_5/p1b/p1b_owner_decision.v1.schema.json")
-        self.assertEqual(schema["additionalProperties"], False)
+        self.assertIs(schema["additionalProperties"], False)
+        self.assertIs(schema["$defs"]["scope"]["additionalProperties"], False)
+        self.assertIs(schema["$defs"]["artifact_binding"]["additionalProperties"], False)
         self.assertIn("AUTHORIZE_ARTIFACT_QUARANTINE_ONLY", schema["properties"]["decision"]["enum"])
-        self.assertFalse((self.fixture / "docs/phase1_5/p1b/p1b_owner_decision.v1.json").exists())
+
+        manifest, manifest_sha = validator.validate_manifest(self.fixture)
+        self.assertEqual(manifest["authorization"]["owner_decision"], "NONE_TRACKED")
+        decision_path = self.fixture / "docs/phase1_5/p1b/p1b_owner_decision.v1.json"
+        self.assertTrue(decision_path.is_file())
+        decision = self.read("docs/phase1_5/p1b/p1b_owner_decision.v1.json")
+        validator.validate_owner_decision(decision, manifest, manifest_sha)
+
+        self.assertEqual(decision["decision"], "AUTHORIZE_ARTIFACT_QUARANTINE_ONLY")
+        self.assertIs(decision["scope"]["artifact_quarantine_only"], True)
+        execution_flags = (
+            "download_authorized",
+            "runtime_authorized",
+            "inference_authorized",
+            "app_integration_authorized",
+            "pipeline_integration_authorized",
+            "private_media_authorized",
+        )
+        self.assertTrue(all(decision["scope"][key] is False for key in execution_flags))
 
     def test_validator_has_no_external_capability_imports_or_commands(self) -> None:
         source_path = ROOT / "scripts/validate_phase1_5_p1b_readiness.py"

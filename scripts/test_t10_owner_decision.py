@@ -82,7 +82,7 @@ class T10OwnerDecisionTests(unittest.TestCase):
                 decision_path.write_bytes(candidate)
                 authority = gate.run(self.fixture)
                 self.assertEqual(authority["decision_sha256"], expected)
-                self.assertEqual(authority["decision_hash_mode"], "UTF8_TEXT_LF_NORMALIZED_SHA256_V1")
+                self.assertEqual(authority["decision_hash_mode"], "UTF8_TEXT_EOL_NORMALIZED_SHA256_V1")
                 self.assertEqual(authority["decision"], "AUTHORIZE_ARTIFACT_QUARANTINE_ONLY")
                 self.assertTrue(authority["artifact_quarantine_only"])
                 self.assertTrue(all(authority[key] is False for key in gate.FORBIDDEN_SCOPE))
