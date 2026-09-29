@@ -3,9 +3,10 @@
 **T11 base:** `2ff77cadc8696cbd06a504458da4d58c74aa6133`<br>
 **Branch:** `codex/t11-artifact-acquisition-preflight-20260929`<br>
 **Stage status:** `ARTIFACT_ACQUISITION_PREFLIGHT_READY — EXTERNAL_EVIDENCE_AND_AUTHORIZATION_REQUIRED`<br>
-**Current blocker:** `BLOCKED_LEGAL_REVIEW`
+**Current blocker:** `BLOCKED_LEGAL_REVIEW`<br>
+**Implementation commit:** `a9362317cd63fdbd3d7ba13699a8132367e4fe85`
 
-The final candidate SHA is the exact head of the Draft PR stacked on PR #15 and is recorded in the C2C execution handoff. The canonical status keeps top-level `current_stage=PRODUCT_READY_PROMOTION_GATE_READY_REAL_READY_PROMOTION_NOT_AUTHORIZED` and stores T11 as a nested preflight projection, so the existing T10 validator remains compatible.
+The implementation commit above is the tested source snapshot. The final delivery SHA, including this report receipt, is recorded in the Draft PR metadata and C2C execution handoff. The canonical status keeps top-level `current_stage=PRODUCT_READY_PROMOTION_GATE_READY_REAL_READY_PROMOTION_NOT_AUTHORIZED` and stores T11 as a nested preflight projection, so the existing T10 validator remains compatible.
 
 ## Authority and artifact identity
 
@@ -46,7 +47,8 @@ Artifact acquisition, artifact-body access, network, runtime, inference, App, Pi
 | Privacy audit | `PASS` |
 | Five T11 authority probes | `5/5 BLOCKED_AS_EXPECTED` |
 | Android bounded JVM smoke | `BUILD SUCCESSFUL`; `:app:testDebugUnitTest`, 27 tasks executed, no emulator/device |
-| Exact-base scope guard | `PENDING_FINAL_QUALIFICATION` |
+| Exact-base scope guard | `PASS`; 18 approved paths, Owner/P1B blobs unchanged, T10 validator unchanged |
+| Local exact review | `PASS_NO_ACTIONABLE_FINDINGS` |
 
 The Android test emitted only the existing Kapt warning that language version 2.0 falls back to 1.9; there were no test or build errors.
 
