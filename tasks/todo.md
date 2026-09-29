@@ -83,7 +83,8 @@ Detailed plan: tasks/plans/2026-09-29-t11-artifact-acquisition-preflight.md.
 - [x] Local exact read-only re-review: `PASS_NO_ACTIONABLE_FINDINGS`; hypothetical authority projections, terminal Owner choices, portable manifest binding, and negative binding cases reviewed.
 - [x] Push initial T11 implementation as Draft PR #16 stacked on #15; remote exact-head review confirmed the scope/authority model and identified the portable manifest identity repair.
 - [x] Repair T11 manifest identity with `UTF8_TEXT_EOL_NORMALIZED_SHA256_V1`; T11 34/34 with LF/CRLF/mixed equality, stale/wrong binding rejection, and malformed-UTF-8 rejection.
-- [ ] Commit and push the repair, update Draft PR #16, record iteration 2 evidence, and obtain remote exact-head DONE.
+- [x] Commit portable manifest identity repair as `7edffea940344107678bc3648e1af4f81bbf5f04`.
+- [ ] Push the repair, update Draft PR #16, record iteration 2 evidence, and obtain remote exact-head DONE.
 - [ ] Run final pre-push privacy audit; keep PR #16 Draft/open/unmerged.
 - [ ] Keep T11 blocked until separately authorized external evidence or an Owner defer/reject decision arrives; do not download or execute the artifact.
 ## T8-R post-submission conformance repair — 2026-09-27

@@ -4,7 +4,7 @@
 **Branch:** `codex/t11-artifact-acquisition-preflight-20260929`<br>
 **Stage status:** `ARTIFACT_ACQUISITION_PREFLIGHT_READY — EXTERNAL_EVIDENCE_AND_AUTHORIZATION_REQUIRED`<br>
 **Current blocker:** `BLOCKED_LEGAL_REVIEW`<br>
-**Implementation commit:** `a9362317cd63fdbd3d7ba13699a8132367e4fe85`
+**Portable-manifest repair commit:** `7edffea940344107678bc3648e1af4f81bbf5f04`
 
 The implementation commit above is the tested source snapshot. The final delivery SHA, including this report receipt, is recorded in the Draft PR metadata and C2C execution handoff. The canonical status keeps top-level `current_stage=PRODUCT_READY_PROMOTION_GATE_READY_REAL_READY_PROMOTION_NOT_AUTHORIZED` and stores T11 as a nested preflight projection, so the existing T10 validator remains compatible.
 
@@ -13,6 +13,8 @@ The implementation commit above is the tested source snapshot. The final deliver
 T10 remains `AUTHORIZE_ARTIFACT_QUARANTINE_ONLY`, hash mode `UTF8_TEXT_EOL_NORMALIZED_SHA256_V1`, portable decision SHA-256 `45e462982d9fafd6444805529138d4fcc082d310dff52e9522e5c6adf233ece9`, and Owner-decision Git blob `74d980e7dccdc67f659836b39126557d91e5460b`. The frozen P1B manifest remains SHA-256 `166211e0fd1790e85a4e86bd4d270cc3cefccccbc04502d20f2584dfcf752a6a`, with `authorization.owner_decision=NONE_TRACKED`; the T10 record remains separate.
 
 The exact candidate is `Qwen/Qwen3-VL-2B-Instruct`, revision `89644892e4d85e24eaac8bacfd4f463576704203`, file `model.safetensors`, 4,255,140,312 bytes, LFS SHA-256 `7de1838c87a5349b016c26a1c3f7d2bc400a3d485f95ef39a7059ffd734977a0`. Proposed transport domains remain `huggingface.co` and `us.aws.cdn.hf.co`; neither is verified.
+
+The T11 manifest now uses `UTF8_TEXT_EOL_NORMALIZED_SHA256_V1` with portable SHA-256 `4aee65b8ae343ad57338f179cabfbfa798672aa704e635331aaedbaff9f49830`. The normalized digest is bound in canonical status and the future Owner-decision schema; raw checkout hashes are not authority.
 
 ## Frozen P1B source semantics
 
@@ -34,7 +36,8 @@ Artifact acquisition, artifact-body access, network, runtime, inference, App, Pi
 
 | Check | Result |
 |---|---|
-| T11 unit tests | `29/29 PASS` |
+| T11 unit tests | `34/34 PASS` |
+| T11 manifest identity | LF/CRLF/mixed produce equal tracked and future Owner-bound authority; stale SHA, non-EOL mutation, and malformed UTF-8 rejected |
 | T10 unit tests | `12/12 PASS` |
 | P1B unit tests | `11/11 PASS` |
 | T9 unit tests | `13/13 PASS` |
@@ -47,7 +50,7 @@ Artifact acquisition, artifact-body access, network, runtime, inference, App, Pi
 | Privacy audit | `PASS` |
 | Five T11 authority probes | `5/5 BLOCKED_AS_EXPECTED` |
 | Android bounded JVM smoke | `BUILD SUCCESSFUL`; `:app:testDebugUnitTest`, 27 tasks executed, no emulator/device |
-| Exact-base scope guard | `PASS`; 18 approved paths, Owner/P1B blobs unchanged, T10 validator unchanged |
+| Exact-base scope guard | `PENDING_FINAL_REQUALIFICATION` |
 | Local exact review | `PASS_NO_ACTIONABLE_FINDINGS` |
 
 The Android test emitted only the existing Kapt warning that language version 2.0 falls back to 1.9; there were no test or build errors.
