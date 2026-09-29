@@ -10,6 +10,8 @@ from pathlib import Path
 
 
 SHA_RE = re.compile(r"^[0-9a-f]{40}$")
+T10_DECISION_HASH_MODE = "UTF8_TEXT_LF_NORMALIZED_SHA256_V1"
+T10_DECISION_SHA256 = "45e462982d9fafd6444805529138d4fcc082d310dff52e9522e5c6adf233ece9"
 REQUIRED_EXTERNAL_GATES = {
     "real_photos": "NOT_RUN",
     "physical_device": "NOT_RUN",
@@ -107,6 +109,8 @@ def validate(root: Path) -> None:
         t10 = status.get("t10_owner_decision", {})
         require(t10.get("base") == "dd5d297ffa26adc38470bfa5737ac82b94eaa2ec", "T10 base drift")
         require(t10.get("decision") == "AUTHORIZE_ARTIFACT_QUARANTINE_ONLY", "T10 decision drift")
+        require(t10.get("decision_hash_mode") == T10_DECISION_HASH_MODE, "T10 decision hash mode drift")
+        require(t10.get("decision_sha256") == T10_DECISION_SHA256, "T10 decision SHA drift")
         require(t10.get("status") == "P1B_ARTIFACT_QUARANTINE_SCOPE_APPROVED_ARTIFACT_ACQUISITION_NOT_YET_AUTHORIZED", "T10 authority status drift")
         require(t10.get("artifact_quarantine_only") is True, "T10 quarantine scope drift")
         require(all(t10.get(key) is False for key in ("download_authorized", "runtime_authorized", "inference_authorized", "app_integration_authorized", "pipeline_integration_authorized", "private_media_authorized")), "T10 forbidden authority promoted")

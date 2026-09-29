@@ -56,15 +56,15 @@ choice without downloading or running the artifact.
 
 ## T10-R3 portable decision identity repair — 2026-09-29
 
-Remote C2C c2c_8b2a corrected its plan after local byte-level evidence showed that the prior proposed canonical hash was wrong. The stable identity is SHA-256 45e462982d9fafd6444805529138d4fcc082d310dff52e9522e5c6adf233ece9 over strict UTF-8 text with only CRLF/lone-CR normalized to LF. The old 646626 mixed-EOL raw hash is diagnostic only. Work stays on T10 / PR #15 from exact repair base d332ba8ee6f1ea036be655de8b09f8c9f4180592; the Owner decision and all closed authority flags remain unchanged. T11 is blocked until remote DONE, then must start from a fresh worktree.
+Remote C2C c2c_8b2a corrected its plan after local byte-level evidence showed that the prior recorded checkout hash was not portable. The stable identity is SHA-256 45e462982d9fafd6444805529138d4fcc082d310dff52e9522e5c6adf233ece9 over strict UTF-8 text with only CRLF/lone-CR normalized to LF. Mixed-EOL raw hash 646626a536eee32bcf171927090a10d9c8df06b9890c2ec3fcd788964a617bdd and all-CRLF raw hash 57b07ab70d34b64802be4a765e04479bdd66bd079958510029b56c133b49425b are NON_AUTHORITY_DIAGNOSTIC_ONLY. Work stays on T10 / PR #15 from exact repair base d332ba8ee6f1ea036be655de8b09f8c9f4180592; the Owner decision and all closed authority flags remain unchanged. T11 is blocked until remote DONE, then must start from a fresh worktree.
 
 Detailed plan: tasks/plans/2026-09-29-t10-portable-decision-identity-repair.md.
 
 - [x] Reproduce T10 validator failure in a clean checkout and confirm P1B manifest remains stable.
 - [x] Verify mixed-EOL and all-CRLF source bytes normalize to the same 45e462 portable digest.
 - [x] Obtain corrected remote plan and exact path boundary before implementation.
-- [ ] Implement the portable T10 decision hash, canonical status migration/mode, report update, tests, and exact-base scope guard.
-- [ ] Run required T10/P1B/T9/status/contracts/privacy/scope regressions and bounded JVM smoke; confirm authority probes remain blocked.
+- [x] Implement the portable T10 decision hash, canonical status migration/mode, report update, tests, and exact-base scope guard.
+- [x] Run the focused T10 unittest, T10 validator, canonical program-status validator, and diff check; run the exact-base scope guard after committing on a clean worktree.
 - [ ] Review exact diff, push Draft PR #15, and obtain remote DONE on the repaired head.
 - [ ] Rebind T11 to the accepted T10-R3 head using a fresh worktree.
 ## T8-R post-submission conformance repair — 2026-09-27

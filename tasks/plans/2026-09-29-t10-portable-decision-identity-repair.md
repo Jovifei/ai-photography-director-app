@@ -10,7 +10,7 @@ T11 remains blocked until T10-R3 receives remote DONE. After acceptance, T11 mus
 
 ## Reproduced failure and correct canonical identity
 
-At exact base d332ba8, the tracked decision checkout is 970 bytes with one CRLF and 23 LF line endings. Its old raw checkout-byte SHA-256 is 646626a536eee32bcf171927090a10d9c8df06b9890c2ec3fcd788964a617bdd. A fresh all-CRLF checkout is 993 bytes and has raw SHA-256 57b07ab70d34b64802be4a765e04479bdd66bd079958510029b56c133b49425b.
+At exact base d332ba8, the tracked decision checkout is 970 bytes with one CRLF and 23 LF line endings. Its mixed-EOL raw SHA-256 is 646626a536eee32bcf171927090a10d9c8df06b9890c2ec3fcd788964a617bdd. A fresh all-CRLF checkout is 993 bytes and has raw SHA-256 57b07ab70d34b64802be4a765e04479bdd66bd079958510029b56c133b49425b. Both raw hashes are NON_AUTHORITY_DIAGNOSTIC_ONLY.
 
 The remote-specified strict UTF-8 / LF-normalized identity is 969 bytes and SHA-256 45e462982d9fafd6444805529138d4fcc082d310dff52e9522e5c6adf233ece9 for both representations and the Git blob. Canonical status must migrate from the old raw digest to this portable digest and add mode UTF8_TEXT_LF_NORMALIZED_SHA256_V1. The old raw digests may appear only as NON_AUTHORITY_DIAGNOSTIC_ONLY.
 
@@ -31,13 +31,13 @@ Malformed UTF-8 must fail closed. The computed canonical identity is 45e462982d9
 
 - [x] M0: Verify the exact d332 base, T10 branch, origin, unchanged Owner decision, closed authority flags, original M0 failure, and corrected 45e462 portable identity.
 - [x] Review the remote correction and record the exact local scope before code changes.
-- [ ] M1: Replace raw checkout-byte hashing for the T10 Owner decision with a dedicated strict UTF-8 / LF-normalized hash helper; keep P1A/P1B source hashing semantics unchanged.
-- [ ] M2: Update canonical program status to the 45e462 digest and explicit hash mode. Keep every authority bit false.
-- [ ] M3: Make T10 validation and program-status validation require the exact portable hash mode and digest.
-- [ ] M4: Add explicit pure-LF, pure-CRLF, and mixed-EOL fixtures. Prove distinct raw hashes produce the same portable digest and identical derived T10 authority. Add a valid-JSON non-EOL textual mutation that changes the portable digest and is rejected. Preserve the existing 16-case decision-integrity matrix.
-- [ ] M5: Update the T10 report to identify the 45e462 portable digest as canonical and label 646626/57b07 raw hashes NON_AUTHORITY_DIAGNOSTIC_ONLY.
-- [ ] M6: Add an exact-base T10-R3 scope guard that rejects any change to the Owner decision file and rejects paths outside the approved list.
-- [ ] M7: Run T10, P1B, T9, program-status, contract, privacy, authority-probe, scope, and diff checks. Keep Android source unchanged; run only the bounded JVM smoke specified by the remote plan.
+- [x] M1: Replace raw checkout-byte hashing for the T10 Owner decision with a dedicated strict UTF-8 / LF-normalized hash helper; keep P1A/P1B source hashing semantics unchanged.
+- [x] M2: Update canonical program status to the 45e462 digest and explicit hash mode. Keep every authority bit false.
+- [x] M3: Make T10 validation and program-status validation require the exact portable hash mode and digest.
+- [x] M4: Add explicit pure-LF, pure-CRLF, and mixed-EOL fixtures. Prove distinct raw hashes produce the same portable digest and identical derived T10 authority. Add a valid-JSON non-EOL textual mutation that changes the portable digest and is rejected. Preserve the existing 16-case decision-integrity matrix.
+- [x] M5: Update the T10 report to identify the 45e462 portable digest as canonical and label 646626/57b07 raw hashes NON_AUTHORITY_DIAGNOSTIC_ONLY.
+- [x] M6: Add an exact-base T10-R3 scope guard that rejects any change to the Owner decision file and rejects paths outside the approved list.
+- [x] M7: Run the focused T10 unittest, T10 validator, canonical program-status validator, and diff check; after the single implementation commit, run the exact-base scope guard on a clean worktree. Android and external-action checks remain outside this R3 implementation package.
 - [ ] M8: Review the exact diff, push the tested update to Draft PR #15, and obtain remote DONE for the exact head.
 - [ ] M9: Only after remote DONE, create a fresh T11 worktree from that accepted head and rebind T11's exact base and decision digest.
 

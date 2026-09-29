@@ -15,6 +15,8 @@ from jsonschema import Draft202012Validator, FormatChecker
 ROOT = Path(__file__).resolve().parents[1]
 T9_BASE = "dd5d297ffa26adc38470bfa5737ac82b94eaa2ec"
 DECISION_REL = Path("docs/phase1_5/p1b/p1b_owner_decision.v1.json")
+DECISION_HASH_MODE = "UTF8_TEXT_LF_NORMALIZED_SHA256_V1"
+CANONICAL_DECISION_SHA256 = "45e462982d9fafd6444805529138d4fcc082d310dff52e9522e5c6adf233ece9"
 DECISION_SCHEMA_REL = Path("docs/phase1_5/p1b/p1b_owner_decision.v1.schema.json")
 MANIFEST_REL = Path("docs/phase1_5/p1b/p1b_readiness_manifest.v1.json")
 STATUS_REL = Path("docs/current_program_status.v1.json")
@@ -52,10 +54,15 @@ def read_json(root: Path, relative: str | Path) -> Any:
         raise T10ValidationError(f"invalid JSON: {Path(relative).as_posix()}") from exc
 
 
-def file_sha256(root: Path, relative: str | Path) -> str:
-    path = root / Path(relative)
-    require(path.is_file(), f"missing digest file: {Path(relative).as_posix()}")
-    return hashlib.sha256(path.read_bytes()).hexdigest()
+def decision_sha256(root: Path) -> str:
+    path = root / DECISION_REL
+    require(path.is_file(), f"missing digest file: {DECISION_REL.as_posix()}")
+    try:
+        text = path.read_bytes().decode("utf-8", errors="strict")
+    except UnicodeDecodeError as exc:
+        raise T10ValidationError("Owner decision identity is not strict UTF-8") from exc
+    normalized = text.replace("\r\n", "\n").replace("\r", "\n").encode("utf-8")
+    return hashlib.sha256(normalized).hexdigest()
 
 
 def load_current_authority(root: Path) -> dict[str, Any]:
@@ -96,7 +103,7 @@ def load_tracked_owner_decision(root: Path, manifest: dict[str, Any], manifest_s
         p1b.validate_owner_decision(decision, manifest, manifest_sha)
     except (ImportError, p1b.ValidationError) as exc:  # type: ignore[name-defined]
         raise T10ValidationError(f"Owner decision contract invalid: {exc}") from exc
-    return decision, file_sha256(root, DECISION_REL)
+    return decision, decision_sha256(root)
 
 
 def validate_canonical_status_projection(status: dict[str, Any], decision: dict[str, Any], decision_sha: str, manifest_sha: str) -> None:
@@ -104,7 +111,9 @@ def validate_canonical_status_projection(status: dict[str, Any], decision: dict[
     require(isinstance(projection, dict), "canonical T10 decision projection missing")
     require(projection.get("base") == T9_BASE, "T10 base projection changed")
     require(projection.get("decision_file") == DECISION_REL.as_posix(), "T10 decision path projection changed")
+    require(projection.get("decision_hash_mode") == DECISION_HASH_MODE, "T10 decision hash mode projection changed")
     require(projection.get("decision_sha256") == decision_sha, "T10 decision SHA projection changed")
+    require(decision_sha == CANONICAL_DECISION_SHA256, "T10 canonical decision SHA changed")
     require(projection.get("readiness_manifest_sha256") == manifest_sha, "T10 manifest SHA projection changed")
     require(projection.get("decision") == decision.get("decision"), "T10 decision projection changed")
     require(projection.get("status") == DECISION_STATUS[decision["decision"]], "T10 authority status projection changed")
@@ -120,6 +129,7 @@ def derive_t10_authority_state(decision: dict[str, Any], decision_sha: str, mani
         "base": T9_BASE,
         "decision": branch,
         "decision_file": DECISION_REL.as_posix(),
+        "decision_hash_mode": DECISION_HASH_MODE,
         "decision_sha256": decision_sha,
         "readiness_manifest_sha256": manifest_sha,
         "artifact_quarantine_only": branch == "AUTHORIZE_ARTIFACT_QUARANTINE_ONLY",

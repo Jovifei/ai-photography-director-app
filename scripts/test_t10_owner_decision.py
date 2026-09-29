@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import copy
+import hashlib
 import json
 import shutil
 import subprocess
@@ -56,6 +57,58 @@ class T10OwnerDecisionTests(unittest.TestCase):
         self.assertTrue(result["artifact_quarantine_only"])
         self.assertTrue(all(result[key] is False for key in gate.FORBIDDEN_SCOPE))
         self.assertEqual(result["base"], gate.T9_BASE)
+
+    def test_decision_hash_is_portable_across_lf_crlf_and_mixed_eol(self) -> None:
+        decision_path = self.fixture / "docs/phase1_5/p1b/p1b_owner_decision.v1.json"
+        original_text = decision_path.read_bytes().decode("utf-8", errors="strict")
+        normalized_text = original_text.replace("\r\n", "\n").replace("\r", "\n")
+        pure_lf = normalized_text.encode("utf-8")
+        pure_crlf = pure_lf.replace(b"\n", b"\r\n")
+        mixed = b"".join(
+            line.replace(b"\n", b"\r\n" if index % 2 else b"\n")
+            for index, line in enumerate(pure_lf.splitlines(keepends=True))
+        )
+
+        expected = "45e462982d9fafd6444805529138d4fcc082d310dff52e9522e5c6adf233ece9"
+        normalized = normalized_text.encode("utf-8")
+        self.assertEqual(len(normalized), 969)
+        representations = (pure_lf, pure_crlf, mixed)
+        raw_hashes = {hashlib.sha256(candidate).hexdigest() for candidate in representations}
+        self.assertEqual(len(raw_hashes), 3)
+
+        authorities = []
+        for candidate in representations:
+            with self.subTest(raw_sha256=hashlib.sha256(candidate).hexdigest()):
+                decision_path.write_bytes(candidate)
+                authority = gate.run(self.fixture)
+                self.assertEqual(authority["decision_sha256"], expected)
+                self.assertEqual(authority["decision_hash_mode"], "UTF8_TEXT_LF_NORMALIZED_SHA256_V1")
+                self.assertEqual(authority["decision"], "AUTHORIZE_ARTIFACT_QUARANTINE_ONLY")
+                self.assertTrue(authority["artifact_quarantine_only"])
+                self.assertTrue(all(authority[key] is False for key in gate.FORBIDDEN_SCOPE))
+                authorities.append(authority)
+
+        self.assertEqual(authorities[0], authorities[1])
+        self.assertEqual(authorities[0], authorities[2])
+
+    def test_non_eol_formatting_mutation_is_rejected_by_identity_projection(self) -> None:
+        decision_path = self.fixture / "docs/phase1_5/p1b/p1b_owner_decision.v1.json"
+        original = decision_path.read_bytes().decode("utf-8", errors="strict")
+        normalized = original.replace("\r\n", "\n").replace("\r", "\n").encode("utf-8")
+        changed = normalized.replace(b"{\n", b"{ \n", 1)
+        self.assertNotEqual(changed, normalized)
+        self.assertEqual(json.loads(changed.decode("utf-8")), self.read("docs/phase1_5/p1b/p1b_owner_decision.v1.json"))
+        self.assertNotEqual(hashlib.sha256(changed).hexdigest(), hashlib.sha256(normalized).hexdigest())
+        decision_path.write_bytes(changed)
+
+        with self.assertRaisesRegex(gate.T10ValidationError, "T10 decision SHA projection changed"):
+            gate.run(self.fixture)
+
+    def test_malformed_utf8_decision_fails_closed(self) -> None:
+        decision_path = self.fixture / "docs/phase1_5/p1b/p1b_owner_decision.v1.json"
+        decision_path.write_bytes(b"\xff\xfe")
+        with self.assertRaises(gate.T10ValidationError):
+            gate.run(self.fixture)
 
     def test_all_three_decisions_are_supported_by_existing_p1b_contract(self) -> None:
         manifest, manifest_sha = p1b.validate_manifest(self.fixture)
