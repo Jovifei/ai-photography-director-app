@@ -67,6 +67,19 @@ Detailed plan: tasks/plans/2026-09-29-t10-portable-decision-identity-repair.md.
 - [x] Run the T10 and P1B unit suites, T10/P1B/status validators, contract and status tests, privacy audit, authority probes, diff check, and exact-base scope guard after commit; record the addendum evidence fields.
 - [ ] Review exact diff, push Draft PR #15, and obtain remote DONE on the repaired head.
 - [ ] Rebind T11 to the accepted T10-R3 head using a fresh worktree.
+## T11 Artifact Acquisition Authorization Preflight / Legal-Transport Readiness — 2026-09-29
+
+Remote C2C task c2c_f785 selected a non-network preflight from exact accepted T10-R3 head 2ff77cadc8696cbd06a504458da4d58c74aa6133. The old pre-R3 T11 worktree is superseded; this is a fresh managed worktree and branch. T10 portable decision mode/SHA is UTF8_TEXT_EOL_NORMALIZED_SHA256_V1 / 45e462982d9fafd6444805529138d4fcc082d310dff52e9522e5c6adf233ece9. The T6 P1B manifest remains NONE_TRACKED and is byte-identical; the T10 quarantine-only decision is separate. T11 must end blocked on legal/transport/metadata/destination evidence and later Owner authorization; it does not authorize artifact acquisition.
+
+Detailed plan: tasks/plans/2026-09-29-t11-artifact-acquisition-preflight.md.
+
+- [x] Create a fresh branch from exact T10-R3 head and run M0: T10/P1B/status validators PASS, legal NOT_LEGAL_APPROVED, transport REDIRECT_DOMAIN_NOT_INDEPENDENTLY_VERIFIED, all authority flags false.
+- [x] Confirm no T11 implementation files exist at the accepted base; read the remote T11 plan.
+- [x] Record the exact 2ff77ca base, portable decision mode/SHA and P1B manifest NONE_TRACKED boundary.
+- [ ] Add T11 preflight manifest, schemas, capability-free validator, 41 table-driven tests, authority probes, canonical status/report, and exact-base scope guard.
+- [ ] Run T11/P1B/T10/T9/T8/T7/status/contracts/privacy/scope/diff checks and bounded Android JVM regression; verify Android source/config unchanged.
+- [ ] Review exact diff, run pre-push privacy audit, push a Draft PR stacked on #15, and obtain remote exact-head DONE/repair.
+- [ ] Keep T11 blocked until separately authorized external evidence or an Owner defer/reject decision arrives; do not download or execute the artifact.
 ## T8-R post-submission conformance repair — 2026-09-27
 
 Remote audit `c2c_aa42` returned `REPAIR_REQUIRED`: the previous T8 receipt proved
