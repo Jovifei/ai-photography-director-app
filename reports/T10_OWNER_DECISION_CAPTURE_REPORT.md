@@ -54,8 +54,9 @@ T10 records an Owner decision and its exact constraints. It does not authorize a
 - `scripts/validate_t10_owner_decision.py`: PASS with the canonical portable identity; the six forbidden authority flags remain false.
 - `scripts/validate_program_status.py`: PASS with the exact mode and digest projection.
 - `scripts/test_phase1_5_p1b_readiness.py`: 11/11 PASS; the stale absence assertion is replaced by a compatibility check for the unchanged manifest and separate tracked T10 decision.
-- `scripts/validate_t10r3_scope.py --base d332ba8ee6f1ea036be655de8b09f8c9f4180592`: PASS for 9 approved paths on the clean committed candidate; optional `docs/CURRENT_PROGRAM_STATUS.md` remains unchanged.
+- `scripts/validate_t10r3_scope.py --base d332ba8ee6f1ea036be655de8b09f8c9f4180592`: PASS for 10 approved paths on the clean committed candidate, including the T6/T10 status clarification.
 - `git diff --check`: PASS.
+- Android source remained unchanged. The parent-run bounded JVM smoke `:app:testDebugUnitTest` used `--no-daemon --max-workers=1 --rerun-tasks` and completed with `BUILD SUCCESSFUL` (27 tasks executed); Android SDK variables were supplied only to that process. No device or provider action occurred.
 - The P1B readiness manifest remains at SHA-256 `166211e0fd1790e85a4e86bd4d270cc3cefccccbc04502d20f2584dfcf752a6a`; the Owner decision file remains unchanged.
 - This is local implementation evidence. PR #15 remote review/`DONE` remains pending.
 

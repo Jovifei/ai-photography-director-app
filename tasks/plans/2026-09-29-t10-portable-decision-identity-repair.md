@@ -38,7 +38,7 @@ Malformed UTF-8 must fail closed. The computed canonical identity is 45e462982d9
 - [x] M4: Add explicit pure-LF, pure-CRLF, and mixed-EOL fixtures. Prove distinct raw hashes produce the same portable digest and identical derived T10 authority. Add a valid-JSON non-EOL textual mutation that changes the portable digest and is rejected. Preserve the existing 16-case decision-integrity matrix.
 - [x] M5: Update the T10 report to identify the 45e462 portable digest as canonical and label 646626/57b07 raw hashes NON_AUTHORITY_DIAGNOSTIC_ONLY.
 - [x] M6: Add an exact-base T10-R3 scope guard that rejects any change to the Owner decision file and rejects paths outside the approved list.
-- [x] M7: Run the T10 and P1B unit suites, T10/P1B/status validators, contract and status tests, privacy audit, authority probes, diff check, and exact-base scope guard after the single implementation commit on a clean worktree. Android and external-action checks remain outside this R3 implementation package.
+- [x] M7: Run the T10 and P1B unit suites, T10/P1B/status validators, contract and status tests, privacy audit, authority probes, diff check, and exact-base scope guard after the implementation commit on a clean worktree. Record the parent-run bounded JVM smoke separately; no device/provider action is authorized.
 - [ ] M8: Review the exact diff, push the tested update to Draft PR #15, and obtain remote DONE for the exact head.
 - [ ] M9: Only after remote DONE, create a fresh T11 worktree from that accepted head and rebind T11's exact base and decision digest.
 
@@ -50,7 +50,7 @@ Malformed UTF-8 must fail closed. The computed canonical identity is 45e462982d9
 - scripts/validate_program_status.py
 - scripts/validate_t10r3_scope.py
 - docs/current_program_status.v1.json
-- docs/CURRENT_PROGRAM_STATUS.md (only if needed)
+- docs/CURRENT_PROGRAM_STATUS.md
 - reports/T10_OWNER_DECISION_CAPTURE_REPORT.md
 - tasks/plans/2026-09-29-t10-portable-decision-identity-repair.md
 - tasks/todo.md
@@ -70,7 +70,8 @@ Malformed UTF-8 must fail closed. The computed canonical identity is 45e462982d9
 - LF, CRLF, and mixed-EOL representations validate with the same derived authority.
 - Non-EOL textual mutation is rejected; existing 16-case negative decision matrix still passes.
 - Owner decision file is byte-for-byte unchanged; all forbidden authority flags remain false.
-- T10 and P1B unit suites, T10/P1B/status validators, contracts, privacy, exact-base scope, diff, and authority probes pass; no Android source delta.
+- T10 and P1B unit suites, T10/P1B/status validators, contracts, privacy, exact-base scope, diff, and authority probes pass; Android source remained unchanged.
+- Parent-run bounded JVM smoke `:app:testDebugUnitTest` used `--no-daemon --max-workers=1 --rerun-tasks` and completed with `BUILD SUCCESSFUL` (27 tasks executed). Android SDK variables were supplied only to that process; no device or provider action occurred.
 - P1B manifest `authorization.owner_decision` remains `NONE_TRACKED`; the separate tracked T10 Owner decision passes `validate_owner_decision` with quarantine-only scope and all six execution flags false.
 - P1B_UNIT_TESTS=PASS_11_OF_11
 - P1B_STALE_ABSENCE_ASSERTION_REPAIRED=PASS
