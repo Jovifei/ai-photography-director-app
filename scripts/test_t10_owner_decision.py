@@ -17,6 +17,7 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "scripts"))
 import validate_phase1_5_p1b_readiness as p1b  # noqa: E402
 import validate_t10_owner_decision as gate  # noqa: E402
+import validate_t10r3_scope as scope  # noqa: E402
 
 
 class T10OwnerDecisionTests(unittest.TestCase):
@@ -165,6 +166,40 @@ class T10OwnerDecisionTests(unittest.TestCase):
         self.write("docs/current_program_status.v1.json", status)
         with self.assertRaises(gate.T10ValidationError):
             gate.run(self.fixture)
+
+    def test_scope_guard_rejects_changed_or_missing_owner_decision_blob(self) -> None:
+        with tempfile.TemporaryDirectory(prefix="t10-owner-scope-") as temporary:
+            git_root = Path(temporary)
+            decision_path = git_root / scope.OWNER_DECISION_PATH
+            decision_path.parent.mkdir(parents=True)
+
+            def run_git(*args: str) -> str:
+                result = subprocess.run(
+                    ["git", *args], cwd=git_root, capture_output=True, text=True, check=False
+                )
+                self.assertEqual(result.returncode, 0, result.stderr)
+                return result.stdout.strip()
+
+            run_git("init", "--quiet")
+            run_git("config", "user.name", "T10 Scope Test")
+            run_git("config", "user.email", "t10-scope-test@example.invalid")
+            decision_path.write_bytes(b"{\"decision\":\"base\"}\n")
+            run_git("add", "--", scope.OWNER_DECISION_PATH)
+            run_git("commit", "--quiet", "-m", "base decision")
+            base = run_git("rev-parse", "HEAD")
+
+            decision_path.write_bytes(b"{\"decision\":\"changed\"}\n")
+            run_git("add", "--", scope.OWNER_DECISION_PATH)
+            run_git("commit", "--quiet", "-m", "change decision")
+            changed_head = run_git("rev-parse", "HEAD")
+            with self.assertRaisesRegex(scope.ScopeError, "blob identity changed"):
+                scope.validate_owner_decision_blob_identity(git_root, base, changed_head)
+
+            run_git("rm", "--", scope.OWNER_DECISION_PATH)
+            run_git("commit", "--quiet", "-m", "remove decision")
+            missing_head = run_git("rev-parse", "HEAD")
+            with self.assertRaisesRegex(scope.ScopeError, "Owner decision file missing"):
+                scope.validate_owner_decision_blob_identity(git_root, base, missing_head)
 
     def test_authority_probes_block(self) -> None:
         for flag, expected in (

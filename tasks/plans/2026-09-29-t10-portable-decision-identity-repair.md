@@ -37,8 +37,8 @@ Malformed UTF-8 must fail closed. The computed canonical identity is 45e462982d9
 - [x] M3: Make T10 validation and program-status validation require the exact portable hash mode and digest.
 - [x] M4: Add explicit pure-LF, pure-CRLF, and mixed-EOL fixtures. Prove distinct raw hashes produce the same portable digest and identical derived T10 authority. Add a valid-JSON non-EOL textual mutation that changes the portable digest and is rejected. Preserve the existing 16-case decision-integrity matrix.
 - [x] M5: Update the T10 report to identify the 45e462 portable digest as canonical and label 646626/57b07 raw hashes NON_AUTHORITY_DIAGNOSTIC_ONLY.
-- [x] M6: Add an exact-base T10-R3 scope guard that rejects any change to the Owner decision file and rejects paths outside the approved list.
-- [x] M7: Run the T10 and P1B unit suites, T10/P1B/status validators, contract and status tests, privacy audit, authority probes, diff check, and exact-base scope guard after the implementation commit on a clean worktree. Record the parent-run bounded JVM smoke separately; no device/provider action is authorized.
+- [x] M6: Add an exact-base T10-R3 scope guard that compares Owner decision blob OIDs at base and HEAD, requires the HEAD path, rejects changed/missing identity independent of rename detection, and rejects paths outside the approved list. Focused tests cover changed and missing blobs.
+- [x] M7: Run T10 tests 12/12 and P1B tests 11/11, T10/P1B/status validators, contract and status tests, privacy audit, all five authority probes, diff check, and the exact-base scope guard after commit on a clean worktree. Record the parent-run bounded JVM smoke separately; no device/provider action is authorized.
 - [ ] M8: Review the exact diff, push the tested update to Draft PR #15, and obtain remote DONE for the exact head.
 - [ ] M9: Only after remote DONE, create a fresh T11 worktree from that accepted head and rebind T11's exact base and decision digest.
 
@@ -68,9 +68,9 @@ Malformed UTF-8 must fail closed. The computed canonical identity is 45e462982d9
 - T10_DECISION_PORTABLE_SHA256=45e462982d9fafd6444805529138d4fcc082d310dff52e9522e5c6adf233ece9
 - T10_DECISION_NORMALIZED_BYTES=969
 - LF, CRLF, and mixed-EOL representations validate with the same derived authority.
-- Non-EOL textual mutation is rejected; existing 16-case negative decision matrix still passes.
-- Owner decision file is byte-for-byte unchanged; all forbidden authority flags remain false.
-- T10 and P1B unit suites, T10/P1B/status validators, contracts, privacy, exact-base scope, diff, and authority probes pass; Android source remained unchanged.
+- Non-EOL textual mutation is rejected; existing 16-case negative decision matrix still passes; Owner decision blob identity checks reject changed and missing HEAD blobs.
+- Owner decision file is byte-for-byte unchanged; exact-base and HEAD blob OIDs match and the HEAD path exists; all forbidden authority flags remain false.
+- T10 tests: 12/12 PASS; P1B tests: 11/11 PASS. T10/P1B/status validators, contracts, privacy, exact-base scope, diff, and authority probes pass; Android source remained unchanged.
 - Parent-run bounded JVM smoke `:app:testDebugUnitTest` used `--no-daemon --max-workers=1 --rerun-tasks` and completed with `BUILD SUCCESSFUL` (27 tasks executed). Android SDK variables were supplied only to that process; no device or provider action occurred.
 - P1B manifest `authorization.owner_decision` remains `NONE_TRACKED`; the separate tracked T10 Owner decision passes `validate_owner_decision` with quarantine-only scope and all six execution flags false.
 - P1B_UNIT_TESTS=PASS_11_OF_11

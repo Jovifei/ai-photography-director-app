@@ -50,7 +50,7 @@ T10 records an Owner decision and its exact constraints. It does not authorize a
 ## T10-R3 portable identity repair
 
 - Canonical decision identity: `UTF8_TEXT_EOL_NORMALIZED_SHA256_V1`, SHA-256 `45e462982d9fafd6444805529138d4fcc082d310dff52e9522e5c6adf233ece9`, 969 normalized UTF-8 bytes.
-- `scripts/test_t10_owner_decision.py`: 11/11 PASS, including the unchanged 16-case semantic/authority negative matrix and the LF, CRLF, mixed-EOL, formatting-mutation, and malformed-UTF-8 cases.
+- `scripts/test_t10_owner_decision.py`: 12/12 PASS, including the unchanged 16-case semantic/authority negative matrix, LF/CRLF/mixed-EOL and formatting-mutation cases, malformed UTF-8, and changed/missing Owner decision blob identity cases.
 - `scripts/validate_t10_owner_decision.py`: PASS with the canonical portable identity; the six forbidden authority flags remain false.
 - `scripts/validate_program_status.py`: PASS with the exact mode and digest projection.
 - `scripts/test_phase1_5_p1b_readiness.py`: 11/11 PASS; the stale absence assertion is replaced by a compatibility check for the unchanged manifest and separate tracked T10 decision.
