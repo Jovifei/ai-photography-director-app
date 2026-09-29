@@ -17,6 +17,7 @@ ROOT = Path(__file__).resolve().parents[1]
 MANIFEST_REL = Path("docs/phase1_5/t11/artifact_acquisition_preflight.v1.json")
 MANIFEST_SCHEMA_REL = Path("docs/phase1_5/t11/artifact_acquisition_preflight.v1.schema.json")
 STATUS_REL = Path("docs/current_program_status.v1.json")
+MANIFEST_HASH_MODE = "UTF8_TEXT_EOL_NORMALIZED_SHA256_V1"
 INPUT_SCHEMAS = {
     "legal_review": Path("docs/phase1_5/t11/legal_review_input.v1.schema.json"),
     "transport": Path("docs/phase1_5/t11/transport_verification_input.v1.schema.json"),
@@ -116,6 +117,16 @@ def canonical_input_sha256(record: dict[str, Any]) -> str:
     """Hash a future input object's canonical UTF-8 JSON representation."""
     payload = json.dumps(record, ensure_ascii=False, sort_keys=True, separators=(",", ":")).encode("utf-8")
     return hashlib.sha256(payload).hexdigest()
+
+
+def preflight_manifest_sha256(root: Path) -> str:
+    """Return the portable T11 manifest identity, normalizing EOL only."""
+    path = root / MANIFEST_REL
+    try:
+        data = path.read_bytes()
+    except OSError as exc:
+        raise ValidationError("cannot read T11 preflight manifest for identity") from exc
+    return hashlib.sha256(normalize_eol(data)).hexdigest()
 
 
 def reject_private_strings(value: Any, location: str) -> None:
@@ -275,14 +286,15 @@ def validate_canonical_status_projection(root: Path, manifest: dict[str, Any]) -
     require(status.get("current_stage") == "PRODUCT_READY_PROMOTION_GATE_READY_REAL_READY_PROMOTION_NOT_AUTHORIZED", "T11 must remain nested under the existing T9 top-level stage")
     require(status.get("current_product_state") == "OFFLINE_ANDROID_PRODUCT_FLOW_VALIDATED", "T11 product state changed")
     require(status.get("next_authorized_stage") == "EXTERNAL_LEGAL_TRANSPORT_DESTINATION_EVIDENCE_OR_OWNER_DEFER", "T11 next authorized stage changed")
-    manifest_path = root / MANIFEST_REL
+    manifest_sha = preflight_manifest_sha256(root)
     expected = {
         "stage_status": "ARTIFACT_ACQUISITION_PREFLIGHT_READY_EXTERNAL_EVIDENCE_AND_AUTHORIZATION_REQUIRED",
         "current_blocker": manifest["current_status"],
         "base": manifest["accepted_t10_r3_base"],
         "manifest": MANIFEST_REL.as_posix(),
         "manifest_id": manifest["manifest_id"],
-        "manifest_sha256": hashlib.sha256(manifest_path.read_bytes()).hexdigest(),
+        "manifest_hash_mode": MANIFEST_HASH_MODE,
+        "manifest_sha256": manifest_sha,
         "t10_decision_hash_mode": manifest["t10_owner_decision"]["decision_hash_mode"],
         "t10_decision_sha256": manifest["t10_owner_decision"]["portable_decision_sha256"],
         "legal_review_status": manifest["current_evidence_status"]["legal_review"],
@@ -359,11 +371,11 @@ def validate_future_acquisition_decision(
     _validate_input(root, "owner_decision", value)
     expected_t10 = {key: t10[key] for key in ("path", "decision_hash_mode", "portable_decision_sha256", "git_blob_sha1")}
     require(value.get("t10_authority_binding") == expected_t10, "future Owner decision T10 binding changed")
-    manifest_path = root / MANIFEST_REL
     expected_t11 = {
         "path": MANIFEST_REL.as_posix(),
         "manifest_id": manifest["manifest_id"],
-        "manifest_sha256": hashlib.sha256(manifest_path.read_bytes()).hexdigest(),
+        "manifest_hash_mode": MANIFEST_HASH_MODE,
+        "manifest_sha256": preflight_manifest_sha256(root),
     }
     require(value.get("t11_manifest_binding") == expected_t11, "future Owner decision T11 manifest binding changed")
     require(value.get("artifact_binding") == manifest["artifact"], "future Owner decision artifact binding changed")
@@ -379,6 +391,7 @@ def validate_future_acquisition_decision(
 
 
 def _result(
+    root: Path,
     manifest: dict[str, Any],
     state: str,
     blockers: list[str],
@@ -399,6 +412,8 @@ def _result(
         "blockers": blockers,
         "base": T11_BASE,
         "manifest_id": manifest["manifest_id"],
+        "t11_manifest_hash_mode": MANIFEST_HASH_MODE,
+        "t11_manifest_sha256": preflight_manifest_sha256(root),
         "t10_decision_hash_mode": t10["decision_hash_mode"],
         "t10_decision_sha256": t10["portable_decision_sha256"],
         "p1b_manifest_sha256": p1b["readiness_manifest_sha256"],
@@ -498,6 +513,7 @@ def evaluate_preflight(
 
     def make_result(state: str, blockers: list[str], **kwargs: Any) -> dict[str, Any]:
         return _result(
+            root,
             manifest,
             state,
             blockers,

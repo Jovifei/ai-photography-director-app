@@ -140,7 +140,8 @@ class T11ArtifactAcquisitionPreflightTests(unittest.TestCase):
             "t11_manifest_binding": {
                 "path": gate.MANIFEST_REL.as_posix(),
                 "manifest_id": manifest["manifest_id"],
-                "manifest_sha256": hashlib.sha256(manifest_path.read_bytes()).hexdigest(),
+                "manifest_hash_mode": gate.MANIFEST_HASH_MODE,
+                "manifest_sha256": gate.preflight_manifest_sha256(self.fixture),
             },
             "artifact_binding": copy.deepcopy(manifest["artifact"]),
             "evidence_binding": {
@@ -230,6 +231,8 @@ class T11ArtifactAcquisitionPreflightTests(unittest.TestCase):
             ("missing_projection", lambda status: status.pop("t11_artifact_acquisition_preflight")),
             ("acquisition_authority", lambda status: status["t11_artifact_acquisition_preflight"].update(artifact_acquisition_authorized=True)),
             ("wrong_blocker", lambda status: status["t11_artifact_acquisition_preflight"].update(current_blocker="READY_FOR_OWNER_ACQUISITION_DECISION")),
+            ("wrong_manifest_hash_mode", lambda status: status["t11_artifact_acquisition_preflight"].update(manifest_hash_mode="RAW_SHA256")),
+            ("wrong_manifest_sha", lambda status: status["t11_artifact_acquisition_preflight"].update(manifest_sha256="0" * 64)),
         )
         for label, mutate in cases:
             with self.subTest(case=label):
@@ -238,6 +241,65 @@ class T11ArtifactAcquisitionPreflightTests(unittest.TestCase):
                 status_path.write_text(json.dumps(candidate, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
                 with self.assertRaises(gate.ValidationError):
                     gate.validate_canonical_status_projection(self.fixture, manifest)
+
+    def test_t11_manifest_hash_mode_is_portable_text_identity(self) -> None:
+        self.assertTrue(hasattr(gate, "MANIFEST_HASH_MODE"))
+        self.assertEqual(gate.MANIFEST_HASH_MODE, "UTF8_TEXT_EOL_NORMALIZED_SHA256_V1")
+
+    def test_t11_manifest_authority_and_future_owner_binding_are_cross_eol_portable(self) -> None:
+        manifest_path = self.fixture / gate.MANIFEST_REL
+        original = manifest_path.read_bytes()
+        normalized = original.decode("utf-8", errors="strict").replace("\r\n", "\n").replace("\r", "\n").encode("utf-8")
+        lf = normalized
+        crlf = normalized.replace(b"\n", b"\r\n")
+        mixed = b"".join(
+            line.replace(b"\n", b"\r\n" if index % 2 else b"\n")
+            for index, line in enumerate(normalized.splitlines(keepends=True))
+        )
+        representations = (lf, crlf, mixed)
+        self.assertEqual(len({hashlib.sha256(value).hexdigest() for value in representations}), 3)
+
+        tracked_results = []
+        hypothetical_results = []
+        for representation in representations:
+            manifest_path.write_bytes(representation)
+            portable_sha = gate.preflight_manifest_sha256(self.fixture)
+            self.assertEqual(portable_sha, "4aee65b8ae343ad57338f179cabfbfa798672aa704e635331aaedbaff9f49830")
+            current = gate.run(self.fixture)
+            self.assertEqual(current["t11_manifest_hash_mode"], "UTF8_TEXT_EOL_NORMALIZED_SHA256_V1")
+            self.assertEqual(current["t11_manifest_sha256"], portable_sha)
+            tracked_results.append(current)
+
+            inputs = self.external_inputs()
+            decision = self.authorized_decision(inputs)
+            hypothetical = gate.evaluate_preflight(self.fixture, **inputs, owner_decision=decision)
+            self.assertEqual(hypothetical["state"], "READY_FOR_SEPARATE_ACQUISITION_EXECUTION_PLAN")
+            self.assertEqual(hypothetical["evidence_status_source"], "HYPOTHETICAL_UNIT_INPUTS")
+            hypothetical_results.append(hypothetical)
+
+        self.assertEqual(tracked_results[0], tracked_results[1])
+        self.assertEqual(tracked_results[0], tracked_results[2])
+        self.assertEqual(hypothetical_results[0], hypothetical_results[1])
+        self.assertEqual(hypothetical_results[0], hypothetical_results[2])
+
+    def test_t11_manifest_non_eol_mutation_and_malformed_utf8_fail_closed(self) -> None:
+        manifest_path = self.fixture / gate.MANIFEST_REL
+        original = manifest_path.read_bytes()
+        changed = original.replace(b'"manifest_id":', b'"manifest_id" :', 1)
+        self.assertEqual(json.loads(changed.decode("utf-8")), json.loads(original.decode("utf-8")))
+        inputs = self.external_inputs()
+        stale_decision = self.authorized_decision(inputs)
+        manifest_path.write_bytes(changed)
+        with self.assertRaises(gate.ValidationError):
+            gate.run(self.fixture)
+        with self.assertRaises(gate.ValidationError):
+            gate.evaluate_preflight(self.fixture, **inputs, owner_decision=stale_decision)
+
+        manifest_path.write_bytes(b"\xff\xfe")
+        with self.assertRaises(gate.ValidationError):
+            gate.preflight_manifest_sha256(self.fixture)
+        with self.assertRaises(gate.ValidationError):
+            gate.evaluate_preflight(self.fixture, **inputs, owner_decision=stale_decision)
 
     def test_p1b_source_tuples_are_bound_exactly_as_frozen(self) -> None:
         manifest, manifest_sha = p1b.validate_manifest(self.fixture)
@@ -401,6 +463,20 @@ class T11ArtifactAcquisitionPreflightTests(unittest.TestCase):
         inputs = self.external_inputs()
         decision = self.authorized_decision(inputs)
         decision["t10_authority_binding"]["portable_decision_sha256"] = "0" * 64
+        with self.assertRaises(gate.ValidationError):
+            gate.evaluate_preflight(self.fixture, **inputs, owner_decision=decision)
+
+    def test_future_decision_must_bind_current_t11_manifest_sha(self) -> None:
+        inputs = self.external_inputs()
+        decision = self.authorized_decision(inputs)
+        decision["t11_manifest_binding"]["manifest_sha256"] = "0" * 64
+        with self.assertRaises(gate.ValidationError):
+            gate.evaluate_preflight(self.fixture, **inputs, owner_decision=decision)
+
+    def test_future_decision_must_bind_portable_t11_manifest_mode(self) -> None:
+        inputs = self.external_inputs()
+        decision = self.authorized_decision(inputs)
+        decision["t11_manifest_binding"]["manifest_hash_mode"] = "RAW_SHA256"
         with self.assertRaises(gate.ValidationError):
             gate.evaluate_preflight(self.fixture, **inputs, owner_decision=decision)
 

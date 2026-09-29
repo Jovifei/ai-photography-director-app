@@ -170,4 +170,23 @@ Each command must exit nonzero. No probe may turn capability on.
 
 ## Expected handoff
 
-After exact T11 source is implemented, tested, scope/privacy reviewed and pushed as a Draft PR stacked on #15, send C2C EXECUTED for task c2c_f785 iteration 1 with exact base/head, changed paths, 41-case result, regression evidence, all blockers and authority probes. Request remote exact-head review. No artifact acquisition is authorized.
+After the portable T11 manifest identity repair is implemented, tested, scope/privacy reviewed and pushed to Draft PR #16, send C2C EXECUTED for task c2c_f785 iteration 2 with exact base/head, changed paths, cross-EOL manifest identity evidence, regression results, blockers and authority probes. Request remote exact-head review. No artifact acquisition is authorized.
+
+## Remote exact-head review repair addendum — 2026-09-29
+
+Remote C2C review of PR #16 head `b6e22dfdbdfa87549207a661ba08f13ec4834189` returned `REPAIR_REQUIRED` for one issue only: T11 treated the new live preflight manifest SHA as raw checkout bytes in the canonical status projection and future Owner-decision binding. In the clean Windows review checkout the manifest is 7,876 bytes, while the Git/LF representation is 7,702 bytes; the 174-byte difference is CRLF expansion. The previously recorded raw digest was therefore tied to one checkout representation and could invalidate both authority-bearing bindings in another checkout.
+
+Keep PR #16, exact T11 base, current blocker, P1B semantics, T10 decision, and all authority flags unchanged. Use the accepted T10 identity algorithm for the live T11 manifest:
+
+`T11_MANIFEST_HASH_MODE = UTF8_TEXT_EOL_NORMALIZED_SHA256_V1`
+
+Strictly decode UTF-8, normalize CRLF and lone CR to LF, perform no JSON reserialization or other text normalization, encode UTF-8, and compute SHA-256. The frozen P1B manifest SHA and P1A/P1B source tuples keep their original semantics.
+
+- [x] Add `preflight_manifest_sha256(root)` and replace raw `read_bytes()` hashing in T11 canonical status projection and future Owner-decision validation.
+- [x] Add `manifest_hash_mode` to `docs/current_program_status.v1.json` nested T11 projection and keep `manifest_sha256` at the normalized digest.
+- [x] Require `manifest_hash_mode=UTF8_TEXT_EOL_NORMALIZED_SHA256_V1` in `artifact_acquisition_owner_decision.v1.schema.json` and its validator-side expected binding.
+- [x] Add LF, CRLF, and mixed-EOL manifest tests proving equal portable identity, equal tracked T11 authority, and equal hypothetical future Owner binding. Add non-EOL mutation and malformed-UTF-8 fail-closed tests.
+- [x] Update the report and plan with the hash mode, computed digest, cross-EOL PASS results, and non-EOL rejection. Any raw checkout SHA is `NON_AUTHORITY_DIAGNOSTIC_ONLY`; the `4aee65...` value is now explicitly the portable normalized digest for the LF representation.
+- [ ] Rerun all T11/T10/P1B/T9/T8/T7/status/contracts/privacy/probe/scope checks and the bounded Android JVM regression. Preserve the 18-path allowlist and do not modify P1A, P1B, T10 validator, Android, runtime, network, or downstream authority.
+
+Acceptance: the exact final PR #16 head passes LF/CRLF/mixed T11 manifest identity tests, `validate_t10_owner_decision.py`, T11 and program-status validators, the exact 18-path scope guard, and the local review. PR #16 remains Draft/open/unmerged; T11 remains `BLOCKED_LEGAL_REVIEW` and authorizes no acquisition.

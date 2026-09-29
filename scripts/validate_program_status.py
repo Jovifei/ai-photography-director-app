@@ -15,6 +15,7 @@ T10_DECISION_SHA256 = "45e462982d9fafd6444805529138d4fcc082d310dff52e9522e5c6adf
 T11_BASE = "2ff77cadc8696cbd06a504458da4d58c74aa6133"
 T11_MANIFEST_ID = "phase1-5-t11-artifact-acquisition-preflight-20260929"
 T11_MANIFEST_SHA256 = "4aee65b8ae343ad57338f179cabfbfa798672aa704e635331aaedbaff9f49830"
+T11_MANIFEST_HASH_MODE = "UTF8_TEXT_EOL_NORMALIZED_SHA256_V1"
 T11_STAGE_STATUS = "ARTIFACT_ACQUISITION_PREFLIGHT_READY_EXTERNAL_EVIDENCE_AND_AUTHORIZATION_REQUIRED"
 REQUIRED_EXTERNAL_GATES = {
     "real_photos": "NOT_RUN",
@@ -126,6 +127,7 @@ def validate(root: Path) -> None:
         "base": T11_BASE,
         "manifest": "docs/phase1_5/t11/artifact_acquisition_preflight.v1.json",
         "manifest_id": T11_MANIFEST_ID,
+        "manifest_hash_mode": T11_MANIFEST_HASH_MODE,
         "manifest_sha256": T11_MANIFEST_SHA256,
         "t10_decision_hash_mode": T10_DECISION_HASH_MODE,
         "t10_decision_sha256": T10_DECISION_SHA256,

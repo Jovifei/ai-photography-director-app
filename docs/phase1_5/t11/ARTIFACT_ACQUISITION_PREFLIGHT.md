@@ -42,7 +42,9 @@ Current records remain legal `NOT_LEGAL_APPROVED`, transport `REDIRECT_DOMAIN_NO
 
 The five companion schemas describe hypothetical future legal, transport, fresh-metadata, quarantine-destination, and Owner-decision inputs. They are contracts only: this package contains no positive external evidence, no destination record, and no future acquisition decision. Model-card Apache metadata does not establish legal approval. Legal disposition scope is limited to `MODEL_WEIGHT_QUARANTINE_ACQUISITION_ONLY`; the legal schema has no reviewer-identity fields.
 
-The future Owner decision binds the T11 manifest by SHA-256 over its exact file bytes. Evidence-input fingerprints use UTF-8 JSON with object keys sorted, compact separators, `ensure_ascii=false`, and no trailing newline before SHA-256. These rules make the hypothetical bindings deterministic without storing the evidence records in T11.
+The live T11 manifest identity uses `UTF8_TEXT_EOL_NORMALIZED_SHA256_V1`: strict UTF-8 decode, CRLF/lone-CR to LF, no JSON reserialization or other transformation, UTF-8 encode, then SHA-256. The same mode and portable digest are bound in canonical status and any future Owner decision. A raw checkout-byte digest is only `NON_AUTHORITY_DIAGNOSTIC_ONLY`. This live manifest identity is separate from the frozen P1B source tuples.
+
+Future evidence-input fingerprints use UTF-8 JSON with object keys sorted, compact separators, `ensure_ascii=false`, and no trailing newline before SHA-256. These rules make hypothetical Owner bindings deterministic without storing the evidence records in T11.
 
 ## State boundary
 

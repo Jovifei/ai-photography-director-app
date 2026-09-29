@@ -50,6 +50,8 @@ The resulting state is `P1B_ARTIFACT_QUARANTINE_SCOPE_APPROVED — ARTIFACT_ACQU
 
 T11 adds an artifact-acquisition preflight projection under the existing T9 lifecycle stage. The top-level machine-readable `current_stage` remains `PRODUCT_READY_PROMOTION_GATE_READY_REAL_READY_PROMOTION_NOT_AUTHORIZED`, preserving T10's existing validator contract; the T11 substate is `ARTIFACT_ACQUISITION_PREFLIGHT_READY — EXTERNAL_EVIDENCE_AND_AUTHORIZATION_REQUIRED`, with current blocker `BLOCKED_LEGAL_REVIEW`.
 
+The live T11 manifest is bound using `UTF8_TEXT_EOL_NORMALIZED_SHA256_V1`, portable SHA-256 `4aee65b8ae343ad57338f179cabfbfa798672aa704e635331aaedbaff9f49830`. This normalizes only CRLF/lone-CR to LF after strict UTF-8 decoding; raw checkout-byte hashes are diagnostics only.
+
 The exact candidate remains Qwen/Qwen3-VL-2B-Instruct at revision `89644892e4d85e24eaac8bacfd4f463576704203`. Legal review is `NOT_LEGAL_APPROVED`, transport is `REDIRECT_DOMAIN_NOT_INDEPENDENTLY_VERIFIED`, fresh metadata is `NOT_RUN`, destination is `NOT_DECLARED`, and a later acquisition Owner decision is `NONE_TRACKED`. Artifact acquisition, artifact-body access, network, runtime, inference, App, Pipeline and private-media authority all remain false. T11 performs no network or artifact access.
 
 P1B retains its T6 checkout-byte/hash bindings under `FROZEN_P1B_CHECKOUT_BINDING_V1`; that identity is not claimed as cross-platform canonical. Git-blob and EOL-normalized identities are diagnostic only. EOL-only differences are classified `EOL_ONLY_CHECKOUT_REPRESENTATION_DIFFERENCE` and do not redefine the frozen P1B record.

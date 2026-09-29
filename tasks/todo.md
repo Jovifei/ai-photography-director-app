@@ -78,10 +78,13 @@ Detailed plan: tasks/plans/2026-09-29-t11-artifact-acquisition-preflight.md.
 - [x] Record the exact 2ff77ca base, portable decision mode/SHA and P1B manifest NONE_TRACKED boundary.
 - [x] Add T11 preflight manifest, schemas, capability-free validator, 41-case coverage, authority probes, canonical status/report, and exact-base scope guard.
 - [x] Resolve the T10/T11 status conflict with remote GPT: keep top-level current_stage at T9 and add the T11 nested projection; do not modify the T10 validator.
-- [x] Run focused regressions: T11 29/29, T10 12/12, P1B 11/11, T9 13/13, T8/T7 15/15, status 8/8, contract checks PASS, validators PASS, five T11 probes blocked, privacy PASS, Android JVM 27 tasks PASS.
-- [x] Run the exact-base scope guard: PASS for 18 approved paths; Owner and P1B blobs unchanged; T10 validator unchanged. Android source/config remain unchanged; final `git diff --check` passes.
-- [x] Local exact read-only review: `PASS_NO_ACTIONABLE_FINDINGS` after fixing hypothetical status projections and testing future Owner defer/reject paths.
-- [ ] Review exact diff, run pre-push privacy audit, push a Draft PR stacked on #15, and obtain remote exact-head DONE/repair.
+- [x] Requalify portable T11 manifest identity: T11 34/34, LF/CRLF/mixed authority equal, stale and wrong Owner manifest bindings rejected, T10 12/12, P1B 11/11, T9 13/13, T8/T7 15/15, status 8/8, contracts/validators/privacy PASS, five probes blocked, Android JVM 27 tasks PASS.
+- [ ] Re-run exact-base scope guard on the portable-identity repair head; preserve the 18-path allowlist and verify Owner/P1B blobs and T10 validator remain unchanged.
+- [x] Local exact read-only re-review: `PASS_NO_ACTIONABLE_FINDINGS`; hypothetical authority projections, terminal Owner choices, portable manifest binding, and negative binding cases reviewed.
+- [x] Push initial T11 implementation as Draft PR #16 stacked on #15; remote exact-head review confirmed the scope/authority model and identified the portable manifest identity repair.
+- [x] Repair T11 manifest identity with `UTF8_TEXT_EOL_NORMALIZED_SHA256_V1`; T11 34/34 with LF/CRLF/mixed equality, stale/wrong binding rejection, and malformed-UTF-8 rejection.
+- [ ] Commit and push the repair, update Draft PR #16, record iteration 2 evidence, and obtain remote exact-head DONE.
+- [ ] Run final pre-push privacy audit; keep PR #16 Draft/open/unmerged.
 - [ ] Keep T11 blocked until separately authorized external evidence or an Owner defer/reject decision arrives; do not download or execute the artifact.
 ## T8-R post-submission conformance repair — 2026-09-27
 

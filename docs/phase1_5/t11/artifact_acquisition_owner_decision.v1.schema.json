@@ -70,6 +70,7 @@
       "required": [
         "path",
         "manifest_id",
+        "manifest_hash_mode",
         "manifest_sha256"
       ],
       "properties": {
@@ -78,6 +79,9 @@
         },
         "manifest_id": {
           "const": "phase1-5-t11-artifact-acquisition-preflight-20260929"
+        },
+        "manifest_hash_mode": {
+          "const": "UTF8_TEXT_EOL_NORMALIZED_SHA256_V1"
         },
         "manifest_sha256": {
           "type": "string",
