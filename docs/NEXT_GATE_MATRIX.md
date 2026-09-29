@@ -14,6 +14,7 @@ This matrix describes possible future tracks. It records prerequisites; it does 
 | More offline Android work | T4 product PASS | A concrete reviewed defect or requirement | `NO_SPECULATIVE_SCOPE` |
 | Product READY promotion gate | T8 synthetic contract evidence and offline Photo Knowledge Bundle consumer contract | Non-runtime policy/schema/validator evidence only; no Provider qualification or product write authorization | `PRODUCT_READY_PROMOTION_GATE_READY — REAL_READY_PROMOTION_NOT_AUTHORIZED` |
 | Owner Decision Capture / P1B Route Resolution | T6 P1B packet, exact T9 authority and explicit Owner choice | Existing P1B schema validation; exact artifact binding; no download/runtime/inference/App/Pipeline/private-media authorization | `P1B_ARTIFACT_QUARANTINE_SCOPE_APPROVED — ARTIFACT_ACQUISITION_NOT_YET_AUTHORIZED` |
+| T11 Artifact Acquisition Preflight | Accepted T10-R3 identity, frozen P1B source bindings and exact Qwen artifact metadata | External legal disposition, verified transport chain, fresh immutable metadata, opaque quarantine destination, and a later separately bound Owner decision | `ARTIFACT_ACQUISITION_PREFLIGHT_READY — EXTERNAL_EVIDENCE_AND_AUTHORIZATION_REQUIRED`; current blocker `BLOCKED_LEGAL_REVIEW` |
 
 The matrix must not promote an old Closed Beta candidate, an emulator result, an HTTP success, an editorial draft or an AI pre-review into a current release or human PASS.
 
@@ -21,7 +22,9 @@ The matrix must not promote an old Closed Beta candidate, an emulator result, an
 
 T10 has captured `AUTHORIZE_ARTIFACT_QUARANTINE_ONLY`, but this does not authorize model download, inference, real-photo access, network activation, device action or merge. A separate plan is required before any artifact acquisition or quarantine operation.
 
-T6's `P1B_AUTHORIZATION_PACKET_READY — EXECUTION_NOT_AUTHORIZED` status is metadata coherence only. It does not qualify Qwen or a Provider, approve licensing or transport, authorize artifact acquisition, or open the runtime branch. A future Owner decision must bind the readiness manifest and may only select `DEFER`, `REJECT_PRIMARY`, or exact artifact quarantine preparation; runtime/inference/App/Pipeline/private-media authorization remains a later gate.
+T11 adds a nested artifact-acquisition preflight under the existing top-level T9 stage. Its current blocker is `BLOCKED_LEGAL_REVIEW`; transport, fresh metadata, destination and a later Owner decision remain unresolved. T11 makes no network request and does not acquire the artifact. The next authorized stage is `EXTERNAL_LEGAL_TRANSPORT_DESTINATION_EVIDENCE_OR_OWNER_DEFER`.
+
+T6's `P1B_AUTHORIZATION_PACKET_READY — EXECUTION_NOT_AUTHORIZED` status is metadata coherence only. It does not qualify Qwen or a Provider, approve licensing or transport, authorize artifact acquisition, or open the runtime branch. A future T11 acquisition Owner decision must bind the T10 identity, T11 manifest, legal/transport/fresh-metadata evidence, destination and approved domains; it may only select `DEFER`, `REJECT_ACQUISITION`, or exact quarantine acquisition. Runtime/inference/App/Pipeline/private-media authorization remains closed.
 
 T7's `EVALUATION_GOVERNANCE_PACKET_READY — HUMAN_REVIEW_NOT_AUTHORIZED` status is protocol coherence only. It does not mean a reviewer scored any output, a threshold was approved, a Provider passed, or Pipeline compatibility exists. The 18-criterion rubric remains proposed and unmeasured; the human-review rights/privacy gate remains `NOT_RUN`.
 

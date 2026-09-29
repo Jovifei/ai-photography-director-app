@@ -1,0 +1,88 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://photoai.local/phase1_5/t11/quarantine_destination_input.v1.schema.json",
+  "title": "Hypothetical T11 Quarantine Destination Input",
+  "description": "Schema only. It accepts an opaque identifier and never contains an absolute destination path.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "input_kind",
+    "destination_id",
+    "destination_kind",
+    "external_quarantine_directory",
+    "repository_location",
+    "android_project_location",
+    "evidence_corpus_location",
+    "product_cache_location",
+    "app_private_location",
+    "artifact_only",
+    "available_bytes",
+    "actual_path_tracked",
+    "cleanup_policy"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "1.0.0"
+    },
+    "input_kind": {
+      "const": "T11_QUARANTINE_DESTINATION_INPUT"
+    },
+    "destination_id": {
+      "type": "string",
+      "pattern": "^quarantine-[A-Za-z0-9][A-Za-z0-9._-]{5,63}$"
+    },
+    "destination_kind": {
+      "const": "EXTERNAL_QUARANTINE_DIRECTORY"
+    },
+    "external_quarantine_directory": {
+      "const": true
+    },
+    "repository_location": {
+      "const": false
+    },
+    "android_project_location": {
+      "const": false
+    },
+    "evidence_corpus_location": {
+      "const": false
+    },
+    "product_cache_location": {
+      "const": false
+    },
+    "app_private_location": {
+      "const": false
+    },
+    "artifact_only": {
+      "const": true
+    },
+    "available_bytes": {
+      "type": "integer",
+      "minimum": 4255140312
+    },
+    "actual_path_tracked": {
+      "const": false
+    },
+    "cleanup_policy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "policy_id",
+        "trigger",
+        "delete_scope"
+      ],
+      "properties": {
+        "policy_id": {
+          "type": "string",
+          "pattern": "^cleanup-[A-Za-z0-9][A-Za-z0-9._-]{3,63}$"
+        },
+        "trigger": {
+          "const": "OWNER_APPROVED_CLEANUP_ONLY"
+        },
+        "delete_scope": {
+          "const": "NAMED_DESTINATION_ONLY"
+        }
+      }
+    }
+  }
+}

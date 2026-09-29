@@ -12,6 +12,11 @@ from pathlib import Path
 SHA_RE = re.compile(r"^[0-9a-f]{40}$")
 T10_DECISION_HASH_MODE = "UTF8_TEXT_EOL_NORMALIZED_SHA256_V1"
 T10_DECISION_SHA256 = "45e462982d9fafd6444805529138d4fcc082d310dff52e9522e5c6adf233ece9"
+T11_BASE = "2ff77cadc8696cbd06a504458da4d58c74aa6133"
+T11_MANIFEST_ID = "phase1-5-t11-artifact-acquisition-preflight-20260929"
+T11_MANIFEST_SHA256 = "4aee65b8ae343ad57338f179cabfbfa798672aa704e635331aaedbaff9f49830"
+T11_MANIFEST_HASH_MODE = "UTF8_TEXT_EOL_NORMALIZED_SHA256_V1"
+T11_STAGE_STATUS = "ARTIFACT_ACQUISITION_PREFLIGHT_READY_EXTERNAL_EVIDENCE_AND_AUTHORIZATION_REQUIRED"
 REQUIRED_EXTERNAL_GATES = {
     "real_photos": "NOT_RUN",
     "physical_device": "NOT_RUN",
@@ -77,6 +82,7 @@ def validate(root: Path) -> None:
     require(status.get("next_authorized_stage") in {
         "OWNER_REVIEWED_NEXT_GATE_SELECTION",
         "OWNER_DECISION_OR_SEPARATE_NON_RUNTIME_GATE",
+        "EXTERNAL_LEGAL_TRANSPORT_DESTINATION_EVIDENCE_OR_OWNER_DEFER",
     }, "next stage drift")
     if status.get("current_stage") == "T6_P1B_AUTHORIZATION_PACKET_READY_EXECUTION_NOT_AUTHORIZED":
         t6 = status.get("t6_readiness", {})
@@ -114,6 +120,33 @@ def validate(root: Path) -> None:
         require(t10.get("status") == "P1B_ARTIFACT_QUARANTINE_SCOPE_APPROVED_ARTIFACT_ACQUISITION_NOT_YET_AUTHORIZED", "T10 authority status drift")
         require(t10.get("artifact_quarantine_only") is True, "T10 quarantine scope drift")
         require(all(t10.get(key) is False for key in ("download_authorized", "runtime_authorized", "inference_authorized", "app_integration_authorized", "pipeline_integration_authorized", "private_media_authorized")), "T10 forbidden authority promoted")
+    require(status.get("current_stage") == "PRODUCT_READY_PROMOTION_GATE_READY_REAL_READY_PROMOTION_NOT_AUTHORIZED", "T11 nested preflight must remain layered under the T9 top-level stage")
+    expected_t11 = {
+        "stage_status": T11_STAGE_STATUS,
+        "current_blocker": "BLOCKED_LEGAL_REVIEW",
+        "base": T11_BASE,
+        "manifest": "docs/phase1_5/t11/artifact_acquisition_preflight.v1.json",
+        "manifest_id": T11_MANIFEST_ID,
+        "manifest_hash_mode": T11_MANIFEST_HASH_MODE,
+        "manifest_sha256": T11_MANIFEST_SHA256,
+        "t10_decision_hash_mode": T10_DECISION_HASH_MODE,
+        "t10_decision_sha256": T10_DECISION_SHA256,
+        "legal_review_status": "NOT_LEGAL_APPROVED",
+        "transport_status": "REDIRECT_DOMAIN_NOT_INDEPENDENTLY_VERIFIED",
+        "fresh_metadata_status": "NOT_RUN",
+        "quarantine_destination_status": "NOT_DECLARED",
+        "owner_acquisition_decision": "NONE_TRACKED",
+        "artifact_acquisition_authorized": False,
+        "artifact_body_access_authorized": False,
+        "network_access_authorized": False,
+        "runtime_authorized": False,
+        "inference_authorized": False,
+        "app_integration_authorized": False,
+        "pipeline_integration_authorized": False,
+        "private_media_authorized": False,
+    }
+    require(status.get("t11_artifact_acquisition_preflight") == expected_t11, "T11 canonical status projection drift")
+    require(status.get("next_authorized_stage") == "EXTERNAL_LEGAL_TRANSPORT_DESTINATION_EVIDENCE_OR_OWNER_DEFER", "T11 next stage drift")
     require(status.get("external_gates") == REQUIRED_EXTERNAL_GATES, "external gate state drift")
     require(status.get("t5_qualification", {}).get("scope_guard") == "PASS_18_APPROVED_PATHS", "T5 scope count drift")
 

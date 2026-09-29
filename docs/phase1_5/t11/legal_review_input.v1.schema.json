@@ -1,0 +1,118 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://photoai.local/phase1_5/t11/legal_review_input.v1.schema.json",
+  "title": "Hypothetical T11 Legal Review Input",
+  "description": "Schema only. No legal review result is tracked by T11.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "input_kind",
+    "scope",
+    "artifact_binding",
+    "license_evidence_binding",
+    "model_card_metadata",
+    "disposition",
+    "external_evidence_sha256",
+    "recorded_at"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "1.0.0"
+    },
+    "input_kind": {
+      "const": "T11_LEGAL_REVIEW_INPUT"
+    },
+    "scope": {
+      "const": "MODEL_WEIGHT_QUARANTINE_ACQUISITION_ONLY"
+    },
+    "artifact_binding": {
+      "$ref": "#/$defs/artifactIdentity"
+    },
+    "license_evidence_binding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "path",
+        "p1b_frozen_checkout_bytes",
+        "p1b_frozen_checkout_sha256"
+      ],
+      "properties": {
+        "path": {
+          "const": "docs/phase1_5/p1a/qwen_weight_license_evidence.v1.json"
+        },
+        "p1b_frozen_checkout_bytes": {
+          "const": 2485
+        },
+        "p1b_frozen_checkout_sha256": {
+          "const": "08ac3a64b9bf4e189c8955bd8106b37a8deb20d8d44f9be9d131c7392f95adac"
+        }
+      }
+    },
+    "model_card_metadata": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "license_value",
+        "metadata_is_legal_approval"
+      ],
+      "properties": {
+        "license_value": {
+          "const": "apache-2.0"
+        },
+        "metadata_is_legal_approval": {
+          "const": false
+        }
+      }
+    },
+    "disposition": {
+      "enum": [
+        "APPROVED_FOR_QUARANTINE_ACQUISITION",
+        "MORE_REVIEW_REQUIRED",
+        "REJECTED"
+      ]
+    },
+    "external_evidence_sha256": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "recorded_at": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "$defs": {
+    "artifactIdentity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "publisher",
+        "model_id",
+        "immutable_revision",
+        "weight_filename",
+        "weight_bytes",
+        "weight_lfs_sha256"
+      ],
+      "properties": {
+        "publisher": {
+          "const": "Qwen"
+        },
+        "model_id": {
+          "const": "Qwen/Qwen3-VL-2B-Instruct"
+        },
+        "immutable_revision": {
+          "const": "89644892e4d85e24eaac8bacfd4f463576704203"
+        },
+        "weight_filename": {
+          "const": "model.safetensors"
+        },
+        "weight_bytes": {
+          "const": 4255140312
+        },
+        "weight_lfs_sha256": {
+          "const": "7de1838c87a5349b016c26a1c3f7d2bc400a3d485f95ef39a7059ffd734977a0"
+        }
+      }
+    }
+  }
+}
