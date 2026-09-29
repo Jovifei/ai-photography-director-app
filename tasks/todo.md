@@ -41,6 +41,32 @@ then required one fail-closed authority guard: tracked fixtures must stay synthe
 - [x] Requalify T9, update the report to 13/13 and record `TRACKED_FIXTURE_SYNTHETIC_ONLY=PASS`.
 - [x] Push the final T9 candidate and obtain remote `DONE` on exact head.
 
+## T10 Owner Decision Capture / P1B Route Resolution — 2026-09-28
+
+Remote plan `c2c_4f7b` selected an Owner-decision stage from exact T9 head
+`dd5d297ffa26adc38470bfa5737ac82b94eaa2ec`. Jovi explicitly selected
+`AUTHORIZE_ARTIFACT_QUARANTINE_ONLY`; this stage records and validates that
+choice without downloading or running the artifact.
+
+- [x] Confirm exact Owner decision and exact T9 base.
+- [x] Record the decision with the existing P1B schema and exact artifact binding.
+- [x] Add the T10 validator, 8/8 tests with 16-case decision-integrity matrix, status projection, report and scope guard.
+- [x] Run T10/P1B/T9/T8/T7/status/contracts/privacy/scope and bounded Android checks.
+- [x] Perform exact review, push Draft PR #15 stacked on PR #13, and obtain remote `DONE`.
+
+## T10-R3 portable decision identity repair — 2026-09-29
+
+Remote C2C c2c_8b2a corrected its plan after local byte-level evidence showed that the prior recorded checkout hash was not portable. The stable identity is SHA-256 45e462982d9fafd6444805529138d4fcc082d310dff52e9522e5c6adf233ece9 over strict UTF-8 text with only CRLF/lone-CR normalized to LF. Mixed-EOL raw hash 646626a536eee32bcf171927090a10d9c8df06b9890c2ec3fcd788964a617bdd and all-CRLF raw hash 57b07ab70d34b64802be4a765e04479bdd66bd079958510029b56c133b49425b are NON_AUTHORITY_DIAGNOSTIC_ONLY. Work stays on T10 / PR #15 from exact repair base d332ba8ee6f1ea036be655de8b09f8c9f4180592; the Owner decision and all closed authority flags remain unchanged. T11 is blocked until remote DONE, then must start from a fresh worktree. The frozen T6 P1B manifest stays unchanged with `authorization.owner_decision` equal to `NONE_TRACKED`; the separate tracked T10 decision is validated against it and is not represented in the manifest.
+
+Detailed plan: tasks/plans/2026-09-29-t10-portable-decision-identity-repair.md.
+
+- [x] Reproduce T10 validator failure in a clean checkout and confirm P1B manifest remains stable.
+- [x] Verify mixed-EOL and all-CRLF source bytes normalize to the same 45e462 portable digest.
+- [x] Obtain corrected remote plan and exact path boundary before implementation.
+- [x] Implement the portable T10 decision hash, canonical status migration/mode, report update, tests, and exact-base scope guard.
+- [x] Run the T10 and P1B unit suites, T10/P1B/status validators, contract and status tests, privacy audit, authority probes, diff check, and exact-base scope guard after commit; record the addendum evidence fields.
+- [ ] Review exact diff, push Draft PR #15, and obtain remote DONE on the repaired head.
+- [ ] Rebind T11 to the accepted T10-R3 head using a fresh worktree.
 ## T8-R post-submission conformance repair — 2026-09-27
 
 Remote audit `c2c_aa42` returned `REPAIR_REQUIRED`: the previous T8 receipt proved

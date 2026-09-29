@@ -69,6 +69,23 @@
     "android_product_change_authorized": false,
     "offline_bundle_path_preserved": true
   },
+  "t10_owner_decision": {
+    "status": "P1B_ARTIFACT_QUARANTINE_SCOPE_APPROVED_ARTIFACT_ACQUISITION_NOT_YET_AUTHORIZED",
+    "base": "dd5d297ffa26adc38470bfa5737ac82b94eaa2ec",
+    "readiness_id": "phase1-5-p1b-qwen3-vl-2b-authorization-readiness-20260927",
+    "decision_file": "docs/phase1_5/p1b/p1b_owner_decision.v1.json",
+    "decision_hash_mode": "UTF8_TEXT_EOL_NORMALIZED_SHA256_V1",
+    "decision_sha256": "45e462982d9fafd6444805529138d4fcc082d310dff52e9522e5c6adf233ece9",
+    "readiness_manifest_sha256": "166211e0fd1790e85a4e86bd4d270cc3cefccccbc04502d20f2584dfcf752a6a",
+    "decision": "AUTHORIZE_ARTIFACT_QUARANTINE_ONLY",
+    "artifact_quarantine_only": true,
+    "download_authorized": false,
+    "runtime_authorized": false,
+    "inference_authorized": false,
+    "app_integration_authorized": false,
+    "pipeline_integration_authorized": false,
+    "private_media_authorized": false
+  },
   "t5_qualification": {
     "candidate_before_receipt_commit": "d64ad4c7e03563c57766b2673b2d734511f0a2b9",
     "scope": "documentation/status validators only",
