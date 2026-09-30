@@ -46,7 +46,13 @@ internal fun CaptureEntryFrame(label: String, onOpen: () -> Unit, content: @Comp
 
 /** Registered outside the camera/gallery navigation so an external picker can return anywhere. */
 @Composable
-internal fun CaptureLibraryHost(model: CaptureLibraryViewModel, projects: List<PhotographyProject>) {
+internal fun CaptureLibraryHost(model: CaptureLibraryViewModel, projects: List<PhotographyProject>,
+    referenceContexts: Map<String, CaptureReferenceContext> = emptyMap(),
+    onOpenReference: ((String) -> Unit)? = null,
+    onRetake: ((String) -> Unit)? = null,
+    navigationMessage: String? = null,
+    navigationInFlight: Boolean = false,
+) {
     val state by model.state.collectAsState()
     var activeExportToken by rememberSaveable { mutableStateOf<String?>(null) }
     val exportLauncher = rememberLauncherForActivityResult(
@@ -74,6 +80,8 @@ internal fun CaptureLibraryHost(model: CaptureLibraryViewModel, projects: List<P
                 onDelete = model::delete,
                 onAbandon = model::abandonExport,
                 onRetry = model::initialize,
+                referenceContexts = referenceContexts, onOpenReference = onOpenReference,
+                onRetake = onRetake, navigationMessage = navigationMessage, navigationInFlight = navigationInFlight,
             )
         }
     }
@@ -91,6 +99,11 @@ internal fun CaptureLibraryContent(
     onDelete: (String) -> Unit,
     onAbandon: (String) -> Unit,
     onRetry: () -> Unit,
+    referenceContexts: Map<String, CaptureReferenceContext> = emptyMap(),
+    onOpenReference: ((String) -> Unit)? = null,
+    onRetake: ((String) -> Unit)? = null,
+    navigationMessage: String? = null,
+    navigationInFlight: Boolean = false,
 ) {
     fun effectiveProject(row: CaptureRecord): String? = row.projectId?.takeIf(projectTitles::containsKey)
     val filtered = state.records.filter { row ->
@@ -114,6 +127,7 @@ internal fun CaptureLibraryContent(
         Text("原片保存在本机应用内；卸载、清除数据或换机不会自动保留。重要照片请另存副本。",
             style = MaterialTheme.typography.bodySmall, color = AppColors.TextSecondary)
         state.message?.let { Text(it, color = AppColors.Warning, style = MaterialTheme.typography.bodyMedium) }
+        navigationMessage?.let { Text(it, color = AppColors.Warning) }
         val pending = state.pendingExport
         if (pending != null) {
             Text(if (pending.phase == ExportPhase.WRITING) "正在保存副本，请勿重复操作。" else
@@ -127,7 +141,8 @@ internal fun CaptureLibraryContent(
             TextButton(onClick = onRetry) { Text("重试成片恢复") }
         } else if (selected != null) {
             CaptureDetail(selected, projectTitles[effectiveProject(selected)] ?: "未归类", loadFile,
-                state.pendingExport, onExport, onDelete, Modifier.weight(1f))
+                state.pendingExport, onExport, onDelete, Modifier.weight(1f),
+                referenceContexts[selected.id], onOpenReference, onRetake, navigationInFlight)
         } else {
             if (state.projectFilter == null) Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 FilterChip(selected = !state.onlyUnassigned, onClick = { onUnassigned(false) }, label = { Text("全部") })
@@ -142,6 +157,11 @@ internal fun CaptureLibraryContent(
                         Column(Modifier.padding(12.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
                             CapturePreview(row, loadFile, Modifier.fillMaxWidth().height(180.dp))
                             Text(projectTitles[effectiveProject(row)] ?: "未归类", style = MaterialTheme.typography.titleMedium)
+                            referenceContexts[row.id]?.let { context ->
+                                context.reference?.let { Text("当前参考图：第 ${it.ordinal + 1} 张 · ${it.photo.title}", style = MaterialTheme.typography.bodySmall) }
+                                Text(context.sourceLabel, style = MaterialTheme.typography.bodySmall)
+                                Text(context.statusLabel, style = MaterialTheme.typography.bodySmall)
+                            }
                             Text(DateFormat.getDateTimeInstance().format(Date(row.createdAtMillis)), style = MaterialTheme.typography.bodySmall)
                             Text(if (row.fileState == CaptureFileState.AVAILABLE) captureExportMessage(row) else captureFileMessage(row.fileState),
                                 style = MaterialTheme.typography.bodySmall)
@@ -158,12 +178,30 @@ private fun CaptureDetail(
     record: CaptureRecord, projectTitle: String, loadFile: suspend (CaptureRecord) -> File,
     pending: CaptureExportTicket?, onExport: (String) -> Unit, onDelete: (String) -> Unit,
     modifier: Modifier,
+    referenceContext: CaptureReferenceContext? = null,
+    onOpenReference: ((String) -> Unit)? = null,
+    onRetake: ((String) -> Unit)? = null,
+    navigationInFlight: Boolean = false,
 ) {
     var confirmDelete by rememberSaveable(record.id) { mutableStateOf(false) }
     var confirmExport by rememberSaveable(record.id) { mutableStateOf(false) }
     Column(modifier.verticalScroll(rememberScrollState()), verticalArrangement = Arrangement.spacedBy(12.dp)) {
         CapturePreview(record, loadFile, Modifier.fillMaxWidth().height(320.dp))
         Text(projectTitle, style = MaterialTheme.typography.titleMedium)
+        referenceContext?.let { context ->
+            context.reference?.let { Text("当前参考图：第 ${it.ordinal + 1} 张 · ${it.photo.title}") }
+            Text(context.sourceLabel)
+            Text(context.statusLabel)
+            Text("这是当前关联参考图的状态，不是拍摄时的指导快照，也不是对成片的分析。", style = MaterialTheme.typography.bodySmall)
+            onOpenReference?.let { action ->
+                OutlinedButton(onClick = { action(record.id) }, enabled = context.canOpen && !navigationInFlight,
+                    modifier = Modifier.fillMaxWidth().testTag("capture-open-reference")) { Text("查看当前参考图") }
+            }
+            onRetake?.let { action ->
+                Button(onClick = { action(record.id) }, enabled = context.canRetake && !navigationInFlight,
+                    modifier = Modifier.fillMaxWidth().testTag("capture-retake")) { Text("按当前参考图继续拍摄") }
+            }
+        }
         Text(if (record.fileState == CaptureFileState.AVAILABLE) captureExportMessage(record) else captureFileMessage(record.fileState))
         if (record.lastExportedAtMillis != null && record.exportState != CaptureExportState.SAVED) {
             Text("此前已有一次保存副本成功记录；最新一次操作状态见上方。", style = MaterialTheme.typography.bodySmall)

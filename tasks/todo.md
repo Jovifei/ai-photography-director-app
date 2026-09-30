@@ -211,3 +211,14 @@ PASS: independent review of delivery 753163efddfd8e28a6b267ac70af95cdd86c282e re
 ### T3 review
 
 Independent review first found an Important race in the export test's pre-capture snapshot and cleanup identity. Fixed in `47c2d8f192f2d92a4fd07539bd9ff3bf28b1ecfa`; focused export instrumentation and full API 35 qualification pass. Reviewer then found a mismatch between the report PID and evidence; it was corrected to 8352. Final confirmation on PR head `663d52991f7e6a436e3c91c82a72e80f411119cd` is PASS with no remaining findings. Evidence is at `E:\project_benchmark_evidence\t3-reference-camera-controls-20260926\5750a52b8c9e4507a4f5b162a8799cba`, with 9/9 artifact hashes verified.
+## T12 Android capture reference and guided retake — 2026-10-01
+
+Remote PLAN `c2c_2537` iteration 1 accepts independent Android development. Detailed checklist: `tasks/plans/2026-10-01-t12-capture-reference-retake.md`. T11 evidence stays unchanged; nightly producer integrates later through PKB1.
+
+- [x] Exact clean base, origin and C2C identity verified.
+- [x] Implement current reference resolver, truthful gallery/detail and safe root open/retake.
+- [ ] Verify focused JVM/UI/root tests and affected regressions on dedicated emulator.
+- [ ] Exact-diff independent review, privacy audit, isolated push and stacked Draft PR.
+- [ ] Remote exact-head review and next executable stage.
+
+Review: pending; no human acceptance or production Pipeline claim.

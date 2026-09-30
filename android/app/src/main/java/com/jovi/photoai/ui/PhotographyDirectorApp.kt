@@ -69,6 +69,12 @@ import com.jovi.photoai.ui.reference.ReferenceLibraryEntry
 import com.jovi.photoai.ui.reference.ReferenceLibraryScreen
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+import kotlinx.coroutines.flow.first
+import com.jovi.photoai.data.capture.CaptureRepository
+import com.jovi.photoai.ui.capture.resolveCaptureReferenceContext
 
 private data class AppReference(
     val photo: ReferencePhoto,
@@ -119,6 +125,9 @@ internal fun PhotographyDirectorAppContent(
     val captureLibrary: CaptureLibraryViewModel = viewModel(
         factory = remember(application) { CaptureLibraryViewModelFactory(application) },
     )
+    val captureState by captureLibrary.state.collectAsState()
+    var captureNavigationInFlight by remember { mutableStateOf(false) }
+    var captureNavigationMessage by remember { mutableStateOf<String?>(null) }
     val knowledgeBundleState by knowledgeBundleViewModel.state.collectAsState()
     var destinationName by rememberSaveable { mutableStateOf(AppDestination.HOME.name) }
     var analysisReturnDestinationName by rememberSaveable { mutableStateOf(AppDestination.IMPORT_REFERENCE.name) }
@@ -718,7 +727,49 @@ internal fun PhotographyDirectorAppContent(
         )
     }
 
-    CaptureLibraryHost(captureLibrary, projects)
+    fun openCaptureReference(captureId: String, retake: Boolean) {
+        if (captureNavigationInFlight) return
+        captureNavigationInFlight = true
+        captureNavigationMessage = null
+        scope.launch {
+            try {
+                val captures = withContext(Dispatchers.IO) { CaptureRepository.get(application).records.first() }
+                val capture = captures.singleOrNull { it.id == captureId }
+                if (capture == null) {
+                    captureNavigationMessage = "成片记录已不存在，无法打开参考图。"
+                    return@launch
+                }
+                val project = capture.projectId?.let { repository.project(it) }
+                val reference = capture.referenceId?.let { repository.activeRecord(it) }
+                val context = resolveCaptureReferenceContext(capture, listOfNotNull(project), listOfNotNull(reference))
+                if (!context.canOpen || (retake && !context.canRetake)) {
+                    captureNavigationMessage = context.unavailableReason ?: "当前参考图指导不可用，无法继续指导拍摄。"
+                    return@launch
+                }
+                val currentGallery = captureLibrary.state.value
+                if (!currentGallery.galleryVisible || currentGallery.selectedId != captureId) return@launch
+                // The persisted association was checked above; never search demo content or guess an owner.
+                selectedProjectId = reference!!.projectId
+                captureProjectId = reference.projectId
+                openAnalysis(toAppReference(reference), AppDestination.PROJECT_BOARD)
+                if (retake) navigateTo(AppDestination.CAMERA_DIRECTOR)
+                captureLibrary.closeGallery()
+            } catch (cancelled: CancellationException) {
+                throw cancelled
+            } catch (_: Exception) {
+                captureNavigationMessage = "无法读取当前参考图，请重试；成片仍保留。"
+            } finally {
+                captureNavigationInFlight = false
+            }
+        }
+    }
+    CaptureLibraryHost(captureLibrary, projects,
+        referenceContexts = captureState.records.associate { it.id to resolveCaptureReferenceContext(it, projects, records) },
+        onOpenReference = { openCaptureReference(it, false) },
+        onRetake = { openCaptureReference(it, true) },
+        navigationMessage = captureNavigationMessage,
+        navigationInFlight = captureNavigationInFlight,
+    )
 
     recoverySummaryToShow?.let { summary ->
         RecoverySummaryDialog(
