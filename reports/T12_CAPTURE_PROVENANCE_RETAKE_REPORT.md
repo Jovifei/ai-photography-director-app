@@ -3,7 +3,7 @@
 Date: 2026-10-01 (Asia/Shanghai)
 Base: `adcf4dcd11dbf4c0ec738a8da5c73a1c25961ded`
 Current branch: `codex/t12-capture-provenance-retake-20261001`
-Delivery commit: `f18ded906f8bc47426c396260ace85bd956d4a96` (includes base checkpoint `b9df8951aa377f35009ee1ae147cadeff7fc283c`). Draft PR #17 is open against `codex/t11-artifact-acquisition-preflight-20260929`: https://github.com/Jovifei/ai-photography-director-app/pull/17.
+T12 implementation commit: `f18ded906f8bc47426c396260ace85bd956d4a96` (includes base checkpoint `b9df8951aa377f35009ee1ae147cadeff7fc283c`). The follow-up delivery-status documentation is also committed in Draft PR #17, open against `codex/t11-artifact-acquisition-preflight-20260929`: https://github.com/Jovifei/ai-photography-director-app/pull/17.
 
 ## Result
 
