@@ -78,6 +78,7 @@ sealed interface CameraUiEvent {
     data object CameraStartRequested : CameraUiEvent
     data object CameraReady : CameraUiEvent
     data object CameraFailed : CameraUiEvent
+    data object CameraStopped : CameraUiEvent
 
     data class ReferenceSelected(val referencePhotoId: String) : CameraUiEvent
     data class ReferenceDecodeStarted(val requestId: Long) : CameraUiEvent
@@ -149,7 +150,6 @@ fun reduceCameraUiState(state: CameraUiState, event: CameraUiEvent): CameraUiSta
             -> state.copy(
                 permission = event.permission,
                 cameraRuntime = CameraRuntime.STOPPED,
-                captureInFlight = false,
             )
         }
 
@@ -170,10 +170,11 @@ fun reduceCameraUiState(state: CameraUiState, event: CameraUiEvent): CameraUiSta
             if (state.permission != CameraPermission.GRANTED) state
             else state.copy(
                 cameraRuntime = CameraRuntime.FAILED,
-                captureInFlight = false,
                 message = CameraUiMessage.CAMERA_UNAVAILABLE,
             )
         }
+
+        CameraUiEvent.CameraStopped -> state.copy(cameraRuntime = CameraRuntime.STOPPED)
 
         is CameraUiEvent.ReferenceSelected -> {
             if (event.referencePhotoId.isBlank()) state

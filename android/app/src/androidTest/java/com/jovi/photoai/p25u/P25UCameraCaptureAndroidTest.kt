@@ -46,8 +46,11 @@ class P25UCameraCaptureAndroidTest {
         val before = model.state.value.records.map { it.id }.toSet()
         var ownedId: String? = null
         try {
-            compose.waitUntil(20_000) { compose.onAllNodesWithContentDescription("拍摄").fetchSemanticsNodes().isNotEmpty() }
-            compose.onNodeWithContentDescription("拍摄").performClick()
+            // Shutter identity is stable while starting; enabled means runtime readiness settled.
+            compose.waitUntil(20_000) {
+                compose.onAllNodesWithContentDescription("拍摄").fetchSemanticsNodes().any { isEnabled().matches(it) }
+            }
+            compose.onNodeWithContentDescription("拍摄").assertIsEnabled().performClick()
             compose.waitUntil(20_000) { model.state.value.records.any { it.id !in before && it.fileState == CaptureFileState.AVAILABLE } }
             ownedId = model.state.value.records.single { it.id !in before }.id
             assertTrue(model.state.value.galleryVisible)

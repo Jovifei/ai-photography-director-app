@@ -3,6 +3,7 @@ package com.jovi.photoai.camera
 import android.content.Context
 import android.util.Log
 import androidx.camera.core.Camera
+import androidx.camera.core.CameraState
 import androidx.camera.core.CameraSelector
 import androidx.camera.core.FocusMeteringAction
 import androidx.camera.core.ImageAnalysis
@@ -13,10 +14,13 @@ import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.Observer
 import java.io.File
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
+import java.util.concurrent.atomic.AtomicBoolean
 
 internal data class ExposureCapability(
     val minIndex: Int,
@@ -34,12 +38,65 @@ class CameraXManager(private val context: Context) {
     private var closed = false
     private var boundLens: CameraLens? = null
     private var capturePending = false
+    private var foreground = true
+    private var bindingGeneration = 0L
+    private var openObserverOwner: LifecycleOwner? = null
+    private var openListener: ((Boolean) -> Unit)? = null
+    private var observedCamera: Camera? = null
+    private var cameraStateObserver: Observer<CameraState>? = null
     private val controlFence = CameraControlFence()
     private val analysisExecutor: ExecutorService = Executors.newSingleThreadExecutor()
     val imageCapture: ImageCapture = ImageCapture.Builder()
         .setCaptureMode(ImageCapture.CAPTURE_MODE_MINIMIZE_LATENCY).build()
     private val imageAnalysis = ImageAnalysis.Builder()
         .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST).build()
+
+    /** Pausing invalidates controls, while an accepted capture retains its settlement callback. */
+    internal fun setForeground(active: Boolean) {
+        if (foreground == active) return
+        foreground = active
+        if (!active) invalidateControls()
+        openListener?.invoke(isCameraOpen())
+    }
+
+    internal fun invalidateControls() = controlFence.invalidate()
+
+    internal fun isCameraOpen(): Boolean = !closed && foreground &&
+        camera?.cameraInfo?.cameraState?.value?.let { it.type == CameraState.Type.OPEN && it.error == null } == true
+
+    /** Registration follows this manager's bindings, including switchLens; disposer removes only itself. */
+    internal fun observeCameraOpen(owner: LifecycleOwner, onChanged: (Boolean) -> Unit): () -> Unit {
+        detachCameraStateObserver()
+        openObserverOwner = owner
+        openListener = onChanged
+        attachCameraStateObserver()
+        onChanged(isCameraOpen())
+        return {
+            if (openListener === onChanged) {
+                detachCameraStateObserver()
+                openObserverOwner = null
+                openListener = null
+            }
+        }
+    }
+
+    private fun detachCameraStateObserver() {
+        cameraStateObserver?.let { observer -> observedCamera?.cameraInfo?.cameraState?.removeObserver(observer) }
+        cameraStateObserver = null
+        observedCamera = null
+    }
+
+    private fun attachCameraStateObserver() {
+        val owner = openObserverOwner ?: return
+        val active = camera ?: return
+        val generation = bindingGeneration
+        val observer = Observer<CameraState> {
+            if (!closed && camera === active && bindingGeneration == generation) openListener?.invoke(isCameraOpen())
+        }
+        observedCamera = active
+        cameraStateObserver = observer
+        active.cameraInfo.cameraState.observe(owner, observer)
+    }
 
     fun initialize(onReady: (ProcessCameraProvider) -> Unit, onError: (Throwable) -> Unit = {}) {
         val future = ProcessCameraProvider.getInstance(context)
@@ -74,7 +131,9 @@ class CameraXManager(private val context: Context) {
             unbind()
             preview = nextPreview
             camera = provider.bindToLifecycle(lifecycleOwner, selector, nextPreview, imageCapture, imageAnalysis)
+            foreground = lifecycleOwner.lifecycle.currentState.isAtLeast(Lifecycle.State.RESUMED)
             boundLens = lens
+            attachCameraStateObserver()
             true
         } catch (_: Exception) {
             Log.e(TAG, "Camera binding failed")
@@ -101,7 +160,7 @@ class CameraXManager(private val context: Context) {
             CameraSelector.LENS_FACING_BACK else CameraSelector.LENS_FACING_FRONT)
 
     internal fun switchLens(owner: LifecycleOwner, view: PreviewView, target: CameraLens): LensSwitchResult {
-        if (capturePending) return LensSwitchResult.Busy
+        if (!foreground || capturePending) return LensSwitchResult.Busy
         val previous = boundLens ?: return LensSwitchResult.Failed
         return performLensSwitch(previous, target, availableLenses(), closed || capturePending) {
             bindLens(owner, view, it)
@@ -121,7 +180,7 @@ class CameraXManager(private val context: Context) {
     internal fun setZoom(ratio: Float, onResult: (Float?) -> Unit) {
         val active = camera ?: return onResult(null)
         val capability = zoomCapability() ?: return onResult(null)
-        if (closed || capturePending || !ratio.isFinite() ||
+        if (closed || !foreground || capturePending || !ratio.isFinite() ||
             ratio !in capability.minRatio..capability.maxRatio) return onResult(null)
         val request = controlFence.zoomRequest()
         try {
@@ -151,6 +210,7 @@ class CameraXManager(private val context: Context) {
 
     internal fun focusAt(previewView: PreviewView, x: Float, y: Float, onResult: (Boolean) -> Unit) {
         val active = camera ?: return onResult(false)
+        if (closed || !foreground || capturePending) return onResult(false)
         val request = controlFence.focusRequest()
         try {
             val point = previewView.meteringPointFactory.createPoint(x, y)
@@ -169,6 +229,7 @@ class CameraXManager(private val context: Context) {
 
     internal fun setExposure(index: Int, onResult: (Int?) -> Unit) {
         val active = camera ?: return onResult(null)
+        if (closed || !foreground || capturePending) return onResult(null)
         val range = active.cameraInfo.exposureState.exposureCompensationRange
         if (index !in range.lower..range.upper) return onResult(null)
         val request = controlFence.exposureRequest()
@@ -183,33 +244,40 @@ class CameraXManager(private val context: Context) {
         }
     }
     fun takePicture(outputFile: File, onSaved: (File) -> Unit, onError: (Throwable) -> Unit) {
-        if (closed || camera == null || capturePending) {
+        if (closed || !foreground || !isCameraOpen() || capturePending) {
             onError(IllegalStateException(if (closed) "CAMERA_CLOSED" else "CAMERA_UNAVAILABLE")); return
         }
         capturePending = true
+        val settled = AtomicBoolean(false)
         val options = ImageCapture.OutputFileOptions.Builder(outputFile).build()
         try {
         imageCapture.takePicture(options, ContextCompat.getMainExecutor(context),
             object : ImageCapture.OnImageSavedCallback {
                 override fun onImageSaved(output: ImageCapture.OutputFileResults) {
+                    if (!settled.compareAndSet(false, true)) return
                     capturePending = false
                     onSaved(outputFile)
                 }
                 override fun onError(exc: ImageCaptureException) {
+                    if (!settled.compareAndSet(false, true)) return
                     capturePending = false
                     Log.e(TAG, "Image capture failed")
                     onError(exc)
                 }
             })
         } catch (error: Exception) {
+            if (!settled.compareAndSet(false, true)) return
             capturePending = false
             onError(error)
         }
     }
     fun unbind() {
         controlFence.invalidate()
+        bindingGeneration++
+        detachCameraStateObserver()
         camera = null
         boundLens = null
+        openListener?.invoke(false)
         val provider = cameraProvider ?: return
         val ownPreview = preview
         if (ownPreview == null) provider.unbind(imageCapture, imageAnalysis)
@@ -221,6 +289,8 @@ class CameraXManager(private val context: Context) {
         closed = true
         imageAnalysis.clearAnalyzer()
         unbind()
+        openObserverOwner = null
+        openListener = null
         analysisExecutor.shutdown()
     }
 }
