@@ -32,6 +32,8 @@ class CameraXManager(private val context: Context) {
     private var camera: Camera? = null
     private var preview: Preview? = null
     private var closed = false
+    private var boundLens: CameraLens? = null
+    private var capturePending = false
     private val controlFence = CameraControlFence()
     private val analysisExecutor: ExecutorService = Executors.newSingleThreadExecutor()
     val imageCapture: ImageCapture = ImageCapture.Builder()
@@ -58,18 +60,79 @@ class CameraXManager(private val context: Context) {
     /** Return actual binding outcome. A failed bind must never become CameraReady. */
     fun bindToLifecycle(lifecycleOwner: LifecycleOwner, previewView: PreviewView,
         lensFacing: Int = CameraSelector.LENS_FACING_BACK): Boolean {
-        if (closed) return false
+        if (closed || capturePending) return false
         val provider = cameraProvider ?: return false
+        val lens = when (lensFacing) {
+            CameraSelector.LENS_FACING_BACK -> CameraLens.BACK
+            CameraSelector.LENS_FACING_FRONT -> CameraLens.FRONT
+            else -> return false
+        }
+        if (lens !in availableLenses()) return false
         val nextPreview = Preview.Builder().build().also { it.setSurfaceProvider(previewView.surfaceProvider) }
         val selector = CameraSelector.Builder().requireLensFacing(lensFacing).build()
         return try {
             unbind()
             preview = nextPreview
             camera = provider.bindToLifecycle(lifecycleOwner, selector, nextPreview, imageCapture, imageAnalysis)
+            boundLens = lens
             true
         } catch (_: Exception) {
             Log.e(TAG, "Camera binding failed")
             false
+        }
+    }
+
+    internal fun availableLenses(): Set<CameraLens> {
+        val provider = cameraProvider ?: return emptySet()
+        if (closed) return emptySet()
+        return CameraLens.entries.filterTo(mutableSetOf()) { lens ->
+            runCatching { provider.hasCamera(selectorFor(lens)) }.getOrDefault(false)
+        }
+    }
+
+    private fun selectorFor(lens: CameraLens) = CameraSelector.Builder().requireLensFacing(
+        if (lens == CameraLens.BACK) CameraSelector.LENS_FACING_BACK else CameraSelector.LENS_FACING_FRONT
+    ).build()
+
+    internal fun currentLens(): CameraLens? = boundLens
+
+    internal fun bindLens(owner: LifecycleOwner, view: PreviewView, lens: CameraLens): Boolean =
+        bindToLifecycle(owner, view, if (lens == CameraLens.BACK)
+            CameraSelector.LENS_FACING_BACK else CameraSelector.LENS_FACING_FRONT)
+
+    internal fun switchLens(owner: LifecycleOwner, view: PreviewView, target: CameraLens): LensSwitchResult {
+        if (capturePending) return LensSwitchResult.Busy
+        val previous = boundLens ?: return LensSwitchResult.Failed
+        return performLensSwitch(previous, target, availableLenses(), closed || capturePending) {
+            bindLens(owner, view, it)
+        }
+    }
+
+    internal fun zoomCapability(): ZoomCapability? {
+        val state = camera?.cameraInfo?.zoomState?.value ?: return null
+        return validatedZoomCapability(state.minZoomRatio, state.maxZoomRatio, state.zoomRatio)
+    }
+
+    internal fun confirmedZoomRatio(): Float? {
+        val state = camera?.cameraInfo?.zoomState?.value ?: return null
+        return validatedConfirmedZoomRatio(state.minZoomRatio, state.maxZoomRatio, state.zoomRatio)
+    }
+
+    internal fun setZoom(ratio: Float, onResult: (Float?) -> Unit) {
+        val active = camera ?: return onResult(null)
+        val capability = zoomCapability() ?: return onResult(null)
+        if (closed || capturePending || !ratio.isFinite() ||
+            ratio !in capability.minRatio..capability.maxRatio) return onResult(null)
+        val request = controlFence.zoomRequest()
+        try {
+            val future = active.cameraControl.setZoomRatio(ratio)
+            future.addListener({
+                val succeeded = runCatching { future.get(); true }.getOrDefault(false)
+                if (!closed && camera === active && controlFence.currentZoom(request))
+                    onResult(if (succeeded) confirmedZoomRatio() else null)
+            }, ContextCompat.getMainExecutor(context))
+        } catch (_: Exception) {
+            if (!closed && camera === active && controlFence.currentZoom(request)) onResult(null)
         }
     }
 
@@ -120,20 +183,33 @@ class CameraXManager(private val context: Context) {
         }
     }
     fun takePicture(outputFile: File, onSaved: (File) -> Unit, onError: (Throwable) -> Unit) {
-        if (closed) { onError(IllegalStateException("CAMERA_CLOSED")); return }
+        if (closed || camera == null || capturePending) {
+            onError(IllegalStateException(if (closed) "CAMERA_CLOSED" else "CAMERA_UNAVAILABLE")); return
+        }
+        capturePending = true
         val options = ImageCapture.OutputFileOptions.Builder(outputFile).build()
+        try {
         imageCapture.takePicture(options, ContextCompat.getMainExecutor(context),
             object : ImageCapture.OnImageSavedCallback {
-                override fun onImageSaved(output: ImageCapture.OutputFileResults) { onSaved(outputFile) }
+                override fun onImageSaved(output: ImageCapture.OutputFileResults) {
+                    capturePending = false
+                    onSaved(outputFile)
+                }
                 override fun onError(exc: ImageCaptureException) {
+                    capturePending = false
                     Log.e(TAG, "Image capture failed")
                     onError(exc)
                 }
             })
+        } catch (error: Exception) {
+            capturePending = false
+            onError(error)
+        }
     }
     fun unbind() {
         controlFence.invalidate()
         camera = null
+        boundLens = null
         val provider = cameraProvider ?: return
         val ownPreview = preview
         if (ownPreview == null) provider.unbind(imageCapture, imageAnalysis)

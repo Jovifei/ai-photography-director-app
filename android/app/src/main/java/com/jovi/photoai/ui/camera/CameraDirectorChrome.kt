@@ -52,6 +52,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.jovi.photoai.domain.model.GuidePanel
+import com.jovi.photoai.camera.CameraLens
+import com.jovi.photoai.camera.ZoomCapability
 import com.jovi.photoai.domain.model.OverlayMode
 import com.jovi.photoai.reference.CameraDirectorGuidance
 import com.jovi.photoai.ui.design.AppColors
@@ -81,8 +83,26 @@ fun CameraDirectorChrome(
     controlsEnabled: Boolean = false,
     exposureStatus: String? = null,
     onExposureSelected: (Int) -> Unit = {},
+    zoomCapability: ZoomCapability? = null,
+    confirmedZoomRatio: Float = 1f,
+    pendingZoomRatio: Float? = null,
+    zoomStatus: String? = null,
+    onZoomSelected: (Float) -> Unit = {},
+    availableLenses: Set<CameraLens> = emptySet(),
+    currentLens: CameraLens = CameraLens.BACK,
+    lensStatus: String? = null,
+    onLensSelected: (CameraLens) -> Unit = {},
+    captureEnabled: Boolean = uiState.canCapture,
     modifier: Modifier = Modifier,
 ) {
+    val hardwareEnabled = controlsEnabled && pendingZoomRatio == null
+    var showZoom by remember(zoomCapability, currentLens) { mutableStateOf(false) }
+    var sliderZoom by remember(zoomCapability, currentLens, confirmedZoomRatio) {
+        mutableFloatStateOf(zoomCapability?.let {
+            (if (confirmedZoomRatio.isFinite()) confirmedZoomRatio else it.currentRatio)
+                .coerceIn(it.minRatio, it.maxRatio)
+        } ?: 1f)
+    }
     var showExposure by remember { mutableStateOf(false) }
     var sliderIndex by remember(exposureRange, exposureIndex, pendingExposureIndex) {
         mutableFloatStateOf((pendingExposureIndex ?: exposureIndex).toFloat())
@@ -99,7 +119,7 @@ fun CameraDirectorChrome(
     }
 
     BoxWithConstraints(modifier = modifier.fillMaxSize()) {
-        val compactLandscape = maxWidth > maxHeight && maxHeight < 400.dp
+        val compactLandscape = maxWidth > maxHeight
         if (!directCaptureMode && referenceGuidance == null) {
             DemoOverlay(mode = uiState.overlayMode, showGrid = uiState.gridVisible)
         }
@@ -114,9 +134,12 @@ fun CameraDirectorChrome(
             uiState = uiState,
             referenceGuidance = referenceGuidance,
             directCaptureMode = directCaptureMode,
+            compactLandscape = compactLandscape,
             modifier = Modifier
                 .align(Alignment.TopCenter)
+                .then(if (compactLandscape) Modifier.statusBarsPadding() else Modifier)
                 .padding(top = when {
+                    compactLandscape && referenceCardVisible -> 144.dp
                     compactLandscape -> 92.dp
                     referenceCardVisible -> 180.dp
                     else -> 144.dp
@@ -160,9 +183,19 @@ fun CameraDirectorChrome(
             exposureAvailable = exposureRange != null,
             exposureIndex = exposureIndex,
             exposureStepEv = exposureStepEv,
-            controlsEnabled = controlsEnabled,
+            controlsEnabled = hardwareEnabled,
             exposureStatus = exposureStatus,
             onShowExposure = { showExposure = true },
+            zoomCapability = zoomCapability,
+            confirmedZoomRatio = confirmedZoomRatio,
+            onShowZoom = { if (hardwareEnabled) showZoom = true },
+            zoomStatus = zoomStatus,
+            availableLenses = availableLenses,
+            currentLens = currentLens,
+            lensStatus = lensStatus,
+            onLensSelected = onLensSelected,
+            captureEnabled = captureEnabled && pendingZoomRatio == null,
+            compactLandscape = compactLandscape,
             modifier = Modifier.align(Alignment.BottomCenter),
         )
 
@@ -182,6 +215,30 @@ fun CameraDirectorChrome(
             )
         }
     }
+    if (showZoom && zoomCapability != null) AlertDialog(
+        onDismissRequest = { showZoom = false },
+        title = { Text("手动变焦") },
+        text = {
+            Column {
+                Text("已确认：${zoomLabel(confirmedZoomRatio)}")
+                Slider(value = sliderZoom,
+                    modifier = Modifier.testTag("zoom-slider"),
+                    onValueChange = { if (hardwareEnabled && it.isFinite()) {
+                        sliderZoom = it.coerceIn(zoomCapability.minRatio, zoomCapability.maxRatio)
+                    } },
+                    valueRange = zoomCapability.minRatio..zoomCapability.maxRatio,
+                    enabled = hardwareEnabled,
+                    onValueChangeFinished = {
+                        if (hardwareEnabled && sliderZoom.isFinite()) onZoomSelected(
+                            sliderZoom.coerceIn(zoomCapability.minRatio, zoomCapability.maxRatio))
+                    })
+                Text("拖动选择：${zoomLabel(sliderZoom)}")
+                pendingZoomRatio?.let { Text("正在确认：${zoomLabel(it)}") }
+                zoomStatus?.let { Text(it) }
+            }
+        },
+        confirmButton = { TextButton(onClick = { showZoom = false }) { Text("完成") } },
+    )
     if (showExposure && exposureRange != null) AlertDialog(
         onDismissRequest = { showExposure = false },
         title = { Text("曝光补偿") },
@@ -193,8 +250,8 @@ fun CameraDirectorChrome(
                     onValueChange = { sliderIndex = it.roundToInt().coerceIn(exposureRange).toFloat() },
                     valueRange = exposureRange.first.toFloat()..exposureRange.last.toFloat(),
                     steps = (exposureRange.last - exposureRange.first - 1).coerceAtLeast(0),
-                    enabled = controlsEnabled,
-                    onValueChangeFinished = { onExposureSelected(sliderIndex.roundToInt()) })
+                    enabled = hardwareEnabled,
+                    onValueChangeFinished = { if (hardwareEnabled) onExposureSelected(sliderIndex.roundToInt()) })
                 Text("待设置：${exposureLabel(sliderIndex.roundToInt(), exposureStepEv)}")
                 if (pendingExposureIndex != null) Text("正在确认曝光设置…")
                 exposureStatus?.let { Text(it) }
@@ -203,10 +260,14 @@ fun CameraDirectorChrome(
         confirmButton = { TextButton(onClick = { showExposure = false }) { Text("完成") } },
         dismissButton = { TextButton(onClick = {
             sliderIndex = 0f
-            onExposureSelected(0)
-        }, enabled = controlsEnabled) { Text("重置") } },
+            if (hardwareEnabled) onExposureSelected(0)
+        }, enabled = hardwareEnabled) { Text("重置") } },
     )
 }
+
+private fun zoomLabel(ratio: Float): String = String.format(Locale.ROOT, "%.2fx", ratio)
+
+private fun lensLabel(lens: CameraLens): String = if (lens == CameraLens.BACK) "后置" else "前置"
 
 private fun exposureLabel(index: Int, stepEv: Float): String =
     if (index == 0) "0 EV" else String.format(Locale.ROOT, "%+.1f EV", index * stepEv)
@@ -233,7 +294,8 @@ private fun CameraTopBar(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween,
         ) {
-            TextButton(onClick = onBack, modifier = Modifier.semantics { contentDescription = "返回" }) {
+            TextButton(onClick = onBack, modifier = Modifier.heightIn(min = AppDimensions.MinTouchTarget)
+                .semantics { contentDescription = "返回" }) {
                 Text("返回", color = AppColors.CameraChromeText)
             }
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
@@ -276,6 +338,7 @@ private fun CameraHint(
     uiState: CameraUiState,
     referenceGuidance: CameraDirectorGuidance?,
     directCaptureMode: Boolean,
+    compactLandscape: Boolean,
     modifier: Modifier = Modifier,
 ) {
     val text = when {
@@ -288,7 +351,8 @@ private fun CameraHint(
         else -> "暂无 Demo 指导，请先确认现场安全与取景。"
     }
     Surface(
-        modifier = modifier.padding(horizontal = 40.dp),
+        modifier = modifier.padding(horizontal = if (compactLandscape) 64.dp else 40.dp)
+            .testTag("camera-guidance-hint"),
         color = AppColors.CameraChromeSurface,
         shape = RoundedCornerShape(AppDimensions.RadiusLarge),
         border = androidx.compose.foundation.BorderStroke(1.dp, AppColors.CameraChromeBorder),
@@ -300,6 +364,7 @@ private fun CameraHint(
             color = AppColors.CameraChromeText,
             style = MaterialTheme.typography.bodyMedium,
             textAlign = TextAlign.Center,
+            maxLines = if (compactLandscape) 2 else Int.MAX_VALUE,
         )
     }
 }
@@ -386,10 +451,65 @@ private fun CameraBottomControls(
     controlsEnabled: Boolean,
     exposureStatus: String?,
     onShowExposure: () -> Unit,
+    zoomCapability: ZoomCapability?,
+    confirmedZoomRatio: Float,
+    onShowZoom: () -> Unit,
+    zoomStatus: String?,
+    availableLenses: Set<CameraLens>,
+    currentLens: CameraLens,
+    lensStatus: String?,
+    onLensSelected: (CameraLens) -> Unit,
+    captureEnabled: Boolean,
+    compactLandscape: Boolean,
     modifier: Modifier = Modifier,
 ) {
+    if (compactLandscape) {
+        Surface(modifier = modifier.fillMaxWidth().testTag("camera-controls"),
+            color = AppColors.CameraChromeSurface) {
+            Row(Modifier.padding(horizontal = 12.dp, vertical = 8.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                Column(Modifier.weight(1f)) {
+                    Row(Modifier.fillMaxWidth()) {
+                        if (exposureAvailable) TextButton(onClick = onShowExposure, enabled = controlsEnabled,
+                            modifier = Modifier.weight(1f).heightIn(min = AppDimensions.MinTouchTarget)) { Text("曝光") }
+                        if (zoomCapability != null) TextButton(onClick = onShowZoom, enabled = controlsEnabled,
+                            modifier = Modifier.weight(1f).heightIn(min = AppDimensions.MinTouchTarget).testTag("zoom-open")) {
+                            Text("变焦 ${zoomLabel(confirmedZoomRatio)}", style = MaterialTheme.typography.labelSmall)
+                        }
+                        if (CameraLens.BACK in availableLenses && CameraLens.FRONT in availableLenses) {
+                            val next = if (currentLens == CameraLens.BACK) CameraLens.FRONT else CameraLens.BACK
+                            TextButton(onClick = { if (controlsEnabled) onLensSelected(next) }, enabled = controlsEnabled,
+                                modifier = Modifier.weight(1f).heightIn(min = AppDimensions.MinTouchTarget).testTag("camera-lens-switch")) {
+                                Text("${lensLabel(currentLens)} → ${lensLabel(next)}", style = MaterialTheme.typography.labelSmall)
+                            }
+                        }
+                        TextButton(onClick = { onEvent(CameraUiEvent.GridToggled) },
+                            modifier = Modifier.weight(1f).heightIn(min = AppDimensions.MinTouchTarget)) {
+                            Text(if (uiState.gridVisible) "网格开" else "网格关", style = MaterialTheme.typography.labelSmall)
+                        }
+                    }
+                    listOfNotNull(exposureStatus, zoomStatus, lensStatus).forEach {
+                        Text(it, color = AppColors.CameraChromeText, style = MaterialTheme.typography.labelSmall, maxLines = 1)
+                    }
+                    if (!directCaptureMode && referenceGuidance == null) OverlayModeControls(
+                        selected = uiState.overlayMode, onSelected = { onEvent(CameraUiEvent.OverlayModeSelected(it)) })
+                }
+                CameraShutter(enabled = captureEnabled, onClick = onCapture)
+                Column(Modifier.width(180.dp)) {
+                    Button(onClick = onSave, enabled = saveEnabled,
+                        modifier = Modifier.fillMaxWidth().heightIn(min = AppDimensions.MinTouchTarget)) { Text("保存照片") }
+                    Text(saveStatus ?: "原片请查看成片库", color = AppColors.CameraChromeText,
+                        style = MaterialTheme.typography.labelSmall, maxLines = 1)
+                    Text(if (uiState.captureInFlight) "保存中…" else "本次取景已拍 ${uiState.captureCount} 张",
+                        color = AppColors.CameraChromeSecondaryText, style = MaterialTheme.typography.labelSmall, maxLines = 1)
+                }
+            }
+        }
+        return
+    }
     Surface(
-        modifier = modifier.fillMaxWidth(),
+        modifier = modifier.fillMaxWidth().testTag("camera-controls"),
         color = AppColors.CameraChromeSurface,
         border = androidx.compose.foundation.BorderStroke(1.dp, AppColors.CameraChromeBorder),
         shadowElevation = AppDimensions.GlassElevation,
@@ -398,10 +518,32 @@ private fun CameraBottomControls(
             modifier = Modifier.padding(horizontal = AppDimensions.Space16, vertical = AppDimensions.Space12),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
-            if (exposureAvailable) TextButton(onClick = onShowExposure, enabled = controlsEnabled) {
-                Text("曝光")
-                Text(" · ${exposureLabel(exposureIndex, exposureStepEv)}")
+            Row(horizontalArrangement = Arrangement.spacedBy(AppDimensions.Space8)) {
+                if (exposureAvailable) TextButton(onClick = onShowExposure, enabled = controlsEnabled,
+                    modifier = Modifier.heightIn(min = AppDimensions.MinTouchTarget)) {
+                    Text("曝光")
+                    Text(" · ${exposureLabel(exposureIndex, exposureStepEv)}")
+                }
+                if (zoomCapability != null) TextButton(onClick = onShowZoom, enabled = controlsEnabled,
+                    modifier = Modifier.heightIn(min = AppDimensions.MinTouchTarget).testTag("zoom-open")) {
+                    Text("变焦 · ${zoomLabel(confirmedZoomRatio)}")
+                }
+                if (CameraLens.BACK in availableLenses && CameraLens.FRONT in availableLenses) {
+                    val nextLens = if (currentLens == CameraLens.BACK) CameraLens.FRONT else CameraLens.BACK
+                    TextButton(onClick = { if (controlsEnabled) onLensSelected(nextLens) },
+                        enabled = controlsEnabled,
+                        modifier = Modifier.heightIn(min = AppDimensions.MinTouchTarget)
+                            .testTag("camera-lens-switch")) {
+                        Text("${lensLabel(currentLens)} → ${lensLabel(nextLens)}",
+                            color = AppColors.CameraChromeText,
+                            style = MaterialTheme.typography.labelSmall)
+                    }
+                }
             }
+            zoomStatus?.let { Text(it, color = AppColors.CameraChromeText,
+                style = MaterialTheme.typography.labelSmall) }
+            lensStatus?.let { Text(it, color = AppColors.CameraChromeText,
+                style = MaterialTheme.typography.labelSmall) }
             exposureStatus?.let { Text(it, color = AppColors.CameraChromeText,
                 style = MaterialTheme.typography.labelSmall) }
             if (directCaptureMode) {
@@ -445,7 +587,7 @@ private fun CameraBottomControls(
                     )
                 }
                 CameraShutter(
-                    enabled = uiState.canCapture,
+                    enabled = captureEnabled,
                     onClick = onCapture,
                 )
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
@@ -455,11 +597,6 @@ private fun CameraBottomControls(
                             color = AppColors.CameraChromeText,
                         )
                     }
-                    Text(
-                        "镜头切换 · 禁用",
-                        color = AppColors.CameraChromeDisabledText,
-                        style = MaterialTheme.typography.labelSmall,
-                    )
                 }
             }
             Button(
