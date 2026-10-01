@@ -275,4 +275,6 @@ Plan: `tasks/plans/2026-10-02-t16-camera-lifecycle-accessibility.md`. Base accep
 - [x] Current source audit and detailed plan confirmed with remote.
 - [x] Failing tests, minimal lifecycle/settlement repairs and adaptive accessibility fixes; preserved tap-focus hit testing after the final regression exposed interception.
 - [x] Dedicated emulator lifecycle, exact permission recovery, font1/2 and affected regression qualification: final88/88, JVM159/159, builds/static lint0errors/17warnings, original permission/allflags/font/config restored.
-- [ ] Independent review, report/privacy, stacked Draft PR, remote current-source review and next stage.
+- [x] Independent review, report/privacy, stacked Draft PR #20, remote current-source review DONE and next T17 plan received.
+
+T16 code `0607aac71f3e8da5dcd7ded09aa8fc29420a6dd5` is accepted for machine implementation, not physical-device/human/signing/producer acceptance. Remote T17 next route: real root guided C1 capture → explicit Bundle A/B replacement → process restart → current-reference retake → associated C2, with exact fixture cleanup.

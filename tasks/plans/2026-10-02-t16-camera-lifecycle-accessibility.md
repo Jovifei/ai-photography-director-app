@@ -21,7 +21,7 @@ Production allowlist: CameraXManager, CameraControlFence, CameraScreen, CameraUi
 - [x] M8: Host font runner snapshots exact settings font_scale (including absent value), tests1.0 and2.0 in fresh invocations, portrait and landscape. Outer finally restores original exact setting (delete only if originally absent), verifies it. No global reset; no physical device.
 - [x] M9: Independent source review, integrate bounded changes, repair concrete findings.
 - [x] M10: New final full JVM, Debug/AndroidTest builds, debug/static Release lint excluding signing verification. Affected API35 T15/T16/P25U/T12/T3/T4/T13 camera regressions; actual permission boundary and font runners; PKB1/Phase1.5 contracts and unchanged blocked T11 preflight. Retain initial failures and final exact artifact hashes outside Git.
-- [ ] M11: Report evidence as emulator lifecycle, OS permission process boundary and machine font/semantics checks separately. Physical-device, human accessibility/photo usefulness and signed release remain NOT_RUN/NOT_EVALUATED. Privacy audit and diff check before non-force push; create stacked Draft PR; remote exact-source review, repair and next-stage plan.
+- [x] M11: Report evidence as emulator lifecycle, OS permission process boundary and machine font/semantics checks separately. Physical-device, human accessibility/photo usefulness and signed release remain NOT_RUN/NOT_EVALUATED. Privacy audit and diff check before non-force push; create stacked Draft PR; remote exact-source review, repair and next-stage plan.
 
 ## Review
 

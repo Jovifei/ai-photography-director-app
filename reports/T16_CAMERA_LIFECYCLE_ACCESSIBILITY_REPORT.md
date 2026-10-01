@@ -43,7 +43,7 @@ Final AndroidTest APK SHA-256: `9A66085480184A93A390D8F2A7CA68BEEFEA5FAB0840C6C0
 
 Original AVD config.ini SHA-256 remains `11C65542C12B5A1B684F842A675800085B6D0434AA825EC3D96AA2EDBC982671`; BACK-only runtime and persistent data retained. T15 software-FRONT evidence is a baseline reference only, not new T16 physical/lens qualification.
 
-Local machine qualification PASS. Remote exact-source review: PENDING.
+Local machine qualification PASS. Remote `c2c_4d16` iteration1 re-read clean PR20 code HEAD `0607aac71f3e8da5dcd7ded09aa8fc29420a6dd5`, current production/tests/host scripts, plan/report and negative/final outputs. Verdict DONE, no repair required: `CAMERA_LIFECYCLE_AND_ACCESSIBILITY_MACHINE_VALIDATED — PHYSICAL_DEVICE_AND_HUMAN_ACCEPTANCE_PENDING`. It accepted the focus-hitbox repair, actual readiness/settlement fences, complete permission restoration and font evidence boundaries. Next independent T17 is production-root offline guided-capture continuity across explicit Bundle replacement and a real process restart; T14 producer vectors remain external.
 
 Physical-device variance NOT_RUN; sensor/photo usefulness NOT_EVALUATED; human accessibility/TalkBack and photography acceptance NOT_RUN; provider/Pipeline integration, signed release and merge NOT_RUN. Machine semantics/layout checks do not constitute human acceptance.
 
