@@ -558,6 +558,10 @@ internal fun PhotographyDirectorAppContent(
                 onApply = { knowledgeBundleViewModel.apply(project.id) },
                 onReset = knowledgeBundleViewModel::reset,
                 onBack = ::leaveKnowledgeBundleImport,
+                onReplacementModeChange = knowledgeBundleViewModel::setReplacementMode,
+                onPreviewReplacement = { knowledgeBundleViewModel.previewReplacement(project.id, selectedProjectRecords) },
+                onConfirmReplacement = { knowledgeBundleViewModel.confirmReplacement(project.id) },
+                onCancelReplacementPreview = knowledgeBundleViewModel::cancelReplacementPreview,
             )
         }
 

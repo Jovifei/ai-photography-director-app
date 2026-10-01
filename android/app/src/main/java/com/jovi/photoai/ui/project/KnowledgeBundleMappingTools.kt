@@ -33,6 +33,7 @@ import androidx.compose.ui.unit.dp
 import com.jovi.photoai.data.reference.PhotoKnowledgeBundleItem
 import com.jovi.photoai.data.reference.ReferenceRecord
 import com.jovi.photoai.data.reference.isKnowledgeBundleTargetEligible
+import com.jovi.photoai.data.reference.isKnowledgeBundleReplacementTargetEligible
 import com.jovi.photoai.ui.design.AppColors
 import com.jovi.photoai.ui.reference.PrivateReferenceImage
 
@@ -45,6 +46,7 @@ internal fun KnowledgeBundleMappingTools(
     bindings: Map<String, String>,
     busy: Boolean,
     onBind: (String, String) -> Unit,
+    replacementMode: Boolean = false,
 ) {
     var choosing by remember(scopeKey, item.referenceId) { mutableStateOf(false) }
     var details by remember(scopeKey, item.referenceId) { mutableStateOf(false) }
@@ -109,7 +111,8 @@ internal fun KnowledgeBundleMappingTools(
                     items(records, key = { it.photo.id }) { record ->
                         val id = record.photo.id
                         val usedElsewhere = bindings.any { (producer, local) -> producer != item.referenceId && local == id }
-                        val eligible = isKnowledgeBundleTargetEligible(record.analysisStatus) && record.knowledgeBundleProvenance == null
+                        val eligible = if (replacementMode) isKnowledgeBundleReplacementTargetEligible(record)
+                            else isKnowledgeBundleTargetEligible(record.analysisStatus) && record.knowledgeBundleProvenance == null
                         val enabled = eligible && !usedElsewhere
                         Row(
                             Modifier.fillMaxWidth().testTag("bundle-target-$id")

@@ -220,9 +220,9 @@ Remote PLAN `c2c_2537` iteration 1 accepts independent Android development. Deta
 - [x] Verify focused JVM/UI/root tests and affected regressions on dedicated emulator.
 - [x] Exact-diff independent review returned PASS with no findings; final privacy audit passed.
 - [x] Push the isolated branch non-force and create Draft PR #17, stacked on T11 / PR #16.
-- [ ] Remote exact-head review and next executable stage.
+- [x] Remote T12 review DONE; T13 explicit replacement plan and identity policy approved.
 
-Review: local exact-diff PASS; remote exact-head review pending. No human acceptance or production Pipeline claim.
+Review: local exact-diff PASS; remote T12 DONE on 2026-10-02. No human acceptance or production Pipeline claim.
 
 ### T12 root-flow defect discovered
 
@@ -238,8 +238,20 @@ The real `MainActivity` root test persisted the synthetic capture with exact pro
 - [x] Run PKB1/Phase1.5 contracts, T11 preflight and privacy audit. T11 stays `BLOCKED_LEGAL_REVIEW`; database schema/migrations, Bundle and T10/T11 authorities stay unchanged.
 - [x] Exact final source review PASS and final `scripts/prepush_privacy_audit.py` PASS.
 - [x] Push non-force and create stacked Draft PR #17 against `codex/t11-artifact-acquisition-preflight-20260929`.
-- [ ] Obtain remote exact-head review and next stage plan after C2C tunnel recovery.
+- [x] C2C Doctor green; remote T12 DONE and next T13 plan received.
 
 Remote approved the T12 process restart gate. Final synthetic run `d01405dcefab40b0aa3a10170564fef9` passed: PREPARE ran as process `com.jovi.photoai`, target UID 10209, PID 8457; the instrumentation package UID is 10210. PREPARE's process had already exited naturally, so target-package force-stop was explicitly recorded as idempotent; VERIFY ran under PID 8512 with a changed epoch and reopened the same project/reference. CLEANUP deleted only that project and host marker. Synthetic project/reference/JPEG writes were scoped to that run ID; no Android app/test marker file was created and MainActivity was not launched. The legacy P23D `clearAll()` harness is not run against unknown App rows.
 
 T12 details and initial failure evidence are recorded in `reports/T12_CAPTURE_PROVENANCE_RETAKE_REPORT.md`; raw synthetic logs/APK metadata remain outside Git under the Codex visualizations evidence folder. No human acceptance or photo-quality judgement is claimed.
+
+## T13 explicit Bundle replacement — 2026-10-02
+
+Remote T13 plan and identity refinement approved in `c2c_2537`. Base accepted PR #17 head `6685dfe5792b45c00081249f16d83e7782927900`; branch `codex/t13-bundle-explicit-replacement-20261002`. Detailed milestones: `tasks/plans/2026-10-02-t13-bundle-explicit-replacement.md`.
+
+- [x] Inspect existing PKB1 importer/Room transaction/provenance; confirm policy with remote.
+- [x] Implement shared replacement policy and all-target transaction fence.
+- [x] Implement explicit mode, read-only preview, cancel and confirm in existing ViewModel/UI.
+- [x] Final synthetic/affected Android batch 73/73; JVM 147/147; Debug/AndroidTest builds and static lint PASS. Independent final review PASS.
+- [x] Independent review/privacy PASS; non-force push and stacked Draft PR #18; remote evidence and key-source audits DONE.
+
+T13 code commit `b6f655bd58bb875f18915281b56f2c5f816b158b` is accepted for machine implementation. T14 has no published PKB1 golden-vector handoff in the inspected producer main tree `ffc4130823c1308f089b835c766e341ec2173e82`; no compatibility/production acceptance is inferred. Remote agreed to inspect and refine independent T15 zoom/lens-switch work while that handoff is pending.

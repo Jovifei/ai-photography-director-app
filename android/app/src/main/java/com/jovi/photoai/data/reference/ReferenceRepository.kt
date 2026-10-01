@@ -245,6 +245,20 @@ internal class ReferenceRepository private constructor(
         projectId: String,
         bundle: PhotoKnowledgeBundle,
         bindings: List<KnowledgeBundleBinding>,
+    ): KnowledgeBundleApplyResult = applyKnowledgeBundleInternal(projectId, bundle, bindings, null)
+
+    suspend fun replaceKnowledgeBundle(
+        projectId: String,
+        bundle: PhotoKnowledgeBundle,
+        bindings: List<KnowledgeBundleBinding>,
+        expectedProvenance: Map<String, KnowledgeBundleProvenance>,
+    ): KnowledgeBundleApplyResult = applyKnowledgeBundleInternal(projectId, bundle, bindings, expectedProvenance.toMap())
+
+    private suspend fun applyKnowledgeBundleInternal(
+        projectId: String,
+        bundle: PhotoKnowledgeBundle,
+        bindings: List<KnowledgeBundleBinding>,
+        expectedProvenance: Map<String, KnowledgeBundleProvenance>?,
     ): KnowledgeBundleApplyResult = withContext(Dispatchers.IO) {
         if (
             bundle.contractVersion != PHOTO_KNOWLEDGE_BUNDLE_VERSION ||
@@ -268,6 +282,9 @@ internal class ReferenceRepository private constructor(
                 if (bindings.map(KnowledgeBundleBinding::localReferenceId).distinct().size != bindings.size) {
                     return@withTransaction KnowledgeBundleApplyResult.Failure(KnowledgeBundleApplyErrorCode.BINDING_DUPLICATE)
                 }
+                if (expectedProvenance != null && expectedProvenance.keys != bindings.map { it.localReferenceId }.toSet()) {
+                    return@withTransaction KnowledgeBundleApplyResult.Failure(KnowledgeBundleApplyErrorCode.REPLACEMENT_PREVIEW_STALE)
+                }
                 val currentById = dao.activeByProjectOnce(projectId).associateBy(ReferenceEntity::id)
                 val bindingByProducer = bindings.associateBy(KnowledgeBundleBinding::producerReferenceId)
                 val importedAt = now()
@@ -276,9 +293,19 @@ internal class ReferenceRepository private constructor(
                     val localId = bindingByProducer[item.referenceId]?.localReferenceId
                         ?: return@withTransaction KnowledgeBundleApplyResult.Failure(KnowledgeBundleApplyErrorCode.BINDING_INCOMPLETE)
                     val current = currentById[localId]
-                        ?: return@withTransaction KnowledgeBundleApplyResult.Failure(KnowledgeBundleApplyErrorCode.REFERENCE_NOT_FOUND)
+                        ?: return@withTransaction KnowledgeBundleApplyResult.Failure(
+                            if (expectedProvenance == null) KnowledgeBundleApplyErrorCode.REFERENCE_NOT_FOUND
+                            else KnowledgeBundleApplyErrorCode.REPLACEMENT_PREVIEW_STALE)
                     val status = runCatching { PhotoAnalysisStatus.valueOf(current.analysisStatus) }.getOrNull()
-                    if (status == null || !isKnowledgeBundleTargetEligible(status) ||
+                    if (expectedProvenance != null) {
+                        val record = current.toRecord()
+                        val error = if (record.knowledgeBundleProvenance != expectedProvenance[localId]) {
+                            KnowledgeBundleApplyErrorCode.REPLACEMENT_PREVIEW_STALE
+                        } else if (current.hasAnyProviderProvenance()) {
+                            KnowledgeBundleApplyErrorCode.REFERENCE_NOT_ELIGIBLE
+                        } else knowledgeBundleReplacementError(record, bundle, item.referenceId, expectedProvenance[localId])
+                        if (error != null) return@withTransaction KnowledgeBundleApplyResult.Failure(error)
+                    } else if (status == null || !isKnowledgeBundleTargetEligible(status) ||
                         current.analysisAttemptId != null || current.hasKnowledgeProvenance()) {
                         return@withTransaction KnowledgeBundleApplyResult.Failure(KnowledgeBundleApplyErrorCode.REFERENCE_NOT_ELIGIBLE)
                     }
