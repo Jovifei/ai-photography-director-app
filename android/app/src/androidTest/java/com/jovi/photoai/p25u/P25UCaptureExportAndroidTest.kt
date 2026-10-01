@@ -12,6 +12,7 @@ import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performScrollTo
 import androidx.lifecycle.ViewModelProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
@@ -46,7 +47,7 @@ class P25UCaptureExportAndroidTest {
     fun realCapture_saveCopyThroughDocumentsUi_reportsSaved() {
         val id = openCapturedGallery()
         try {
-            compose.onNodeWithText("保存副本").performClick()
+            compose.onNodeWithText("保存副本").performScrollTo().performClick()
             assertTrue(device().wait(Until.hasObject(By.pkg("com.google.android.documentsui")), TIMEOUT))
             chooseDestination()
             compose.waitUntil(TIMEOUT) {
@@ -64,7 +65,7 @@ class P25UCaptureExportAndroidTest {
     fun realCapture_cancelSaveCopyKeepsOriginalAndRetryEnabled() {
         val id = openCapturedGallery()
         try {
-            compose.onNodeWithText("保存副本").performClick()
+            compose.onNodeWithText("保存副本").performScrollTo().performClick()
             assertTrue(device().wait(Until.hasObject(By.pkg("com.google.android.documentsui")), TIMEOUT))
             device().pressBack()
             compose.waitUntil(TIMEOUT) {
@@ -73,7 +74,7 @@ class P25UCaptureExportAndroidTest {
                     true
                 }.getOrDefault(false)
             }
-            compose.onNodeWithText("保存副本").assertIsEnabled()
+            compose.onNodeWithText("保存副本").performScrollTo().assertIsEnabled()
         } finally {
             delete(id)
         }
@@ -98,7 +99,7 @@ class P25UCaptureExportAndroidTest {
         val app = compose.activity.application
         app.registerActivityLifecycleCallbacks(callbacks)
         try {
-            compose.onNodeWithText("保存副本").performClick()
+            compose.onNodeWithText("保存副本").performScrollTo().performClick()
             assertTrue(device().wait(Until.hasObject(By.pkg("com.google.android.documentsui")), TIMEOUT))
             compose.runOnUiThread { original.recreate() }
             assertTrue("MainActivity was not recreated behind DocumentsUI",
@@ -111,7 +112,7 @@ class P25UCaptureExportAndroidTest {
                     true
                 }.getOrDefault(false)
             }
-            compose.onNodeWithText("保存副本").assertIsEnabled()
+            compose.onNodeWithText("保存副本").performScrollTo().assertIsEnabled()
             assertTrue(activeLibrary.state.value.records.any {
                 it.id == id && it.fileState == CaptureFileState.AVAILABLE
             })
@@ -167,7 +168,7 @@ class P25UCaptureExportAndroidTest {
         val id = checkNotNull(capturedId) { "Expected exactly one new available capture" }
         compose.waitUntil(TIMEOUT) { library.state.value.galleryVisible }
         compose.onNodeWithText("成片预览").assertIsDisplayed()
-        compose.onNodeWithText("保存副本").assertIsDisplayed()
+        compose.onNodeWithText("保存副本").performScrollTo().assertIsDisplayed()
         return id
     }
 

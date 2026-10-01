@@ -13,6 +13,7 @@ import com.jovi.photoai.data.reference.*
 import com.jovi.photoai.p25u.P25UCaptureFixture
 import com.jovi.photoai.ui1.SyntheticPickerMediaFactory
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.flow.first
 import org.junit.Assert.*
 import org.junit.Rule
 import org.junit.Test
@@ -27,7 +28,7 @@ class T12CaptureNavigationAndroidTest {
 
     @Test fun bundleCaptureOpensCurrentReference() = fixture { _, _, capture ->
         openCapture(capture)
-        rule.onNodeWithTag("capture-open-reference").performScrollTo().performClick()
+        clickWhenEnabled("capture-open-reference")
         rule.waitUntil(10_000) { rule.onAllNodesWithText("项目照片 · 第 1 张").fetchSemanticsNodes().isNotEmpty() }
         rule.onNodeWithTag("capture-library").assertDoesNotExist()
         rule.onNodeWithText("项目照片 · 第 1 张").assertExists()
@@ -35,7 +36,7 @@ class T12CaptureNavigationAndroidTest {
 
     @Test fun bundleCaptureRetakesWithTrustedCurrentReference() = fixture { _, _, capture ->
         openCapture(capture)
-        rule.onNodeWithTag("capture-retake").performScrollTo().performClick()
+        clickWhenEnabled("capture-retake")
         rule.waitUntil(10_000) { rule.onAllNodesWithText("Camera Director").fetchSemanticsNodes().isNotEmpty() }
         rule.onNodeWithTag("capture-library").assertDoesNotExist()
         rule.onNodeWithText("Camera Director").assertExists()
@@ -49,6 +50,19 @@ class T12CaptureNavigationAndroidTest {
         rule.onNodeWithTag("capture-library").assertExists()
         val app = ApplicationProvider.getApplicationContext<Application>()
         runBlocking { assertTrue(CaptureRepository.get(app).previewFile(capture).isFile) }
+    }
+
+    private fun clickWhenEnabled(tag: String) {
+        // Capture and reference Room Flows publish independently; a rendered button may still be disabled.
+        try {
+            rule.waitUntil(10_000) {
+                rule.onAllNodesWithTag(tag).fetchSemanticsNodes().any { isEnabled().matches(it) }
+            }
+        } catch (timeout: AssertionError) {
+            rule.onNodeWithTag("capture-library", useUnmergedTree = true).printToLog("T12_CONTEXT_DIAGNOSTIC")
+            throw timeout
+        }
+        rule.onNodeWithTag(tag).performScrollTo().assertIsEnabled().performClick()
     }
 
     private fun openCapture(capture: com.jovi.photoai.data.capture.CaptureRecord) {
@@ -83,6 +97,15 @@ class T12CaptureNavigationAndroidTest {
                     captureId = reservation.record.id
                     P25UCaptureFixture.writeJpeg(reservation.output)
                     ref.photo.id to captures.complete(reservation.record.id)
+                }
+                runBlocking {
+                    val persisted = captures.records.first().single { it.id == pair.second.id }
+                    assertEquals(projectId, persisted.projectId)
+                    assertEquals(pair.first, persisted.referenceId)
+                    assertNotNull(repository.project(requireNotNull(projectId)))
+                    val current = requireNotNull(repository.activeRecord(pair.first))
+                    assertEquals(PhotoAnalysisStatus.READY, current.analysisStatus)
+                    assertNotNull(current.knowledgeBundleProvenance)
                 }
                 action(repository, pair.first, pair.second)
             } finally {

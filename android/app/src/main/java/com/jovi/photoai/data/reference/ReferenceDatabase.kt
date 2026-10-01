@@ -209,13 +209,18 @@ internal abstract class ReferenceLibraryDatabase : RoomDatabase() {
     abstract fun referenceDao(): ReferenceDao
 
     companion object {
-        fun create(context: Context): ReferenceLibraryDatabase = Room.databaseBuilder(
-            context.applicationContext,
-            ReferenceLibraryDatabase::class.java,
-            "reference-library.db",
-        ).setJournalMode(JournalMode.TRUNCATE)
-            .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5, MIGRATION_5_6)
-            .build()
+        @Volatile private var instance: ReferenceLibraryDatabase? = null
+
+        fun create(context: Context): ReferenceLibraryDatabase = instance ?: synchronized(this) {
+            instance ?: Room.databaseBuilder(
+                context.applicationContext,
+                ReferenceLibraryDatabase::class.java,
+                "reference-library.db",
+            ).setJournalMode(JournalMode.TRUNCATE)
+                .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5, MIGRATION_5_6)
+                .build()
+                .also { instance = it }
+        }
     }
 }
 
