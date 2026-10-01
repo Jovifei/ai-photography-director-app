@@ -22,7 +22,7 @@ Project/reference/guidance and capture destination stay fixed across all control
 - [x] Unit tests: finite/range/fixed zoom, independent generation, lens availability/rollback, restoration and all busy gates; JVM155/155.
 - [x] Dedicated API35 tests: actual BACK/zoom and unavailable FRONT, separately emulated FRONT/default zoom, capture association/original settlement, Compose state restoration/reference-gallery rebind and layout. Bind failure/rollback is pure injected-model evidence.
 - [x] JVM155/155, builds/static lint, primary API35 81/81 and separate FRONT auxiliary7/7; final independent review PASS. Contract/privacy checks complete before push.
-- [ ] Non-force push stacked Draft PR on T13, remote source/evidence review and next unblocked stage.
+- [x] Non-force push stacked Draft PR #19 on T13; remote current-source/evidence review DONE and next unblocked T16 plan received.
 
 ## Acceptance
 
