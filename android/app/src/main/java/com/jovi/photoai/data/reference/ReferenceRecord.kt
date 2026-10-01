@@ -47,6 +47,8 @@ internal data class ReferenceRecord(
     val safeAnalysisErrorCode: String? = null,
     val analysisProvenance: ProviderAnalysisProvenance? = null,
     val knowledgeBundleProvenance: KnowledgeBundleProvenance? = null,
+    /** Derived from Room metadata, including incomplete provider tuples; not a new stored column. */
+    val hasProviderProvenanceMetadata: Boolean = analysisProvenance != null,
 )
 
 internal fun ReferenceRecord.requireSafeImageFileName() {

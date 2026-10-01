@@ -339,6 +339,7 @@ internal fun ReferenceEntity.toRecord(): ReferenceRecord = ReferenceRecord(
     safeAnalysisErrorCode = safeAnalysisErrorCode,
     analysisProvenance = toAnalysisProvenance(),
     knowledgeBundleProvenance = toKnowledgeBundleProvenance(),
+    hasProviderProvenanceMetadata = hasAnyProviderProvenance(),
 ).also { it.requireSafeImageFileName() }
 
 internal fun ReferenceRecord.toEntity(storageState: ReferenceStorageState = ReferenceStorageState.ACTIVE): ReferenceEntity {
