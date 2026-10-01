@@ -286,4 +286,14 @@ Plan: `tasks/plans/2026-10-02-t17-offline-guided-continuity.md`. Base T16 accept
 - [x] Confirm detailed stage plan, current source routes and exact scope.
 - [x] Implement synthetic production-root A→C1→B→process restart→current-B retake→C2 phase harness, host marker and exact cleanup/pref restoration.
 - [x] Verify separate deleted-reference recovery, eight shared Android guard tests and19 host policies; final96/96, JVM159/159, builds/static lint0errors/17warnings and contracts/privacy PASS.
-- [ ] Consumer handoff request, report/privacy, stacked Draft PR and remote current-source review/next stage.
+- [x] Consumer handoff request, report/privacy, stacked Draft PR #21 and remote current-source review DONE.
+
+## Current machine/external boundary — 2026-10-02
+
+T12–T17 independent Android machine track accepted by remote current-source review. Latest qualified code `25ee14a2f6380b1b03a05c6b9a12a8fcf90510d4`, JVM159/159 and affected API35 96/96. Existing goal does not justify another invented App feature stage.
+
+- [ ] T14: receive producer-generated versioned PKB1 single/multi/A-B/negative vectors, preserved raw UTF-8 bytes/document SHA, independent canonical bytes/digests and exact mapping/runtime manifest; then execute compatibility/import/replacement/no-write gates.
+- [ ] Human/physical: real device, authorized photo usefulness and TalkBack review against the qualified candidate.
+- [ ] Signing/release/merge: supply and qualify the actual release inputs and decision; current Draft PRs and Debug APK are not a launched product.
+
+Consumer request: `docs/PKB1_PRODUCER_GOLDEN_VECTOR_HANDOFF_REQUEST.md`. Optional Qwen/T11 legal/acquisition track stays separately blocked; it does not invalidate the completed independent App machine evidence.
