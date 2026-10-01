@@ -3,7 +3,7 @@
 Date: 2026-10-01 (Asia/Shanghai)
 Base: `adcf4dcd11dbf4c0ec738a8da5c73a1c25961ded`
 Current branch: `codex/t12-capture-provenance-retake-20261001`
-Implementation includes base checkpoint `b9df8951aa377f35009ee1ae147cadeff7fc283c`; the final delivery commit is pending.
+Delivery commit: `f18ded906f8bc47426c396260ace85bd956d4a96` (includes base checkpoint `b9df8951aa377f35009ee1ae147cadeff7fc283c`). Draft PR #17 is open against `codex/t11-artifact-acquisition-preflight-20260929`: https://github.com/Jovifei/ai-photography-director-app/pull/17.
 
 ## Result
 
@@ -37,4 +37,4 @@ Raw outputs and the verified APK fingerprint/hash are stored outside Git under t
 
 Remote PLAN / PLAN_FEEDBACK (`c2c_2537`, iteration 1) approved the Android track, the process-scoped Room fix after the production Flow defect was demonstrated, and the narrow export test scrolling update. T11’s optional Qwen/legal acquisition branch remains separate.
 
-Exact-diff review, final privacy audit, push, Draft PR stacked on PR #16, and exact-head remote review are the remaining delivery steps for T12. C2C local bridge/MCP checks pass, but Doctor reports the named Cloudflare tunnel start timing out; the tunnel login command confirms an existing login and the repair still needs Jovi's Cloudflare-domain selection before remote review can resume. No remote review control message has been sent while Doctor is red. After remote DONE, return for the next machine-only stage: explicit, all-or-none replacement of existing Bundle-backed READY guidance. Producer golden-vector compatibility follows when the separate nightly project exposes a stable exporter. Camera zoom/front-back switching remains a separately planned Android candidate. Physical-device and human photo-usefulness acceptance are not claimed here.
+Local exact-diff review PASS; final privacy audit PASS; branch `codex/t12-capture-provenance-retake-20261001` was pushed non-force and Draft PR #17 is open stacked on PR #16. Exact-head remote review and its resulting next-stage plan remain pending. C2C local bridge/MCP checks pass, but Doctor reports the named Cloudflare tunnel start timing out; the tunnel login command confirms an existing login and the repair still needs Jovi's Cloudflare-domain selection before remote review can resume. No remote review control message has been sent while Doctor is red. After remote DONE, return for the next machine-only stage: explicit, all-or-none replacement of existing Bundle-backed READY guidance. Producer golden-vector compatibility follows when the separate nightly project exposes a stable exporter. Camera zoom/front-back switching remains a separately planned Android candidate. Physical-device and human photo-usefulness acceptance are not claimed here.

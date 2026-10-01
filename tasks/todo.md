@@ -219,7 +219,7 @@ Remote PLAN `c2c_2537` iteration 1 accepts independent Android development. Deta
 - [x] Implement current reference resolver, truthful gallery/detail and safe root open/retake.
 - [x] Verify focused JVM/UI/root tests and affected regressions on dedicated emulator.
 - [x] Exact-diff independent review returned PASS with no findings; final privacy audit passed.
-- [ ] Push the isolated branch and create a stacked Draft PR on the T11 branch.
+- [x] Push the isolated branch non-force and create Draft PR #17, stacked on T11 / PR #16.
 - [ ] Remote exact-head review and next executable stage.
 
 Review: local exact-diff PASS; remote exact-head review pending. No human acceptance or production Pipeline claim.
@@ -237,7 +237,8 @@ The real `MainActivity` root test persisted the synthetic capture with exact pro
 - [x] Build Debug/AndroidTest and run debug plus static Release lint; release signing remains `NOT_RUN`.
 - [x] Run PKB1/Phase1.5 contracts, T11 preflight and privacy audit. T11 stays `BLOCKED_LEGAL_REVIEW`; database schema/migrations, Bundle and T10/T11 authorities stay unchanged.
 - [x] Exact final source review PASS and final `scripts/prepush_privacy_audit.py` PASS.
-- [ ] Push and create the stacked Draft PR; obtain remote exact-head review after C2C tunnel recovery.
+- [x] Push non-force and create stacked Draft PR #17 against `codex/t11-artifact-acquisition-preflight-20260929`.
+- [ ] Obtain remote exact-head review and next stage plan after C2C tunnel recovery.
 
 Remote approved the T12 process restart gate. Final synthetic run `d01405dcefab40b0aa3a10170564fef9` passed: PREPARE ran as process `com.jovi.photoai`, target UID 10209, PID 8457; the instrumentation package UID is 10210. PREPARE's process had already exited naturally, so target-package force-stop was explicitly recorded as idempotent; VERIFY ran under PID 8512 with a changed epoch and reopened the same project/reference. CLEANUP deleted only that project and host marker. Synthetic project/reference/JPEG writes were scoped to that run ID; no Android app/test marker file was created and MainActivity was not launched. The legacy P23D `clearAll()` harness is not run against unknown App rows.
 
