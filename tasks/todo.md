@@ -211,3 +211,35 @@ PASS: independent review of delivery 753163efddfd8e28a6b267ac70af95cdd86c282e re
 ### T3 review
 
 Independent review first found an Important race in the export test's pre-capture snapshot and cleanup identity. Fixed in `47c2d8f192f2d92a4fd07539bd9ff3bf28b1ecfa`; focused export instrumentation and full API 35 qualification pass. Reviewer then found a mismatch between the report PID and evidence; it was corrected to 8352. Final confirmation on PR head `663d52991f7e6a436e3c91c82a72e80f411119cd` is PASS with no remaining findings. Evidence is at `E:\project_benchmark_evidence\t3-reference-camera-controls-20260926\5750a52b8c9e4507a4f5b162a8799cba`, with 9/9 artifact hashes verified.
+## T12 Android capture reference and guided retake — 2026-10-01
+
+Remote PLAN `c2c_2537` iteration 1 accepts independent Android development. Detailed checklist: `tasks/plans/2026-10-01-t12-capture-reference-retake.md`. T11 evidence stays unchanged; nightly producer integrates later through PKB1.
+
+- [x] Exact clean base, origin and C2C identity verified.
+- [x] Implement current reference resolver, truthful gallery/detail and safe root open/retake.
+- [x] Verify focused JVM/UI/root tests and affected regressions on dedicated emulator.
+- [x] Exact-diff independent review returned PASS with no findings; final privacy audit passed.
+- [x] Push the isolated branch non-force and create Draft PR #17, stacked on T11 / PR #16.
+- [ ] Remote exact-head review and next executable stage.
+
+Review: local exact-diff PASS; remote exact-head review pending. No human acceptance or production Pipeline claim.
+
+### T12 root-flow defect discovered
+
+The real `MainActivity` root test persisted the synthetic capture with exact project/reference IDs and independently verified the project and READY Bundle reference through the writer repository. The production UI nevertheless displayed `拍摄项目已不存在` and kept both reference actions disabled. A diagnostic Compose dump confirmed the UI resolver had a stale projects/reference Flow from a second same-name Room database instance. Remote PLAN_FEEDBACK approved a process-scoped Room singleton factory; DB schema, migrations, journal mode, permissions, files and backup policy stay fixed. Production repositories remain distinct. A new cross-repository persistent-collector test covers both project and reference Flow invalidation.
+
+### T12 verification update — 2026-10-01
+
+- [x] Share the production `ReferenceLibraryDatabase` instance per process; keep Room v6 and `createForTest` isolated.
+- [x] Preserve click-time DB revalidation and enabled open/retake semantics on the default root.
+- [x] Verify project/reference Flow updates across two production Repository objects.
+- [x] Run T12/T4 mixed tests 10/10, full affected batch 43/43, export retest 3/3, Room disk/process recovery prepare/force-stop/verify/cleanup 3/3, Android JVM 147/147.
+- [x] Build Debug/AndroidTest and run debug plus static Release lint; release signing remains `NOT_RUN`.
+- [x] Run PKB1/Phase1.5 contracts, T11 preflight and privacy audit. T11 stays `BLOCKED_LEGAL_REVIEW`; database schema/migrations, Bundle and T10/T11 authorities stay unchanged.
+- [x] Exact final source review PASS and final `scripts/prepush_privacy_audit.py` PASS.
+- [x] Push non-force and create stacked Draft PR #17 against `codex/t11-artifact-acquisition-preflight-20260929`.
+- [ ] Obtain remote exact-head review and next stage plan after C2C tunnel recovery.
+
+Remote approved the T12 process restart gate. Final synthetic run `d01405dcefab40b0aa3a10170564fef9` passed: PREPARE ran as process `com.jovi.photoai`, target UID 10209, PID 8457; the instrumentation package UID is 10210. PREPARE's process had already exited naturally, so target-package force-stop was explicitly recorded as idempotent; VERIFY ran under PID 8512 with a changed epoch and reopened the same project/reference. CLEANUP deleted only that project and host marker. Synthetic project/reference/JPEG writes were scoped to that run ID; no Android app/test marker file was created and MainActivity was not launched. The legacy P23D `clearAll()` harness is not run against unknown App rows.
+
+T12 details and initial failure evidence are recorded in `reports/T12_CAPTURE_PROVENANCE_RETAKE_REPORT.md`; raw synthetic logs/APK metadata remain outside Git under the Codex visualizations evidence folder. No human acceptance or photo-quality judgement is claimed.

@@ -48,6 +48,14 @@ class T4GuidanceTransitionAndroidTest {
     @get:Rule val rule = createComposeRule()
     @get:Rule val cameraPermission = GrantPermissionRule.grant(Manifest.permission.CAMERA)
 
+    private fun openProjectWhenVisible(title: String) {
+        // Room Flow and startup reconciliation can finish after setContent becomes idle.
+        rule.waitUntil(10_000) {
+            rule.onAllNodesWithText(title).fetchSemanticsNodes().isNotEmpty()
+        }
+        rule.onAllNodesWithText(title).onFirst().performClick()
+    }
+
     @Test fun mismatchedBundleFailsClosedAndReadyThenUnavailableDropsLiveGuidance() {
         val application = ApplicationProvider.getApplicationContext<Application>()
         val database = Room.inMemoryDatabaseBuilder(application, ReferenceLibraryDatabase::class.java).build()
@@ -82,7 +90,7 @@ class T4GuidanceTransitionAndroidTest {
                     }
                 }
                 contentMounted = true
-                rule.onAllNodesWithText("T4 合成状态项目").onFirst().performClick()
+                openProjectWhenVisible("T4 合成状态项目")
                 rule.onNodeWithText("使用主参考进行无 AI 拍摄").performScrollTo().assertExists()
 
                 val mismatch = AnalysisAttempt(referenceId, "t4-mismatch")
@@ -183,7 +191,7 @@ class T4GuidanceTransitionAndroidTest {
                     }
                 }
                 contentMounted = true
-                rule.onAllNodesWithText("T4 切换项目").onFirst().performClick()
+                openProjectWhenVisible("T4 切换项目")
                 rule.onNodeWithText("使用主参考进入 AI 拍摄").performScrollTo().performClick()
                 rule.onNodeWithText("Camera Director").assertExists()
 
@@ -192,7 +200,7 @@ class T4GuidanceTransitionAndroidTest {
                     rule.onAllNodesWithText("拍摄项目").fetchSemanticsNodes().isNotEmpty()
                 }
                 rule.onNodeWithText("Camera Director").assertDoesNotExist()
-                rule.onAllNodesWithText("T4 切换项目").onFirst().performClick()
+                openProjectWhenVisible("T4 切换项目")
                 rule.onNodeWithContentDescription("设为主参考").performScrollTo().performClick()
                 rule.onNodeWithText("使用主参考进行无 AI 拍摄").performScrollTo().performClick()
                 rule.onNodeWithText("无指导直接拍摄").assertExists()
