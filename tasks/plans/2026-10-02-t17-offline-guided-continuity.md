@@ -1,0 +1,37 @@
+# T17 offline guided-capture continuity and full product journey
+
+## Accepted basis
+
+Jovi authorizes the continuing C2C development/review loop. Remote T16 current-source verdict DONE on `0607aac71f3e8da5dcd7ded09aa8fc29420a6dd5`; documentation-only acceptance descendant and T17 base `acfc1a515c8b5ec99ca56d01b4d9c637cc27c94e`. Branch `codex/t17-offline-guided-continuity-20261002`. Remote supplied M0–M11 and approved exact pre-outcome capture receipts, repository replacement, no duplicate resolver and stricter fail-closed cleanup.
+
+Target: `OFFLINE_GUIDED_CAPTURE_CONTINUITY_MACHINE_VALIDATED — PRODUCER_AND_HUMAN_ACCEPTANCE_PENDING`.
+
+Critical invariant: C1 persists project/reference identity, not historical guidance. Replacing current R's A Bundle with B must leave C1 row/JPEG unchanged. After a fresh process, production capture-library guided retake must revalidate C1/P/R, use current B guidance, and create independent associated C2. It must not describe C1 as historically captured with B.
+
+## Scope
+
+New focused test files under AndroidTest/t17, one host process runner, report, plan/todo and a consumer-side PKB1 golden-vector request. Existing T12 pure identity/current-guidance tests and T13 UI confirmation remain baseline evidence; do not duplicate them or redesign resolver/navigation. Production changes only for demonstrated failures in PhotographyDirectorApp, CaptureLibraryScreen or CaptureReferenceContext; schema/repository policy changes require remote re-plan. No producer/Qwen/network/T11 authority, actual Owner images, phone, signing, release or merge.
+
+## Execution checklist
+
+- [x] M0: Remote detailed plan/refinement accepted; exact clean base/origin and independent source exploration identify production selectors and published APIs.
+- [x] M1: Add a shared synthetic A/B fixture using official PKB1 canonical digest/consumer types. Same bundleId/producerId/origin/producerReferenceId and explicit binding, different opaque release and distinctive guidance. No invented trusted wrapper. Reuse current pure policy coverage; add only genuinely uncovered continuity assertions.
+- [x] M2: Dedicated API35 phase harness with createEmptyComposeRule and real MainActivity root (no setContent replacement). Require measured CAMERA already GRANTED; no GrantPermissionRule/grant/revoke. Emit runId, process-static epoch, PID/name/processUID/targetUID and exact fixture IDs. Snapshot only ui1_preferences.last_active_reference_id key presence/raw value; host marker preserves it privately, never Git or remote evidence. Restore only when current presence/raw value is exactly original (no-op) or the exact owned reference; reject foreign changes, including unexpected absence. Restore before deleting owned R so missing-reference startup cannot clear it.
+- [ ] M3 PREPARE: Host writes runId marker before instrumentation. Create exact `T17 continuity <runId>` project and generated reference JPEG through production repositories. Publish IDs immediately. Apply A. Root Home → exact project → READY tile → Analysis Detail → Director Card → actual Camera Director. Wait enabled shutter plus actual preview. Snapshot capture IDs, trigger C1, find exactly one reservation row with exact P/R, publish C1 ID before outcome wait; then require AVAILABLE and record entire capture tuple, byte count/file SHA/reference JPEG SHA.
+- [x] M4: Fresh-read A provenance, call existing T13-qualified replaceKnowledgeBundle with frozen exact old tuple and B. Require acknowledged Success(1), fresh B provenance/distinct guidance, unchanged C1 row tuple/JPEG and reference image. Label this repository transport proof; it is not new T13 confirmation UI proof.
+- [x] M5: Host persists incremental ID receipts even when instrumentation fails, including raw preference snapshot only in private host marker. After PREPARE settled, verify original target process gone; if alive force-stop only exact target package. Record actual INSTRUMENTATION_PROCESS_EXIT or TARGET_PACKAGE_FORCE_STOP; never pm clear, DB deletion, App-side marker or broad process reset.
+- [ ] M6 VERIFY: New process epoch must differ and measured UID/package must match; PID is supporting evidence. Reopen production persisted P/R/B/C1, compare exact C1 tuple/JPEG/reference image. Use real root to open exact C1 in capture library, not persisted gallery-selection claims. Current context must show current B, with no historical A/B snapshot claim.
+- [x] M7: From exact C1 production guided-retake callback, require click-time P/R/current B validation and navigate to current B Director/Camera. Assert B guidance and absence of A marker. Actual C2 capture uses the same reservation-ID-before-outcome receipt rule; require different ID, same P/R, independent AVAILABLE file. C1 remains unchanged.
+- [x] M8: A separate deleted-reference fixture/run persists C1, deletes only its owned R, crosses process boundary, opens C1 through root and verifies reference/retake fail closed without guessing alternate references. Existing mismatch/non-READY pure tests remain baseline; do not manufacture illegal production associations.
+- [ ] M9 CLEANUP: Restore guarded original last-reference preference independently of test UI survival. Current exact project capture set must equal positively recorded C1/C2 subset before any deletion, and every association/identity must match. Delete exact captures, verify rows/files absent, then exact reference/project and verify absent. If any capture ID is unknown or set has an extra member, delete nothing and retain fixture+marker. Exact runId title may recover identity only, never authorize capture deletion. Never assert whole DB/library empty.
+- [x] M10: Test cleanup safety for incomplete/ambiguous ownership without destructive execution. Host marker before PREPARE, atomic incremental receipts, restoration failures and phase failure parsing are meaningful runner gates. Independently review code and host scopes.
+- [x] M11: New final full JVM/build/debug+static Release lint, affected T3/T4/P25U/T12/T13/T15/T16/T17 API35 matrix, prepare/verify/cleanup success and deleted-reference process runs. PKB1/Phase1.5/privacy/diff and unchanged T11 preflight. Raw logs/hashes stay outside Git; retain failure evidence and publish exact candidate/artifact receipts.
+- [ ] M12: Consumer-side producer request specifies single/multi/reference A/B and negative schema/digest vectors with exact raw bytes/SHA/mappings. This prepares handoff but never qualifies T14 without producer-generated vectors. Write report, privacy audit, non-force stacked Draft PR, remote exact-source review/repairs and next independent stage.
+
+## Required receipts
+
+Bundle A READY; C1 real guided association; explicit B replacement; C1 row/image unchanged; fresh process reopen; current B guided retake; C2 independent association; deleted reference fail-closed; pre-outcome C1/C2 IDs; host-marker-first; exact cleanup set and deletion; guarded exact preference restoration; unknown/ambiguous ownership policy retains fixture. All are separately labeled machine/synthetic evidence. Producer compatibility PENDING_EXTERNAL_GOLDEN_VECTORS; physical/human photography/accessibility and signing/release NOT_RUN.
+
+## Review
+
+Read-only exploration confirms existing runtime follows current-reference identity and click-time lookup; the missing evidence is the combined production-root A→capture→B→process→retake journey. Global last-reference preference and lost-receipt cleanup are protected explicitly. No production defect inferred before tests.

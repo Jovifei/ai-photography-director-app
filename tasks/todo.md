@@ -278,3 +278,12 @@ Plan: `tasks/plans/2026-10-02-t16-camera-lifecycle-accessibility.md`. Base accep
 - [x] Independent review, report/privacy, stacked Draft PR #20, remote current-source review DONE and next T17 plan received.
 
 T16 code `0607aac71f3e8da5dcd7ded09aa8fc29420a6dd5` is accepted for machine implementation, not physical-device/human/signing/producer acceptance. Remote T17 next route: real root guided C1 capture → explicit Bundle A/B replacement → process restart → current-reference retake → associated C2, with exact fixture cleanup.
+
+## T17 offline guided continuity — 2026-10-02
+
+Plan: `tasks/plans/2026-10-02-t17-offline-guided-continuity.md`. Base T16 acceptance docs `acfc1a515c8b5ec99ca56d01b4d9c637cc27c94e`. Remote exact cleanup/pre-outcome receipt/repository replacement refinements accepted. T14 producer vectors remain external.
+
+- [x] Confirm detailed stage plan, current source routes and exact scope.
+- [x] Implement synthetic production-root A→C1→B→process restart→current-B retake→C2 phase harness, host marker and exact cleanup/pref restoration.
+- [x] Verify separate deleted-reference recovery, eight shared Android guard tests and19 host policies; final96/96, JVM159/159, builds/static lint0errors/17warnings and contracts/privacy PASS.
+- [ ] Consumer handoff request, report/privacy, stacked Draft PR and remote current-source review/next stage.

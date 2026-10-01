@@ -14,6 +14,8 @@ import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollTo
+import androidx.compose.ui.test.isEnabled
+import androidx.compose.ui.test.assertIsEnabled
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.rule.GrantPermissionRule
@@ -202,7 +204,12 @@ class T4GuidanceTransitionAndroidTest {
                 rule.onNodeWithText("Camera Director").assertDoesNotExist()
                 openProjectWhenVisible("T4 切换项目")
                 rule.onNodeWithContentDescription("设为主参考").performScrollTo().performClick()
-                rule.onNodeWithText("使用主参考进行无 AI 拍摄").performScrollTo().performClick()
+                // Selecting a primary reference commits asynchronously, then updates the merged CTA.
+                rule.waitUntil(10_000) {
+                    rule.onAllNodesWithText("使用主参考进行无 AI 拍摄").fetchSemanticsNodes()
+                        .any { isEnabled().matches(it) }
+                }
+                rule.onNodeWithText("使用主参考进行无 AI 拍摄").assertIsEnabled().performScrollTo().performClick()
                 rule.onNodeWithText("无指导直接拍摄").assertExists()
                 rule.onNodeWithText("Camera Director").assertDoesNotExist()
             } finally {
