@@ -21,7 +21,7 @@ Remote set-boundary decision: only the exact incoming explicit mapping set is re
 - [x] Extend existing import UI/mapping eligibility and root callbacks; show complete old/incoming provenance with explicit confirmation.
 - [x] Test initial-import regressions, replacement, cancel, provider/mixed/identity conflict, stale-preview, atomic failure, unknown-commit and omitted-member behavior.
 - [x] Final JVM 147/147, build/static lint PASS, API35 combined 73/73.
-- [ ] Independent review, privacy audit, non-force push Draft PR stacked on T12; remote review and next plan.
+- [x] Independent review/privacy PASS, non-force push Draft PR #18 stacked on T12; remote evidence and source reviews DONE. Next: T15 lifecycle audit and detailed plan while T14 awaits producer handoff.
 
 ## Acceptance
 

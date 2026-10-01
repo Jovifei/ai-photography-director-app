@@ -252,4 +252,6 @@ Remote T13 plan and identity refinement approved in `c2c_2537`. Base accepted PR
 - [x] Implement shared replacement policy and all-target transaction fence.
 - [x] Implement explicit mode, read-only preview, cancel and confirm in existing ViewModel/UI.
 - [x] Final synthetic/affected Android batch 73/73; JVM 147/147; Debug/AndroidTest builds and static lint PASS. Independent final review PASS.
-- [ ] Independent review, privacy audit, stacked Draft PR and remote next-stage review.
+- [x] Independent review/privacy PASS; non-force push and stacked Draft PR #18; remote evidence and key-source audits DONE.
+
+T13 code commit `b6f655bd58bb875f18915281b56f2c5f816b158b` is accepted for machine implementation. T14 has no published PKB1 golden-vector handoff in the inspected producer main tree `ffc4130823c1308f089b835c766e341ec2173e82`; no compatibility/production acceptance is inferred. Remote agreed to inspect and refine independent T15 zoom/lens-switch work while that handoff is pending.
