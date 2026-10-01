@@ -255,3 +255,13 @@ Remote T13 plan and identity refinement approved in `c2c_2537`. Base accepted PR
 - [x] Independent review/privacy PASS; non-force push and stacked Draft PR #18; remote evidence and key-source audits DONE.
 
 T13 code commit `b6f655bd58bb875f18915281b56f2c5f816b158b` is accepted for machine implementation. T14 has no published PKB1 golden-vector handoff in the inspected producer main tree `ffc4130823c1308f089b835c766e341ec2173e82`; no compatibility/production acceptance is inferred. Remote agreed to inspect and refine independent T15 zoom/lens-switch work while that handoff is pending.
+
+## T15 CameraX capability controls — 2026-10-02
+
+Remote plan/policy: `c2c_8b15`. Base PR #18 head `58119b8541a49e27eedff2497c306e9212c3d654`; branch `codex/t15-camera-capability-controls-20261002`. Detailed milestones: `tasks/plans/2026-10-02-t15-camera-capability-controls.md`.
+
+- [x] Implement actual capability discovery, bounded/fenced zoom, lens bind/rollback and busy capture guards.
+- [x] Integrate confirmed saveable lens/zoom, fresh binding restore, explicit fallback/retry and manual chrome controls.
+- [x] Strict builds/static lint and JVM155/155 PASS; independent source review PASS.
+- [x] Current BACK-only API35 81/81, separate software FRONT auxiliary7/7; original AVD runtime restored, config.ini unchanged and no data wipe.
+- [ ] Update report, privacy audit, non-force stacked Draft PR and remote source/evidence review.
