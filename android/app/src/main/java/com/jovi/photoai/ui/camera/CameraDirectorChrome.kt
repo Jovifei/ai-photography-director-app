@@ -9,6 +9,8 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -48,6 +50,7 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.disabled
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.stateDescription
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -94,6 +97,7 @@ fun CameraDirectorChrome(
     onLensSelected: (CameraLens) -> Unit = {},
     captureEnabled: Boolean = uiState.canCapture,
     modifier: Modifier = Modifier,
+    referenceCard: (@Composable () -> Unit)? = null,
 ) {
     val hardwareEnabled = controlsEnabled && pendingZoomRatio == null
     var showZoom by remember(zoomCapability, currentLens) { mutableStateOf(false) }
@@ -124,27 +128,45 @@ fun CameraDirectorChrome(
             DemoOverlay(mode = uiState.overlayMode, showGrid = uiState.gridVisible)
         }
 
-        CameraTopBar(
-            referenceGuidance = referenceGuidance,
-            directCaptureMode = directCaptureMode,
-            onBack = closePanelOrBack,
-            modifier = Modifier.align(Alignment.TopCenter),
-        )
-        CameraHint(
-            uiState = uiState,
-            referenceGuidance = referenceGuidance,
-            directCaptureMode = directCaptureMode,
-            compactLandscape = compactLandscape,
-            modifier = Modifier
-                .align(Alignment.TopCenter)
-                .then(if (compactLandscape) Modifier.statusBarsPadding() else Modifier)
-                .padding(top = when {
-                    compactLandscape && referenceCardVisible -> 144.dp
-                    compactLandscape -> 92.dp
-                    referenceCardVisible -> 180.dp
-                    else -> 144.dp
-                }),
-        )
+        Column(Modifier.fillMaxSize()) {
+            BoxWithConstraints(Modifier.weight(1f).fillMaxWidth()) {
+                // Only visible guidance receives scroll gestures; blank preview retains tap focus.
+                Column(Modifier.fillMaxWidth().heightIn(max = maxHeight).testTag("camera-upper-content")
+                    .verticalScroll(rememberScrollState())) {
+                    CameraTopBar(
+                        referenceGuidance = referenceGuidance,
+                        directCaptureMode = directCaptureMode,
+                        onBack = closePanelOrBack,
+                    )
+                    referenceCard?.invoke()
+                    CameraHint(
+                        uiState = uiState,
+                        referenceGuidance = referenceGuidance,
+                        directCaptureMode = directCaptureMode,
+                        compactLandscape = compactLandscape,
+                        modifier = Modifier.align(Alignment.CenterHorizontally).padding(top = 12.dp),
+                    )
+                }
+            }
+            CameraBottomControls(
+                uiState = uiState, onEvent = onEvent, onCapture = onCapture, onSave = onSave,
+                saveEnabled = saveEnabled, saveStatus = saveStatus, referenceGuidance = referenceGuidance,
+                directCaptureMode = directCaptureMode, exposureAvailable = exposureRange != null,
+                exposureIndex = exposureIndex, exposureStepEv = exposureStepEv, controlsEnabled = hardwareEnabled,
+                exposureStatus = exposureStatus, onShowExposure = { showExposure = true },
+                zoomCapability = zoomCapability, confirmedZoomRatio = confirmedZoomRatio,
+                onShowZoom = { if (hardwareEnabled) showZoom = true }, zoomStatus = zoomStatus,
+                availableLenses = availableLenses, currentLens = currentLens, lensStatus = lensStatus,
+                onLensSelected = onLensSelected, captureEnabled = captureEnabled && pendingZoomRatio == null,
+                captureState = when {
+                    uiState.captureInFlight -> "保存中"
+                    pendingZoomRatio != null -> "正在确认变焦"
+                    captureEnabled -> "可以拍摄"
+                    else -> "相机准备中"
+                },
+                compactLandscape = compactLandscape,
+            )
+        }
 
         if (!directCaptureMode) {
             EdgeGestureZone(
@@ -171,33 +193,6 @@ fun CameraDirectorChrome(
             )
         }
 
-        CameraBottomControls(
-            uiState = uiState,
-            onEvent = onEvent,
-            onCapture = onCapture,
-            onSave = onSave,
-            saveEnabled = saveEnabled,
-            saveStatus = saveStatus,
-            referenceGuidance = referenceGuidance,
-            directCaptureMode = directCaptureMode,
-            exposureAvailable = exposureRange != null,
-            exposureIndex = exposureIndex,
-            exposureStepEv = exposureStepEv,
-            controlsEnabled = hardwareEnabled,
-            exposureStatus = exposureStatus,
-            onShowExposure = { showExposure = true },
-            zoomCapability = zoomCapability,
-            confirmedZoomRatio = confirmedZoomRatio,
-            onShowZoom = { if (hardwareEnabled) showZoom = true },
-            zoomStatus = zoomStatus,
-            availableLenses = availableLenses,
-            currentLens = currentLens,
-            lensStatus = lensStatus,
-            onLensSelected = onLensSelected,
-            captureEnabled = captureEnabled && pendingZoomRatio == null,
-            compactLandscape = compactLandscape,
-            modifier = Modifier.align(Alignment.BottomCenter),
-        )
 
         if (!directCaptureMode && uiState.selectedGuidePanel != GuidePanel.NONE) {
             GuidePanelSheet(
@@ -222,7 +217,7 @@ fun CameraDirectorChrome(
             Column {
                 Text("已确认：${zoomLabel(confirmedZoomRatio)}")
                 Slider(value = sliderZoom,
-                    modifier = Modifier.testTag("zoom-slider"),
+                    modifier = Modifier.testTag("zoom-slider").semantics { contentDescription = "变焦，倍率" },
                     onValueChange = { if (hardwareEnabled && it.isFinite()) {
                         sliderZoom = it.coerceIn(zoomCapability.minRatio, zoomCapability.maxRatio)
                     } },
@@ -246,7 +241,7 @@ fun CameraDirectorChrome(
             Column {
                 Text("当前：${exposureLabel(exposureIndex, exposureStepEv)}")
                 Slider(value = sliderIndex,
-                    modifier = Modifier.testTag("exposure-slider"),
+                    modifier = Modifier.testTag("exposure-slider").semantics { contentDescription = "曝光补偿，EV" },
                     onValueChange = { sliderIndex = it.roundToInt().coerceIn(exposureRange).toFloat() },
                     valueRange = exposureRange.first.toFloat()..exposureRange.last.toFloat(),
                     steps = (exposureRange.last - exposureRange.first - 1).coerceAtLeast(0),
@@ -298,7 +293,7 @@ private fun CameraTopBar(
                 .semantics { contentDescription = "返回" }) {
                 Text("返回", color = AppColors.CameraChromeText)
             }
-            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+            Column(modifier = Modifier.weight(1f), horizontalAlignment = Alignment.CenterHorizontally) {
                 Text(
                     when {
                         directCaptureMode -> "基础拍摄"
@@ -351,7 +346,7 @@ private fun CameraHint(
         else -> "暂无 Demo 指导，请先确认现场安全与取景。"
     }
     Surface(
-        modifier = modifier.padding(horizontal = if (compactLandscape) 64.dp else 40.dp)
+        modifier = modifier.fillMaxWidth().padding(horizontal = if (compactLandscape) 64.dp else 40.dp)
             .testTag("camera-guidance-hint"),
         color = AppColors.CameraChromeSurface,
         shape = RoundedCornerShape(AppDimensions.RadiusLarge),
@@ -360,11 +355,11 @@ private fun CameraHint(
     ) {
         Text(
             text = text,
-            modifier = Modifier.padding(horizontal = AppDimensions.Space16, vertical = AppDimensions.Space12),
+            modifier = Modifier.fillMaxWidth().padding(horizontal = AppDimensions.Space16, vertical = AppDimensions.Space12),
             color = AppColors.CameraChromeText,
             style = MaterialTheme.typography.bodyMedium,
             textAlign = TextAlign.Center,
-            maxLines = if (compactLandscape) 2 else Int.MAX_VALUE,
+            maxLines = Int.MAX_VALUE,
         )
     }
 }
@@ -435,6 +430,7 @@ private fun CameraEdgeHandle(
     }
 }
 
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 private fun CameraBottomControls(
     uiState: CameraUiState,
@@ -460,6 +456,7 @@ private fun CameraBottomControls(
     lensStatus: String?,
     onLensSelected: (CameraLens) -> Unit,
     captureEnabled: Boolean,
+    captureState: String,
     compactLandscape: Boolean,
     modifier: Modifier = Modifier,
 ) {
@@ -470,22 +467,22 @@ private fun CameraBottomControls(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                 Column(Modifier.weight(1f)) {
-                    Row(Modifier.fillMaxWidth()) {
+                    FlowRow(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(4.dp)) {
                         if (exposureAvailable) TextButton(onClick = onShowExposure, enabled = controlsEnabled,
-                            modifier = Modifier.weight(1f).heightIn(min = AppDimensions.MinTouchTarget)) { Text("曝光") }
+                            modifier = Modifier.heightIn(min = AppDimensions.MinTouchTarget)) { Text("曝光") }
                         if (zoomCapability != null) TextButton(onClick = onShowZoom, enabled = controlsEnabled,
-                            modifier = Modifier.weight(1f).heightIn(min = AppDimensions.MinTouchTarget).testTag("zoom-open")) {
+                            modifier = Modifier.heightIn(min = AppDimensions.MinTouchTarget).testTag("zoom-open")) {
                             Text("变焦 ${zoomLabel(confirmedZoomRatio)}", style = MaterialTheme.typography.labelSmall)
                         }
                         if (CameraLens.BACK in availableLenses && CameraLens.FRONT in availableLenses) {
                             val next = if (currentLens == CameraLens.BACK) CameraLens.FRONT else CameraLens.BACK
                             TextButton(onClick = { if (controlsEnabled) onLensSelected(next) }, enabled = controlsEnabled,
-                                modifier = Modifier.weight(1f).heightIn(min = AppDimensions.MinTouchTarget).testTag("camera-lens-switch")) {
+                                modifier = Modifier.heightIn(min = AppDimensions.MinTouchTarget).testTag("camera-lens-switch")) {
                                 Text("${lensLabel(currentLens)} → ${lensLabel(next)}", style = MaterialTheme.typography.labelSmall)
                             }
                         }
                         TextButton(onClick = { onEvent(CameraUiEvent.GridToggled) },
-                            modifier = Modifier.weight(1f).heightIn(min = AppDimensions.MinTouchTarget)) {
+                            modifier = Modifier.heightIn(min = AppDimensions.MinTouchTarget)) {
                             Text(if (uiState.gridVisible) "网格开" else "网格关", style = MaterialTheme.typography.labelSmall)
                         }
                     }
@@ -495,7 +492,7 @@ private fun CameraBottomControls(
                     if (!directCaptureMode && referenceGuidance == null) OverlayModeControls(
                         selected = uiState.overlayMode, onSelected = { onEvent(CameraUiEvent.OverlayModeSelected(it)) })
                 }
-                CameraShutter(enabled = captureEnabled, onClick = onCapture)
+                CameraShutter(enabled = captureEnabled, captureState = captureState, onClick = onCapture)
                 Column(Modifier.width(180.dp)) {
                     Button(onClick = onSave, enabled = saveEnabled,
                         modifier = Modifier.fillMaxWidth().heightIn(min = AppDimensions.MinTouchTarget)) { Text("保存照片") }
@@ -518,7 +515,7 @@ private fun CameraBottomControls(
             modifier = Modifier.padding(horizontal = AppDimensions.Space16, vertical = AppDimensions.Space12),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
-            Row(horizontalArrangement = Arrangement.spacedBy(AppDimensions.Space8)) {
+            FlowRow(horizontalArrangement = Arrangement.spacedBy(AppDimensions.Space8)) {
                 if (exposureAvailable) TextButton(onClick = onShowExposure, enabled = controlsEnabled,
                     modifier = Modifier.heightIn(min = AppDimensions.MinTouchTarget)) {
                     Text("曝光")
@@ -571,6 +568,7 @@ private fun CameraBottomControls(
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 Surface(
+                    modifier = Modifier.weight(1f),
                     shape = RoundedCornerShape(AppDimensions.RadiusSmall),
                     color = AppColors.AccentBlueSoft,
                     border = androidx.compose.foundation.BorderStroke(1.dp, AppColors.CameraChromeBorder),
@@ -588,9 +586,10 @@ private fun CameraBottomControls(
                 }
                 CameraShutter(
                     enabled = captureEnabled,
+                    captureState = captureState,
                     onClick = onCapture,
                 )
-                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                Column(modifier = Modifier.weight(1f), horizontalAlignment = Alignment.CenterHorizontally) {
                     TextButton(onClick = { onEvent(CameraUiEvent.GridToggled) }) {
                         Text(
                             if (uiState.gridVisible) "网格开" else "网格关",
@@ -659,13 +658,13 @@ private fun OverlayModeControls(
 }
 
 @Composable
-private fun CameraShutter(enabled: Boolean, onClick: () -> Unit) {
+private fun CameraShutter(enabled: Boolean, captureState: String, onClick: () -> Unit) {
     Surface(
         onClick = onClick,
         enabled = enabled,
         modifier = Modifier
             .size(AppDimensions.ShutterSize)
-            .semantics { contentDescription = if (enabled) "拍摄" else "相机准备中" },
+            .semantics { contentDescription = "拍摄"; stateDescription = captureState },
         shape = CircleShape,
         color = Color.Transparent,
         border = androidx.compose.foundation.BorderStroke(3.dp, AppColors.CameraChromeText),
@@ -715,6 +714,7 @@ private fun GuidePanelSheet(
             ) {
                 Text(
                     if (environment) "环境指导" else "人物指导",
+                    modifier = Modifier.weight(1f),
                     style = MaterialTheme.typography.headlineSmall,
                     fontWeight = FontWeight.SemiBold,
                     color = AppColors.TextPrimary,
@@ -782,10 +782,10 @@ private fun GuidePanelSheet(
                 onClick = onClose,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(AppDimensions.PrimaryButtonHeight),
+                    .heightIn(min = AppDimensions.PrimaryButtonHeight),
                 colors = ButtonDefaults.buttonColors(containerColor = AppColors.AccentBlue),
             ) {
-                Text("返回取景")
+                Text("返回取景", modifier = Modifier.weight(1f), textAlign = TextAlign.Center)
             }
         }
     }

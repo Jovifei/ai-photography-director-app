@@ -42,6 +42,7 @@ import com.jovi.photoai.camera.CameraLens
 import com.jovi.photoai.camera.ZoomCapability
 import com.jovi.photoai.camera.LensSwitchResult
 import com.jovi.photoai.camera.cameraControlsAllowed
+import com.jovi.photoai.camera.cameraInteractionReady
 import com.jovi.photoai.camera.resolveCameraLens
 import com.jovi.photoai.camera.restoredZoomRatio
 import com.jovi.photoai.data.capture.CaptureFileState
@@ -213,8 +214,29 @@ private fun CameraContent(
     var exposureMessage by remember(manager) { mutableStateOf<String?>(null) }
     var focusFeedback by remember(manager) { mutableStateOf<FocusFeedback?>(null) }
     var focusRequestId by remember(manager) { mutableLongStateOf(0L) }
+    var foreground by remember(lifecycleOwner) {
+        mutableStateOf(lifecycleOwner.lifecycle.currentState.isAtLeast(Lifecycle.State.RESUMED))
+    }
+    var cameraOpen by remember(manager) { mutableStateOf(false) }
+    var previewStreaming by remember(previewView) { mutableStateOf(false) }
+    var restoreOnResume by remember(manager) { mutableStateOf(false) }
+    fun permissionGrantedNow() = ContextCompat.checkSelfPermission(context,
+        Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED
+    fun runtimeReadyNow() = cameraInteractionReady(
+        foreground && lifecycleOwner.lifecycle.currentState.isAtLeast(Lifecycle.State.RESUMED),
+        permissionGrantedNow(), cameraOpen && manager.isCameraOpen(),
+        previewStreaming && previewView.previewStreamState.value == PreviewView.StreamState.STREAMING,
+    )
+    fun publishReadiness() {
+        if (cameraBound && runtimeReadyNow() && !bindingPending && pendingZoom == null && pendingExposure == null) {
+            if (latestUiState.cameraRuntime != CameraRuntime.READY) {
+                dispatch(CameraUiEvent.CameraStartRequested)
+                dispatch(CameraUiEvent.CameraReady)
+            }
+        } else if (latestUiState.cameraRuntime == CameraRuntime.READY) dispatch(CameraUiEvent.CameraStopped)
+    }
     fun canControlNow() = cameraControlsAllowed(
-        latestUiState.canCapture && cameraBound && library.state.value.ready,
+        latestUiState.canCapture && cameraBound && runtimeReadyNow() && library.state.value.ready && pendingExposure == null,
         latestUiState.captureInFlight, library.state.value.capturing, bindingPending, pendingZoom != null,
     )
     fun beginBinding() {
@@ -234,6 +256,7 @@ private fun CameraContent(
     fun acceptBinding(lens: CameraLens, restoreZoom: Float?, restoreExposure: Int, notice: String?) {
         val ticket = bindingEpoch
         cameraBound = true
+        if (!foreground) { restoreOnResume = true; return }
         lensMessage = notice
         availableLenses = manager.availableLenses()
         val zoom = manager.zoomCapability()
@@ -250,7 +273,7 @@ private fun CameraContent(
         fun finishIfSettled() {
             if (bindingEpoch == ticket && pendingZoom == null && pendingExposure == null) {
                 bindingPending = false
-                dispatch(if (cameraBound) CameraUiEvent.CameraReady else CameraUiEvent.CameraFailed)
+                publishReadiness()
             }
         }
         // Both pending flags are assigned first: synchronous failures cannot finish early.
@@ -294,6 +317,38 @@ private fun CameraContent(
         if (focusFeedback == shown) focusFeedback = null
     }
     DisposableEffect(lifecycleOwner, manager) {
+        manager.setForeground(foreground)
+        val removeOpenObserver = manager.observeCameraOpen(lifecycleOwner) {
+            cameraOpen = it
+            publishReadiness()
+        }
+        val streamObserver = androidx.lifecycle.Observer<PreviewView.StreamState> {
+            previewStreaming = foreground && it == PreviewView.StreamState.STREAMING
+            publishReadiness()
+        }
+        previewView.previewStreamState.observe(lifecycleOwner, streamObserver)
+        val lifecycleObserver = LifecycleEventObserver { _, event ->
+            if (event == Lifecycle.Event.ON_RESUME) {
+                foreground = true
+                manager.setForeground(true)
+                cameraOpen = manager.isCameraOpen()
+                previewStreaming = previewView.previewStreamState.value == PreviewView.StreamState.STREAMING
+                if (cameraBound) restoreOnResume = true
+            } else if (event == Lifecycle.Event.ON_PAUSE || event == Lifecycle.Event.ON_STOP) {
+                foreground = false
+                manager.setForeground(false)
+                bindingEpoch++
+                pendingZoom = null
+                pendingExposure = null
+                focusFeedback = null
+                focusRequestId++
+                cameraOpen = false
+                previewStreaming = false
+                if (cameraBound) { bindingPending = true; restoreOnResume = true }
+                dispatch(CameraUiEvent.CameraStopped)
+            }
+        }
+        lifecycleOwner.lifecycle.addObserver(lifecycleObserver)
         dispatch(CameraUiEvent.PermissionObserved(CameraPermission.GRANTED))
         dispatch(CameraUiEvent.CameraStartRequested)
         manager.initialize(
@@ -305,9 +360,25 @@ private fun CameraContent(
                 dispatch(CameraUiEvent.CameraFailed)
             },
         )
-        onDispose { bindingEpoch++; cameraBound = false; bindingPending = true; manager.shutdown() }
+        onDispose {
+            lifecycleOwner.lifecycle.removeObserver(lifecycleObserver)
+            previewView.previewStreamState.removeObserver(streamObserver)
+            removeOpenObserver()
+            bindingEpoch++; cameraBound = false; bindingPending = true; manager.shutdown()
+        }
     }
-    val interactionEnabled = controlsEnabled && cameraBound && !bindingPending && pendingZoom == null
+    LaunchedEffect(foreground, restoreOnResume, cameraBound, libraryCapturing, uiState.captureInFlight) {
+        if (foreground && restoreOnResume && cameraBound && !libraryCapturing && !latestUiState.captureInFlight && permissionGrantedNow()) {
+            restoreOnResume = false
+            bindingEpoch++
+            bindingPending = true
+            manager.currentLens()?.let { acceptBinding(it, latestZoom, latestExposure, null) }
+        }
+    }
+    LaunchedEffect(foreground, cameraOpen, previewStreaming, cameraBound, bindingPending, pendingZoom, pendingExposure, uiState.cameraRuntime) {
+        publishReadiness()
+    }
+    val interactionEnabled = controlsEnabled && cameraBound && runtimeReadyNow() && !bindingPending && pendingZoom == null && pendingExposure == null
     Box(Modifier.fillMaxSize().background(AppColors.TextPrimary)) {
         AndroidView(factory = { previewView }, modifier = Modifier.fillMaxSize())
         Box(Modifier.fillMaxSize().testTag("camera-focus-surface")
@@ -355,9 +426,11 @@ private fun CameraContent(
             lensStatus = lensMessage,
             onZoomSelected = { ratio ->
                 if (canControlNow() && ratio.isFinite()) {
+                    val ticket = bindingEpoch
                     pendingZoom = ratio
                     zoomMessage = null
                     manager.setZoom(ratio) { confirmed ->
+                        if (ticket != bindingEpoch || !foreground) return@setZoom
                         if (confirmed != null) onZoomConfirmed(confirmed) else zoomMessage = "缩放调整未确认，请重试"
                         pendingZoom = null
                     }
@@ -387,9 +460,11 @@ private fun CameraContent(
             exposureStatus = exposureMessage,
             onExposureSelected = { index ->
                 if (canControlNow() && exposureCapability != null) {
+                    val ticket = bindingEpoch
                     pendingExposure = index
                     exposureMessage = null
                     manager.setExposure(index) { confirmed ->
+                        if (ticket != bindingEpoch || !foreground) return@setExposure
                         if (confirmed != null) onExposureConfirmed(confirmed)
                         else exposureMessage = "曝光调整未完成，已恢复上次设置"
                         pendingExposure = null
@@ -408,10 +483,14 @@ private fun CameraContent(
                     }
                 }
             },
+            referenceCard = if (referenceGuidance != null && !directCaptureMode) {
+                { ReferenceThumbnailCard(referenceGuidance.referenceTitle, referenceImageFileName,
+                    onViewReference, Modifier.padding(horizontal = AppDimensions.PagePadding)) }
+            } else null,
         )
         if (!cameraBound && !bindingPending && !libraryCapturing) {
             TextButton(onClick = {
-                if (!library.state.value.capturing && !latestUiState.captureInFlight && !bindingPending) {
+                if (foreground && lifecycleOwner.lifecycle.currentState.isAtLeast(Lifecycle.State.RESUMED) && permissionGrantedNow() && !library.state.value.capturing && !latestUiState.captureInFlight && !bindingPending) {
                     beginBinding()
                     manager.initialize(onReady = { bindSavedCamera() }, onError = {
                         bindingPending = false; lensMessage = "相机初始化未完成，请重试"; dispatch(CameraUiEvent.CameraFailed)
@@ -419,17 +498,12 @@ private fun CameraContent(
                 }
             }, modifier = Modifier.align(Alignment.Center).testTag("camera-bind-retry")) { Text("重试相机绑定") }
         }
-        if (referenceGuidance != null && !directCaptureMode) {
-            ReferenceThumbnailCard(referenceGuidance.referenceTitle, referenceImageFileName,
-                onViewReference, Modifier.align(Alignment.TopStart).statusBarsPadding()
-                    .padding(start = AppDimensions.PagePadding, top = 76.dp))
-        }
     }
 }
 
 @Composable
 private fun ReferenceThumbnailCard(title: String, imageFileName: String?, onOpen: () -> Unit, modifier: Modifier) {
-    Surface(modifier.widthIn(max = 224.dp).height(64.dp).testTag("camera-reference-card").clickable(onClick = onOpen),
+    Surface(modifier.widthIn(max = 224.dp).heightIn(min = 64.dp).testTag("camera-reference-card").clickable(onClick = onOpen),
         shape = RoundedCornerShape(AppDimensions.RadiusLarge), color = AppColors.CameraChromeSurface) {
         Row(Modifier.padding(8.dp), verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -437,10 +511,10 @@ private fun ReferenceThumbnailCard(title: String, imageFileName: String?, onOpen
                 "当前参考缩略图", Modifier.size(48.dp), maxDimensionPx = 256)
             else Box(Modifier.size(48.dp).background(AppColors.AccentBlueSoft),
                 contentAlignment = Alignment.Center) { Text("无图") }
-            Column {
-                Text(title, maxLines = 1, overflow = TextOverflow.Ellipsis,
+            Column(Modifier.weight(1f)) {
+                Text(title, modifier = Modifier.fillMaxWidth(), maxLines = 1, overflow = TextOverflow.Ellipsis,
                     color = AppColors.CameraChromeText, style = MaterialTheme.typography.labelMedium)
-                Text("查看参考图", maxLines = 1, color = AppColors.CameraChromeText,
+                Text("查看参考图", modifier = Modifier.fillMaxWidth().testTag("camera-reference-open-label"), color = AppColors.CameraChromeText,
                     style = MaterialTheme.typography.labelSmall)
             }
         }

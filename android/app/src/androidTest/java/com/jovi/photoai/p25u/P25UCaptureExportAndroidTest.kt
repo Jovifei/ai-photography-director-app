@@ -6,6 +6,7 @@ import android.app.Application
 import android.os.Bundle
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsEnabled
+import androidx.compose.ui.test.isEnabled
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onAllNodesWithContentDescription
 import androidx.compose.ui.test.onAllNodesWithText
@@ -152,9 +153,10 @@ class P25UCaptureExportAndroidTest {
         compose.onNodeWithContentDescription("无指导直接拍摄", useUnmergedTree = true).performClick()
         compose.waitUntil(TIMEOUT) {
             compose.onAllNodesWithContentDescription("拍摄", useUnmergedTree = true)
-                .fetchSemanticsNodes().isNotEmpty()
+                .fetchSemanticsNodes().any { isEnabled().matches(it) }
         }
-        compose.onNodeWithContentDescription("拍摄", useUnmergedTree = true).performClick()
+        // Stable shutter identity also exists before OPEN/STREAMING; wait for its enabled gate.
+        compose.onNodeWithContentDescription("拍摄", useUnmergedTree = true).assertIsEnabled().performClick()
         var capturedId: String? = null
         compose.waitUntil(TIMEOUT) {
             val added = library.state.value.records.filter {

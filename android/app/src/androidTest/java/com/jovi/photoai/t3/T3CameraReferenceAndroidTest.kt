@@ -7,6 +7,8 @@ import android.hardware.camera2.CameraManager
 import android.os.Build
 import androidx.activity.compose.setContent
 import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.assertIsEnabled
+import androidx.compose.ui.test.isEnabled
 import androidx.compose.ui.test.onAllNodesWithContentDescription
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithText
@@ -132,9 +134,9 @@ class T3CameraReferenceAndroidTest {
             PhotoDirectorTheme { CameraScreen(guidanceItems = emptyList(), directCaptureMode = true) }
         }
         compose.waitUntil(15_000) {
-            compose.onAllNodesWithText("曝光").fetchSemanticsNodes().isNotEmpty()
+            compose.onAllNodesWithText("曝光").fetchSemanticsNodes().any { isEnabled().matches(it) }
         }
-        compose.onNodeWithText("曝光").assertIsDisplayed()
+        compose.onNodeWithText("曝光").assertIsDisplayed().assertIsEnabled()
         compose.onNodeWithText("曝光").performClick()
         compose.onNodeWithText("曝光补偿").assertIsDisplayed()
         compose.onNodeWithTag("exposure-slider").performTouchInput {
@@ -154,8 +156,9 @@ class T3CameraReferenceAndroidTest {
             PhotoDirectorTheme { CameraScreen(guidanceItems = emptyList(), directCaptureMode = true) }
         }
         compose.waitUntil(20_000) {
-            compose.onAllNodesWithContentDescription("拍摄").fetchSemanticsNodes().isNotEmpty()
+            compose.onAllNodesWithContentDescription("拍摄").fetchSemanticsNodes().any { isEnabled().matches(it) }
         }
+        compose.onNodeWithContentDescription("拍摄").assertIsEnabled()
         compose.onNodeWithTag("camera-focus-surface").performTouchInput { click() }
         compose.waitUntil(5_000) {
             listOf("对焦中", "对焦成功", "对焦未确认").any { status ->

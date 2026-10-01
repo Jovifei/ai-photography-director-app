@@ -267,3 +267,12 @@ Remote plan/policy: `c2c_8b15`. Base PR #18 head `58119b8541a49e27eedff2497c306e
 - [x] Update report, privacy audit, non-force stacked Draft PR #19 and remote source/evidence review.
 
 Remote current-source review `c2c_8b15` iteration1 explicitly re-read clean PR19 code HEAD `3d6204887363c586fb8fd227975394d4a8c745d3` through the exact bound connector and returned DONE / PASS without tool limitations. T16 lifecycle, permission and accessibility hardening is next; its final qualification must be new evidence.
+
+## T16 lifecycle, permission and accessibility — 2026-10-02
+
+Plan: `tasks/plans/2026-10-02-t16-camera-lifecycle-accessibility.md`. Base accepted T15 plus documentation `a8b67bcd0f2344c027b65d6ea8ed72cef8a11239`; remote detailed plan and concrete state/semantics refinements approved.
+
+- [x] Current source audit and detailed plan confirmed with remote.
+- [x] Failing tests, minimal lifecycle/settlement repairs and adaptive accessibility fixes; preserved tap-focus hit testing after the final regression exposed interception.
+- [x] Dedicated emulator lifecycle, exact permission recovery, font1/2 and affected regression qualification: final88/88, JVM159/159, builds/static lint0errors/17warnings, original permission/allflags/font/config restored.
+- [ ] Independent review, report/privacy, stacked Draft PR, remote current-source review and next stage.

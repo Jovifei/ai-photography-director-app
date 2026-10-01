@@ -36,7 +36,7 @@ class T15CameraChromeAndroidTest {
         } } }
         rule.onNodeWithTag("zoom-open").assertDoesNotExist()
         rule.onNodeWithTag("camera-lens-switch").assertDoesNotExist()
-        rule.onNodeWithContentDescription("相机准备中").assertIsNotEnabled()
+        rule.onNodeWithContentDescription("拍摄").assertIsNotEnabled()
         dispose()
     }
 
@@ -71,7 +71,7 @@ class T15CameraChromeAndroidTest {
         rule.onNodeWithTag("zoom-slider").assertIsNotEnabled()
         rule.onNodeWithText("完成").performClick()
         rule.onNodeWithTag("camera-lens-switch").assertIsNotEnabled()
-        rule.onNodeWithContentDescription("相机准备中").assertIsNotEnabled()
+        rule.onNodeWithContentDescription("拍摄").assertIsNotEnabled()
         rule.runOnIdle { pending.value = null }
         rule.onNodeWithTag("zoom-open").performClick()
         rule.runOnIdle { lens.value = CameraLens.FRONT }

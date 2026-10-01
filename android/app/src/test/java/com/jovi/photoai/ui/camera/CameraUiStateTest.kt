@@ -85,8 +85,34 @@ class CameraUiStateTest {
 
         assertEquals(CameraRuntime.STOPPED, denied.cameraRuntime)
         assertEquals("window-portrait", denied.selectedReferencePhotoId)
-        assertFalse(denied.captureInFlight)
+        assertTrue(denied.captureInFlight)
         assertFalse(denied.canCapture)
+    }
+
+    @Test fun acceptedCaptureStillSettlesAfterPermissionLossOrCameraFailure() {
+        val capturing = capturableState().copy(captureInFlight = true, captureCount = 4)
+        for (event in listOf(CameraUiEvent.PermissionObserved(CameraPermission.DENIED), CameraUiEvent.CameraFailed, CameraUiEvent.CameraStopped)) {
+            val unavailable = reduceCameraUiState(capturing, event)
+            assertFalse(unavailable.canCapture)
+            assertTrue(unavailable.captureInFlight)
+            val saved = reduceCameraUiState(unavailable, CameraUiEvent.CaptureSucceeded)
+            assertEquals(5, saved.captureCount)
+            assertFalse(saved.captureInFlight)
+            assertEquals(saved, reduceCameraUiState(saved, CameraUiEvent.CaptureSucceeded))
+            val failed = reduceCameraUiState(unavailable, CameraUiEvent.CaptureFailed)
+            assertEquals(4, failed.captureCount)
+            assertFalse(failed.captureInFlight)
+            assertEquals(CameraUiMessage.CAPTURE_FAILED, failed.message)
+        }
+    }
+
+    @Test fun pausedRuntimeRejectsStaleReadyAndResumesOnlyThroughStart() {
+        val stopped = reduceCameraUiState(capturableState(), CameraUiEvent.CameraStopped)
+        assertFalse(stopped.canCapture)
+        assertEquals(stopped, reduceCameraUiState(stopped, CameraUiEvent.CameraReady))
+        val starting = reduceCameraUiState(stopped, CameraUiEvent.CameraStartRequested)
+        assertFalse(starting.canCapture)
+        assertTrue(reduceCameraUiState(starting, CameraUiEvent.CameraReady).canCapture)
     }
 
     @Test

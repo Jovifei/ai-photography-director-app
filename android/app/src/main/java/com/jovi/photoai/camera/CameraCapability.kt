@@ -4,6 +4,11 @@ enum class CameraLens { BACK, FRONT }
 
 data class ZoomCapability(val minRatio: Float, val maxRatio: Float, val currentRatio: Float)
 
+/** Binding alone is not proof that the viewfinder can accept a user operation. */
+fun cameraInteractionReady(foreground: Boolean, permissionGranted: Boolean,
+    cameraOpen: Boolean, previewStreaming: Boolean): Boolean =
+    foreground && permissionGranted && cameraOpen && previewStreaming
+
 fun cameraControlsAllowed(cameraReady: Boolean, uiCaptureInFlight: Boolean,
     libraryCaptureInFlight: Boolean, bindingPending: Boolean, zoomPending: Boolean): Boolean =
     cameraReady && !uiCaptureInFlight && !libraryCaptureInFlight && !bindingPending && !zoomPending
