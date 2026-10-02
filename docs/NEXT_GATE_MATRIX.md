@@ -34,3 +34,7 @@ T7's `EVALUATION_GOVERNANCE_PACKET_READY — HUMAN_REVIEW_NOT_AUTHORIZED` status
 T8's `SYNTHETIC_EVALUATION_HARNESS_READY — REAL_EVALUATION_NOT_AUTHORIZED` status proves only that contract-only JSON fixtures can flow through Envelope eligibility, blinded projection and T7 adjudication states. It does not represent Provider execution, human review, image/media processing, confidence, Pipeline compatibility or approved thresholds.
 
 T9's `PRODUCT_READY_PROMOTION_GATE_READY — REAL_READY_PROMOTION_NOT_AUTHORIZED` status proves only that the future promotion boundary is machine-readable and fail-closed. It does not authorize a real Provider result, trusted READY guidance, Android READY writes, human review, Pipeline, device, signing, release or merge. The offline Photo Knowledge Bundle consumer remains a separate preserved READY path.
+
+## 主线整合后当前状态（2026-10-02）
+
+PR22合并061d7627aa1a9dd461411c1f1141fec62e8857a6，PR23合并98b28b03a74c81e972d5806ee6637f9b7b1fd845。Owner main已安全同步整合源码，原件备份及Owner修改保留，20项完整性行为测试与进度/隐私门通过。前文Draft/未合并描述保留为历史，不再代表当前主线；详见reports/MAINLINE_CONSOLIDATION_20261002.md。T14、物理手机、人审和发布资格独立待验收。

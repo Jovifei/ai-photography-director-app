@@ -10,13 +10,13 @@
 | 大阶段 | 进度条 | 检查点 | 状态 | 首发要求 |
 |---|---|---|---|---|
 | M1 产品范围与数据契约 | ██████████ | 4/4 | IN_PROGRESS | 是 |
-| M2 Android 离线产品闭环 | ████████░░ | 5/6 | IN_PROGRESS | 是 |
+| M2 Android 离线产品闭环 | ██████████ | 6/6 | OFFLINE_MACHINE_MAINLINE_INTEGRATED | 是 |
 | M3 夜间分析生产端与 App 接入 | ██░░░░░░░░ | 1/5 | WAITING_EXTERNAL | 是 |
 | M4 真实 AI 能力资格与路由 | ██░░░░░░░░ | 2/7 | ROUTE_DECISION_PENDING | 路线待远端审定 |
 | M5 真实设备、摄影体验与试点 | █░░░░░░░░░ | 1/6 | HUMAN_ACCEPTANCE_PENDING | 是 |
 | M6 Android 发布与持续维护 | █░░░░░░░░░ | 1/6 | RELEASE_PENDING | 是 |
 
-**下一动作：** 进度/交接完整性防护已远端接受；M3/T14等待生产端独立原始黄金向量、版本及canonical摘要；物理手机、人审和发布资格另行验收。
+**下一动作：** 源码及主线同步已远端复审通过；M3/T14等待生产端独立黄金向量，物理手机、人审与发布資格单独验收。
 
 [大阶段实施步骤与完成标准](PROJECT_MASTER_ROADMAP.md)
 
@@ -38,7 +38,7 @@
 | 阶段级合成/API35远端资格 | DONE | T17远端96/96，逐阶段远端接受 |
 | 当前候选本地JVM/构建/Debug lint | DONE | 本轮159/159，Debug/AndroidTest构建PASS，lint0错误26警告；本机限定复验报告 |
 | 当前候选本机API35复验 | DONE | 本机API35限定T17六阶段+8保护PASS；完整96矩阵本轮未重跑；LOCAL_API35_T17_20261002.md |
-| 整合PR远端复核与主线接收 | PENDING | PR22/PR23 Draft；远端交接已接收，完整审查与主线接收尚未完成 |
+| 整合PR远端复核与主线接收 | DONE | 远端APPROVE_SOURCE_MERGE；PR22/23已正常合并，Owner main已同步98b28b0，20项验证PASS |
 
 ## M3 夜间分析生产端与 App 接入
 

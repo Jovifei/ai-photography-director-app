@@ -90,3 +90,7 @@ T5 consolidated this status into one machine-checkable authority, T6 added a mac
 ## Android lane after T17
 
 The local T3–T17 offline Android machine track has no additional speculative app implementation queued. Its next machine gate is T14 only after the producer supplies exact source revision, raw single/multi/A/B vectors, file byte hashes, canonical PKB1 digests and independent mapping expectations. Physical-device behavior, real-photo usefulness, TalkBack usefulness, human editorial decisions, signing, release and a GitHub `main` merge remain separate `PENDING` or `NOT_RUN` gates.
+
+## 主线整合后当前状态（2026-10-02）
+
+PR22合并061d7627aa1a9dd461411c1f1141fec62e8857a6，PR23合并98b28b03a74c81e972d5806ee6637f9b7b1fd845。Owner main已安全同步整合源码，原件备份及Owner修改保留，20项完整性行为测试与进度/隐私门通过。前文Draft/未合并描述保留为历史，不再代表当前主线；详见reports/MAINLINE_CONSOLIDATION_20261002.md。T14、物理手机、人审和发布资格独立待验收。
