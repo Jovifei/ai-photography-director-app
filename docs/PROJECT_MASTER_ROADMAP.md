@@ -1,38 +1,193 @@
 # 项目总路线图：AI 摄影现场导演
 
-更新时间：2026-10-02。规划来源：本地基于当前源码、交接与用户目标整理；远端 ChatGPT 总体规划 **PENDING_REMOTE_PLANNING**。本文件是供远端审定的大阶段草案，不能称为远端已批准方案。
+更新时间：2026-10-02。
 
-目标：用户选择参考图，得到来源清楚、可执行的构图/光线/人物指导，在 Android 相机中完成拍摄、查看成片、重拍与导出。夜间照片分析工程通过版本化 Bundle 接入 App。首发 Android；实时 Pose、云服务和 iOS 后续独立决策。
+规划状态：**PENDING_REMOTE_PLANNING**。
 
-进度入口：[项目进度总览](PROJECT_PROGRESS.md)。进度数据：[project_progress.json](project_progress.json)。当前源码候选：PR #22；基准源码 `625beba85ee1c33496602e8d758d96f79ed497a3`。Owner main 与已取得的 origin/main 同为 `1b776ba9932a7fdc96112c8cb85c7258f3f7d6af`。
+说明：当前文档完成远端源码证据整理和阶段实施包补充，但详细总路线图正式批准状态仍保持待审定。不得把源码审查、测试通过或文档整理等同于产品完成。
 
-## 大阶段与实施步骤
+## 产品目标与边界
 
-| 阶段 | 用户得到什么 | 实施顺序 | 交付物与结束条件 |
-|---|---|---|---|
-| M1 产品范围与数据契约 | 明确 App 要解决的问题及各工程职责 | ①确认 Reference→Director 目标；②冻结 Android 首发范围；③确认 Bundle 字段、摘要和错误语义；④远端审定本总路线图及阶段优先级 | 总路线图、消费者合同、App/生产端责任边界。远端总体审定前仍为草案 |
-| M2 Android 离线产品闭环 | 导入参考图、绑定指导、拍摄、成片库、重拍、导出 | ①项目/参考库与明确状态；②指导展示与 CameraX 控制；③成片持久化和导出；④替换/恢复/删除关系验证；⑤在本机专用 API35 环境复验；⑥远端审核整合 PR、修复发现并完成主线接收 | T3–T17 实现与报告、PR #22、当前候选本地证据。JVM/编译不能代替 API35；合成验证不能代替真人体验 |
-| M3 夜间分析生产端与 App 接入 | 夜间分析结果能可靠进入手机并成为可追溯指导 | ①发出 PKB1 向量要求；②接收生产端确切 revision、原始向量及摘要；③双端独立核对 canonical bytes/digest；④验证明确映射、导入、A/B 替换与拒绝时无写入；⑤验证来源/版本/逐图状态及端到端交接 | T14 跨工程兼容报告、原始向量清单、消费者接收回执。生产端自行实现分析；只通过 Bundle Contract 对接。消费者 fixture 不能证明生产端兼容 |
-| M4 真实 AI 能力资格与路由 | 真实分析结果具有可测质量和诚实失败行为 | ①远端决定首发使用夜间生产端、局域网 Provider 或两者；②审核模型/服务权利及输入隐私；③满足具体路线的 acquisition/transport/resource 条件；④最小运行与单图 schema 预检；⑤按既有 rubric 评估质量、拒绝/取消/超时；⑥验证 READY promotion 和 App 接线；⑦确认成本/延迟/离线降级 | 实测质量与运行报告、确切模型/服务版本、授权边界。Qwen 当前 T11 legal 阻塞；是否首发必需仍待远端路线决策，不让可选路线阻断 M2/M3 |
-| M5 真实设备、摄影体验与试点 | 用户在真实手机上获得稳定且有帮助的拍摄体验 | ①准备当前候选审核包；②允许设备与使用协议；③真实照片构图/光线/人物指导评价；④TalkBack、大字体、旋转、相机差异验证；⑤修复问题并重测；⑥按已批准试点协议观察和记录 | 人工/设备验收回执、缺陷关闭证据、试点结果。每项绑定候选与人员决策；未执行为 NOT_RUN |
-| M6 Android 发布与持续维护 | 可安装、升级、回滚并持续交付的正式版本 | ①复用已有交付工具并绑定当前候选；②提供外部签名身份并核验；③通过代码/权限/隐私/人工门后完成主线合入；④签名包安装升级与数据保存验证；⑤演练回滚、支持和版本追溯；⑥决定发布范围并记录上线结果 | 已审核主线、签名制品与升级/回滚证据、发布决定。历史签名资格不自动覆盖当前 T3–T17 候选 |
+目标：用户选择可信来源参考图，获得来源明确、可执行的构图/光线/人物指导，在 Android 相机中完成拍摄、查看成片、重拍与导出。夜间照片分析工程通过版本化 Bundle 合同进入 App。
 
-## 依赖、并行与当前优先级
+首发边界：Android 离线闭环优先。
 
-主路径：M1 总体审定 → M2 当前候选收口 → M3 生产端兼容 → M5 真人/设备验收 → M6 发布。M4 的真实 AI 能力决定 M3 输入质量；具体 Provider 部署路线必须由远端审定。生产端仍在独立工程进行，App 侧不得代替生产端生成兼容证据。
+不自动包含：实时 Pose、云服务、未经许可模型服务、生产端分析实现、iOS。
 
-当前先处理：连接恢复与远端总规划 → 整合 PR #22 复核 → 本机 API35 环境/外部 P1A 证据缺口 → 接收生产端黄金向量并执行 T14。发布签名、真人审核和实时 Pose 不穿插伪装成普通自动开发任务。
+当前候选：PR #22
 
-当前本机证据：JVM159/159、P1.5合同75/75、PKB1合同12/12、Debug/AndroidTest构建与Debug lint通过。Python全套249项为247通过、1跳过、1因外部许可证据缺失失败。API35本机无AVD未运行；Release lint缺少签名输入。T17远端96/96是独立远端记录。
+基准源码：`57081b4aebc5feffdfe7460b359c5e3e031b27b3`
 
-## 进度维护规则
+## M1 产品范围与数据契约
 
-1. `project_progress.json` 是本总览唯一进度数据源。每个检查点记录 done/pending/blocked/not_run、证据、阻塞及下一动作。
-2. 每次功能提交、测试结果变化、远端审核、外部交接或人工决定，同一提交内更新该 JSON，并运行 `python scripts/render_project_progress.py`。
-3. 使用 `python scripts/render_project_progress.py --check` 检查 Markdown 未落后于 JSON；阶段完成只在全部结束条件有证据时写入。
-4. 每阶段进度条表示检查点完成数。草案检查点未获远端审定，不显示综合产品完成百分比；不得把测试数量作为进度权重。
-5. 每轮更新 README/当前状态指向本总览，随后按映射 DryRun 同步本地知识库。保留历史 P/T 报告，把它们映射到大阶段而非再创建平级大阶段。
+目标：冻结产品责任和数据边界。
 
-## 远端总体规划请求
+步骤：
 
-连接恢复后，在同一 Ai相机 Project/chat 发起以下任务：读取本文件、进度 JSON、当前状态、PR #22 精确源码、T17交接和生产端需求；审定/重排 M1–M6，说明哪些是首发必需、哪些可选；为每阶段给出工作包、实施顺序、文件/接口、验收证据、角色责任、依赖、并行边界、预计工作量范围、失败处理、退出条件；给出下一阶段可执行详细计划及长期阶段图。回答必须明确当前完成/阻塞状态、M4路线与夜间工程边界，并审定进度口径。远端回答尚未收到，不能将本草案标为远端批准。
+1. 审定 Reference→Director 用户流程。
+2. 冻结 Android consumer 责任。
+3. 冻结 PKB1 字段、digest、错误语义。
+4. 完成 producer/consumer 边界审定。
+
+交付物：
+
+- PROJECT_MASTER_ROADMAP.md
+- project_progress.json
+- PKB1 contract
+- producer handoff request
+
+验收：
+
+- consumer 不生成 producer 证据。
+- digest/provenance 可追溯。
+
+当前：待正式路线批准。
+
+## M2 Android 离线产品闭环
+
+目标：完成无需真实 AI provider 的 Android 产品闭环。
+
+源码范围：
+
+- `android/app/src/main/java/com/jovi/photoai/camera/CameraCapability.kt`
+- `android/app/src/main/java/com/jovi/photoai/camera/CameraControlFence.kt`
+- `android/app/src/main/java/com/jovi/photoai/camera/CameraXManager.kt`
+- `android/app/src/main/java/com/jovi/photoai/data/capture/CaptureEngine.kt`
+- `android/app/src/main/java/com/jovi/photoai/data/capture/CaptureRepository.kt`
+- `android/app/src/main/java/com/jovi/photoai/data/reference/PhotoKnowledgeBundle.kt`
+
+步骤：
+
+1. 项目/参考图管理。
+2. PKB1 导入和绑定。
+3. 指导卡展示。
+4. CameraX 拍摄。
+5. 成片保存、重拍、恢复。
+6. 本地设备复验。
+
+验收依赖：
+
+- JVM/build/lint。
+- API35 设备验证。
+- 真人体验验证独立记录。
+
+当前：源码审查未发现可复现缺陷；设备验证 NOT_RUN。
+
+## M3 生产端与 App 接入
+
+目标：生产分析结果可安全进入 App。
+
+步骤：
+
+1. 接收 producer golden vector。
+2. 校验 revision/digest。
+3. 双端验证 canonical bytes。
+4. 验证导入、替换、拒绝无写入。
+5. 验证来源和逐图状态。
+
+交付物：
+
+- T14 compatibility report。
+- 原始向量清单。
+- consumer receipt。
+
+依赖：生产端独立提供证据。
+
+当前阻塞：golden vector 未提供。
+
+## M4 真实 AI 能力资格与路由
+
+目标：确定真实分析能力是否进入产品。
+
+步骤：
+
+1. 审定 provider 路线。
+2. 审核模型/服务权利。
+3. 验证输入隐私边界。
+4. 单图真实运行。
+5. 按 rubric 测量质量、失败、延迟。
+6. 验证 READY promotion。
+
+交付物：
+
+- provider version。
+- evaluation report。
+- privacy/legal evidence。
+
+当前：路线决策待审定；不阻断 M2。
+
+## M5 真实设备、摄影体验与试点
+
+目标：验证真实用户拍摄价值。
+
+步骤：
+
+1. 准备审核包。
+2. 设备安装。
+3. 真实照片评价。
+4. 无障碍验证。
+5. 问题修复。
+6. 试点观察。
+
+验收：
+
+- 人工回执。
+- 设备记录。
+- 缺陷关闭证据。
+
+当前：NOT_RUN。
+
+## M6 发布与维护
+
+目标：形成可维护 Android 发布流程。
+
+步骤：
+
+1. 当前候选重新资格化。
+2. 签名材料验证。
+3. 权限/隐私审核。
+4. 安装升级测试。
+5. 回滚演练。
+6. 发布决定。
+
+依赖：M2-M5 门禁完成。
+
+当前：签名和发布验证未完成。
+
+## 当前源码审查证据
+
+已读取：
+
+PKB1：
+
+- `PhotoKnowledgeBundleParser.parse`
+- `KnowledgeBundleProvenance`
+- `canonicalPayloadBytes`
+- `canonicalPayloadSha256`
+
+核对：schema、版本、UTF-8、digest、duplicate reference、provenance。
+
+T17：
+
+- `T17OfflineGuidedContinuityAndroidTest`
+- `T17OwnershipPolicyAndroidTest`
+
+核对：API35 gate、process identity、bundle replacement、deleted reference safety、capture identity。
+
+结论：当前远端源码审查未发现可复现源码缺陷。
+
+## 依赖关系
+
+主路径：
+
+M1 审定 → M2 收口 → M3 producer compatibility → M5 人机验收 → M6 发布。
+
+M4 独立决策，不允许用未授权 AI 路线阻塞 Android 离线闭环。
+
+## 进度规则
+
+唯一进度来源：`docs/project_progress.json`。
+
+Markdown 必须由 `scripts/render_project_progress.py` 生成。
+
+每次状态变化必须同步 ledger；未执行项目保持 NOT_RUN。
