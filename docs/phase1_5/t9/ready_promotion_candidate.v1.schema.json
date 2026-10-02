@@ -1,0 +1,23 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://photoai.local/phase1_5/t9/ready_promotion_candidate.v1.schema.json",
+  "type": "object", "additionalProperties": false,
+  "required": ["fixture_class", "candidate_version", "reference_id", "evidence_class", "provider_outcome", "provider_result_origin", "envelope_contract_valid", "bundle_contract_valid", "reference_identity_valid", "evaluation_state", "evaluation_contract_valid", "adjudication_complete", "severe_hallucination_unresolved", "threshold_status", "provider_qualification_state", "human_review_state", "product_promotion_authority", "explicit_demo_fallback_selected", "demo_fallback_policy"],
+  "properties": {
+    "fixture_class": {"const": "CONTRACT_ONLY_SYNTHETIC_NO_REAL_PROMOTION"},
+    "candidate_version": {"const": "1.0.0"},
+    "reference_id": {"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,127}$"},
+    "evidence_class": {"enum": ["SYNTHETIC_CONTRACT_ONLY", "REAL_PROVIDER_RESULT"]},
+    "provider_outcome": {"enum": ["SUCCESS", "FAILED", "CANCELLED"]},
+    "provider_result_origin": {"enum": ["PIPELINE", "LOCAL_VLM", "CLOUD", "ON_DEVICE", "UNAVAILABLE"]},
+    "envelope_contract_valid": {"type": "boolean"}, "bundle_contract_valid": {"type": "boolean"}, "reference_identity_valid": {"type": "boolean"},
+    "evaluation_state": {"enum": ["NOT_APPLICABLE", "METRICS_READY_OWNER_THRESHOLD_NOT_APPROVED", "ADJUDICATION_REQUIRED", "ADJUDICATION_COMPLETE", "UNRESOLVED"]},
+    "evaluation_contract_valid": {"type": "boolean"}, "adjudication_complete": {"type": "boolean"}, "severe_hallucination_unresolved": {"type": "boolean"},
+    "threshold_status": {"enum": ["PROPOSED_NOT_APPROVED", "APPROVED"]},
+    "provider_qualification_state": {"enum": ["NOT_PROVIDER_QUALIFICATION", "PROVIDER_QUALIFIED"]},
+    "human_review_state": {"enum": ["NOT_AUTHORIZED", "ACCEPTED"]},
+    "product_promotion_authority": {"type": "boolean"},
+    "explicit_demo_fallback_selected": {"type": "boolean"},
+    "demo_fallback_policy": {"const": "USER_EXPLICIT_OUT_OF_ENVELOPE_ONLY"}
+  }
+}

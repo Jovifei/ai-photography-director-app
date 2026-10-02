@@ -1,0 +1,42 @@
+{
+  "stage": "P25U_CAPTURE_RESULTS",
+  "status": "P25U_IMPLEMENTED_HOST_VERIFIED_ANDROID_VALIDATION_PENDING",
+  "date": "2026-09-23",
+  "branch": "codex/p25s-internal-handoff-validation-20260920",
+  "base_sha": "11342a3a441cb03826b85f46f3932a98bd98930f",
+  "source_commit": "5a6968635df89f99e44ea15896d0dd6898df6f38",
+  "main_expected": "1b776ba9932a7fdc96112c8cb85c7258f3f7d6af",
+  "base_review": "OWNER_REPORTED_P25T_PASS_NOT_NEW_REVIEW_OF_P25U",
+  "steps": [
+    {"id": "U1", "commit": "8367f233120e4cad8ddeb2c6ade14b925ad980b0"},
+    {"id": "U2", "commit": "b657b8cbcf965c0cd2940d63a3c0be7f25d94bff"},
+    {"id": "U3", "commit": "6defd95c499f7e068f35af102fa4b94893f2186f"},
+    {"id": "U4", "commit": "5a6968635df89f99e44ea15896d0dd6898df6f38"}
+  ],
+  "evidence": {
+    "host_engine_assertions": {"passed": 98, "scope": "PRODUCTION_ENGINE_REAL_FILES_TEST_LEDGER_NO_ANDROID_CODEC"},
+    "new_junit_methods_authored": 6,
+    "new_android_methods_authored": 14,
+    "android_compile": "NOT_RUN",
+    "android_runtime": "NOT_RUN",
+    "full_repo_validation": "NOT_RUN",
+    "privacy_diff": "PASS_MATERIALIZED_CHANGED_SOURCE_SNAPSHOT_ONLY",
+    "independent_review": "NOT_RUN"
+  },
+  "decisions": {
+    "reference_database_version_unchanged": 6,
+    "capture_database_version": 1,
+    "capture_storage": "DEVICE_LOCAL_NO_BACKUP_WITH_EXPLICIT_SAVE_COPY",
+    "automatic_capture_backup_or_d2d": false,
+    "cross_store_atomicity_claimed": false
+  },
+  "authority": {
+    "main_updated": false,
+    "human_content_approval_changed": false,
+    "pipeline_written_or_executed": false,
+    "physical_device_used": false,
+    "signing_key_generated": false,
+    "public_release": false
+  },
+  "next": "LOCAL_ANDROID_QUALIFICATION_ON_FINAL_DELIVERY_HEAD"
+}

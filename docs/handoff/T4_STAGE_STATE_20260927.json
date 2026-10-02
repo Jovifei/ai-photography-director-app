@@ -1,0 +1,48 @@
+{
+  "stage": "T4_OFFLINE_PRODUCT_FLOW",
+  "status": "T4_SYNTHETIC_API35_VALIDATED_INDEPENDENT_REVIEW_PASS_DRAFT_PR_OPEN",
+  "date": "2026-09-27",
+  "base_sha": "14a56f49e1220eb8139bf7280c747124118fdb21",
+  "reviewed_source_sha": "a69ede68f3e54e5ab006dbfd7a65c33040590f93",
+  "delivery_head_before_receipt_commit": "a69ede68f3e54e5ab006dbfd7a65c33040590f93",
+  "branch": "codex/t4-offline-flow-20260927",
+  "draft_pr": 8,
+  "draft_pr_base": "codex/t3-reference-camera-controls",
+  "qualification_run_id": "412699bebfe344d5b9aeca1b68135090",
+  "qualification": {
+    "device": "dedicated API 35 emulator; QEMU=1",
+    "jvm": "141/141_PASS",
+    "t4_android": "7/7_PASS",
+    "t3_android": "7/7_PASS",
+    "director_root": "2/2_PASS",
+    "p25u_camera": "1/1_PASS",
+    "p25u_export": "3/3_PASS",
+    "force_stop_recovery": "prepare/verify/cleanup 1/1_EACH_PASS",
+    "build_and_android_test_apk": "PASS",
+    "lint_debug": "0_ERRORS_25_WARNINGS",
+    "contracts": "PASS",
+    "privacy_audit": "PASS",
+    "git_diff_check": "PASS",
+    "qualification_exit": 0,
+    "hashed_output_count": 16,
+    "debug_apk_sha256": "d61bce8e1ff52eabc8a4fa2f3fe150f0e08b4940963104b0e478d2a5f9f47fb0"
+  },
+  "independent_review": {
+    "verdict": "PASS",
+    "scope": "exact reviewed source SHA and local qualification receipt",
+    "findings": 0,
+    "reviewer_reran_tests": false
+  },
+  "authority": {
+    "main_merged": false,
+    "real_photos_used": false,
+    "physical_device_used": false,
+    "qwen_or_private_lan_used": false,
+    "pipeline_executed": false,
+    "human_editorial_approved": false,
+    "release_signing": false,
+    "beta_pilot": false,
+    "public_release": false
+  },
+  "next": "Owner reviews stacked Draft PRs #6, #7 and #8; later provider, human editorial, Pipeline, physical-device, signing and release gates remain separate."
+}

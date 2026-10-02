@@ -1,5 +1,7 @@
 # Program Handoff Reference
 
+> **Historical handoff:** this 2026-07 program handoff records provenance and integrity context. It is not the current execution authority. Follow [`CURRENT_PROGRAM_STATUS.md`](CURRENT_PROGRAM_STATUS.md) and [`NEXT_GATE_MATRIX.md`](NEXT_GATE_MATRIX.md) for the current delivery stack and gates.
+
 本仓库（`ai-photography-director-app`）是项目群级交接包派生的**项目级**仓库。项目群 Source of Truth **不属于本仓库**，本文件仅记录所使用的交接包版本与外部引用，便于审计与可追溯。
 
 ## 交接包引用
@@ -42,4 +44,4 @@
 - 项目群交接包（`project-templates/` 本身、总包级 `tasks/`、`validation`、`PROGRAM_START_HERE`、另一工程模板、ZIP/SHA256/项目群 Manifest、项目群级智能体入口文件）**不进入本仓库**。
 - 本仓库只包含 `project-templates/ai-photography-director-app/` 下的项目级内容。
 - Pipeline 源码、iOS 工程、CameraX 功能实现、Pose 模型、大型第三方仓库源码、私人图片、模型文件、运行数据库**不进入本仓库**。
-- 当前阶段：G0（仓库整理与首次安全推送）。下一阶段：AH0（Android 环境与 CameraX）。
+- 原始阶段记录：G0（仓库整理与首次安全推送），下一阶段 AH0（Android 环境与 CameraX）。这只是本交接包发布时的历史状态；当前 T4 delivery stack 和 T5 status consolidation 以仓库当前状态页为准。

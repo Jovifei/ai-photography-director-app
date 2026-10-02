@@ -1,0 +1,149 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://photoai.local/phase1_5/t11/transport_verification_input.v1.schema.json",
+  "title": "Hypothetical T11 Transport Verification Input",
+  "description": "Schema only. T11 performs no network request and tracks no verification result.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "input_kind",
+    "artifact_binding",
+    "initial_domain",
+    "redirect_domains",
+    "final_domain",
+    "transport_status",
+    "identity_match",
+    "artifact_body_accessed",
+    "transport_evidence_sha256",
+    "recorded_at"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "1.0.0"
+    },
+    "input_kind": {
+      "const": "T11_TRANSPORT_VERIFICATION_INPUT"
+    },
+    "artifact_binding": {
+      "$ref": "#/$defs/artifactIdentity"
+    },
+    "initial_domain": {
+      "const": "huggingface.co"
+    },
+    "redirect_domains": {
+      "type": "array",
+      "maxItems": 8,
+      "uniqueItems": true,
+      "items": {
+        "enum": [
+          "huggingface.co",
+          "us.aws.cdn.hf.co"
+        ]
+      }
+    },
+    "final_domain": {
+      "enum": [
+        "huggingface.co",
+        "us.aws.cdn.hf.co"
+      ]
+    },
+    "transport_status": {
+      "enum": [
+        "VERIFIED_ALLOWED_DOMAIN_CHAIN",
+        "UNVERIFIED",
+        "IDENTITY_DRIFT",
+        "REJECTED_UNLISTED_DOMAIN",
+        "REJECTED_ARTIFACT_BODY_ACCESSED"
+      ]
+    },
+    "identity_match": {
+      "type": "boolean"
+    },
+    "artifact_body_accessed": {
+      "const": false
+    },
+    "transport_evidence_sha256": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "recorded_at": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "transport_status": {
+            "const": "VERIFIED_ALLOWED_DOMAIN_CHAIN"
+          }
+        },
+        "required": [
+          "transport_status"
+        ]
+      },
+      "then": {
+        "properties": {
+          "identity_match": {
+            "const": true
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "transport_status": {
+            "const": "IDENTITY_DRIFT"
+          }
+        },
+        "required": [
+          "transport_status"
+        ]
+      },
+      "then": {
+        "properties": {
+          "identity_match": {
+            "const": false
+          }
+        }
+      }
+    }
+  ],
+  "$defs": {
+    "artifactIdentity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "publisher",
+        "model_id",
+        "immutable_revision",
+        "weight_filename",
+        "weight_bytes",
+        "weight_lfs_sha256"
+      ],
+      "properties": {
+        "publisher": {
+          "const": "Qwen"
+        },
+        "model_id": {
+          "const": "Qwen/Qwen3-VL-2B-Instruct"
+        },
+        "immutable_revision": {
+          "const": "89644892e4d85e24eaac8bacfd4f463576704203"
+        },
+        "weight_filename": {
+          "const": "model.safetensors"
+        },
+        "weight_bytes": {
+          "const": 4255140312
+        },
+        "weight_lfs_sha256": {
+          "const": "7de1838c87a5349b016c26a1c3f7d2bc400a3d485f95ef39a7059ffd734977a0"
+        }
+      }
+    }
+  }
+}

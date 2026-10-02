@@ -1,0 +1,26 @@
+{
+  "policy_version": "1.0.0",
+  "status": "PRODUCT_READY_PROMOTION_GATE_READY_REAL_READY_PROMOTION_NOT_AUTHORIZED",
+  "authority": {
+    "provider_qualification_authorized": false,
+    "human_review_authorized": false,
+    "owner_thresholds_approved": false,
+    "real_provider_execution_authorized": false,
+    "product_ready_promotion_authorized": false,
+    "pipeline_integration_authorized": false,
+    "private_media_authorized": false,
+    "android_product_change_authorized": false
+  },
+  "bindings": [
+    {"id": "provider_envelope", "path": "docs/reference/provider_analysis_envelope.v1.schema.json", "sha256": "014f69f0eda46b806b7632e6440d85be9a5ccb78461a2a78418fb5c4ac78f194", "bytes": 8488},
+    {"id": "reference_bundle", "path": "docs/reference/reference_bundle.v1.schema.json", "sha256": "387e1f4749db3dbe34a5aab0e9618a05f1c4349eb02c567ebfc180a435301700", "bytes": 3292},
+    {"id": "error_policy", "path": "docs/phase1_5/error_policy.v1.json", "sha256": "821466ba68385f3c9628d96dbfc5b27e1d5628ef554b879e086aacc6b42ea7f9", "bytes": 5599},
+    {"id": "t7_governance", "path": "docs/phase1_5/t7/evaluation_governance.v1.json", "sha256": "c66959adafc5f628dde2a5d5eb361e970e383cf085262f59ee0bafdd1f52ef16", "bytes": 5556},
+    {"id": "t8_summary", "path": "docs/phase1_5/t8/evaluation_run_summary.v1.schema.json", "sha256": "140ae25b24af871f495431956b883729d2de57397fc3acc78fb45624ce68f4ff", "bytes": 1390},
+    {"id": "offline_bundle_consumer", "path": "docs/reference/PHOTO_KNOWLEDGE_BUNDLE_CONSUMER_V1.md", "sha256": "ce1bade6063d62b34eb32686e894e02cf6af69ed620f35e042b6fe03e6a25799", "bytes": 7478}
+  ],
+  "blocker_precedence": ["SYNTHETIC_EVIDENCE", "NON_SUCCESS", "CONTRACT_INVALID", "EVALUATION_INVALID", "PIPELINE_COMPATIBILITY_NOT_AUTHORIZED", "ADJUDICATION_REQUIRED", "SEVERE_FINDING", "THRESHOLD_NOT_APPROVED", "PROVIDER_NOT_QUALIFIED", "HUMAN_REVIEW_NOT_AUTHORIZED", "PRODUCT_PROMOTION_NOT_AUTHORIZED"],
+  "allowed_evidence_classes": ["SYNTHETIC_CONTRACT_ONLY", "REAL_PROVIDER_RESULT"],
+  "offline_bundle": {"path": "docs/reference/PHOTO_KNOWLEDGE_BUNDLE_CONSUMER_V1.md", "status": "EXISTING_ACTIVE_SEPARATE_READY_PATH", "semantics_modified": false, "path_preserved": true},
+  "demo_fallback_policy": "USER_EXPLICIT_OUT_OF_ENVELOPE_ONLY"
+}

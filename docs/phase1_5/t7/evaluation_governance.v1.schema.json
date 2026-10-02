@@ -1,0 +1,38 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://photoai.local/phase1_5/t7/evaluation_governance.v1.schema.json",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "governance_id", "status", "t6_base", "rubric", "criteria", "review_policy", "thresholds", "severe_hallucination_categories", "uncertainty", "provider_neutrality", "pipeline_boundary", "privacy_boundary", "authorization", "contract_identities", "stop_conditions"],
+  "properties": {
+    "schema_version": {"const": "1.0.0"},
+    "governance_id": {"type": "string", "minLength": 1},
+    "status": {"const": "EVALUATION_GOVERNANCE_PACKET_READY_HUMAN_REVIEW_NOT_AUTHORIZED"},
+    "t6_base": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+    "rubric": {"$ref": "#/$defs/rubric"},
+    "criteria": {"type": "array", "minItems": 18, "maxItems": 18, "items": {"$ref": "#/$defs/criterion"}},
+    "review_policy": {"$ref": "#/$defs/review_policy"},
+    "thresholds": {"$ref": "#/$defs/thresholds"},
+    "severe_hallucination_categories": {"type": "array", "minItems": 1, "items": {"type": "string"}},
+    "uncertainty": {"$ref": "#/$defs/uncertainty"},
+    "provider_neutrality": {"$ref": "#/$defs/provider_neutrality"},
+    "pipeline_boundary": {"$ref": "#/$defs/pipeline_boundary"},
+    "privacy_boundary": {"$ref": "#/$defs/privacy_boundary"},
+    "authorization": {"$ref": "#/$defs/authorization"},
+    "contract_identities": {"$ref": "#/$defs/contracts"},
+    "stop_conditions": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}}
+  },
+  "$defs": {
+    "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "rubric": {"type": "object", "additionalProperties": false, "required": ["path", "sha256", "bytes", "status", "criteria_count", "human_criteria", "automated_criteria", "human_score_min", "human_score_max", "maximum_raw_score", "normalized_score_scale", "owner_thresholds_approved"], "properties": {"path": {"type": "string"}, "sha256": {"$ref": "#/$defs/sha256"}, "bytes": {"type": "integer", "minimum": 1}, "status": {"const": "PROPOSED_OWNER_THRESHOLD_NOT_MEASURED"}, "criteria_count": {"const": 18}, "human_criteria": {"const": 17}, "automated_criteria": {"const": [18]}, "human_score_min": {"const": 0}, "human_score_max": {"const": 2}, "maximum_raw_score": {"const": 36}, "normalized_score_scale": {"const": "0_100_QUALITY_AGGREGATE_NOT_CONFIDENCE"}, "owner_thresholds_approved": {"const": false}}},
+    "criterion": {"type": "object", "additionalProperties": false, "required": ["id", "name", "verifier"], "properties": {"id": {"type": "integer", "minimum": 1, "maximum": 18}, "name": {"type": "string", "minLength": 1}, "verifier": {"enum": ["HUMAN", "AUTOMATED"]}}},
+    "review_policy": {"type": "object", "additionalProperties": false, "required": ["provider_model_blinded", "provider_provenance_retained_in_envelope", "initial_reviewer_slots", "third_reviewer_slot", "third_reviewer_when", "per_criterion_aggregate", "unresolved_adjudication_blocks_final_result", "human_review_authorized"], "properties": {"provider_model_blinded": {"const": true}, "provider_provenance_retained_in_envelope": {"const": true}, "initial_reviewer_slots": {"const": ["R1", "R2"]}, "third_reviewer_slot": {"const": "R3"}, "third_reviewer_when": {"type": "array", "minItems": 2}, "per_criterion_aggregate": {"const": "MEDIAN"}, "unresolved_adjudication_blocks_final_result": {"const": true}, "human_review_authorized": {"const": false}}},
+    "thresholds": {"type": "object", "additionalProperties": false, "required": ["status", "owner_thresholds_approved", "schema_valid_required_field_rate", "privacy_license_violation", "severe_hallucination_rate", "director_usefulness_median", "lighting_composition_usefulness", "latency_vram_determinism"], "properties": {"status": {"const": "PROPOSED_NOT_APPROVED"}, "owner_thresholds_approved": {"const": false}, "schema_valid_required_field_rate": {"type": "string"}, "privacy_license_violation": {"type": "string"}, "severe_hallucination_rate": {"type": "string"}, "director_usefulness_median": {"type": "string"}, "lighting_composition_usefulness": {"type": "string"}, "latency_vram_determinism": {"type": "string"}}},
+    "uncertainty": {"type": "object", "additionalProperties": false, "required": ["contract_path", "contract_sha256", "field_count", "global_confidence_forbidden", "allowed_bases"], "properties": {"contract_path": {"type": "string"}, "contract_sha256": {"$ref": "#/$defs/sha256"}, "field_count": {"const": 9}, "global_confidence_forbidden": {"const": true}, "allowed_bases": {"type": "array", "minItems": 4}}},
+    "provider_neutrality": {"type": "object", "additionalProperties": false, "required": ["allowed_provider_types", "provider_qualification_authorized", "runtime_authorized", "pipeline_integration_authorized"], "properties": {"allowed_provider_types": {"const": ["LOCAL_VLM", "PIPELINE", "CLOUD", "ON_DEVICE"]}, "provider_qualification_authorized": {"const": false}, "runtime_authorized": {"const": false}, "pipeline_integration_authorized": {"const": false}}},
+    "pipeline_boundary": {"type": "object", "additionalProperties": false, "required": ["mapping_path", "mapping_sha256", "status", "compatibility_claim_allowed", "missing_safe_mapping_remains_blocked"], "properties": {"mapping_path": {"type": "string"}, "mapping_sha256": {"$ref": "#/$defs/sha256"}, "status": {"const": "PIPELINE_TO_REFERENCEBUNDLE_DIRECT_INTEGRATION_BLOCKED_BY_CONTRACT_AND_STAGE_EVIDENCE"}, "compatibility_claim_allowed": {"const": false}, "missing_safe_mapping_remains_blocked": {"const": true}}},
+    "privacy_boundary": {"type": "object", "additionalProperties": false, "required": ["reviewer_identity", "media_bytes_allowed", "media_paths_allowed", "private_media_allowed", "reviewer_pii_allowed", "synthetic_review_records_tracked"], "properties": {"reviewer_identity": {"const": "ROLE_SLOT_ONLY"}, "media_bytes_allowed": {"const": false}, "media_paths_allowed": {"const": false}, "private_media_allowed": {"const": false}, "reviewer_pii_allowed": {"const": false}, "synthetic_review_records_tracked": {"const": false}}},
+    "authorization": {"type": "object", "additionalProperties": false, "required": ["human_review_authorized", "provider_qualification_authorized", "pipeline_integration_authorized", "private_media_authorized", "runtime_authorized", "owner_thresholds_approved"], "properties": {"human_review_authorized": {"const": false}, "provider_qualification_authorized": {"const": false}, "pipeline_integration_authorized": {"const": false}, "private_media_authorized": {"const": false}, "runtime_authorized": {"const": false}, "owner_thresholds_approved": {"const": false}}},
+    "contracts": {"type": "object", "additionalProperties": false, "required": ["reference_bundle", "provider_envelope", "error_policy"], "properties": {"reference_bundle": {"type": "string"}, "provider_envelope": {"type": "string"}, "error_policy": {"type": "string"}}}
+  }
+}

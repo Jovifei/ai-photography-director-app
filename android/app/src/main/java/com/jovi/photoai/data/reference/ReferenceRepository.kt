@@ -13,6 +13,8 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
 
+internal const val MAX_PROJECT_TITLE_LENGTH = 60
+
 internal sealed interface ReferenceImportResult {
     data class Success(val record: ReferenceRecord) : ReferenceImportResult
     data class Failure(val code: ReferenceImportErrorCode) : ReferenceImportResult
@@ -81,6 +83,14 @@ internal class ReferenceRepository private constructor(
 
     suspend fun project(projectId: String): PhotographyProject? = withContext(Dispatchers.IO) {
         dao.projectById(projectId)?.toProject()
+    }
+
+    suspend fun renameProject(projectId: String, title: String): Boolean = withContext(Dispatchers.IO) {
+        val normalized = title.trim().take(MAX_PROJECT_TITLE_LENGTH)
+        if (projectId.isBlank() || projectId == LEGACY_PROJECT_ID || normalized.isBlank()) {
+            return@withContext false
+        }
+        dao.renameProject(projectId, normalized, now()) == 1
     }
 
     suspend fun importFromPicker(uri: Uri): ReferenceImportResult =
@@ -235,6 +245,20 @@ internal class ReferenceRepository private constructor(
         projectId: String,
         bundle: PhotoKnowledgeBundle,
         bindings: List<KnowledgeBundleBinding>,
+    ): KnowledgeBundleApplyResult = applyKnowledgeBundleInternal(projectId, bundle, bindings, null)
+
+    suspend fun replaceKnowledgeBundle(
+        projectId: String,
+        bundle: PhotoKnowledgeBundle,
+        bindings: List<KnowledgeBundleBinding>,
+        expectedProvenance: Map<String, KnowledgeBundleProvenance>,
+    ): KnowledgeBundleApplyResult = applyKnowledgeBundleInternal(projectId, bundle, bindings, expectedProvenance.toMap())
+
+    private suspend fun applyKnowledgeBundleInternal(
+        projectId: String,
+        bundle: PhotoKnowledgeBundle,
+        bindings: List<KnowledgeBundleBinding>,
+        expectedProvenance: Map<String, KnowledgeBundleProvenance>?,
     ): KnowledgeBundleApplyResult = withContext(Dispatchers.IO) {
         if (
             bundle.contractVersion != PHOTO_KNOWLEDGE_BUNDLE_VERSION ||
@@ -258,6 +282,9 @@ internal class ReferenceRepository private constructor(
                 if (bindings.map(KnowledgeBundleBinding::localReferenceId).distinct().size != bindings.size) {
                     return@withTransaction KnowledgeBundleApplyResult.Failure(KnowledgeBundleApplyErrorCode.BINDING_DUPLICATE)
                 }
+                if (expectedProvenance != null && expectedProvenance.keys != bindings.map { it.localReferenceId }.toSet()) {
+                    return@withTransaction KnowledgeBundleApplyResult.Failure(KnowledgeBundleApplyErrorCode.REPLACEMENT_PREVIEW_STALE)
+                }
                 val currentById = dao.activeByProjectOnce(projectId).associateBy(ReferenceEntity::id)
                 val bindingByProducer = bindings.associateBy(KnowledgeBundleBinding::producerReferenceId)
                 val importedAt = now()
@@ -266,9 +293,19 @@ internal class ReferenceRepository private constructor(
                     val localId = bindingByProducer[item.referenceId]?.localReferenceId
                         ?: return@withTransaction KnowledgeBundleApplyResult.Failure(KnowledgeBundleApplyErrorCode.BINDING_INCOMPLETE)
                     val current = currentById[localId]
-                        ?: return@withTransaction KnowledgeBundleApplyResult.Failure(KnowledgeBundleApplyErrorCode.REFERENCE_NOT_FOUND)
+                        ?: return@withTransaction KnowledgeBundleApplyResult.Failure(
+                            if (expectedProvenance == null) KnowledgeBundleApplyErrorCode.REFERENCE_NOT_FOUND
+                            else KnowledgeBundleApplyErrorCode.REPLACEMENT_PREVIEW_STALE)
                     val status = runCatching { PhotoAnalysisStatus.valueOf(current.analysisStatus) }.getOrNull()
-                    if (status == null || !isKnowledgeBundleTargetEligible(status) ||
+                    if (expectedProvenance != null) {
+                        val record = current.toRecord()
+                        val error = if (record.knowledgeBundleProvenance != expectedProvenance[localId]) {
+                            KnowledgeBundleApplyErrorCode.REPLACEMENT_PREVIEW_STALE
+                        } else if (current.hasAnyProviderProvenance()) {
+                            KnowledgeBundleApplyErrorCode.REFERENCE_NOT_ELIGIBLE
+                        } else knowledgeBundleReplacementError(record, bundle, item.referenceId, expectedProvenance[localId])
+                        if (error != null) return@withTransaction KnowledgeBundleApplyResult.Failure(error)
+                    } else if (status == null || !isKnowledgeBundleTargetEligible(status) ||
                         current.analysisAttemptId != null || current.hasKnowledgeProvenance()) {
                         return@withTransaction KnowledgeBundleApplyResult.Failure(KnowledgeBundleApplyErrorCode.REFERENCE_NOT_ELIGIBLE)
                     }
@@ -437,8 +474,6 @@ internal class ReferenceRepository private constructor(
     private class ProjectCapacityReachedException : RuntimeException()
 
     companion object {
-        private const val MAX_PROJECT_TITLE_LENGTH = 60
-
         /** Test caller owns and closes its isolated database. No production failure hooks. */
         @androidx.annotation.VisibleForTesting
         internal fun createForTest(

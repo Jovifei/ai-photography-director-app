@@ -1,0 +1,94 @@
+{
+  "stage": "P25T_VISUAL_MAPPING_AND_DIRECTOR_PREPARATION",
+  "base_sha": "61a7c1da92c51b791aac4ea094e6efa56adf474e",
+  "source_commit": "4c8adfa5cffed9fbc40405a3ed0b4b1d57b55795",
+  "hash_domain": "Exact UTF-8 Git blob bytes; no Windows checkout or Unicode normalization",
+  "verification_scope": "Local completion source snapshot; historical 20260921 manifest remains bound to 9ea075a.",
+  "files": {
+    "android/app/src/androidTest/java/com/jovi/photoai/p25s/P25SInternalHandoffAndroidTest.kt": {
+      "git_blob": "f2a888458afdc1c5e85431aa410ac429db9ea24e",
+      "bytes": 5526,
+      "sha256": "546a37a38eafde56818cdcc9125c27ab5cb954e5597b8830d6b0a3f632170583"
+    },
+    "android/app/src/androidTest/java/com/jovi/photoai/p25t/P25TBundleMappingAndroidTest.kt": {
+      "git_blob": "5a2955519ac30aa96230b97cf18c032cd8e23b02",
+      "bytes": 5716,
+      "sha256": "a1b76ac9aa07d349048f724883bcf51ea444c9a8e9f1870ee588a287b5c07714"
+    },
+    "android/app/src/androidTest/java/com/jovi/photoai/p25t/P25TDirectorPreparationAndroidTest.kt": {
+      "git_blob": "39afe628252d741bc707e87b2407cdce6319b31a",
+      "bytes": 3303,
+      "sha256": "664578d5f9227bda96d635fdd785d29b42dd2077ad27c414347505cbf63c0bd4"
+    },
+    "android/app/src/main/java/com/jovi/photoai/reference/ReferenceDirectorMapper.kt": {
+      "git_blob": "56225e5417eda80954142c6f7d73156aab3997fe",
+      "bytes": 3486,
+      "sha256": "7d169fb9c054ea7a0666a2389d2046a59ccc5ce6fc9c466a068d7e082b52500c"
+    },
+    "android/app/src/main/java/com/jovi/photoai/ui/project/KnowledgeBundleMappingTools.kt": {
+      "git_blob": "7f0c0b609d244a900f952497ad364703e35b5eb9",
+      "bytes": 7755,
+      "sha256": "252d441e7f6d5887a2f9d8722a0f9779d32f4ff6a0dd28da23d46618e4feb1b8"
+    },
+    "android/app/src/main/java/com/jovi/photoai/ui/project/PhotoKnowledgeBundleImportScreen.kt": {
+      "git_blob": "5408c3f1db0ca088acb774f43512074aab614d1d",
+      "bytes": 13473,
+      "sha256": "53e36f756a2feb445a9f322aba3811dbd0a4957a633aacf14e47c87c5ef5a6c8"
+    },
+    "android/app/src/main/java/com/jovi/photoai/ui/reference/DirectorCardScreen.kt": {
+      "git_blob": "44b516cf4b350c74299f5814d4719c87587b171c",
+      "bytes": 6516,
+      "sha256": "7af3f669cfb48d9fdf32d9b2693c3ea81708657c8958adcccae2d38309b77330"
+    },
+    "android/app/src/main/java/com/jovi/photoai/ui/reference/DirectorPreparation.kt": {
+      "git_blob": "60ea3ac863449f4f0982b67bbc9878bf3ecbe438",
+      "bytes": 1612,
+      "sha256": "17efe03125846ac28c669f6a8817698f5cf1d1a62cd17b1c293e4e2aa8f8ee06"
+    },
+    "android/app/src/test/java/com/jovi/photoai/ui/reference/DirectorPreparationCases.kt": {
+      "git_blob": "1575d1cbd03645be35b995efb811ff4ff12aec77",
+      "bytes": 2406,
+      "sha256": "a4293673e663331afb3500b559c8fb8b40a13c37d4bc2d378da944e02cb0a851"
+    },
+    "android/app/src/test/java/com/jovi/photoai/ui/reference/DirectorPreparationTest.kt": {
+      "git_blob": "69db1282bd49a88e253ebf85ed3b299880b8f9ed",
+      "bytes": 214,
+      "sha256": "5d3b6ce405fc58787b4c8f15c023773d9bc978d3dce53f956a82e04a84f8f12c"
+    },
+    "scripts/p25_internal_handoff_fixture.py": {
+      "git_blob": "8f17e7da758190670ac6206b090fc13039d57bbe",
+      "bytes": 3837,
+      "sha256": "3bedca26889918ec274d0ec31b17e1034d2e413cea3405456250b2e60037c2ac"
+    },
+    "scripts/test_p25_internal_handoff_fixture.py": {
+      "git_blob": "d7373dab25a194a16c030b2136f9837b2601f0eb",
+      "bytes": 2940,
+      "sha256": "6b9db1d98515196cb37eaf1da5b064ce1450b0c233693b5cf7145d9b7125007f"
+    },
+    "scripts/test_p25s_fixture_boundary.py": {
+      "git_blob": "9a4f378f7c47155e2e8d13fc3fefab47be4a0ccb",
+      "bytes": 5555,
+      "sha256": "a50df89316a70f23332dc456820d3723cdc44632a38e4c2d017ddff742b33a4f"
+    },
+    "scripts/test_p25t_director_core.py": {
+      "git_blob": "9a13440587693ac3ad3ad45adbd46c6ac736deae",
+      "bytes": 1947,
+      "sha256": "0cf64ba4096ad56f68b88c6c3be61ffc2f58f2292daa335568abd53b0430a5d5"
+    },
+    "android/app/src/androidTest/java/com/jovi/photoai/ui1/SyntheticPickerMediaFactory.kt": {
+      "git_blob": "a44abe55292596d36643d9b9f9a2c12a861ee30f",
+      "bytes": 6163,
+      "sha256": "7a8709e3b79f39382c284922b39c282fdda895edfb75a33b03fef0ab20d30042"
+    },
+    "android/app/src/androidTest/java/com/jovi/photoai/p25t/P25TRealPhotoMappingAndroidTest.kt": {
+      "git_blob": "237a40eff603f95f674a018e58e5d775ede8ac89",
+      "bytes": 14016,
+      "sha256": "f36d680b0bf282e873dc922003b697c6067d868a1e0beb517aa336824731a885"
+    },
+    "android/app/src/androidTest/java/com/jovi/photoai/p25t/P25TFontScaleScreenshotAndroidTest.kt": {
+      "git_blob": "3a4d7b7152ca6e049829497bdb648a1dab923fa2",
+      "bytes": 3524,
+      "sha256": "382326d1f4c74b2a8c8b050712db44d61f7545dfc2e364c5ee1d32ce9648cf0c"
+    }
+  }
+}
