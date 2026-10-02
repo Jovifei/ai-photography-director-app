@@ -4,96 +4,133 @@ Date: 2026-10-02
 
 ## Scope
 
-This document records the remote source review of PR #22 at:
+Reviewed candidate:
 
-- head: `57081b4aeb5cfeffdfe7460b359c5e3e031b27b3`
+- PR #22
+- head: `57081b4aeb5cfeffdfe7460b3592b27b3`
 - base: `main@1b776ba9932a7fdc96112c8cb85c7258f3f7d6af`
 
 ## Review result
 
-PR #22 is accepted as an integration candidate for continued gate review, not as a release-ready merge.
+PR #22 is an Android offline integration candidate. It is not a release approval. Human, legal, production and signing gates remain independent.
 
-The candidate correctly preserves the boundary between:
+A source review record is stored at:
 
-- Android offline product implementation;
-- producer-side PKB1 artifact generation;
-- real photo quality evaluation;
-- human acceptance;
-- legal/licensing evidence;
-- release signing.
+`docs/PR22_SOURCE_REVIEW_20261002.md`
 
-No evidence was found in the reviewed PR metadata that permits treating these blocked areas as completed.
+## Source review conclusion
 
-## Evidence state
+Reviewed areas:
 
-Confirmed from repository documents:
+- CameraX controls and lifecycle boundary
+- Capture persistence/export/recovery path
+- PKB1 consumer import and ownership boundary
+- T17 offline guided continuity tests
 
-- T3-T17 Android implementation is integrated into the candidate branch.
-- JVM, build and lint evidence exists as historical/local evidence.
-- API35 local device verification remains NOT_RUN when no configured local AVD/device exists.
-- Release signing remains blocked without release signing material.
-- Producer golden vectors remain an external handoff requirement.
+No reproducible source defect was identified in this remote review pass. No speculative code was added.
 
-## M1-M6 route decision
+## M1-M6 execution package
 
 ### M1 Product scope and data contract
 
-Status: continue.
+Goal:
 
-Required next evidence:
+- Maintain Android-first boundary and consumer/producer ownership contract.
 
-- remote approval of the master roadmap;
-- stable consumer/producer contract review.
+Deliverables:
 
-### M2 Android offline product closure
+- Approved roadmap state.
+- Updated progress ledger.
+- Contract evidence references.
 
-Status: current focus.
+Acceptance:
 
-Required next evidence:
+- Route decisions are recorded separately from implementation completion.
 
-- current candidate review fixes;
-- local API35/device rerun by execution environment.
+### M2 Android offline closure
+
+Goal:
+
+- Complete evidence-backed closure of the current offline product.
+
+Deliverables:
+
+- Source review record.
+- Local build/test evidence.
+- Device verification result when available.
+
+Acceptance:
+
+- No claims beyond executed evidence.
 
 ### M3 Producer integration
 
-Status: waiting external input.
+Goal:
 
-Do not generate producer evidence from consumer fixtures.
+- Connect only approved producer artifacts.
 
-### M4 Real AI capability
+Dependencies:
 
-Status: route decision pending.
+- Golden vectors.
+- Canonical digests.
+- Producer ownership evidence.
 
-No provider, model, transport, legal, or privacy capability is considered active without evidence.
+Acceptance:
+
+- Consumer fixtures cannot substitute for production evidence.
+
+### M4 AI capability route
+
+Goal:
+
+- Decide route before adding provider code.
+
+Dependencies:
+
+- Legal/privacy/provider evidence.
+- Evaluation criteria.
+
+Acceptance:
+
+- No READY claim without measured provider output.
 
 ### M5 Human/device acceptance
 
-Status: not run.
+Goal:
 
-Real photography evaluation, accessibility acceptance, and device variance require human/device evidence.
+- Validate actual photography workflow.
+
+Dependencies:
+
+- Physical devices.
+- Human review.
+- Accessibility checks.
+
+Acceptance:
+
+- Human results remain separate from automated tests.
 
 ### M6 Release
 
-Status: pending.
+Goal:
 
-Signing, upgrade, rollback and release scope require separate evidence.
+- Prepare publishable Android release only after gates close.
 
-## Next implementation package
+Dependencies:
 
-The next code phase should be limited to evidence-backed closure work:
+- Signing identity.
+- Upgrade/rollback evidence.
 
-1. Keep PR22 boundaries explicit.
-2. Improve auditability of progress and handoff documents.
-3. Avoid adding AI claims or production-provider code before M3/M4 evidence exists.
-4. Let local execution verify renderer, privacy audit, Android builds and device checks.
+Acceptance:
 
-## Execution limits
+- Release package evidence exists.
 
-Not executed in this remote GitHub planning pass:
+## NOT_RUN from remote GitHub review
 
-- Android Gradle build: NOT_RUN.
-- renderer check: NOT_RUN.
-- privacy audit script: NOT_RUN.
-- API35 device test: NOT_RUN.
+- Android build: NOT_RUN
+- renderer --check: NOT_RUN
+- privacy audit: NOT_RUN
+- API35 device verification: NOT_RUN
+- human photography acceptance: NOT_RUN
 
-These remain local execution evidence requirements and are not replaced by this document.
+Local execution must report these independently.
