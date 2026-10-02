@@ -26,31 +26,55 @@ def fail(message: str) -> None:
 
 
 def validate(data: dict) -> None:
+    if not isinstance(data, dict) or type(data.get("version")) is not int or data["version"] != 1:
+        fail("progress ledger version must be 1")
     if data.get("checkpoint_contract") != EXPECTED_SOURCE_VERSION:
         fail("checkpoint contract version mismatch")
-    if not EXPECTED_SOURCE_RE.fullmatch(data.get("source_revision", "")):
+    source = data.get("source_revision")
+    if not isinstance(source, str) or not EXPECTED_SOURCE_RE.fullmatch(source):
         fail("source_revision must be exact 40 lowercase hex characters")
+    if data.get("planning_status") not in {"APPROVED", "PENDING_REMOTE_PLANNING"}:
+        fail("unknown planning status")
     phases = data.get("phases")
     if not isinstance(phases, list) or len(phases) != 6:
         fail("phase count mismatch")
+    if any(not isinstance(p, dict) for p in phases):
+        fail("phase must be an object")
+    if tuple(p.get("id") for p in phases) != tuple(EXPECTED_PHASES):
+        fail("phase identity/order mismatch")
     seen = set()
     for phase in phases:
         pid = phase.get("id")
         if pid in seen or pid not in EXPECTED_PHASES:
             fail("phase identity mismatch")
         seen.add(pid)
-        names = tuple(c.get("name") for c in phase.get("checks", []))
+        checks = phase.get("checks")
+        if not isinstance(checks, list) or any(not isinstance(c, dict) for c in checks):
+            fail(f"{pid} checkpoints must be objects")
+        names = tuple(c.get("name") for c in checks)
         if names != EXPECTED_PHASES[pid]:
             fail(f"{pid} checkpoint identity changed")
         for check in phase["checks"]:
             if check.get("status") not in {"done", "pending", "blocked", "not_run"}:
                 fail(f"invalid checkpoint status {pid}/{check.get('name')}")
-            if not check.get("evidence"):
+            evidence = check.get("evidence")
+            if not isinstance(evidence, str) or not evidence.strip():
                 fail(f"missing evidence {pid}/{check.get('name')}")
+            if any(char in evidence for char in ("\n", "\r", "|")):
+                fail(f"evidence must fit a single Markdown table cell: {pid}/{check['name']}")
     if data.get("planning_status") == "APPROVED":
-        approval = next((c for c in phases[0]["checks"] if c["name"] == "远端总路线图审定"), None)
+        m1 = next(p for p in phases if p["id"] == "M1")
+        approval = next((c for c in m1["checks"] if c["name"] == "远端总路线图审定"), None)
         if not approval or approval.get("status") != "done":
             fail("APPROVED requires M1 roadmap approval evidence")
+        receipt = data.get("roadmap_approval")
+        if not isinstance(receipt, dict) or receipt.get("reviewed_source_revision") != source:
+            fail("APPROVED requires a receipt bound to source_revision")
+        review = receipt.get("review_commit")
+        if not isinstance(review, str) or not EXPECTED_SOURCE_RE.fullmatch(review):
+            fail("approval review_commit must be exact 40 lowercase hex characters")
+        if review not in approval["evidence"]:
+            fail("approval checkpoint must cite its review_commit")
 
 
 if __name__ == "__main__":
