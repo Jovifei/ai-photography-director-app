@@ -1,0 +1,23 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://photoai.local/phase1_5/t8/evaluation_run_summary.v1.schema.json",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["summary_version", "fixture_class", "candidate_blind_id", "provider_outcome", "contract_valid", "quality_review_eligible", "adjudication_state", "threshold_status", "qualification_state", "severe_hallucination_count", "hard_findings"],
+  "properties": {
+    "summary_version": {"const": "1.0.0"},
+    "fixture_class": {"const": "CONTRACT_ONLY_SYNTHETIC"},
+    "candidate_blind_id": {"type": "string"},
+    "provider_outcome": {"enum": ["SUCCESS", "FAILED", "CANCELLED"]},
+    "contract_valid": {"type": "boolean"},
+    "quality_review_eligible": {"type": "boolean"},
+    "adjudication_state": {"enum": ["NOT_APPLICABLE", "METRICS_READY_OWNER_THRESHOLD_NOT_APPROVED", "ADJUDICATION_REQUIRED", "ADJUDICATION_COMPLETE", "UNRESOLVED"]},
+    "criterion_scores": {"type": "object"},
+    "raw_score": {"type": ["integer", "null"]},
+    "normalized_quality": {"type": ["number", "null"]},
+    "severe_hallucination_count": {"type": "integer", "minimum": 0},
+    "hard_findings": {"type": "array", "items": {"type": "string"}},
+    "threshold_status": {"const": "PROPOSED_NOT_APPROVED"},
+    "qualification_state": {"const": "NOT_PROVIDER_QUALIFICATION"}
+  }
+}

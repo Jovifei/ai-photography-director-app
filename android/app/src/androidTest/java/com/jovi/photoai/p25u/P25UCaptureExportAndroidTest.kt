@@ -1,0 +1,201 @@
+package com.jovi.photoai.p25u
+
+import android.Manifest
+import android.app.Activity
+import android.app.Application
+import android.os.Bundle
+import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.assertIsEnabled
+import androidx.compose.ui.test.isEnabled
+import androidx.compose.ui.test.junit4.createAndroidComposeRule
+import androidx.compose.ui.test.onAllNodesWithContentDescription
+import androidx.compose.ui.test.onAllNodesWithText
+import androidx.compose.ui.test.onNodeWithContentDescription
+import androidx.compose.ui.test.onNodeWithText
+import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performScrollTo
+import androidx.lifecycle.ViewModelProvider
+import androidx.test.ext.junit.runners.AndroidJUnit4
+import androidx.test.platform.app.InstrumentationRegistry
+import androidx.test.rule.GrantPermissionRule
+import androidx.test.uiautomator.By
+import androidx.test.uiautomator.UiDevice
+import androidx.test.uiautomator.Until
+import com.jovi.photoai.MainActivity
+import com.jovi.photoai.data.capture.CaptureFileState
+import com.jovi.photoai.data.capture.CaptureRepository
+import com.jovi.photoai.ui.capture.CaptureLibraryViewModel
+import com.jovi.photoai.ui.capture.CaptureLibraryViewModelFactory
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.runBlocking
+import org.junit.Assert.assertNotSame
+import org.junit.Assert.assertNotNull
+import org.junit.Assert.assertTrue
+import org.junit.Rule
+import org.junit.Test
+import org.junit.runner.RunWith
+import java.util.concurrent.CountDownLatch
+import java.util.concurrent.TimeUnit
+
+@RunWith(AndroidJUnit4::class)
+class P25UCaptureExportAndroidTest {
+    @get:Rule val cameraPermission = GrantPermissionRule.grant(Manifest.permission.CAMERA)
+    @get:Rule val compose = createAndroidComposeRule<MainActivity>()
+    private lateinit var activeLibrary: CaptureLibraryViewModel
+
+    @Test
+    fun realCapture_saveCopyThroughDocumentsUi_reportsSaved() {
+        val id = openCapturedGallery()
+        try {
+            compose.onNodeWithText("保存副本").performScrollTo().performClick()
+            assertTrue(device().wait(Until.hasObject(By.pkg("com.google.android.documentsui")), TIMEOUT))
+            chooseDestination()
+            compose.waitUntil(TIMEOUT) {
+                runCatching {
+                    compose.onNodeWithText("已保存副本；应用不跟踪外部文件后续变化").assertIsDisplayed()
+                    true
+                }.getOrDefault(false)
+            }
+        } finally {
+            delete(id)
+        }
+    }
+
+    @Test
+    fun realCapture_cancelSaveCopyKeepsOriginalAndRetryEnabled() {
+        val id = openCapturedGallery()
+        try {
+            compose.onNodeWithText("保存副本").performScrollTo().performClick()
+            assertTrue(device().wait(Until.hasObject(By.pkg("com.google.android.documentsui")), TIMEOUT))
+            device().pressBack()
+            compose.waitUntil(TIMEOUT) {
+                runCatching {
+                    compose.onNodeWithText("已取消另存为，应用内原片保留").assertIsDisplayed()
+                    true
+                }.getOrDefault(false)
+            }
+            compose.onNodeWithText("保存副本").performScrollTo().assertIsEnabled()
+        } finally {
+            delete(id)
+        }
+    }
+
+    @Test
+    fun realCapture_activityRecreationKeepsSaveResultAndRetryEnabled() {
+        val id = openCapturedGallery()
+        val original = compose.activity
+        val recreated = CountDownLatch(1)
+        val callbacks = object : Application.ActivityLifecycleCallbacks {
+            override fun onActivityCreated(activity: Activity, state: Bundle?) {
+                if (activity is MainActivity && activity !== original) recreated.countDown()
+            }
+            override fun onActivityStarted(activity: Activity) = Unit
+            override fun onActivityResumed(activity: Activity) = Unit
+            override fun onActivityPaused(activity: Activity) = Unit
+            override fun onActivityStopped(activity: Activity) = Unit
+            override fun onActivitySaveInstanceState(activity: Activity, state: Bundle) = Unit
+            override fun onActivityDestroyed(activity: Activity) = Unit
+        }
+        val app = compose.activity.application
+        app.registerActivityLifecycleCallbacks(callbacks)
+        try {
+            compose.onNodeWithText("保存副本").performScrollTo().performClick()
+            assertTrue(device().wait(Until.hasObject(By.pkg("com.google.android.documentsui")), TIMEOUT))
+            compose.runOnUiThread { original.recreate() }
+            assertTrue("MainActivity was not recreated behind DocumentsUI",
+                recreated.await(TIMEOUT, TimeUnit.MILLISECONDS))
+            device().pressBack()
+            compose.activityRule.scenario.onActivity { assertNotSame(original, it) }
+            compose.waitUntil(TIMEOUT) {
+                runCatching {
+                    compose.onNodeWithText("已取消另存为，应用内原片保留").assertIsDisplayed()
+                    true
+                }.getOrDefault(false)
+            }
+            compose.onNodeWithText("保存副本").performScrollTo().assertIsEnabled()
+            assertTrue(activeLibrary.state.value.records.any {
+                it.id == id && it.fileState == CaptureFileState.AVAILABLE
+            })
+        } finally {
+            app.unregisterActivityLifecycleCallbacks(callbacks)
+            delete(id)
+        }
+    }
+
+    private fun openCapturedGallery(): String {
+        val library = ViewModelProvider(
+            compose.activity,
+            CaptureLibraryViewModelFactory(compose.activity.application),
+        )[CaptureLibraryViewModel::class.java]
+        activeLibrary = library
+        compose.waitUntil(TIMEOUT) { library.state.value.ready }
+        val repository = CaptureRepository.get(compose.activity.application)
+        val (initialRecords, initialPendingExport) = runBlocking {
+            combine(
+                repository.records,
+                repository.pendingExport,
+            ) { records, pending -> records to pending }.first()
+        }
+        compose.waitUntil(TIMEOUT) {
+            val state = library.state.value
+            state.records.map { it.id }.toSet() == initialRecords.map { it.id }.toSet() &&
+                state.pendingExport?.token == initialPendingExport?.token
+        }
+        initialPendingExport?.let { pending -> library.abandonExport(pending.token) }
+        compose.waitUntil(TIMEOUT) { library.state.value.pendingExport == null }
+        val before = initialRecords.map { it.id }.toSet()
+        compose.waitUntil(TIMEOUT) {
+            compose.onAllNodesWithText("拍摄", useUnmergedTree = true)
+                .fetchSemanticsNodes().isNotEmpty()
+        }
+        compose.onNodeWithText("拍摄", useUnmergedTree = true).performClick()
+        compose.onNodeWithContentDescription("无指导直接拍摄", useUnmergedTree = true).performClick()
+        compose.waitUntil(TIMEOUT) {
+            compose.onAllNodesWithContentDescription("拍摄", useUnmergedTree = true)
+                .fetchSemanticsNodes().any { isEnabled().matches(it) }
+        }
+        // Stable shutter identity also exists before OPEN/STREAMING; wait for its enabled gate.
+        compose.onNodeWithContentDescription("拍摄", useUnmergedTree = true).assertIsEnabled().performClick()
+        var capturedId: String? = null
+        compose.waitUntil(TIMEOUT) {
+            val added = library.state.value.records.filter {
+                it.id !in before && it.fileState == CaptureFileState.AVAILABLE
+            }
+            if (added.size != 1) false else {
+                capturedId = added.single().id
+                true
+            }
+        }
+        val id = checkNotNull(capturedId) { "Expected exactly one new available capture" }
+        compose.waitUntil(TIMEOUT) { library.state.value.galleryVisible }
+        compose.onNodeWithText("成片预览").assertIsDisplayed()
+        compose.onNodeWithText("保存副本").performScrollTo().assertIsDisplayed()
+        return id
+    }
+
+    private fun delete(id: String) {
+        activeLibrary.delete(id)
+        compose.waitUntil(TIMEOUT) { activeLibrary.state.value.records.none { it.id == id } }
+    }
+
+    private fun chooseDestination() {
+        val device = device()
+        device.findObject(By.res("android:id/title"))?.setText("p25u-capture.jpg")
+        val save = device.findObject(By.res("android:id/button1"))
+            ?: device.findObject(By.res("com.google.android.documentsui:id/save"))
+            ?: device.findObject(By.text("保存"))
+            ?: device.findObject(By.text("SAVE"))
+            ?: device.findObject(By.text("Save"))
+        assertNotNull("DocumentsUI save action unavailable", save)
+        save!!.click()
+        assertTrue(device.wait(Until.gone(By.pkg("com.google.android.documentsui")), TIMEOUT))
+    }
+
+    private fun device(): UiDevice =
+        UiDevice.getInstance(InstrumentationRegistry.getInstrumentation())
+
+    private companion object {
+        const val TIMEOUT = 30_000L
+    }
+}

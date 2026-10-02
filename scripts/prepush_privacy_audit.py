@@ -7,8 +7,16 @@ import sys
 from pathlib import Path, PurePosixPath
 
 FORBIDDEN_SEGMENTS = {
-    "private-data", "runtime", "source-library", "user-library", "model-cache",
-    "models", "review-output", "deriveddata", "xcuserdata", "outputs"
+    "private-data",
+    "runtime",
+    "source-library",
+    "user-library",
+    "model-cache",
+    "models",
+    "review-output",
+    "deriveddata",
+    "xcuserdata",
+    "outputs",
 }
 FORBIDDEN_PREFIXES = (
     "docs/references/repos/",
@@ -17,10 +25,30 @@ FORBIDDEN_PREFIXES = (
 )
 FORBIDDEN_NAMES = {".env", "id_rsa", "id_ed25519"}
 FORBIDDEN_SUFFIXES = {
-    ".sqlite", ".sqlite3", ".db", ".p12", ".mobileprovision", ".pem", ".key",
-    ".safetensors", ".ckpt", ".pth", ".pt", ".onnx", ".engine", ".tflite",
-    ".gguf", ".mlmodel", ".mlpackage",
-    ".heic", ".dng", ".arw", ".cr2", ".cr3", ".nef", ".raf"
+    ".sqlite",
+    ".sqlite3",
+    ".db",
+    ".p12",
+    ".mobileprovision",
+    ".pem",
+    ".key",
+    ".safetensors",
+    ".ckpt",
+    ".pth",
+    ".pt",
+    ".onnx",
+    ".engine",
+    ".tflite",
+    ".gguf",
+    ".mlmodel",
+    ".mlpackage",
+    ".heic",
+    ".dng",
+    ".arw",
+    ".cr2",
+    ".cr3",
+    ".nef",
+    ".raf",
 }
 IMAGE_SUFFIXES = {".jpg", ".jpeg", ".png", ".webp", ".gif", ".bmp", ".tif", ".tiff"}
 ALLOWED_IMAGE_PATH_PARTS = {
@@ -59,6 +87,17 @@ def is_allowed_image(norm_lower: str) -> bool:
 def main() -> int:
     root = Path(__file__).resolve().parents[1]
     errors: list[str] = []
+    if (root / "docs/project_progress.json").exists():
+        renderer = root / "scripts/render_project_progress.py"
+        if not renderer.is_file():
+            errors.append("milestone progress renderer is missing")
+        else:
+            progress = subprocess.run(
+                [sys.executable, str(renderer), "--check"],
+                cwd=root, text=True, capture_output=True,
+            )
+            if progress.returncode != 0:
+                errors.append("milestone progress is invalid or out of date; run render_project_progress.py")
     for rel in git_files(root):
         norm = rel.replace("\\", "/")
         low = norm.lower()
@@ -75,7 +114,9 @@ def main() -> int:
         if suffix in FORBIDDEN_SUFFIXES:
             errors.append(f"forbidden private/binary artifact: {rel}")
         if suffix in IMAGE_SUFFIXES and not is_allowed_image(low):
-            errors.append(f"unapproved image asset; move to an allowlisted public fixture/assets path or keep private: {rel}")
+            errors.append(
+                f"unapproved image asset; move to an allowlisted public fixture/assets path or keep private: {rel}"
+            )
         path = root / rel
         if norm in SCANNER_SOURCE_ALLOWLIST:
             continue
@@ -92,7 +133,9 @@ def main() -> int:
         for err in sorted(set(errors)):
             print(f"- {err}", file=sys.stderr)
         return 1
-    print("PASS: no forbidden private assets, unapproved images, model weights, databases, reference clones, or common secrets detected.")
+    print(
+        "PASS: no forbidden private assets, unapproved images, model weights, databases, reference clones, or common secrets detected."
+    )
     return 0
 
 

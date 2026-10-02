@@ -1,0 +1,26 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://photoai.local/phase1_5/p1b/p1b_readiness_manifest.v1.schema.json",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "readiness_id", "status", "t5_delivery_head", "reviewed_product_source", "t3_base", "p1a_sources", "primary_artifact", "corpus", "contract_identities", "authorization", "stop_conditions"],
+  "properties": {
+    "schema_version": {"const": "1.0.0"},
+    "readiness_id": {"type": "string", "minLength": 1},
+    "status": {"const": "READY_FOR_OWNER_DECISION"},
+    "t5_delivery_head": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+    "reviewed_product_source": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+    "t3_base": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+    "p1a_sources": {"type": "array", "minItems": 7, "items": {"$ref": "#/$defs/source"}},
+    "primary_artifact": {"$ref": "#/$defs/primary"},
+    "corpus": {"type": "object", "additionalProperties": false, "required": ["manifest", "approved_count", "quarantine_count", "owner_media", "status"], "properties": {"manifest": {"type": "string"}, "approved_count": {"const": 21}, "quarantine_count": {"const": 8}, "owner_media": {"const": "prohibited"}, "status": {"const": "CORPUS_R3_VALIDATED"}}},
+    "contract_identities": {"type": "object", "additionalProperties": false, "required": ["reference_bundle", "provider_envelope", "error_policy"], "properties": {"reference_bundle": {"type": "string"}, "provider_envelope": {"type": "string"}, "error_policy": {"type": "string"}}},
+    "authorization": {"$ref": "#/$defs/authorization"},
+    "stop_conditions": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}}
+  },
+  "$defs": {
+    "source": {"type": "object", "additionalProperties": false, "required": ["path", "bytes", "sha256"], "properties": {"path": {"type": "string", "pattern": "^(docs/|reports/)[^\\\\]*$"}, "bytes": {"type": "integer", "minimum": 1}, "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}}},
+    "primary": {"type": "object", "additionalProperties": false, "required": ["model_id", "immutable_revision", "weight_filename", "weight_bytes", "weight_lfs_sha256", "repository_file_count", "repository_total_bytes", "source_domains"], "properties": {"model_id": {"type": "string"}, "immutable_revision": {"type": "string", "pattern": "^[0-9a-f]{40}$"}, "weight_filename": {"const": "model.safetensors"}, "weight_bytes": {"type": "integer", "minimum": 1}, "weight_lfs_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}, "repository_file_count": {"type": "integer", "minimum": 1}, "repository_total_bytes": {"type": "integer", "minimum": 1}, "source_domains": {"type": "array", "minItems": 1, "items": {"type": "string"}}}},
+    "authorization": {"type": "object", "additionalProperties": false, "required": ["download_authorized", "runtime_authorized", "inference_authorized", "app_integration_authorized", "pipeline_integration_authorized", "private_media_authorized", "execution_authorized", "legal_review_status", "transport_status", "owner_decision"], "properties": {"download_authorized": {"const": false}, "runtime_authorized": {"const": false}, "inference_authorized": {"const": false}, "app_integration_authorized": {"const": false}, "pipeline_integration_authorized": {"const": false}, "private_media_authorized": {"const": false}, "execution_authorized": {"const": false}, "legal_review_status": {"const": "NOT_LEGAL_APPROVED"}, "transport_status": {"const": "REDIRECT_DOMAIN_NOT_INDEPENDENTLY_VERIFIED"}, "owner_decision": {"const": "NONE_TRACKED"}}}
+  }
+}

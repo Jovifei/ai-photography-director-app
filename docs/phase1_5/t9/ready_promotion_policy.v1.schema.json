@@ -1,0 +1,23 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://photoai.local/phase1_5/t9/ready_promotion_policy.v1.schema.json",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["policy_version", "status", "authority", "bindings", "blocker_precedence", "allowed_evidence_classes", "offline_bundle", "demo_fallback_policy"],
+  "properties": {
+    "policy_version": {"const": "1.0.0"},
+    "status": {"const": "PRODUCT_READY_PROMOTION_GATE_READY_REAL_READY_PROMOTION_NOT_AUTHORIZED"},
+    "authority": {
+      "type": "object", "additionalProperties": false,
+      "required": ["provider_qualification_authorized", "human_review_authorized", "owner_thresholds_approved", "real_provider_execution_authorized", "product_ready_promotion_authorized", "pipeline_integration_authorized", "private_media_authorized", "android_product_change_authorized"],
+      "properties": {
+        "provider_qualification_authorized": {"const": false}, "human_review_authorized": {"const": false}, "owner_thresholds_approved": {"const": false}, "real_provider_execution_authorized": {"const": false}, "product_ready_promotion_authorized": {"const": false}, "pipeline_integration_authorized": {"const": false}, "private_media_authorized": {"const": false}, "android_product_change_authorized": {"const": false}
+      }
+    },
+    "bindings": {"type": "array", "minItems": 6, "items": {"type": "object", "additionalProperties": false, "required": ["id", "path", "sha256", "bytes"], "properties": {"id": {"type": "string"}, "path": {"type": "string"}, "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}, "bytes": {"type": "integer", "minimum": 1}}}},
+    "blocker_precedence": {"type": "array", "minItems": 10, "items": {"type": "string"}},
+    "allowed_evidence_classes": {"type": "array", "items": {"enum": ["SYNTHETIC_CONTRACT_ONLY", "REAL_PROVIDER_RESULT"]}},
+    "offline_bundle": {"type": "object", "additionalProperties": false, "required": ["path", "status", "semantics_modified", "path_preserved"], "properties": {"path": {"const": "docs/reference/PHOTO_KNOWLEDGE_BUNDLE_CONSUMER_V1.md"}, "status": {"const": "EXISTING_ACTIVE_SEPARATE_READY_PATH"}, "semantics_modified": {"const": false}, "path_preserved": {"const": true}}},
+    "demo_fallback_policy": {"const": "USER_EXPLICIT_OUT_OF_ENVELOPE_ONLY"}
+  }
+}

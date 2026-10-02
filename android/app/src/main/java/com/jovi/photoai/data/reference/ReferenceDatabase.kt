@@ -155,6 +155,9 @@ internal interface ReferenceDao {
     @Insert(onConflict = OnConflictStrategy.ABORT)
     suspend fun insertProject(entity: PhotographyProjectEntity)
 
+    @Query("UPDATE photography_projects SET title = :title, updatedAtEpochMillis = :updatedAtEpochMillis WHERE id = :projectId")
+    suspend fun renameProject(projectId: String, title: String, updatedAtEpochMillis: Long): Int
+
     @Query("UPDATE photography_projects SET updatedAtEpochMillis = :updatedAtEpochMillis WHERE id = :projectId")
     suspend fun touchProject(projectId: String, updatedAtEpochMillis: Long)
 
@@ -206,13 +209,18 @@ internal abstract class ReferenceLibraryDatabase : RoomDatabase() {
     abstract fun referenceDao(): ReferenceDao
 
     companion object {
-        fun create(context: Context): ReferenceLibraryDatabase = Room.databaseBuilder(
-            context.applicationContext,
-            ReferenceLibraryDatabase::class.java,
-            "reference-library.db",
-        ).setJournalMode(JournalMode.TRUNCATE)
-            .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5, MIGRATION_5_6)
-            .build()
+        @Volatile private var instance: ReferenceLibraryDatabase? = null
+
+        fun create(context: Context): ReferenceLibraryDatabase = instance ?: synchronized(this) {
+            instance ?: Room.databaseBuilder(
+                context.applicationContext,
+                ReferenceLibraryDatabase::class.java,
+                "reference-library.db",
+            ).setJournalMode(JournalMode.TRUNCATE)
+                .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5, MIGRATION_5_6)
+                .build()
+                .also { instance = it }
+        }
     }
 }
 
@@ -331,6 +339,7 @@ internal fun ReferenceEntity.toRecord(): ReferenceRecord = ReferenceRecord(
     safeAnalysisErrorCode = safeAnalysisErrorCode,
     analysisProvenance = toAnalysisProvenance(),
     knowledgeBundleProvenance = toKnowledgeBundleProvenance(),
+    hasProviderProvenanceMetadata = hasAnyProviderProvenance(),
 ).also { it.requireSafeImageFileName() }
 
 internal fun ReferenceRecord.toEntity(storageState: ReferenceStorageState = ReferenceStorageState.ACTIVE): ReferenceEntity {

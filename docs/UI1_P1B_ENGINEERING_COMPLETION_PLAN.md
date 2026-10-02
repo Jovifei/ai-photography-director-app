@@ -1,5 +1,7 @@
 # UI1 Product Completion and P1B Offline Benchmark Plan
 
+> **Historical / authorization-bound plan.** Its P1A/P1B SHAs and main-branch assumptions are not current execution authority. Keep its safety and authorization constraints; follow [`CURRENT_PROGRAM_STATUS.md`](CURRENT_PROGRAM_STATUS.md) and [`NEXT_GATE_MATRIX.md`](NEXT_GATE_MATRIX.md) for current status.
+
 **Plan date:** 2026-07-29
 **Status:** `READY_FOR_OWNER_EXECUTION_AUTHORIZATION`
 **Product decisions:** [OWNER_PRODUCT_DECISIONS_2026-07-29.md](OWNER_PRODUCT_DECISIONS_2026-07-29.md)

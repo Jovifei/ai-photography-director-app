@@ -1,0 +1,28 @@
+{
+  "stage": "P25_REAL_20_PHOTOGRAPHY_KNOWLEDGE",
+  "status": "P25_EDITORIAL_20_DRAFT_READY_FOR_HUMAN_REVIEW",
+  "date": "2026-09-19",
+  "main_sha": "1b776ba9932a7fdc96112c8cb85c7258f3f7d6af",
+  "branch": "codex/p25-real-20-knowledge-20260919",
+  "source_commit": "a7c5376ff084486dadcdcfaa92ae53621ab381a8",
+  "evidence": {
+    "editorial_entries": "PASS_20_OF_20_PENDING_REVIEW",
+    "p25_contract_tests": "PASS_7_OF_7",
+    "p23c_regression": "PASS_55_SKIP_1_SYMLINK_PRIVILEGE",
+    "compileall": "PASS",
+    "human_content_review": "NOT_RUN",
+    "human_rights_review": "NOT_RUN",
+    "human_privacy_review": "NOT_RUN",
+    "public_candidate_pack": "NOT_RUN"
+  },
+  "authority": {
+    "content_approved": false,
+    "rights_approved": false,
+    "privacy_approved": false,
+    "pipeline_provenance_claimed": false,
+    "app_import_authorized": false,
+    "public_distribution_authorized": false,
+    "release_authorized": false
+  },
+  "next_action": "HUMAN_REVIEW_ALL_20_ENTRIES_THEN_BUILD_A_REAL_PROVENANCE_BOUND_PUBLIC_CANDIDATE"
+}

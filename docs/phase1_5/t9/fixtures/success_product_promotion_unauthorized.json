@@ -1,0 +1,21 @@
+{
+  "fixture_class": "CONTRACT_ONLY_SYNTHETIC_NO_REAL_PROMOTION",
+  "candidate_version": "1.0.0",
+  "evidence_class": "SYNTHETIC_CONTRACT_ONLY",
+  "provider_outcome": "SUCCESS",
+  "provider_result_origin": "LOCAL_VLM",
+  "envelope_contract_valid": true,
+  "bundle_contract_valid": true,
+  "reference_identity_valid": true,
+  "evaluation_state": "METRICS_READY_OWNER_THRESHOLD_NOT_APPROVED",
+  "evaluation_contract_valid": true,
+  "adjudication_complete": true,
+  "severe_hallucination_unresolved": false,
+  "threshold_status": "PROPOSED_NOT_APPROVED",
+  "provider_qualification_state": "NOT_PROVIDER_QUALIFICATION",
+  "human_review_state": "NOT_AUTHORIZED",
+  "product_promotion_authority": false,
+  "demo_fallback_policy": "USER_EXPLICIT_OUT_OF_ENVELOPE_ONLY",
+  "reference_id": "t9-synthetic-reference-07",
+  "explicit_demo_fallback_selected": false
+}

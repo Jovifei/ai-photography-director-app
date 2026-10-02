@@ -1,0 +1,29 @@
+{
+  "schema_version": "1.0.0",
+  "harness_id": "phase1-5-t8-synthetic-evaluation-harness-20260927",
+  "status": "CONTRACT_ONLY_SYNTHETIC_NO_PROVIDER_EXECUTED",
+  "t7_base": "61cb6776b2b6f00d6965789e0589c5337536d258",
+  "fixture_class": "CONTRACT_ONLY_SYNTHETIC",
+  "cases": [
+    {"id": "success-no-adjudication", "path": "docs/phase1_5/t8/fixtures/success_no_adjudication.json", "expected": "METRICS_READY_OWNER_THRESHOLD_NOT_APPROVED"},
+    {"id": "success-disagreement", "path": "docs/phase1_5/t8/fixtures/success_disagreement.json", "expected": "ADJUDICATION_REQUIRED"},
+    {"id": "success-severe", "path": "docs/phase1_5/t8/fixtures/success_severe.json", "expected": "ADJUDICATION_REQUIRED"},
+    {"id": "success-disagreement-r3", "path": "docs/phase1_5/t8/fixtures/success_disagreement_r3.json", "expected": "METRICS_READY_OWNER_THRESHOLD_NOT_APPROVED"},
+    {"id": "success-severe-r3", "path": "docs/phase1_5/t8/fixtures/success_severe_r3.json", "expected": "METRICS_READY_OWNER_THRESHOLD_NOT_APPROVED"},
+    {"id": "failed-provider", "path": "docs/phase1_5/t8/fixtures/failed_provider.json", "expected": "NOT_APPLICABLE"},
+    {"id": "cancelled-provider", "path": "docs/phase1_5/t8/fixtures/cancelled_provider.json", "expected": "NOT_APPLICABLE"},
+    {"id": "pipeline-incompatible", "path": "docs/phase1_5/t8/fixtures/pipeline_incompatible.json", "expected": "NOT_APPLICABLE"}
+  ],
+  "authority": {
+    "provider_runtime_authorized": false,
+    "human_review_authorized": false,
+    "pipeline_authorized": false,
+    "private_media_authorized": false,
+    "thresholds_approved": false
+  },
+  "stop_conditions": [
+    "Any fixture claims a real Provider, human review, image/media access or Pipeline execution.",
+    "Any review output promotes proposed thresholds, confidence or Provider qualification.",
+    "Any T7/T6 authority, contract, privacy or scope check fails."
+  ]
+}

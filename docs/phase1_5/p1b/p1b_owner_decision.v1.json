@@ -1,0 +1,24 @@
+{
+  "schema_version": "1.0.0",
+  "decision_id": "owner-decision-artifact-quarantine-20260928",
+  "readiness_id": "phase1-5-p1b-qwen3-vl-2b-authorization-readiness-20260927",
+  "decision": "AUTHORIZE_ARTIFACT_QUARANTINE_ONLY",
+  "recorded_at": "2026-09-28T23:12:50+08:00",
+  "scope": {
+    "artifact_quarantine_only": true,
+    "download_authorized": false,
+    "runtime_authorized": false,
+    "inference_authorized": false,
+    "app_integration_authorized": false,
+    "pipeline_integration_authorized": false,
+    "private_media_authorized": false
+  },
+  "artifact_binding": {
+    "model_id": "Qwen/Qwen3-VL-2B-Instruct",
+    "immutable_revision": "89644892e4d85e24eaac8bacfd4f463576704203",
+    "weight_filename": "model.safetensors",
+    "weight_bytes": 4255140312,
+    "weight_lfs_sha256": "7de1838c87a5349b016c26a1c3f7d2bc400a3d485f95ef39a7059ffd734977a0",
+    "readiness_manifest_sha256": "166211e0fd1790e85a4e86bd4d270cc3cefccccbc04502d20f2584dfcf752a6a"
+  }
+}

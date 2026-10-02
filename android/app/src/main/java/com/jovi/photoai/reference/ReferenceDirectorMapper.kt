@@ -17,7 +17,7 @@ fun ReferenceBundle.toReferenceAnalysis(): ReferenceAnalysis = ReferenceAnalysis
 )
 
 fun ReferenceBundle.toDirectorCard(): DirectorCard = DirectorCard(
-    environment = "$scene。$backgroundStory",
+    environment = "$scene。$backgroundStory。光线：$lighting。构图：$composition",
     subject = "$subjectIntent。$poseTemplate",
     emotion = emotion,
     camera = "$cameraPosition。$directorPrompt",

@@ -1,0 +1,28 @@
+{
+  "stage": "P25_REAL_20_PHOTOGRAPHY_KNOWLEDGE",
+  "base_sha": "1b776ba9932a7fdc96112c8cb85c7258f3f7d6af",
+  "source_commit": "a7c5376ff084486dadcdcfaa92ae53621ab381a8",
+  "hash_domain": "Git blob OID, byte length, and SHA-256 are authoritative from the exact source commit; Windows CRLF checkout hashes are not canonical bytes.",
+  "files": {
+    "docs/P25_REAL_20_CONTENT_REVIEW.md": {
+      "git_blob": "34fe150847c89b9e4b0d25ae72e6eafb314f4a08",
+      "bytes": 3182,
+      "sha256": "85f0ccc6eb1759999eb5b5149dbfa2f5885f5e141c28505ed383c69e121bfb26"
+    },
+    "docs/reference/p25_real_20_editorial_draft.v1.json": {
+      "git_blob": "7774cb53f4e28f52ee08a153b9a1b2662f20bd25",
+      "bytes": 21067,
+      "sha256": "1670f7101120261f88759bb390d896c34b194d07cbfdcf0eb4defce2c95a275e"
+    },
+    "scripts/p25_validate_editorial_corpus.py": {
+      "git_blob": "fb674e57a49f0e98986cd99675838afa3b8f66c5",
+      "bytes": 4052,
+      "sha256": "48b3699624458b53d8fb9805735f582758e77a7f36bdd93264a792c28f0b33fb"
+    },
+    "scripts/test_p25_validate_editorial_corpus.py": {
+      "git_blob": "96a158eefad5558ac1de85a89cb56032b4922f43",
+      "bytes": 2604,
+      "sha256": "67c0bfe5937afdc6b98760d75a376116cbab4afab86cc2302e931fb3045654ba"
+    }
+  }
+}

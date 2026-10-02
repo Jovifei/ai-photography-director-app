@@ -1,0 +1,174 @@
+{
+  "schema_version": "1.0.0",
+  "manifest_id": "phase1-5-t11-artifact-acquisition-preflight-20260929",
+  "accepted_t10_r3_base": "2ff77cadc8696cbd06a504458da4d58c74aa6133",
+  "target_status": "ARTIFACT_ACQUISITION_PREFLIGHT_READY — EXTERNAL_EVIDENCE_AND_AUTHORIZATION_REQUIRED",
+  "current_status": "BLOCKED_LEGAL_REVIEW",
+  "t10_owner_decision": {
+    "path": "docs/phase1_5/p1b/p1b_owner_decision.v1.json",
+    "decision_hash_mode": "UTF8_TEXT_EOL_NORMALIZED_SHA256_V1",
+    "portable_decision_sha256": "45e462982d9fafd6444805529138d4fcc082d310dff52e9522e5c6adf233ece9",
+    "git_blob_sha1": "74d980e7dccdc67f659836b39126557d91e5460b",
+    "decision": "AUTHORIZE_ARTIFACT_QUARANTINE_ONLY",
+    "artifact_quarantine_only": true,
+    "download_authorized": false,
+    "runtime_authorized": false,
+    "inference_authorized": false,
+    "app_integration_authorized": false,
+    "pipeline_integration_authorized": false,
+    "private_media_authorized": false
+  },
+  "p1b_readiness": {
+    "path": "docs/phase1_5/p1b/p1b_readiness_manifest.v1.json",
+    "readiness_id": "phase1-5-p1b-qwen3-vl-2b-authorization-readiness-20260927",
+    "readiness_manifest_sha256": "166211e0fd1790e85a4e86bd4d270cc3cefccccbc04502d20f2584dfcf752a6a",
+    "manifest_authorization_owner_decision": "NONE_TRACKED",
+    "legal_review_status": "NOT_LEGAL_APPROVED",
+    "transport_status": "REDIRECT_DOMAIN_NOT_INDEPENDENTLY_VERIFIED"
+  },
+  "artifact": {
+    "publisher": "Qwen",
+    "model_id": "Qwen/Qwen3-VL-2B-Instruct",
+    "immutable_revision": "89644892e4d85e24eaac8bacfd4f463576704203",
+    "weight_filename": "model.safetensors",
+    "weight_bytes": 4255140312,
+    "weight_lfs_sha256": "7de1838c87a5349b016c26a1c3f7d2bc400a3d485f95ef39a7059ffd734977a0"
+  },
+  "proposed_transport_domains": [
+    "huggingface.co",
+    "us.aws.cdn.hf.co"
+  ],
+  "p1b_source_binding": {
+    "authority_mode": "FROZEN_P1B_CHECKOUT_BINDING_V1",
+    "cross_platform_canonical": false,
+    "validator": "scripts/validate_phase1_5_p1b_readiness.py::validate_manifest",
+    "p1a_sources": [
+      {
+        "path": "docs/phase1_5/p1a/primary_artifact_authorization_draft.v1.json",
+        "bytes": 2171,
+        "sha256": "7fcab9f1c351f5473a8bde7b2e23185d2888610c27e1fb6d6c4a0e0ab718d5b5"
+      },
+      {
+        "path": "docs/phase1_5/p1a/qwen_candidate_inventory.v1.json",
+        "bytes": 4192,
+        "sha256": "ba432763ee70321eaac4e0314588701f25a833471030d33fee9dd6ee404bc9a1"
+      },
+      {
+        "path": "docs/phase1_5/p1a/qwen_weight_license_evidence.v1.json",
+        "bytes": 2485,
+        "sha256": "08ac3a64b9bf4e189c8955bd8106b37a8deb20d8d44f9be9d131c7392f95adac"
+      },
+      {
+        "path": "docs/phase1_5/p1a/public_corpus_manifest.v3.json",
+        "bytes": 126442,
+        "sha256": "9da0ccdeaa367c1c15e314fb2c64a8e487ddf028c0ec532d30c097c3be62efa6"
+      },
+      {
+        "path": "docs/reference/reference_bundle.v1.schema.json",
+        "bytes": 3292,
+        "sha256": "387e1f4749db3dbe34a5aab0e9618a05f1c4349eb02c567ebfc180a435301700"
+      },
+      {
+        "path": "docs/reference/provider_analysis_envelope.v1.schema.json",
+        "bytes": 8488,
+        "sha256": "014f69f0eda46b806b7632e6440d85be9a5ccb78461a2a78418fb5c4ac78f194"
+      },
+      {
+        "path": "docs/phase1_5/error_policy.v1.json",
+        "bytes": 5599,
+        "sha256": "821466ba68385f3c9628d96dbfc5b27e1d5628ef554b879e086aacc6b42ea7f9"
+      }
+    ],
+    "eol_diagnostics": {
+      "classification": "NON_AUTHORITY_DIAGNOSTIC_ONLY",
+      "representation": "LF_GIT_BLOB_BYTES",
+      "normalization": "CRLF_TO_LF",
+      "rows": [
+        {
+          "path": "docs/phase1_5/p1a/primary_artifact_authorization_draft.v1.json",
+          "git_blob_bytes": 2124,
+          "git_blob_sha1": "c672a3563b8d2a1f741938c978d176763f5386b2",
+          "git_blob_sha256": "d3e01c6ec868d4be2d94b92c0a299dad1a4a219b6e6f53f31169cb60354bdc29",
+          "eol_normalized_sha256": "d3e01c6ec868d4be2d94b92c0a299dad1a4a219b6e6f53f31169cb60354bdc29",
+          "representation_note": "EOL_ONLY_CHECKOUT_REPRESENTATION_DIFFERENCE",
+          "normalized_content_matches_git_blob_bytes": true
+        },
+        {
+          "path": "docs/phase1_5/p1a/qwen_candidate_inventory.v1.json",
+          "git_blob_bytes": 4099,
+          "git_blob_sha1": "3c11866f48b0de55cffbfed0875e758155bc2ce9",
+          "git_blob_sha256": "fe365b9f358ef680f81762fb50bbaffb702b0c7b40372af53b3e0f94c01e32cb",
+          "eol_normalized_sha256": "fe365b9f358ef680f81762fb50bbaffb702b0c7b40372af53b3e0f94c01e32cb",
+          "representation_note": "EOL_ONLY_CHECKOUT_REPRESENTATION_DIFFERENCE",
+          "normalized_content_matches_git_blob_bytes": true
+        },
+        {
+          "path": "docs/phase1_5/p1a/qwen_weight_license_evidence.v1.json",
+          "git_blob_bytes": 2438,
+          "git_blob_sha1": "7bd5f3246950eb7b2fe0ff33167f6e159ec38083",
+          "git_blob_sha256": "2b377ecb680fbece4be8a2bbddcc2d647924f0452dff39d2bc123de3ad94e3f9",
+          "eol_normalized_sha256": "2b377ecb680fbece4be8a2bbddcc2d647924f0452dff39d2bc123de3ad94e3f9",
+          "representation_note": "EOL_ONLY_CHECKOUT_REPRESENTATION_DIFFERENCE",
+          "normalized_content_matches_git_blob_bytes": true
+        }
+      ]
+    },
+    "additional_p1a_runbook_identity": {
+      "path": "docs/phase1_5/p1a/QWEN_FUTURE_DOWNLOAD_RUNBOOK.md",
+      "base_commit": "2ff77cadc8696cbd06a504458da4d58c74aa6133",
+      "git_blob_bytes": 1880,
+      "git_blob_sha1": "d77bb04a74c1be25a135a01b0f02b37d8605e0fe",
+      "git_blob_sha256": "44932ea13784446975001fee2717f519c91c72b6abd70855043a55e502d77ab8",
+      "eol_normalized_sha256": "44932ea13784446975001fee2717f519c91c72b6abd70855043a55e502d77ab8",
+      "representation_note": "EOL_ONLY_CHECKOUT_REPRESENTATION_DIFFERENCE",
+      "classification": "NON_AUTHORITY_DIAGNOSTIC_ONLY"
+    },
+    "drift_action": "SOURCE_CONTENT_DRIFT_STOP"
+  },
+  "current_evidence_status": {
+    "legal_review": "NOT_LEGAL_APPROVED",
+    "transport_verification": "REDIRECT_DOMAIN_NOT_INDEPENDENTLY_VERIFIED",
+    "fresh_metadata": "NOT_RUN",
+    "quarantine_destination": "NOT_DECLARED",
+    "future_acquisition_owner_decision": "NONE_TRACKED"
+  },
+  "blockers": [
+    "LEGAL_REVIEW_REQUIRED",
+    "TRANSPORT_VERIFICATION_REQUIRED",
+    "FRESH_METADATA_REVALIDATION_REQUIRED",
+    "QUARANTINE_DESTINATION_REQUIRED",
+    "OWNER_ACQUISITION_AUTHORIZATION_REQUIRED"
+  ],
+  "authorization": {
+    "acquisition_authorized": false,
+    "artifact_body_access_authorized": false,
+    "network_access_authorized": false,
+    "runtime_authorized": false,
+    "inference_authorized": false,
+    "app_integration_authorized": false,
+    "pipeline_integration_authorized": false,
+    "private_media_authorized": false
+  },
+  "state_machine": {
+    "current_state": "BLOCKED_LEGAL_REVIEW",
+    "evidence_complete_state": "READY_FOR_OWNER_ACQUISITION_DECISION",
+    "future_owner_authorization_state": "READY_FOR_SEPARATE_ACQUISITION_EXECUTION_PLAN",
+    "current_record_can_report_evidence_complete": false,
+    "current_record_can_report_acquisition_authorized": false,
+    "current_record_can_report_artifact_acquisition_ready": false
+  },
+  "safety_boundary": {
+    "network_accessed": false,
+    "http_head_get_or_range_issued": false,
+    "redirect_followed": false,
+    "external_metadata_refreshed": false,
+    "artifact_downloaded": false,
+    "git_lfs_accessed": false,
+    "legal_conclusion_made": false,
+    "quarantine_destination_selected": false,
+    "runtime_installed_or_executed": false,
+    "inference_performed": false,
+    "photos_private_media_pipeline_or_device_accessed": false,
+    "android_changed_or_signing_release_merge_performed": false
+  }
+}

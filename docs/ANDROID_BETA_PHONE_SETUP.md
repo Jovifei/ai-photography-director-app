@@ -1,5 +1,7 @@
 # 摄影导演 Android Beta：手机配置与首次使用说明
 
+> **Historical pilot reference:** this document describes a future/previous pilot setup. It does not authorize Qwen, Private LAN, physical-device testing or beta release. Follow [`CURRENT_PROGRAM_STATUS.md`](CURRENT_PROGRAM_STATUS.md) and [`NEXT_GATE_MATRIX.md`](NEXT_GATE_MATRIX.md).
+
 版本：`0.2.0-beta.1`
 包名：`com.jovi.photoai`
 

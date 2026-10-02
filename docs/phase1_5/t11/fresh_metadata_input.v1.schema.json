@@ -1,0 +1,188 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://photoai.local/phase1_5/t11/fresh_metadata_input.v1.schema.json",
+  "title": "Hypothetical T11 Fresh Metadata Input",
+  "description": "Schema only. Metadata refresh is not performed and no positive metadata record is tracked.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "input_kind",
+    "expected_identity",
+    "observed_identity",
+    "fresh_metadata_status",
+    "fallback_permitted",
+    "metadata_evidence_sha256",
+    "recorded_at"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "1.0.0"
+    },
+    "input_kind": {
+      "const": "T11_FRESH_METADATA_INPUT"
+    },
+    "expected_identity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "publisher",
+        "model_id",
+        "immutable_revision",
+        "license_value",
+        "weight_filename",
+        "weight_bytes",
+        "weight_lfs_sha256"
+      ],
+      "properties": {
+        "publisher": {
+          "const": "Qwen"
+        },
+        "model_id": {
+          "const": "Qwen/Qwen3-VL-2B-Instruct"
+        },
+        "immutable_revision": {
+          "const": "89644892e4d85e24eaac8bacfd4f463576704203"
+        },
+        "license_value": {
+          "const": "apache-2.0"
+        },
+        "weight_filename": {
+          "const": "model.safetensors"
+        },
+        "weight_bytes": {
+          "const": 4255140312
+        },
+        "weight_lfs_sha256": {
+          "const": "7de1838c87a5349b016c26a1c3f7d2bc400a3d485f95ef39a7059ffd734977a0"
+        }
+      }
+    },
+    "observed_identity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "publisher",
+        "model_id",
+        "immutable_revision",
+        "license_value",
+        "weight_filename",
+        "weight_bytes",
+        "weight_lfs_sha256"
+      ],
+      "properties": {
+        "publisher": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 300
+        },
+        "model_id": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 300
+        },
+        "immutable_revision": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 300
+        },
+        "license_value": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 300
+        },
+        "weight_filename": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 300
+        },
+        "weight_bytes": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 1
+        },
+        "weight_lfs_sha256": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 300
+        }
+      }
+    },
+    "fresh_metadata_status": {
+      "enum": [
+        "MATCHED_IMMUTABLE_IDENTITY",
+        "IDENTITY_DRIFT",
+        "INCOMPLETE"
+      ]
+    },
+    "fallback_permitted": {
+      "const": false
+    },
+    "metadata_evidence_sha256": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "recorded_at": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "fresh_metadata_status": {
+            "const": "MATCHED_IMMUTABLE_IDENTITY"
+          }
+        },
+        "required": [
+          "fresh_metadata_status"
+        ]
+      },
+      "then": {
+        "properties": {
+          "observed_identity": {
+            "properties": {
+              "publisher": {
+                "const": "Qwen"
+              },
+              "model_id": {
+                "const": "Qwen/Qwen3-VL-2B-Instruct"
+              },
+              "immutable_revision": {
+                "const": "89644892e4d85e24eaac8bacfd4f463576704203"
+              },
+              "license_value": {
+                "const": "apache-2.0"
+              },
+              "weight_filename": {
+                "const": "model.safetensors"
+              },
+              "weight_bytes": {
+                "const": 4255140312
+              },
+              "weight_lfs_sha256": {
+                "const": "7de1838c87a5349b016c26a1c3f7d2bc400a3d485f95ef39a7059ffd734977a0"
+              }
+            }
+          }
+        }
+      }
+    }
+  ],
+  "$defs": {}
+}
