@@ -1,22 +1,22 @@
 # 项目进度总览
 
 更新时间：2026-10-02
-总体规划状态：**PENDING_REMOTE_PLANNING**
+总体规划状态：**APPROVED**
 
-由 project_progress.json 自动生成。路线图尚待远端审定；每条进度表示已有证据的检查点完成数，不代表摄影质量或整体产品完成百分比。
+由 project_progress.json 自动生成。每条进度表示已有证据的检查点完成数，不代表摄影质量或整体产品完成百分比。
 
-候选：[PR #22](https://github.com/Jovifei/ai-photography-director-app/pull/22)；证据基准 `b7509cbc6f8c470ae8ccd11e759c7bfe0de3ed3b`。
+候选：[PR #22](https://github.com/Jovifei/ai-photography-director-app/pull/22)；证据基准 `078fe8ff759b357e8825017219c88c737b01e124`。
 
 | 大阶段 | 进度条 | 检查点 | 状态 | 首发要求 |
 |---|---|---|---|---|
-| M1 产品范围与数据契约 | ███████░░░ | 3/4 | IN_PROGRESS | 是 |
+| M1 产品范围与数据契约 | ██████████ | 4/4 | IN_PROGRESS | 是 |
 | M2 Android 离线产品闭环 | ██████░░░░ | 4/6 | IN_PROGRESS | 是 |
 | M3 夜间分析生产端与 App 接入 | ██░░░░░░░░ | 1/5 | WAITING_EXTERNAL | 是 |
 | M4 真实 AI 能力资格与路由 | ██░░░░░░░░ | 2/7 | ROUTE_DECISION_PENDING | 路线待远端审定 |
 | M5 真实设备、摄影体验与试点 | █░░░░░░░░░ | 1/6 | HUMAN_ACCEPTANCE_PENDING | 是 |
 | M6 Android 发布与持续维护 | █░░░░░░░░░ | 1/6 | RELEASE_PENDING | 是 |
 
-**下一动作：** 远端完成详细总路线图正式审定及源码审核；本地已接收PR23、修复进度生成，等待完整阶段交接。
+**下一动作：** 远端复审本地规划同步修复；下一机器阶段T14等待生产端独立golden-vector交接，本机API35及真实设备资格另待环境。
 
 [大阶段实施步骤与完成标准](PROJECT_MASTER_ROADMAP.md)
 
@@ -27,7 +27,7 @@
 | 产品目标与 Android 首发边界 | DONE | 当前 README / T17 交接；用户 Reference→Director 目标 |
 | PKB1 消费端合同 | DONE | 合同12/12及严格解析/摘要规则 |
 | App/生产端责任及交接要求 | DONE | PKB1_PRODUCER_GOLDEN_VECTOR_HANDOFF_REQUEST.md |
-| 远端总路线图审定 | PENDING | 新恢复会话GitHub读写已验证；详细总路线图尚未正式审定 |
+| 远端总路线图审定 | DONE | 远端恢复会话技术规划APPROVED；PR23回执078fe8ff759b357e8825017219c88c737b01e124 |
 
 ## M2 Android 离线产品闭环
 

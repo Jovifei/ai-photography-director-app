@@ -1,10 +1,10 @@
 {
   "version": 1,
   "updated_at": "2026-10-02",
-  "planning_status": "PENDING_REMOTE_PLANNING",
-  "source_revision": "b7509cbc6f8c470ae8ccd11e759c7bfe0de3ed3b",
+  "planning_status": "APPROVED",
+  "source_revision": "078fe8ff759b357e8825017219c88c737b01e124",
   "candidate_pr": "https://github.com/Jovifei/ai-photography-director-app/pull/22",
-  "next_action": "远端完成详细总路线图正式审定及源码审核；本地已接收PR23、修复进度生成，等待完整阶段交接。",
+  "next_action": "远端复审本地规划同步修复；下一机器阶段T14等待生产端独立golden-vector交接，本机API35及真实设备资格另待环境。",
   "phases": [
     {
       "id": "M1",
@@ -29,8 +29,8 @@
         },
         {
           "name": "远端总路线图审定",
-          "status": "pending",
-          "evidence": "新恢复会话GitHub读写已验证；详细总路线图尚未正式审定"
+          "status": "done",
+          "evidence": "远端恢复会话技术规划APPROVED；PR23回执078fe8ff759b357e8825017219c88c737b01e124"
         }
       ]
     },
@@ -226,7 +226,7 @@
     }
   ],
   "remote_task": "c2c_a621",
-  "remote_state": "CHANGES_REQUIRED_MASTER_ROADMAP_AND_SOURCE_REVIEW",
+  "remote_state": "LOCAL_INTAKE_VERIFIED_AWAITING_REMOTE_FINAL_REVIEW",
   "connection_status": "PASS",
   "remote_chat_url": "https://chatgpt.com/g/g-p-6aa64998af50819185d9b12a5e52736a-aixiang-ji/c/6abf762e-d97c-83e9-a62c-93f0b6c49a02-app"
 }
