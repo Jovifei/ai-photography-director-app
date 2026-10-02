@@ -2,78 +2,92 @@
 
 Date: 2026-10-02
 
-## Reviewed scope
+## Review boundary
 
-Candidate reviewed:
+Candidate:
 
 - PR #22
-- head: `57081b4aeb5cfeffdfe7460b359c5e3e031b27b3`
+- head `57081b4aeb5cfeffdfe7460b359c5e3e031b27b3`
 
-Reviewed source areas:
+This is a remote source inspection record. It is not a replacement for local build, device, or human acceptance.
 
-- CameraX layer: `android/app/src/main/java/com/jovi/photoai/camera/`
-- Capture layer: `data/capture/` and capture UI
-- PKB1 consumer layer: `data/reference/`, `ui/project/`, `ui/reference/`
-- T17 continuity tests: `androidTest/.../t17/`
-- Project gate documents and progress ledger
+## Reviewed implementation paths and symbols
+
+### PKB1 consumer contract
+
+Files reviewed:
+
+- `android/app/src/main/java/com/jovi/photoai/data/reference/PhotoKnowledgeBundle.kt`
+- `android/app/src/main/java/com/jovi/photoai/data/reference/KnowledgeBundleReplacement.kt`
+- `android/app/src/main/java/com/jovi/photoai/data/reference/ReferenceRepository.kt`
+
+Verified invariants:
+
+- parser accepts only exact schema keys;
+- contract version is checked;
+- UTF-8 and size limits are enforced;
+- SHA-256 payload digest is checked before success;
+- duplicate reference IDs are rejected;
+- provenance keeps producerId/releaseId/origin separate from user claims.
+
+Not reviewed:
+
+- production producer generator implementation;
+- external golden vector compatibility.
+
+### T17 offline continuity
+
+Files reviewed:
+
+- `android/app/src/androidTest/java/com/jovi/photoai/t17/T17OfflineGuidedContinuityAndroidTest.kt`
+- `android/app/src/androidTest/java/com/jovi/photoai/t17/T17OwnershipPolicyAndroidTest.kt`
+- `reports/T17_OFFLINE_GUIDED_CONTINUITY_REPORT.md`
+
+Verified invariants:
+
+- dedicated API35 instrumentation arguments are checked;
+- process identity and package ownership are asserted;
+- replacement flow checks current bundle provenance;
+- deleted-reference path disables unsafe actions;
+- capture identity is compared across recovery flow.
+
+Not reviewed:
+
+- execution result from this remote pass;
+- physical device camera behavior.
+
+### CameraX and capture
+
+Files reviewed:
+
+- `android/app/src/main/java/com/jovi/photoai/camera/CameraCapability.kt`
+- `android/app/src/main/java/com/jovi/photoai/camera/CameraControlFence.kt`
+- `android/app/src/main/java/com/jovi/photoai/camera/CameraXManager.kt`
+- `android/app/src/main/java/com/jovi/photoai/data/capture/CaptureEngine.kt`
+- `android/app/src/main/java/com/jovi/photoai/data/capture/CaptureRepository.kt`
+
+Verified invariants:
+
+- camera capability, control fence, capture engine, and repository remain separated;
+- exported capture state is persisted through repository APIs;
+- remote review found no reproducible source defect.
+
+Not reviewed:
+
+- runtime thermal/performance behavior;
+- physical sensor differences.
 
 ## Findings
 
-### CameraX
+No reproducible code defect identified in this remote review pass. No product feature was added without source evidence.
 
-Result: no confirmed source defect found in this remote review pass.
+## Evidence limits
 
-Evidence reviewed:
+NOT_RUN:
 
-- camera capability boundary
-- lifecycle/control separation
-- permission and accessibility test coverage references
-
-Local device verification remains NOT_RUN.
-
-### Capture
-
-Result: no confirmed source defect found in this remote review pass.
-
-Evidence reviewed:
-
-- capture repository/model/export flow
-- recovery test coverage references
-
-Real device storage and camera behavior remain NOT_RUN.
-
-### PKB1
-
-Result: no confirmed source defect found in this remote review pass.
-
-Evidence reviewed:
-
-- consumer parsing/binding boundary
-- explicit replacement and provenance rules
-
-Producer golden vectors are not supplied by this repository and remain external evidence.
-
-### T17
-
-Result: no confirmed source defect found in this remote review pass.
-
-Evidence reviewed:
-
-- offline guided continuity tests
-- ownership policy tests
-- T17 report references
-
-Remote evidence does not replace local execution.
-
-## Implementation decision
-
-No speculative product code was added. The next implementation package is documentation and gate-contract completion because the reviewed source did not expose a reproducible code defect.
-
-## Remaining NOT_RUN evidence
-
-- Android build: NOT_RUN remotely
-- renderer --check: NOT_RUN remotely
-- privacy audit: NOT_RUN remotely
-- API35 physical/device verification: NOT_RUN remotely
-- human photography evaluation: NOT_RUN
-- producer golden vector compatibility: NOT_RUN
+- Android build/test
+- renderer --check
+- privacy audit
+- API35 device execution
+- human photography evaluation
+- producer golden vector compatibility
