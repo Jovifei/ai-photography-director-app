@@ -4,7 +4,7 @@
   "planning_status": "APPROVED",
   "source_revision": "57081b4aeb5cfeffdfe7460b359c5e3e031b27b3",
   "candidate_pr": "https://github.com/Jovifei/ai-photography-director-app/pull/22",
-  "next_action": "远端审核当前候选本机T17限定复验证据；T14等待生产端独立向量，物理设备、人审与发布资格未通过。",
+  "next_action": "M3/T14等待夜间分析生产端独立原始向量、版本与canonical摘要交接；本机T17限定复验已远端接受，物理手机、人审与发布资格待验收。",
   "phases": [
     {
       "id": "M1",
@@ -226,7 +226,7 @@
     }
   ],
   "remote_task": "c2c_a621",
-  "remote_state": "LOCAL_API35_VERIFIED_AWAITING_REMOTE_REVIEW",
+  "remote_state": "DONE_LOCAL_API35_T17_REVIEW",
   "connection_status": "PASS",
   "remote_chat_url": "https://chatgpt.com/g/g-p-6aa64998af50819185d9b12a5e52736a-aixiang-ji/c/6abf762e-d97c-83e9-a62c-93f0b6c49a02-app"
 }
