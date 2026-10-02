@@ -10,13 +10,13 @@
 | 大阶段 | 进度条 | 检查点 | 状态 | 首发要求 |
 |---|---|---|---|---|
 | M1 产品范围与数据契约 | ██████████ | 4/4 | IN_PROGRESS | 是 |
-| M2 Android 离线产品闭环 | ██████░░░░ | 4/6 | IN_PROGRESS | 是 |
+| M2 Android 离线产品闭环 | ████████░░ | 5/6 | IN_PROGRESS | 是 |
 | M3 夜间分析生产端与 App 接入 | ██░░░░░░░░ | 1/5 | WAITING_EXTERNAL | 是 |
 | M4 真实 AI 能力资格与路由 | ██░░░░░░░░ | 2/7 | ROUTE_DECISION_PENDING | 路线待远端审定 |
 | M5 真实设备、摄影体验与试点 | █░░░░░░░░░ | 1/6 | HUMAN_ACCEPTANCE_PENDING | 是 |
 | M6 Android 发布与持续维护 | █░░░░░░░░░ | 1/6 | RELEASE_PENDING | 是 |
 
-**下一动作：** 技术规划与交接已远端接受；T14等待生产端独立golden-vector，当前候选API35/物理手机资格待环境，人工与发布门禁另行验收。
+**下一动作：** 远端审核当前候选本机T17限定复验证据；T14等待生产端独立向量，物理设备、人审与发布资格未通过。
 
 [大阶段实施步骤与完成标准](PROJECT_MASTER_ROADMAP.md)
 
@@ -36,8 +36,8 @@
 | 项目/参考图/指导界面 | DONE | T3–T13 阶段源码与报告 |
 | 拍摄/成片库/重拍/导出 | DONE | P25U/T12–T17 源码与报告 |
 | 阶段级合成/API35远端资格 | DONE | T17远端96/96，逐阶段远端接受 |
-| 当前候选本地JVM/构建/Debug lint | DONE | 159/159；Debug/AndroidTest build PASS；lint 0错误17警告 |
-| 当前候选本机API35复验 | NOT_RUN | 本机未配置AVD；Python外部证据另有缺口 |
+| 当前候选本地JVM/构建/Debug lint | DONE | 本轮159/159，Debug/AndroidTest构建PASS，lint0错误26警告；本机限定复验报告 |
+| 当前候选本机API35复验 | DONE | 本机API35限定T17六阶段+8保护PASS；完整96矩阵本轮未重跑；LOCAL_API35_T17_20261002.md |
 | 整合PR远端复核与主线接收 | PENDING | PR22/PR23 Draft；远端交接已接收，完整审查与主线接收尚未完成 |
 
 ## M3 夜间分析生产端与 App 接入

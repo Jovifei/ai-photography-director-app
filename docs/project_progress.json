@@ -4,7 +4,7 @@
   "planning_status": "APPROVED",
   "source_revision": "57081b4aeb5cfeffdfe7460b359c5e3e031b27b3",
   "candidate_pr": "https://github.com/Jovifei/ai-photography-director-app/pull/22",
-  "next_action": "技术规划与交接已远端接受；T14等待生产端独立golden-vector，当前候选API35/物理手机资格待环境，人工与发布门禁另行验收。",
+  "next_action": "远端审核当前候选本机T17限定复验证据；T14等待生产端独立向量，物理设备、人审与发布资格未通过。",
   "phases": [
     {
       "id": "M1",
@@ -58,12 +58,12 @@
         {
           "name": "当前候选本地JVM/构建/Debug lint",
           "status": "done",
-          "evidence": "159/159；Debug/AndroidTest build PASS；lint 0错误17警告"
+          "evidence": "本轮159/159，Debug/AndroidTest构建PASS，lint0错误26警告；本机限定复验报告"
         },
         {
           "name": "当前候选本机API35复验",
-          "status": "not_run",
-          "evidence": "本机未配置AVD；Python外部证据另有缺口"
+          "status": "done",
+          "evidence": "本机API35限定T17六阶段+8保护PASS；完整96矩阵本轮未重跑；LOCAL_API35_T17_20261002.md"
         },
         {
           "name": "整合PR远端复核与主线接收",
@@ -226,7 +226,7 @@
     }
   ],
   "remote_task": "c2c_a621",
-  "remote_state": "DONE_TECHNICAL_ROADMAP_REVIEW",
+  "remote_state": "LOCAL_API35_VERIFIED_AWAITING_REMOTE_REVIEW",
   "connection_status": "PASS",
   "remote_chat_url": "https://chatgpt.com/g/g-p-6aa64998af50819185d9b12a5e52736a-aixiang-ji/c/6abf762e-d97c-83e9-a62c-93f0b6c49a02-app"
 }

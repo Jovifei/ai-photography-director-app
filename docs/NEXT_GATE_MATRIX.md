@@ -19,7 +19,7 @@ Current Android source candidate: T3–T17 is locally integrated on `codex/mainl
 | Owner Decision Capture / P1B Route Resolution | T6 P1B packet, exact T9 authority and explicit Owner choice | Existing P1B schema validation; exact artifact binding; no download/runtime/inference/App/Pipeline/private-media authorization | `P1B_ARTIFACT_QUARANTINE_SCOPE_APPROVED — ARTIFACT_ACQUISITION_NOT_YET_AUTHORIZED` |
 | T11 Artifact Acquisition Preflight | Accepted T10-R3 identity, frozen P1B source bindings and exact Qwen artifact metadata | External legal disposition, verified transport chain, fresh immutable metadata, opaque quarantine destination, and a later separately bound Owner decision | `ARTIFACT_ACQUISITION_PREFLIGHT_READY — EXTERNAL_EVIDENCE_AND_AUTHORIZATION_REQUIRED`; current blocker `BLOCKED_LEGAL_REVIEW` |
 
-The matrix must not promote an old Closed Beta candidate, an emulator result, an HTTP success, an editorial draft or an AI pre-review into a current release or human PASS. The T17 96/96 API35 result is the reported remote qualification; this local candidate's API35 run remains `NOT_RUN` because this host has no configured AVD.
+The matrix must not promote an old Closed Beta candidate, an emulator result, an HTTP success, an editorial draft or an AI pre-review into a current release or human PASS. The historical T17 96/96 remains remote evidence. Current local T17 qualification now passed six host phases, eight Android guards and nineteen host policies; the full 96-test matrix was not rerun. SDK-access preflight corrected the earlier sandbox-empty AVD result. See reports/LOCAL_API35_T17_20261002.md; physical-device acceptance remains NOT_RUN.
 
 ## Stage-selection rule
 

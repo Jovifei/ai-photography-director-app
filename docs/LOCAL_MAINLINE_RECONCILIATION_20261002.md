@@ -68,3 +68,7 @@ P23B 本地验证分支 `codex/p23b-local-validation-20260915@34949f8` 的测试
 ## 本地知识库镜像
 
 `sync-project-docs.ps1 -ProjectRoot E:\project\ai-photography-director-app -DryRun` 返回 `DRY_RUN`，copy_count 16、skip_count 0。随后按映射运行无参数 `invoke-mirror.ps1`，返回 `MEMORY_UPDATED`，依据同一轮 DryRun 同步 16 份 allowlist 文档。任务记录、构建/运行输出、九份未列入 allowlist 的 Owner 草稿和 `tasks/` 未镜像；P20 执行规格按现有 allowlist 镜像到个人 Obsidian，E 盘原件仍未改。
+
+## 后续本机复验更正
+
+既有T3 API35 AVD在具备SDK访问权限的检查中可见；此前受限空列表不代表无AVD。当前候选本机T17限定六阶段/8Android保护/19宿主策略PASS，JVM159/159及Debug/AndroidTest构建PASS，lint0错误26警告；完整96矩阵本轮未重跑。技术规划/交接已远端接受，PR22/23仍未合并。详见reports/LOCAL_API35_T17_20261002.md。

@@ -81,6 +81,12 @@ The following remain useful evidence or design constraints but are not current e
 
 T5 consolidated this status into one machine-checkable authority, T6 added a machine-verifiable P1B readiness boundary, T7 added provider-neutral evaluation governance, T8 exercised the future evidence flow with contract-only synthetic records, T9 defined the future READY-promotion boundary, T10 recorded the explicit Owner quarantine-only decision, and T11 defines the non-network preflight for a separate future acquisition decision. For the versioned P1B/T11 authority record, the next authorized stage remains `EXTERNAL_LEGAL_TRANSPORT_DESTINATION_EVIDENCE_OR_OWNER_DEFER`; T11 does not collect that evidence or authorize artifact acquisition.
 
+## 2026-10-02 后续实测更新
+
+远端恢复会话已实际GitHub读写、审定M1–M6技术规划并接受PR23交接。当前仍为Draft PR22/23，未合入main。
+
+此前“没有已配置AVD”来自受限环境检查；本轮实际SDK权限检查证实既有专用T3 API35环境。当前候选本机159/159 JVM、Debug/AndroidTest构建、Debug lint0错误26警告，T17成功/删除两模式6阶段、8项Android保护和19项宿主策略通过。历史96项完整矩阵本轮未重跑，物理手机/真人/生产端/Release门禁保持待验收。详见reports/LOCAL_API35_T17_20261002.md。上文旧环境结果为历史记录，不再代表当前环境。
+
 ## Android lane after T17
 
 The local T3–T17 offline Android machine track has no additional speculative app implementation queued. Its next machine gate is T14 only after the producer supplies exact source revision, raw single/multi/A/B vectors, file byte hashes, canonical PKB1 digests and independent mapping expectations. Physical-device behavior, real-photo usefulness, TalkBack usefulness, human editorial decisions, signing, release and a GitHub `main` merge remain separate `PENDING` or `NOT_RUN` gates.
