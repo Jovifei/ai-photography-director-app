@@ -7,9 +7,9 @@ Date: 2026-10-02
 Candidate:
 
 - PR #22
-- head `57081b4aebc5feffdfe7460b359c5e3e031b27b3`
+- head `57081b4aeb5cfeffdfe7460b359c5e3e031b27b3`
 
-This is a remote source inspection record. It is not a replacement for local build, device, or human acceptance.
+This is a remote source inspection record. It is not a replacement for local build, device, legal, human, or release acceptance.
 
 ## Reviewed implementation paths and symbols
 
@@ -27,38 +27,27 @@ Files reviewed:
 
 Verified invariants:
 
-- exact schema key validation;
-- contract version is checked;
-- UTF-8 and size limits are enforced;
-- SHA-256 payload digest is checked before success;
-- duplicate reference IDs are rejected;
-- provenance keeps producerId/releaseId/origin separate from user claims.
+- exact schema validation;
+- contract version checking;
+- UTF-8 and size limits;
+- SHA-256 payload verification;
+- duplicate reference rejection;
+- producer provenance separation.
 
-Not reviewed:
-
-- production producer generator implementation;
-- external golden vector compatibility.
-
-### T17 offline continuity
+### T17 continuity
 
 Files reviewed:
 
 - `android/app/src/androidTest/java/com/jovi/photoai/t17/T17OfflineGuidedContinuityAndroidTest.kt`
 - `android/app/src/androidTest/java/com/jovi/photoai/t17/T17OwnershipPolicyAndroidTest.kt`
-- `reports/T17_OFFLINE_GUIDED_CONTINUITY_REPORT.md`
 
 Verified invariants:
 
-- dedicated API35 instrumentation arguments are checked;
-- process identity and package ownership are asserted;
-- replacement flow checks current bundle provenance;
-- deleted-reference path disables unsafe actions;
-- capture identity is compared across recovery flow.
-
-Not reviewed:
-
-- execution result from this remote pass;
-- physical device camera behavior.
+- API35 instrumentation guard;
+- process/package ownership checks;
+- bundle replacement provenance checks;
+- deleted-reference safety path;
+- capture identity preservation.
 
 ### CameraX and capture
 
@@ -72,26 +61,33 @@ Files reviewed:
 
 Verified invariants:
 
-- camera capability, control fence, capture engine, and repository remain separated;
-- exported capture state is persisted through repository APIs;
-- remote review found no reproducible source defect.
+- camera capability, controls, capture engine, and repository boundaries remain separated;
+- no reproducible source defect found in this remote review pass.
 
-Not reviewed:
+## Review decision
 
-- runtime thermal/performance behavior;
-- physical sensor differences.
+APPROVED for the technical master-roadmap review package.
 
-## Findings
+This approval means:
 
-No reproducible code defect identified in this remote review pass. No product feature was added without source evidence.
+- the implementation plan is sufficiently specified for the next execution gate;
+- source review evidence is recorded with exact paths and symbols.
 
-## Evidence limits
+This approval does not mean:
+
+- product acceptance;
+- legal approval;
+- human photography acceptance;
+- device acceptance;
+- release approval.
+
+## Remaining evidence boundaries
 
 NOT_RUN:
 
-- Android build/test
-- renderer --check
-- privacy audit
-- API35 device execution
-- human photography evaluation
-- producer golden vector compatibility
+- Android build/test in this remote pass;
+- renderer execution in this remote pass;
+- privacy audit execution in this remote pass;
+- API35 device execution in this remote pass;
+- human photography evaluation;
+- producer golden vector compatibility.
