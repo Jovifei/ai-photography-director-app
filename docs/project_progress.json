@@ -2,9 +2,9 @@
   "version": 1,
   "updated_at": "2026-10-02",
   "planning_status": "APPROVED",
-  "source_revision": "078fe8ff759b357e8825017219c88c737b01e124",
+  "source_revision": "57081b4aeb5cfeffdfe7460b359c5e3e031b27b3",
   "candidate_pr": "https://github.com/Jovifei/ai-photography-director-app/pull/22",
-  "next_action": "远端复审本地规划同步修复；下一机器阶段T14等待生产端独立golden-vector交接，本机API35及真实设备资格另待环境。",
+  "next_action": "技术规划与交接已远端接受；T14等待生产端独立golden-vector，当前候选API35/物理手机资格待环境，人工与发布门禁另行验收。",
   "phases": [
     {
       "id": "M1",
@@ -226,7 +226,7 @@
     }
   ],
   "remote_task": "c2c_a621",
-  "remote_state": "LOCAL_INTAKE_VERIFIED_AWAITING_REMOTE_FINAL_REVIEW",
+  "remote_state": "DONE_TECHNICAL_ROADMAP_REVIEW",
   "connection_status": "PASS",
   "remote_chat_url": "https://chatgpt.com/g/g-p-6aa64998af50819185d9b12a5e52736a-aixiang-ji/c/6abf762e-d97c-83e9-a62c-93f0b6c49a02-app"
 }

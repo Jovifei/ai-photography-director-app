@@ -5,7 +5,7 @@
 
 由 project_progress.json 自动生成。每条进度表示已有证据的检查点完成数，不代表摄影质量或整体产品完成百分比。
 
-候选：[PR #22](https://github.com/Jovifei/ai-photography-director-app/pull/22)；证据基准 `078fe8ff759b357e8825017219c88c737b01e124`。
+候选：[PR #22](https://github.com/Jovifei/ai-photography-director-app/pull/22)；证据基准 `57081b4aeb5cfeffdfe7460b359c5e3e031b27b3`。
 
 | 大阶段 | 进度条 | 检查点 | 状态 | 首发要求 |
 |---|---|---|---|---|
@@ -16,7 +16,7 @@
 | M5 真实设备、摄影体验与试点 | █░░░░░░░░░ | 1/6 | HUMAN_ACCEPTANCE_PENDING | 是 |
 | M6 Android 发布与持续维护 | █░░░░░░░░░ | 1/6 | RELEASE_PENDING | 是 |
 
-**下一动作：** 远端复审本地规划同步修复；下一机器阶段T14等待生产端独立golden-vector交接，本机API35及真实设备资格另待环境。
+**下一动作：** 技术规划与交接已远端接受；T14等待生产端独立golden-vector，当前候选API35/物理手机资格待环境，人工与发布门禁另行验收。
 
 [大阶段实施步骤与完成标准](PROJECT_MASTER_ROADMAP.md)
 
