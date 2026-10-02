@@ -72,3 +72,7 @@ P23B 本地验证分支 `codex/p23b-local-validation-20260915@34949f8` 的测试
 ## 后续本机复验更正
 
 既有T3 API35 AVD在具备SDK访问权限的检查中可见；此前受限空列表不代表无AVD。当前候选本机T17限定六阶段/8Android保护/19宿主策略PASS，JVM159/159及Debug/AndroidTest构建PASS，lint0错误26警告；完整96矩阵本轮未重跑。技术规划/交接已远端接受，PR22/23仍未合并。详见reports/LOCAL_API35_T17_20261002.md。
+
+## 主线整合后当前状态（2026-10-02）
+
+PR22合并061d7627aa1a9dd461411c1f1141fec62e8857a6，PR23合并98b28b03a74c81e972d5806ee6637f9b7b1fd845。Owner main已安全同步整合源码，原件备份及Owner修改保留，20项完整性行为测试与进度/隐私门通过。前文Draft/未合并描述保留为历史，不再代表当前主线；详见reports/MAINLINE_CONSOLIDATION_20261002.md。T14、物理手机、人审和发布资格独立待验收。

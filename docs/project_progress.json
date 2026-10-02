@@ -4,7 +4,7 @@
   "planning_status": "APPROVED",
   "source_revision": "57081b4aeb5cfeffdfe7460b359c5e3e031b27b3",
   "candidate_pr": "https://github.com/Jovifei/ai-photography-director-app/pull/22",
-  "next_action": "进度/交接完整性防护已远端接受；M3/T14等待生产端独立原始黄金向量、版本及canonical摘要；物理手机、人审和发布资格另行验收。",
+  "next_action": "远端审核真实主线合并/本地同步回执；T14等待生产端独立向量，物理手机、人审及发布资格保持待验收。",
   "phases": [
     {
       "id": "M1",
@@ -37,7 +37,7 @@
     {
       "id": "M2",
       "name": "Android 离线产品闭环",
-      "state": "IN_PROGRESS",
+      "state": "OFFLINE_MACHINE_MAINLINE_INTEGRATED",
       "required": "是",
       "checks": [
         {
@@ -67,8 +67,8 @@
         },
         {
           "name": "整合PR远端复核与主线接收",
-          "status": "pending",
-          "evidence": "PR22/PR23 Draft；远端交接已接收，完整审查与主线接收尚未完成"
+          "status": "done",
+          "evidence": "远端APPROVE_SOURCE_MERGE；PR22/23已正常合并，Owner main已同步98b28b0，20项验证PASS"
         }
       ]
     },
@@ -225,13 +225,18 @@
       ]
     }
   ],
-  "remote_task": "c2c_a622",
-  "remote_state": "DONE_PROGRESS_HANDOFF_INTEGRITY",
+  "remote_task": "c2c_a623",
+  "remote_state": "MAINLINE_MERGED_LOCAL_VERIFIED_AWAITING_REVIEW",
   "connection_status": "PASS",
   "remote_chat_url": "https://chatgpt.com/g/g-p-6aa64998af50819185d9b12a5e52736a-aixiang-ji/c/6abf762e-d97c-83e9-a62c-93f0b6c49a02-app",
   "checkpoint_contract": "progress-contract-v1",
   "roadmap_approval": {
     "reviewed_source_revision": "57081b4aeb5cfeffdfe7460b359c5e3e031b27b3",
     "review_commit": "078fe8ff759b357e8825017219c88c737b01e124"
+  },
+  "mainline_receipt": {
+    "pr22_merge": "061d7627aa1a9dd461411c1f1141fec62e8857a6",
+    "pr23_merge": "98b28b03a74c81e972d5806ee6637f9b7b1fd845",
+    "reviewed_pr23_head": "8fbf14dccf123f19f9f4529c0727bf6b293bf84d"
   }
 }
