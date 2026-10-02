@@ -1,22 +1,22 @@
 # 项目进度总览
 
 更新时间：2026-10-02
-总体规划状态：**PENDING_REMOTE_PLANNING**
+总体规划状态：**APPROVED**
 
-由 project_progress.json 自动生成。路线图尚待远端审定；每条进度表示已有证据的检查点完成数，不代表摄影质量或整体产品完成百分比。
+由 project_progress.json 自动生成。每条进度表示已有证据的检查点完成数，不代表摄影质量或整体产品完成百分比。
 
-候选：[PR #22](https://github.com/Jovifei/ai-photography-director-app/pull/22)；证据基准 `625beba85ee1c33496602e8d758d96f79ed497a3`。
+候选：[PR #22](https://github.com/Jovifei/ai-photography-director-app/pull/22)；证据基准 `57081b4aeb5cfeffdfe7460b359c5e3e031b27b3`。
 
 | 大阶段 | 进度条 | 检查点 | 状态 | 首发要求 |
 |---|---|---|---|---|
-| M1 产品范围与数据契约 | ███████░░░ | 3/4 | IN_PROGRESS | 是 |
-| M2 Android 离线产品闭环 | ██████░░░░ | 4/6 | IN_PROGRESS | 是 |
+| M1 产品范围与数据契约 | ██████████ | 4/4 | IN_PROGRESS | 是 |
+| M2 Android 离线产品闭环 | ████████░░ | 5/6 | IN_PROGRESS | 是 |
 | M3 夜间分析生产端与 App 接入 | ██░░░░░░░░ | 1/5 | WAITING_EXTERNAL | 是 |
 | M4 真实 AI 能力资格与路由 | ██░░░░░░░░ | 2/7 | ROUTE_DECISION_PENDING | 路线待远端审定 |
 | M5 真实设备、摄影体验与试点 | █░░░░░░░░░ | 1/6 | HUMAN_ACCEPTANCE_PENDING | 是 |
 | M6 Android 发布与持续维护 | █░░░░░░░░░ | 1/6 | RELEASE_PENDING | 是 |
 
-**下一动作：** 恢复既有远端连接，审定总路线图并审核 PR #22；随后补齐本机资格并接收生产端 T14 向量。
+**下一动作：** 进度/交接完整性防护已远端接受；M3/T14等待生产端独立原始黄金向量、版本及canonical摘要；物理手机、人审和发布资格另行验收。
 
 [大阶段实施步骤与完成标准](PROJECT_MASTER_ROADMAP.md)
 
@@ -27,7 +27,7 @@
 | 产品目标与 Android 首发边界 | DONE | 当前 README / T17 交接；用户 Reference→Director 目标 |
 | PKB1 消费端合同 | DONE | 合同12/12及严格解析/摘要规则 |
 | App/生产端责任及交接要求 | DONE | PKB1_PRODUCER_GOLDEN_VECTOR_HANDOFF_REQUEST.md |
-| 远端总路线图审定 | BLOCKED | 尚未收到；Doctor连接检查失败 |
+| 远端总路线图审定 | DONE | 远端恢复会话技术规划APPROVED；PR23回执078fe8ff759b357e8825017219c88c737b01e124 |
 
 ## M2 Android 离线产品闭环
 
@@ -36,9 +36,9 @@
 | 项目/参考图/指导界面 | DONE | T3–T13 阶段源码与报告 |
 | 拍摄/成片库/重拍/导出 | DONE | P25U/T12–T17 源码与报告 |
 | 阶段级合成/API35远端资格 | DONE | T17远端96/96，逐阶段远端接受 |
-| 当前候选本地JVM/构建/Debug lint | DONE | 159/159；Debug/AndroidTest build PASS；lint 0错误17警告 |
-| 当前候选本机API35复验 | NOT_RUN | 本机未配置AVD；Python外部证据另有缺口 |
-| 整合PR远端复核与主线接收 | BLOCKED | PR22 Draft；总体复核未发起，main未合入 |
+| 当前候选本地JVM/构建/Debug lint | DONE | 本轮159/159，Debug/AndroidTest构建PASS，lint0错误26警告；本机限定复验报告 |
+| 当前候选本机API35复验 | DONE | 本机API35限定T17六阶段+8保护PASS；完整96矩阵本轮未重跑；LOCAL_API35_T17_20261002.md |
+| 整合PR远端复核与主线接收 | PENDING | PR22/PR23 Draft；远端交接已接收，完整审查与主线接收尚未完成 |
 
 ## M3 夜间分析生产端与 App 接入
 

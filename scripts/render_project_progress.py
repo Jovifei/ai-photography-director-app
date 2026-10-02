@@ -3,6 +3,8 @@ from __future__ import annotations
 
 import argparse
 import json
+
+from validate_progress_contract import validate
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -12,12 +14,13 @@ STATUSES = {"done", "pending", "blocked", "not_run"}
 
 
 def render(data: dict) -> str:
+    validate(data)
     phases = data["phases"]
     if len({p["id"] for p in phases}) != len(phases):
         raise ValueError("duplicate phase id")
     rows = ["# 项目进度总览", "", f"更新时间：{data['updated_at']}",
             f"总体规划状态：**{data['planning_status']}**", "",
-            "由 project_progress.json 自动生成。路线图尚待远端审定；每条进度表示已有证据的检查点完成数，不代表摄影质量或整体产品完成百分比。", "",
+            "由 project_progress.json 自动生成。每条进度表示已有证据的检查点完成数，不代表摄影质量或整体产品完成百分比。", "",
             f"候选：[PR #22]({data['candidate_pr']})；证据基准 `{data['source_revision']}`。", "",
             "| 大阶段 | 进度条 | 检查点 | 状态 | 首发要求 |", "|---|---|---|---|---|"]
     for phase in phases:
