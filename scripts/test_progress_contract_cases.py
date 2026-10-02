@@ -1,45 +1,61 @@
 #!/usr/bin/env python3
-"""Small regression cases for the progress contract."""
+"""Executable stdlib regression tests for progress contract failures."""
 from __future__ import annotations
 
 import copy
-import json
-import subprocess
-import sys
-from pathlib import Path
+import importlib.util
+import unittest
 
-ROOT = Path(__file__).resolve().parents[1]
-LEDGER = ROOT / "docs/project_progress.json"
+spec = importlib.util.spec_from_file_location("contract", "scripts/validate_progress_contract.py")
+contract = importlib.util.module_from_spec(spec)
+assert spec.loader
+spec.loader.exec_module(contract)
+
+BASE = {
+    "checkpoint_contract": "progress-contract-v1",
+    "source_revision": "a" * 40,
+    "planning_status": "PENDING",
+    "phases": [
+        {"id": key, "checks": [{"name": name, "status": "pending", "evidence": "fixture"} for name in names]}
+        for key, names in contract.EXPECTED_PHASES.items()
+    ],
+}
 
 
-def run_validator(data: dict) -> bool:
-    temp = ROOT / "scripts/.contract-test-ledger.json"
-    temp.write_text(json.dumps(data), encoding="utf-8")
-    temp.unlink()
-    return True
+class ProgressContractTest(unittest.TestCase):
+    def test_valid_contract(self):
+        contract.validate(BASE)
 
+    def test_wrong_sha_rejected(self):
+        data = copy.deepcopy(BASE)
+        data["source_revision"] = "bad"
+        with self.assertRaises(ValueError):
+            contract.validate(data)
 
-def cases() -> list[str]:
-    data = json.loads(LEDGER.read_text(encoding="utf-8"))
-    results = []
-    bad = copy.deepcopy(data)
-    bad["source_revision"] = "abc"
-    results.append("reject wrong SHA")
-    bad = copy.deepcopy(data)
-    bad["phases"][0]["checks"] = bad["phases"][0]["checks"][:2]
-    results.append("reject removed checkpoints")
-    bad = copy.deepcopy(data)
-    bad["phases"][0]["checks"].append(bad["phases"][0]["checks"][0])
-    results.append("reject duplicate checkpoint")
-    bad = copy.deepcopy(data)
-    bad["planning_status"] = "APPROVED"
-    bad["phases"][0]["checks"][-1]["status"] = "pending"
-    results.append("reject false approval")
-    results.append("reject stale rendered output through renderer check")
-    return results
+    def test_removed_checkpoint_rejected(self):
+        data = copy.deepcopy(BASE)
+        data["phases"][0]["checks"].pop()
+        with self.assertRaises(ValueError):
+            contract.validate(data)
+
+    def test_renamed_checkpoint_rejected(self):
+        data = copy.deepcopy(BASE)
+        data["phases"][0]["checks"][0]["name"] = "替换历史身份"
+        with self.assertRaises(ValueError):
+            contract.validate(data)
+
+    def test_duplicate_phase_rejected(self):
+        data = copy.deepcopy(BASE)
+        data["phases"].append(copy.deepcopy(data["phases"][0]))
+        with self.assertRaises(ValueError):
+            contract.validate(data)
+
+    def test_false_approval_rejected(self):
+        data = copy.deepcopy(BASE)
+        data["planning_status"] = "APPROVED"
+        with self.assertRaises(ValueError):
+            contract.validate(data)
 
 
 if __name__ == "__main__":
-    for item in cases():
-        print(item)
-    print("PASS: regression cases defined")
+    unittest.main()
