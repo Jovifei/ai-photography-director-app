@@ -7,7 +7,7 @@ Date: 2026-10-02
 Candidate:
 
 - PR #22
-- head `57081b4aeb5cfeffdfe7460b359c5e3e031b27b3`
+- head `57081b4aebc5feffdfe7460b359c5e3e031b27b3`
 
 This is a remote source inspection record. It is not a replacement for local build, device, or human acceptance.
 
@@ -18,12 +18,16 @@ This is a remote source inspection record. It is not a replacement for local bui
 Files reviewed:
 
 - `android/app/src/main/java/com/jovi/photoai/data/reference/PhotoKnowledgeBundle.kt`
+  - `PhotoKnowledgeBundleParser.parse`
+  - `KnowledgeBundleProvenance`
+  - `canonicalPayloadBytes`
+  - `canonicalPayloadSha256`
 - `android/app/src/main/java/com/jovi/photoai/data/reference/KnowledgeBundleReplacement.kt`
 - `android/app/src/main/java/com/jovi/photoai/data/reference/ReferenceRepository.kt`
 
 Verified invariants:
 
-- parser accepts only exact schema keys;
+- exact schema key validation;
 - contract version is checked;
 - UTF-8 and size limits are enforced;
 - SHA-256 payload digest is checked before success;
