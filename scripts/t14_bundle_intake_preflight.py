@@ -11,8 +11,11 @@ if __name__ == "__main__":
     p.add_argument("manifest", type=Path)
     p.add_argument("checksums", type=Path)
     args = p.parse_args()
-    print(json.dumps(preflight(
+    result = preflight(
         args.raw_bundle.read_bytes(),
         args.manifest.read_bytes(),
         args.checksums.read_bytes(),
-    ), indent=2))
+    )
+    print(json.dumps(result, indent=2))
+    if not result.get("compatible_preflight", False):
+        raise SystemExit(1)
