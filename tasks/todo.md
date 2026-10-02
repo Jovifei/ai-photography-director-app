@@ -308,7 +308,7 @@ Consumer request: `docs/PKB1_PRODUCER_GOLDEN_VECTOR_HANDOFF_REQUEST.md`. Optiona
 - [ ] API 35 仪器矩阵：`NOT_RUN`，本机没有配置 AVD；Release lint：`BLOCKED`，缺少 `PHOTOAI_RELEASE_STORE_FILE`。
 - [ ] 完整 Python unittest：`247 PASS / 1 SKIP / 1 FAIL`；外部 P1A/Qwen 证据目录缺失，需有权限的本机环境提供该证据后重跑。
 - [x] 候选 `prepush_privacy_audit.py` 与 `git diff --check` 已通过。
-- [ ] 提交候选代码/文档并非强制推送 Draft PR。
+- [x] 候选已非强制推送到 Draft PR #22；PR 尚未合并。
 - [ ] C2C Doctor 变绿后，把最终 SHA 交给同一 Ai相机 Project 聊天作远端整体审查；当前 Doctor 被本机安全连接访问策略阻塞。
 - [x] 更新 README、当前状态、Gate 矩阵、分支盘点与 T17/T14 交接。
 - [x] Complete the mapped Obsidian Docs DryRun and controlled mirror; Owner private drafts remain excluded. Mirror result: 16 documents, 0 skipped.

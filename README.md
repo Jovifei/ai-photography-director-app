@@ -11,7 +11,7 @@ AI 摄影现场导演 App。首发 Android，iOS 第二阶段。
 
 ## 当前 Android 产品状态
 
-截至 2026-10-02，`origin/main` 已同步到 `1b776ba9932a7fdc96112c8cb85c7258f3f7d6af`。最新离线 Android 工作已在独立本地候选分支 `codex/mainline-consolidation-20261002` 整合 T3–T17；该候选仍待整体精确 SHA 远端复核，未合并到 GitHub `main`。分支、PR、Owner 工作区和验证状态见 [`docs/LOCAL_MAINLINE_RECONCILIATION_20261002.md`](docs/LOCAL_MAINLINE_RECONCILIATION_20261002.md)。
+截至 2026-10-02，`origin/main` 已同步到 `1b776ba9932a7fdc96112c8cb85c7258f3f7d6af`。最新离线 Android 工作已在独立候选分支 `codex/mainline-consolidation-20261002` 整合 T3–T17，并已推送为 [Draft PR #22](https://github.com/Jovifei/ai-photography-director-app/pull/22)。整体 exact-SHA ChatGPT 复核仍待 C2C 安全连接恢复；候选尚未合并到 GitHub `main`。分支、PR、Owner 工作区和验证状态见 [`docs/LOCAL_MAINLINE_RECONCILIATION_20261002.md`](docs/LOCAL_MAINLINE_RECONCILIATION_20261002.md)。
 
 本机对整合候选的验证：JVM 159/159、Debug APK 与 AndroidTest APK 构建、Debug lint（0 errors / 17 warnings）均通过；P1.5 合同语义 75/75、PKB1 消费端合同 12/12 通过。完整 Python unittest 有一个外部 Qwen 许可证据目录缺失、一个 Windows 符号链接权限跳过。API 35 本机仪器测试未运行：本机没有已配置 AVD。Release lint 受缺少 `PHOTOAI_RELEASE_STORE_FILE` 门禁阻塞。T17 远端记录的 96/96 API 35 结果是独立远端证据，不能当成本机结果。
 

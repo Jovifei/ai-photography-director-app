@@ -25,7 +25,7 @@ At completion, document the source head, branch/PR inventory, local test totals,
 - [x] Update README, current Android status, Gate matrix, branch inventory, task ledger and correction lesson.
 - [x] Run local P1.5/PKB1, Python, JVM, Debug/AndroidTest builds, Debug lint, and APK metadata verification.
 - [x] Final `prepush_privacy_audit.py` and `git diff --check` pass on the candidate.
-- [ ] Commit the staged code/docs and push the Draft PR.
+- [x] Commit the staged code/docs and push the Draft PR #22 non-force; PR remains open and unmerged.
 - [ ] Re-run C2C Doctor and obtain overall exact-SHA ChatGPT review after the local host security block is resolved.
 - [ ] API 35 instrumentation remains `NOT_RUN` because no local AVD exists; Release lint remains `BLOCKED` by missing signing input.
 

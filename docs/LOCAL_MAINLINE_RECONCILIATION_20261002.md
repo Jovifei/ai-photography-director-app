@@ -10,7 +10,7 @@
 
 T3–T17 已在隔离候选分支 `codex/mainline-consolidation-20261002` 中以 merge 保留完整历史。候选 merge anchor 为 `a045b4b36488fe975ae1caca63d2d70886070d31`，父节点是 `origin/main@1b776ba...` 与逐阶段远端审查的 T17 头 `96ec9b3f0270636000acbea163a7b64e5ca5dffc`。T17 相对最新 `origin/main` 有 121 个提交；候选还包含这次同步的本地代码和文档更新。
 
-这只是本地整合候选。候选整体还没有推送、创建 PR 或由远端 ChatGPT 对整体精确 SHA 复核；也没有合并 GitHub `main`。T17 原有远端 DONE 只覆盖其接受源码，不覆盖这次合并和本地六文件补丁。
+本地整合候选已非强制推送并创建 [Draft PR #22](https://github.com/Jovifei/ai-photography-director-app/pull/22)，首次推送 head 为 `753d8f6de5384276be634b322a48ce6e6c945213`。PR #22 未合并；这次整合整体 exact-SHA ChatGPT 复核仍 Pending。T17 原有远端 DONE 只覆盖其接受源码，不覆盖这次合并和本地六文件补丁。
 
 ## Owner 工作区保护
 
@@ -23,7 +23,7 @@ Owner `docs/` 下十份未跟踪草稿（`01`–`07`、`AA0` 两份和 `P20_PHOT
 | 分支 / PR | 当前身份 | 本次处理 |
 |---|---|---|
 | `main` | 本地与 `origin/main` 同为 `1b776ba...` | 已快进同步；Owner 未提交状态保留 |
-| `codex/mainline-consolidation-20261002` | `origin/main` + T3–T17 + 本地补丁 | 本地整合候选；整体远端复核待做 |
+| `codex/mainline-consolidation-20261002` / PR #22 | `origin/main` + T3–T17 + 本地补丁；Draft PR 指向 `main` | 已非强制推送；等待整体远端复核 |
 | PR #3 / #4 | GitHub 已关闭并合并 | 已在 `origin/main` 历史中，不重复合入 |
 | PR #1 | Draft 开放；head `1d13b8e...` 已可从 `origin/main` 到达 | 标记为重复候选；本次未关闭 PR |
 | PR #2 / P23B | Draft 开放，head `bd8d66b...`，base 为 P23A R1 分支 | 保持独立；其固定候选和预期 main 已过时，不混入 Android 主候选 |

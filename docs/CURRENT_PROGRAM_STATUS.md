@@ -14,7 +14,7 @@
 
 本机已完成 159/159 JVM、Debug APK、AndroidTest APK、Debug lint、75/75 P1.5 合同语义与 12/12 PKB1 消费端合同验证。Debug lint 为 0 errors、17 warnings。完整 Python unittest 发现为 249 项：247 pass、1 skip、1 fail；唯一失败需要未提供的外部 P1A/Qwen 许可证据目录，跳过项是 Windows 符号链接权限。API 35 仪器测试本机 `NOT_RUN`（没有已配置 AVD），Release lint `BLOCKED`（缺少 `PHOTOAI_RELEASE_STORE_FILE`）。具体记录见 [`LOCAL_MAINLINE_RECONCILIATION_20261002.md`](LOCAL_MAINLINE_RECONCILIATION_20261002.md)。
 
-整合分支尚未推送到 GitHub、尚未建立整体 PR，也没有本地整体精确 SHA 的 ChatGPT 复核。现有 T17 的远端 PASS 只适用于其接受源码头，不覆盖本地整合及六个 Owner 文件。
+整合分支已推送并创建 [Draft PR #22](https://github.com/Jovifei/ai-photography-director-app/pull/22)，起始 review head 为 `753d8f6de5384276be634b322a48ce6e6c945213`。整体 exact-SHA ChatGPT 复核仍待本机 C2C Doctor 恢复；PR 未合并。现有 T17 的远端 PASS 只适用于其接受源码头，不覆盖本地整合及六个 Owner 文件。
 
 下面的 `current_program_status.v1.json` 保留 P1B/T11 的既有版本化授权合同；它所绑定的 T4/T5 `delivery_head` 是该机器记录的历史基线，不是 T3–T17 候选的 HEAD。不要改写此 JSON 来冒充更新后的 Android 候选身份。
 
