@@ -65,3 +65,10 @@ API 35 仪器测试仅对计划中指定的专用 AVD 执行；测试状态必�
 见 `.gitignore`。关键禁提交项：私人照片与用户素材、RAW/HEIC、`.env` 与 Token/密钥、模型权重、数据库、日志、Android `local.properties`、`build/`、`.gradle/`、`.idea/`、`docs/references/repos/` 第三方克隆以及未来 iOS 签名与 `DerivedData/`。
 
 Owner 工作区的未提交代码和本地草稿文档保持原位；当前 PR 候选不自动包含这些草稿。
+
+## 项目大阶段与进度
+
+- [项目进度总览](docs/PROJECT_PROGRESS.md)
+- [大阶段总路线图与实施步骤](docs/PROJECT_MASTER_ROADMAP.md)
+
+总体规划当前为 `PENDING_REMOTE_PLANNING`。进度由 `docs/project_progress.json` 维护；每次项目更新运行 `python scripts/render_project_progress.py`，推送前使用 `--check` 检查一致性。

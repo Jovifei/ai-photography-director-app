@@ -87,6 +87,17 @@ def is_allowed_image(norm_lower: str) -> bool:
 def main() -> int:
     root = Path(__file__).resolve().parents[1]
     errors: list[str] = []
+    if (root / "docs/project_progress.json").exists():
+        renderer = root / "scripts/render_project_progress.py"
+        if not renderer.is_file():
+            errors.append("milestone progress renderer is missing")
+        else:
+            progress = subprocess.run(
+                [sys.executable, str(renderer), "--check"],
+                cwd=root, text=True, capture_output=True,
+            )
+            if progress.returncode != 0:
+                errors.append("milestone progress is invalid or out of date; run render_project_progress.py")
     for rel in git_files(root):
         norm = rel.replace("\\", "/")
         low = norm.lower()

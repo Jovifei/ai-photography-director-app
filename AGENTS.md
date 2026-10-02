@@ -18,3 +18,7 @@
 - 兄弟项目只通过 Bundle Contract 通信；
 - 外部仓库无兼容许可时只研究；
 - 每次 push 前运行 `python scripts/prepush_privacy_audit.py`。
+
+## Project milestone progress
+
+For each feature, test-result, review, producer-handoff or release-state change, update `docs/project_progress.json` in the same commit and run `python scripts/render_project_progress.py`. Before push, run `python scripts/render_project_progress.py --check`. Keep `PENDING_REMOTE_PLANNING` until the bound ChatGPT Project actually returns and approves the master roadmap. Checkpoint progress is evidence completeness, not a product-quality percentage.

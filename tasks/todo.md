@@ -316,3 +316,12 @@ Consumer request: `docs/PKB1_PRODUCER_GOLDEN_VECTOR_HANDOFF_REQUEST.md`. Optiona
 ### Review
 
 本地 Owner `main` 与 `origin/main` 同步；T3–T17 候选保存在隔离分支。远端整体 review、API 35 本机运行、P1A 外部证据、Release signing 和人工门仍需单独处理。
+
+## 2026-10-02 大阶段总路线图与持续进度
+
+- [x] 建立 M1–M6 大阶段草案，列出步骤、交付物、完成标准和依赖。
+- [x] 建立进度 JSON、生成式 Markdown 进度条及每次变更维护规则。
+- [ ] 同一 Ai相机 Project/chat 返回总体路线审定和下一阶段详细计划；当前 Doctor 不绿，请求未发送。
+- [ ] 收到远端方案后更新路线图和进度口径；不得把本地草案标为远端方案。
+
+Review: 本地统览草案和维护机制完成；远端总体规划待连接恢复。
