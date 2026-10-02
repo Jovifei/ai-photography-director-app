@@ -297,3 +297,22 @@ T12–T17 independent Android machine track accepted by remote current-source re
 - [ ] Signing/release/merge: supply and qualify the actual release inputs and decision; current Draft PRs and Debug APK are not a launched product.
 
 Consumer request: `docs/PKB1_PRODUCER_GOLDEN_VECTOR_HANDOFF_REQUEST.md`. Optional Qwen/T11 legal/acquisition track stays separately blocked; it does not invalidate the completed independent App machine evidence.
+
+## 2026-10-02 本地 main 同步与分支整合
+
+- [x] 验证 `origin` 并把 Owner `main` 快进到 `origin/main@1b776ba9932a7fdc96112c8cb85c7258f3f7d6af`；Owner 未提交内容原位保留。
+- [x] 在隔离 `codex/mainline-consolidation-20261002` 合并完整 T3–T17 历史。
+- [x] 将六个 Owner 修改代码/测试文件以三方补丁应用到候选，Owner 原文件不覆盖。
+- [x] 盘点 PR #1–#21 和未合入的 P23B、P24 docs-refresh、UI0、旧 T11 计划分支；分开记录重复、过时和待审项。
+- [x] 本机 P1.5 75/75、PKB1 12/12、JVM 159/159、Debug/AndroidTest build 和 Debug lint 验证。
+- [ ] API 35 仪器矩阵：`NOT_RUN`，本机没有配置 AVD；Release lint：`BLOCKED`，缺少 `PHOTOAI_RELEASE_STORE_FILE`。
+- [ ] 完整 Python unittest：`247 PASS / 1 SKIP / 1 FAIL`；外部 P1A/Qwen 证据目录缺失，需有权限的本机环境提供该证据后重跑。
+- [x] 候选 `prepush_privacy_audit.py` 与 `git diff --check` 已通过。
+- [ ] 提交候选代码/文档并非强制推送 Draft PR。
+- [ ] C2C Doctor 变绿后，把最终 SHA 交给同一 Ai相机 Project 聊天作远端整体审查；当前 Doctor 被本机安全连接访问策略阻塞。
+- [x] 更新 README、当前状态、Gate 矩阵、分支盘点与 T17/T14 交接。
+- [x] Complete the mapped Obsidian Docs DryRun and controlled mirror; Owner private drafts remain excluded. Mirror result: 16 documents, 0 skipped.
+
+### Review
+
+本地 Owner `main` 与 `origin/main` 同步；T3–T17 候选保存在隔离分支。远端整体 review、API 35 本机运行、P1A 外部证据、Release signing 和人工门仍需单独处理。

@@ -2,21 +2,24 @@
 
 This matrix describes possible future tracks. It records prerequisites; it does not authorize any track.
 
+Current Android source candidate: T3–T17 is locally integrated on `codex/mainline-consolidation-20261002`; it is not merged to GitHub `main`. See [`LOCAL_MAINLINE_RECONCILIATION_20261002.md`](LOCAL_MAINLINE_RECONCILIATION_20261002.md) for exact source, local evidence and remaining blockers.
+
 | Future track | Existing basis | Required before execution | Current disposition |
 |---|---|---|---|
 | Provider / Qwen P1B | P1A desk, license and corpus evidence; T6 readiness packet binds exact revision/artifact metadata | Owner decision for exact artifact quarantine, then separate runtime/platform/resource plan | `P1B_AUTHORIZATION_PACKET_READY — EXECUTION_NOT_AUTHORIZED` |
 | Private LAN service | Historical service and pilot planning | Provider qualification, private-network authority, authentication/TLS/privacy protocol | `NOT_RUN` |
 | Pipeline | Field mapping and Bundle contract references | Producer implementation, human approval, rights/privacy and release/integrity evidence | `BLOCKED` |
+| T14 PKB1 producer compatibility | T17 consumer-side golden-vector request | Producer revision, raw single/multi/A/B vectors, exact byte hashes, canonical PKB1 digests and independent expected mappings | `PENDING_EXTERNAL_GOLDEN_VECTORS` |
 | Human editorial | Product corpus, review guide and T7 governance packet | Reviewer role, rights/privacy/retention decisions, approved thresholds and an explicitly authorized public-corpus review run | `HUMAN_REVIEW_NOT_AUTHORIZED` |
 | Physical device | T3/T4 emulator evidence | Explicit device protocol, allowed device and privacy-safe evidence scope | `NOT_RUN` |
 | Pose | Frozen domain and prior spike evidence | Separate provider decision and real-device qualification | `FROZEN` |
 | Signing / beta / release | Historical release work | Separate authorization tied to a reviewed candidate and signing identity | `NOT_RUN_FOR_T4_STACK` |
-| More offline Android work | T4 product PASS | A concrete reviewed defect or requirement | `NO_SPECULATIVE_SCOPE` |
+| More offline Android work | T3–T17 local candidate; latest stage T17 machine validation | A concrete reviewed defect or requirement; no speculative continuation | `NO_SPECULATIVE_SCOPE — T14 waits for producer vectors` |
 | Product READY promotion gate | T8 synthetic contract evidence and offline Photo Knowledge Bundle consumer contract | Non-runtime policy/schema/validator evidence only; no Provider qualification or product write authorization | `PRODUCT_READY_PROMOTION_GATE_READY — REAL_READY_PROMOTION_NOT_AUTHORIZED` |
 | Owner Decision Capture / P1B Route Resolution | T6 P1B packet, exact T9 authority and explicit Owner choice | Existing P1B schema validation; exact artifact binding; no download/runtime/inference/App/Pipeline/private-media authorization | `P1B_ARTIFACT_QUARANTINE_SCOPE_APPROVED — ARTIFACT_ACQUISITION_NOT_YET_AUTHORIZED` |
 | T11 Artifact Acquisition Preflight | Accepted T10-R3 identity, frozen P1B source bindings and exact Qwen artifact metadata | External legal disposition, verified transport chain, fresh immutable metadata, opaque quarantine destination, and a later separately bound Owner decision | `ARTIFACT_ACQUISITION_PREFLIGHT_READY — EXTERNAL_EVIDENCE_AND_AUTHORIZATION_REQUIRED`; current blocker `BLOCKED_LEGAL_REVIEW` |
 
-The matrix must not promote an old Closed Beta candidate, an emulator result, an HTTP success, an editorial draft or an AI pre-review into a current release or human PASS.
+The matrix must not promote an old Closed Beta candidate, an emulator result, an HTTP success, an editorial draft or an AI pre-review into a current release or human PASS. The T17 96/96 API35 result is the reported remote qualification; this local candidate's API35 run remains `NOT_RUN` because this host has no configured AVD.
 
 ## Stage-selection rule
 

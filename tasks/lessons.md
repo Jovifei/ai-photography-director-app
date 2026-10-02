@@ -6,3 +6,5 @@
 
 - 2026-10-01: Continue independent Android engineering under Jovi's latest authorization. Optional Qwen evidence cannot stop unrelated App work. Use the separate nightly producer's explicit Bundle contract without inventing missing fields or duplicating PKB1 import.
 - 2026-10-01: Capture project/reference IDs establish a relationship, not a historical guidance snapshot. Show current reference/source/status truthfully and revalidate persisted capture ownership and current trusted guidance at click time.
+
+- 2026-10-02: 用户要求远端方案/复核、本地执行/测试并维护 Docs/知识库。每轮必须先核对 `origin/main` 和分支的实际祖先关系，保留 Owner 脏工作区，在隔离候选上跑本机证据并同步当前状态、下一 Gate 和分支/PR 盘点；云端/历史 PASS 不得冒充本地 PASS。C2C Doctor 未绿时保持 exact-SHA 远端复核 Pending，不新开聊天、不让 Jovi 代管分支步骤。

@@ -1,15 +1,26 @@
 # Current program status
 
+**Page reconciliation:** 2026-10-02
 **As of:** 2026-09-29
 
 **Machine-readable record:** [`current_program_status.v1.json`](current_program_status.v1.json)
 
-**Next-stage plan:** [`tasks/plans/2026-09-29-t11-artifact-acquisition-preflight.md`](../tasks/plans/2026-09-29-t11-artifact-acquisition-preflight.md)
+**Next-stage plan:** [`PKB1 producer golden-vector handoff`](PKB1_PRODUCER_GOLDEN_VECTOR_HANDOFF_REQUEST.md) for T14; the versioned P1B/T11 authority plan remains in the consolidation branch.
 **Gate matrix:** [`NEXT_GATE_MATRIX.md`](NEXT_GATE_MATRIX.md)
 
-## Current authority
+## 当前本地 Android 整合候选（2026-10-02）
 
-The current Android delivery is the T4 offline product-flow stack. Its delivery head is `e88d2ab1eb0c9c5cf9f891c5107d951fbbbe15cb`, with reviewed product source `a69ede68f3e54e5ab006dbfd7a65c33040590f93`, based on T3 `14a56f49e1220eb8139bf7280c747124118fdb21`. Draft PR #8 is stacked on the T3 branch and remains open, Draft and unmerged. Owner `main` remains dirty and untouched; active source review uses the clean exact-head clone. `C2C_CODE_DIFF_REVIEW_NOT_POSSIBLE` refers only to arbitrary historical base-range patch rendering.
+最新离线 Android 源码候选在 `codex/mainline-consolidation-20261002`，从 `origin/main@1b776ba9932a7fdc96112c8cb85c7258f3f7d6af` 以显式 merge 纳入已远端逐阶段审查的 T3–T17 堆栈。T17 来源头为 `96ec9b3f0270636000acbea163a7b64e5ca5dffc`，其 121 个提交历史完整保留。六个 Owner 修改的配置、Python 语义校验和测试文件也经干净三方应用进入候选；E 盘 Owner 工作区原件保持未改动。
+
+本机已完成 159/159 JVM、Debug APK、AndroidTest APK、Debug lint、75/75 P1.5 合同语义与 12/12 PKB1 消费端合同验证。Debug lint 为 0 errors、17 warnings。完整 Python unittest 发现为 249 项：247 pass、1 skip、1 fail；唯一失败需要未提供的外部 P1A/Qwen 许可证据目录，跳过项是 Windows 符号链接权限。API 35 仪器测试本机 `NOT_RUN`（没有已配置 AVD），Release lint `BLOCKED`（缺少 `PHOTOAI_RELEASE_STORE_FILE`）。具体记录见 [`LOCAL_MAINLINE_RECONCILIATION_20261002.md`](LOCAL_MAINLINE_RECONCILIATION_20261002.md)。
+
+整合分支尚未推送到 GitHub、尚未建立整体 PR，也没有本地整体精确 SHA 的 ChatGPT 复核。现有 T17 的远端 PASS 只适用于其接受源码头，不覆盖本地整合及六个 Owner 文件。
+
+下面的 `current_program_status.v1.json` 保留 P1B/T11 的既有版本化授权合同；它所绑定的 T4/T5 `delivery_head` 是该机器记录的历史基线，不是 T3–T17 候选的 HEAD。不要改写此 JSON 来冒充更新后的 Android 候选身份。
+
+## Historical versioned P1B/T11 authority record
+
+The versioned JSON records the historical T4 offline product-flow baseline. Its delivery head is `e88d2ab1eb0c9c5cf9f891c5107d951fbbbe15cb`, with reviewed product source `a69ede68f3e54e5ab006dbfd7a65c33040590f93`, based on T3 `14a56f49e1220eb8139bf7280c747124118fdb21`. Draft PR #8 is stacked on the T3 branch and remains open, Draft and unmerged. Owner `main` remains dirty and untouched; active source review uses the clean exact-head clone. `C2C_CODE_DIFF_REVIEW_NOT_POSSIBLE` refers only to arbitrary historical base-range patch rendering.
 
 T4 qualification is synthetic/API 35 emulator evidence. The final receipt records T4 7/7, T3 7/7, root 2/2, P25U camera 1/1, export 3/3, force-stop recovery prepare/verify/cleanup 1/1 each, JVM 141/141, lint 0 errors, contract and privacy checks PASS. Local exact-SHA independent review is PASS. That historical T4 receipt predates the clean review clone; current C2C source review uses the clean exact-head clone while Owner `main` remains dirty and untouched. `C2C_CODE_DIFF_REVIEW_NOT_POSSIBLE` refers only to arbitrary historical base-range patch rendering; remote evidence review must not be read as a connector-performed historical diff review.
 
@@ -66,6 +77,10 @@ The future live director remains a separate route requiring a qualified provider
 
 The following remain useful evidence or design constraints but are not current execution authority: G0/AH0/AA0 bootstrap plans, the six-week roadmap, P20/P21/P22 operational banners, P1A/P1B implementation plans, older P25/T3 handoffs and Obsidian P22/P24 notes. Do not rewrite their historical claims as though they were current; use this page and the gate matrix for current status.
 
-## Next stage
+## Versioned P1B/T11 next stage
 
-T5 consolidated this status into one machine-checkable authority, T6 added a machine-verifiable P1B readiness boundary, T7 added provider-neutral evaluation governance, T8 exercised the future evidence flow with contract-only synthetic records, T9 defined the future READY-promotion boundary, T10 recorded the explicit Owner quarantine-only decision, and T11 defines the non-network preflight for a separate future acquisition decision. The next authorized stage is `EXTERNAL_LEGAL_TRANSPORT_DESTINATION_EVIDENCE_OR_OWNER_DEFER`; T11 does not collect that evidence or authorize artifact acquisition.
+T5 consolidated this status into one machine-checkable authority, T6 added a machine-verifiable P1B readiness boundary, T7 added provider-neutral evaluation governance, T8 exercised the future evidence flow with contract-only synthetic records, T9 defined the future READY-promotion boundary, T10 recorded the explicit Owner quarantine-only decision, and T11 defines the non-network preflight for a separate future acquisition decision. For the versioned P1B/T11 authority record, the next authorized stage remains `EXTERNAL_LEGAL_TRANSPORT_DESTINATION_EVIDENCE_OR_OWNER_DEFER`; T11 does not collect that evidence or authorize artifact acquisition.
+
+## Android lane after T17
+
+The local T3–T17 offline Android machine track has no additional speculative app implementation queued. Its next machine gate is T14 only after the producer supplies exact source revision, raw single/multi/A/B vectors, file byte hashes, canonical PKB1 digests and independent mapping expectations. Physical-device behavior, real-photo usefulness, TalkBack usefulness, human editorial decisions, signing, release and a GitHub `main` merge remain separate `PENDING` or `NOT_RUN` gates.
