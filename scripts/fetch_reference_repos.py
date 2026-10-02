@@ -9,16 +9,31 @@ import sys
 from pathlib import Path
 
 
-def run(cmd: list[str], cwd: Path | None = None, check: bool = True) -> subprocess.CompletedProcess[str]:
+def run(
+    cmd: list[str], cwd: Path | None = None, check: bool = True
+) -> subprocess.CompletedProcess[str]:
     return subprocess.run(cmd, cwd=cwd, text=True, capture_output=True, check=check)
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(description="Shallow-clone approved reference repositories into a gitignored docs directory.")
+    parser = argparse.ArgumentParser(
+        description="Shallow-clone approved reference repositories into a gitignored docs directory."
+    )
     parser.add_argument("--profile", choices=["core", "all"], default="core")
-    parser.add_argument("--refresh", action="store_true", help="Fetch a new shallow origin HEAD when the local reference clone is clean.")
-    parser.add_argument("--only", action="append", default=[], help="Fetch only a named repository id; may be repeated.")
-    parser.add_argument("--list", action="store_true", help="List matching repositories without cloning.")
+    parser.add_argument(
+        "--refresh",
+        action="store_true",
+        help="Fetch a new shallow origin HEAD when the local reference clone is clean.",
+    )
+    parser.add_argument(
+        "--only",
+        action="append",
+        default=[],
+        help="Fetch only a named repository id; may be repeated.",
+    )
+    parser.add_argument(
+        "--list", action="store_true", help="List matching repositories without cloning."
+    )
     args = parser.parse_args()
 
     root = Path(__file__).resolve().parents[1]
@@ -45,7 +60,18 @@ def main() -> int:
         target = dest_root / repo["folder"]
         try:
             if not target.exists():
-                result = run(["git", "clone", "--depth", "1", "--filter=blob:none", repo["url"], str(target)], check=False)
+                result = run(
+                    [
+                        "git",
+                        "clone",
+                        "--depth",
+                        "1",
+                        "--filter=blob:none",
+                        repo["url"],
+                        str(target),
+                    ],
+                    check=False,
+                )
                 if result.returncode != 0:
                     raise RuntimeError(result.stderr.strip() or result.stdout.strip())
             elif not (target / ".git").exists():
@@ -55,7 +81,9 @@ def main() -> int:
                 if dirty:
                     raise RuntimeError("local reference clone has changes; refusing to refresh")
                 run(["git", "fetch", "--depth", "1", "origin"], cwd=target)
-                head_ref = run(["git", "symbolic-ref", "refs/remotes/origin/HEAD"], cwd=target, check=False).stdout.strip()
+                head_ref = run(
+                    ["git", "symbolic-ref", "refs/remotes/origin/HEAD"], cwd=target, check=False
+                ).stdout.strip()
                 if head_ref:
                     branch = head_ref.rsplit("/", 1)[-1]
                     run(["git", "checkout", "-B", branch, f"origin/{branch}"], cwd=target)
@@ -64,22 +92,27 @@ def main() -> int:
             remote = run(["git", "remote", "get-url", "origin"], cwd=target).stdout.strip()
             if remote.rstrip("/") != repo["url"].rstrip("/"):
                 raise RuntimeError(f"origin mismatch: expected {repo['url']}, found {remote}")
-            lock.append({
-                "id": repo["id"],
-                "remote": remote,
-                "commit": commit,
-                "folder": str(target.relative_to(root)).replace("\\", "/"),
-                "reuse_mode": repo["reuse_mode"],
-                "license_snapshot": repo["license_snapshot"],
-                "fetched_at": dt.datetime.now(dt.timezone.utc).isoformat()
-            })
+            lock.append(
+                {
+                    "id": repo["id"],
+                    "remote": remote,
+                    "commit": commit,
+                    "folder": str(target.relative_to(root)).replace("\\", "/"),
+                    "reuse_mode": repo["reuse_mode"],
+                    "license_snapshot": repo["license_snapshot"],
+                    "fetched_at": dt.datetime.now(dt.timezone.utc).isoformat(),
+                }
+            )
             print(f"OK {repo['id']} {commit[:12]}")
         except Exception as exc:
             failures.append(f"{repo['id']}: {exc}")
             print(f"ERROR {repo['id']}: {exc}", file=sys.stderr)
 
     lock_path = root / "docs" / "references" / "REFERENCE_LOCK.json"
-    lock_path.write_text(json.dumps({"generated": True, "repositories": lock}, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    lock_path.write_text(
+        json.dumps({"generated": True, "repositories": lock}, ensure_ascii=False, indent=2) + "\n",
+        encoding="utf-8",
+    )
     print(f"Wrote {lock_path}")
     if failures:
         print("Some repositories failed; inspect before continuing.", file=sys.stderr)

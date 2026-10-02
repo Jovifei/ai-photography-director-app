@@ -28,25 +28,25 @@ Generated: {dt.datetime.now(dt.timezone.utc).isoformat()}
 
 ## Repository
 
-- Project: `{binding['repository_name']}`
-- Project ID: `{binding['project_id']}`
-- Local path: `{binding['local_path']}`
-- Expected remote: `{binding['remote_url']}`
+- Project: `{binding["repository_name"]}`
+- Project ID: `{binding["project_id"]}`
+- Local path: `{binding["local_path"]}`
+- Expected remote: `{binding["remote_url"]}`
 - Actual remote: `{actual_remote}`
 - Branch: `{branch}`
 - HEAD commit: `{head}`
-- Bundle role: `{binding['bundle_role']}`
+- Bundle role: `{binding["bundle_role"]}`
 - Tracked file count: `{tracked_count}`
 
 ## Required files
 
-- README.md: `{(root / 'README.md').is_file()}`
-- .gitignore: `{(root / '.gitignore').is_file()}`
-- AGENTS.md: `{(root / 'AGENTS.md').is_file()}`
-- CLAUDE.md: `{(root / 'CLAUDE.md').is_file()}`
-- OPENCLAW.md: `{(root / 'OPENCLAW.md').is_file()}`
-- PROJECT_BINDING.json: `{(root / 'PROJECT_BINDING.json').is_file()}`
-- Shared Contract snapshot: `{(root / 'shared-contract/contract_version.json').is_file()}`
+- README.md: `{(root / "README.md").is_file()}`
+- .gitignore: `{(root / ".gitignore").is_file()}`
+- AGENTS.md: `{(root / "AGENTS.md").is_file()}`
+- CLAUDE.md: `{(root / "CLAUDE.md").is_file()}`
+- OPENCLAW.md: `{(root / "OPENCLAW.md").is_file()}`
+- PROJECT_BINDING.json: `{(root / "PROJECT_BINDING.json").is_file()}`
+- Shared Contract snapshot: `{(root / "shared-contract/contract_version.json").is_file()}`
 
 ## Working tree
 
