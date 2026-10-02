@@ -25,7 +25,7 @@ Owner `docs/` 下十份未跟踪草稿（`01`–`07`、`AA0` 两份和 `P20_PHOT
 | `main` | 本地与 `origin/main` 同为 `1b776ba...` | 已快进同步；Owner 未提交状态保留 |
 | `codex/mainline-consolidation-20261002` / PR #22 | `origin/main` + T3–T17 + 本地补丁；Draft PR 指向 `main` | 已非强制推送；等待整体远端复核 |
 | PR #3 / #4 | GitHub 已关闭并合并 | 已在 `origin/main` 历史中，不重复合入 |
-| PR #1 | Draft 开放；head `1d13b8e...` 已可从 `origin/main` 到达 | 标记为重复候选；本次未关闭 PR |
+| PR #1 | 已于 2026-10-02 关闭为 superseded；exact head `1d13b8ed...` 是 `origin/main` 祖先 | 重复 PR 关闭；GitHub main 未由本次操作改动 |
 | PR #2 / P23B | Draft 开放，head `bd8d66b...`，base 为 P23A R1 分支 | 保持独立；其固定候选和预期 main 已过时，不混入 Android 主候选 |
 | PR #5 / #6 | Draft 开放，真人审核或产品接受仍待办 | 代码提交祖先已在 T3–T17 候选；人工审核状态仍 Pending |
 | PR #7–#21 | T3–T17 阶段 Draft 堆栈 | 完整代码/测试/计划历史在本地候选；旧 PR 均保持打开，等待整体复核与单独状态处理 |
