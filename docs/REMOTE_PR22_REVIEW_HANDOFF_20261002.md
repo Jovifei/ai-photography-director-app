@@ -7,7 +7,7 @@ Date: 2026-10-02
 Reviewed candidate:
 
 - PR #22
-- head: `57081b4aeb5cfeffdfe7460b3592b27b3`
+- head: `57081b4aeb5cfeffdfe7460b359c5e3e031b27b3`
 - base: `main@1b776ba9932a7fdc96112c8cb85c7258f3f7d6af`
 
 ## Review result
