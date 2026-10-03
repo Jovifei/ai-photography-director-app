@@ -16,7 +16,7 @@
 | M5 真实设备、摄影体验与试点 | █░░░░░░░░░ | 1/6 | HUMAN_ACCEPTANCE_PENDING | 是 |
 | M6 Android 发布与持续维护 | █░░░░░░░░░ | 1/6 | RELEASE_PENDING | 是 |
 
-**下一动作：** 远端复审producer离线PKB1工具及App单文档完整性预检；25/8/20限定测试通过，T14仍待独立生产端黄金向量。
+**下一动作：** 离线合成合同准备工具已远端审查并双端合并；正式T14仍等待独立producer黄金向量、版本与canonical摘要，设备/人审/发布资格另行验收。
 
 [大阶段实施步骤与完成标准](PROJECT_MASTER_ROADMAP.md)
 
