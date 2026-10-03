@@ -1,10 +1,10 @@
 {
   "version": 1,
-  "updated_at": "2026-10-02",
+  "updated_at": "2026-10-03",
   "planning_status": "APPROVED",
   "source_revision": "57081b4aeb5cfeffdfe7460b359c5e3e031b27b3",
   "candidate_pr": "https://github.com/Jovifei/ai-photography-director-app/pull/22",
-  "next_action": "源码及主线同步已远端复审通过；M3/T14等待生产端独立黄金向量，物理手机、人审与发布資格单独验收。",
+  "next_action": "远端复审producer离线PKB1工具及App单文档完整性预检；25/8/20限定测试通过，T14仍待独立生产端黄金向量。",
   "phases": [
     {
       "id": "M1",
@@ -225,8 +225,8 @@
       ]
     }
   ],
-  "remote_task": "c2c_a623",
-  "remote_state": "DONE_SOURCE_CONSOLIDATION",
+  "remote_task": "c2c_a624",
+  "remote_state": "LOCAL_SYNTHETIC_CONTRACT_PREPARATION_VERIFIED_AWAITING_REVIEW",
   "connection_status": "PASS",
   "remote_chat_url": "https://chatgpt.com/g/g-p-6aa64998af50819185d9b12a5e52736a-aixiang-ji/c/6abf762e-d97c-83e9-a62c-93f0b6c49a02-app",
   "checkpoint_contract": "progress-contract-v1",
