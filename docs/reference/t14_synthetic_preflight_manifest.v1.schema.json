@@ -1,0 +1,54 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "T14 synthetic single-document preflight manifest v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "contract_version",
+    "mode",
+    "producer_revision",
+    "files"
+  ],
+  "properties": {
+    "contract_version": {
+      "const": "T14_PREFLIGHT_MANIFEST_V1"
+    },
+    "mode": {
+      "const": "SYNTHETIC_CONTRACT_TEST_ONLY"
+    },
+    "producer_revision": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{40}$"
+    },
+    "files": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "path",
+          "bytes",
+          "sha256"
+        ],
+        "properties": {
+          "path": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+            "description": "Implementation additionally rejects trailing dots and Windows reserved device stems."
+          },
+          "bytes": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 524288
+          },
+          "sha256": {
+            "type": "string",
+            "pattern": "^[0-9a-fA-F]{64}$"
+          }
+        }
+      }
+    }
+  }
+}
