@@ -4,7 +4,7 @@
   "planning_status": "APPROVED",
   "source_revision": "57081b4aeb5cfeffdfe7460b359c5e3e031b27b3",
   "candidate_pr": "https://github.com/Jovifei/ai-photography-director-app/pull/22",
-  "next_action": "远端复审producer离线PKB1工具及App单文档完整性预检；25/8/20限定测试通过，T14仍待独立生产端黄金向量。",
+  "next_action": "离线合成合同准备工具已远端审查并双端合并；正式T14仍等待独立producer黄金向量、版本与canonical摘要，设备/人审/发布资格另行验收。",
   "phases": [
     {
       "id": "M1",
@@ -226,7 +226,7 @@
     }
   ],
   "remote_task": "c2c_a624",
-  "remote_state": "LOCAL_SYNTHETIC_CONTRACT_PREPARATION_VERIFIED_AWAITING_REVIEW",
+  "remote_state": "DONE_OFFLINE_SYNTHETIC_CONTRACT_PREPARATION",
   "connection_status": "PASS",
   "remote_chat_url": "https://chatgpt.com/g/g-p-6aa64998af50819185d9b12a5e52736a-aixiang-ji/c/6abf762e-d97c-83e9-a62c-93f0b6c49a02-app",
   "checkpoint_contract": "progress-contract-v1",
@@ -239,5 +239,16 @@
     "pr23_merge": "98b28b03a74c81e972d5806ee6637f9b7b1fd845",
     "reviewed_pr23_head": "8fbf14dccf123f19f9f4529c0727bf6b293bf84d",
     "remote_reviewed_receipt_head": "90eee41a7910f30279086902913a52e7e0deb8ef"
+  },
+  "synthetic_preparation_receipt": {
+    "app_reviewed_head": "d444fdc69241f658441869b691b6fe2b231290a8",
+    "producer_reviewed_head": "2adcf5dd8c62ff25fdc522937469a7e0181455b1",
+    "app_merge": "83b45a6521f53ea0de736c1e58ca0f499d10018f",
+    "producer_merge": "64125dc1b8d9190a50b18aef220116a609c51510",
+    "app_tests": 25,
+    "producer_tests": 8,
+    "progress_tests": 20,
+    "producer_golden_evidence": false,
+    "t14_authority": false
   }
 }

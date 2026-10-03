@@ -21,3 +21,7 @@ Production PKB1 compatibility, mappings/replacement/reject-without-write in Andr
 ## Handoff
 
 Review exact published heads in producer PR3 and App PR25, then repair findings or approve this synthetic/offline preparation scope only. Maintain34 checkpoints and all prior evidence. Current work is a prerequisite tool package, not project completion.
+
+## Reviewed merge receipts
+
+Remote bound chat read both actual heads and posted GitHub scoped approval comments5968149849 (producer) and5968150120 (App), approving only offline synthetic preparation. Normal merges: producer PR3=64125dc1b8d9190a50b18aef220116a609c51510, App PR25=83b45a6521f53ea0de736c1e58ca0f499d10018f. Both merge trees equal their tested heads. Owner App main actually fast-forwarded83b45a6 (0/0) after preserving this agent’s two interim progress files, and reran25/20 tests plus progress/privacy gates. Producer download verification clone alone synchronized64125dc and reran8 tests; original producer Owner worktree was not modified. Full pipeline qualification was not run. T14 remains pending on independent producer evidence.
