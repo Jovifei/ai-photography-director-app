@@ -62,6 +62,7 @@ import com.jovi.photoai.ui.project.ProjectBoardScreen
 import com.jovi.photoai.ui.project.ProjectHomeItem
 import com.jovi.photoai.ui.project.ProjectSummaryScreen
 import com.jovi.photoai.ui.project.ProjectsHomeScreen
+import com.jovi.photoai.ui.pose.PoseDirectionScreen
 import com.jovi.photoai.ui.project.LocalAnalysisConnectionDialog
 import com.jovi.photoai.ui.project.PhotoKnowledgeBundleImportScreen
 import com.jovi.photoai.ui.reference.DirectorCardScreen
@@ -513,6 +514,7 @@ internal fun PhotographyDirectorAppContent(
             AppDestination.DIRECTOR_CARD -> navigateTo(AppDestination.ANALYSIS_DETAIL)
             AppDestination.CAMERA_DIRECTOR -> navigateTo(AppDestination.DIRECTOR_CARD)
             AppDestination.DIRECT_CAPTURE -> navigateTo(AppDestination.CAPTURE_ENTRY)
+            AppDestination.POSE_DIRECTION -> navigateTo(AppDestination.HOME)
         }
     }
 
@@ -526,6 +528,7 @@ internal fun PhotographyDirectorAppContent(
                 onOpenProject = ::openProject,
                 onOpenCapture = ::openCaptureEntry,
                 onOpenLibrary = { openReferenceLibrary(ReferenceLibraryMode.BROWSE_ALL_PROJECTS) },
+                onOpenPoseDirection = { navigateTo(AppDestination.POSE_DIRECTION) },
             )
         }
 
@@ -728,6 +731,10 @@ internal fun PhotographyDirectorAppContent(
             guidanceItems = emptyList(),
             directCaptureMode = true,
             onBack = { navigateTo(AppDestination.CAPTURE_ENTRY) },
+        )
+
+        AppDestination.POSE_DIRECTION -> PoseDirectionScreen(
+            onBack = { navigateTo(AppDestination.HOME) },
         )
     }
 

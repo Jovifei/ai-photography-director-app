@@ -13,4 +13,5 @@ enum class AppDestination {
     DIRECTOR_CARD,
     CAMERA_DIRECTOR,
     DIRECT_CAPTURE,
+    POSE_DIRECTION,
 }

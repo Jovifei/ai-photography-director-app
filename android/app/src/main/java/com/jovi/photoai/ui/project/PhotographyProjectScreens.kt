@@ -78,6 +78,7 @@ internal fun ProjectsHomeScreen(
     onOpenProject: (String) -> Unit,
     onOpenCapture: () -> Unit,
     onOpenLibrary: () -> Unit,
+    onOpenPoseDirection: () -> Unit,
 ) {
     var showCreateDialog by rememberSaveable { mutableStateOf(false) }
     Column(
@@ -102,6 +103,12 @@ internal fun ProjectsHomeScreen(
         }
         TextButton(onClick = onOpenLibrary, modifier = Modifier.heightIn(min = AppDimensions.MinTouchTarget)) {
             Text("查看全部参考图")
+        }
+        TextButton(
+            onClick = onOpenPoseDirection,
+            modifier = Modifier.heightIn(min = AppDimensions.MinTouchTarget),
+        ) {
+            Text("\u6784\u56fe\u53e3\u4ee4")
         }
         Spacer(Modifier.height(AppDimensions.Space20))
         GlassSurface(

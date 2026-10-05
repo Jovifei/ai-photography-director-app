@@ -118,6 +118,8 @@ dependencies {
 
     // Unit test
     testImplementation("junit:junit:4.13.2")
+    // JVM stand-in for platform org.json. Not a production dependency.
+    testImplementation("org.json:json:20240303")
 
     // Android test-only contracts; no production runtime Pose dependencies.
     androidTestImplementation("androidx.test:core:1.7.0")
