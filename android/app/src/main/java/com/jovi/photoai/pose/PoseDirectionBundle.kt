@@ -38,6 +38,15 @@ internal data class PoseDirectionItem(
     val svg: String?,
     val svgFile: String?,
     val whyItWorks: PoseWhyItWorks?,
+    /** Short Chinese composition name for list/detail/overlay. */
+    val title: String? = null,
+    /**
+     * Optional asset basename (same pattern as [id]) for
+     * assets/pose_direction/thumbs/{name}.jpg — never a filesystem path or image extension.
+     */
+    val referenceImage: String? = null,
+    /** Ordered Chinese coaching steps; preferred over a dense paragraph. */
+    val spokenSteps: List<String> = emptyList(),
 )
 
 internal data class PoseDirectionBundle(
@@ -66,7 +75,7 @@ internal sealed interface PoseDirectionParseResult {
  */
 internal object PoseDirectionBundleParser {
     private val rootKeys = setOf("schema_id", "schema_version", "authority", "producer_note", "items")
-    private val itemKeys = setOf("id", "spoken_direction", "stick_figure", "why_it_works")
+    private val itemKeys = setOf("id", "spoken_direction", "stick_figure", "why_it_works", "title", "reference_image", "spoken_steps")
     private val requiredItemKeys = setOf("id", "spoken_direction", "stick_figure")
     private val figureKeys = setOf("svg", "svg_file")
     private val whyKeys = setOf("composition", "light", "gaze", "clothing")
@@ -117,7 +126,7 @@ internal object PoseDirectionBundleParser {
         if (!ITEM_ID.matches(id)) reject(PoseDirectionReject.SCHEMA)
         val spoken = item.opt("spoken_direction")
         if (spoken !is String || spoken.isBlank()) reject(PoseDirectionReject.MISSING_SPOKEN)
-        if (spoken.length > MAX_TEXT_CHARS || spoken.any(Character::isISOControl)) reject(PoseDirectionReject.SCHEMA)
+        if (spoken.length > MAX_TEXT_CHARS || hasDisallowedControl(spoken)) reject(PoseDirectionReject.SCHEMA)
         if (containsPrivate(spoken)) reject(PoseDirectionReject.PRIVATE_PATH)
         val figureValue = item.opt("stick_figure")
         if (figureValue !is JSONObject) reject(PoseDirectionReject.MISSING_FIGURE)
@@ -128,7 +137,57 @@ internal object PoseDirectionBundleParser {
             is JSONObject -> parseWhy(whyValue)
             else -> reject(PoseDirectionReject.SCHEMA)
         }
-        return PoseDirectionItem(id, spoken, svg, svgFile, why)
+        val title = parseOptionalTitle(item)
+        val referenceImage = parseOptionalReferenceImage(item)
+        val spokenSteps = parseSpokenSteps(item, spoken)
+        return PoseDirectionItem(id, spoken, svg, svgFile, why, title, referenceImage, spokenSteps)
+    }
+
+
+    private fun parseSpokenSteps(item: JSONObject, spokenFallback: String): List<String> {
+        if (item.has("spoken_steps")) {
+            val value = item.opt("spoken_steps")
+            if (value !is JSONArray || value.length() == 0) reject(PoseDirectionReject.SCHEMA)
+            if (value.length() > 12) reject(PoseDirectionReject.SCHEMA)
+            val steps = ArrayList<String>(value.length())
+            for (index in 0 until value.length()) {
+                val step = value.opt(index)
+                if (step !is String || step.isBlank() || step.length > MAX_TEXT_CHARS || hasDisallowedControl(step)) {
+                    reject(PoseDirectionReject.SCHEMA)
+                }
+                if (containsPrivate(step)) reject(PoseDirectionReject.PRIVATE_PATH)
+                steps += step.trim()
+            }
+            return steps
+        }
+        return spokenFallback
+            .split("\n", "\r")
+            .map { it.trim() }
+            .filter { it.isNotEmpty() }
+    }
+
+    private fun parseOptionalTitle(item: JSONObject): String? {
+        if (!item.has("title")) return null
+        val value = item.opt("title")
+        if (value !is String || value.isBlank() || value.length > 64 || hasDisallowedControl(value)) {
+            reject(PoseDirectionReject.SCHEMA)
+        }
+        if (containsPrivate(value)) reject(PoseDirectionReject.PRIVATE_PATH)
+        return value
+    }
+
+    private fun parseOptionalReferenceImage(item: JSONObject): String? {
+        if (!item.has("reference_image")) return null
+        val value = item.opt("reference_image")
+        if (value !is String || value.isBlank()) reject(PoseDirectionReject.SCHEMA)
+        // Basename only, same public hash pattern as id — no extension, no path separators.
+        if (!ITEM_ID.matches(value)) {
+            if (containsPrivate(value) || value.any { it == '/' || it == '\\' || it == ':' || it == '.' }) {
+                reject(PoseDirectionReject.PRIVATE_PATH)
+            }
+            reject(PoseDirectionReject.SCHEMA)
+        }
+        return value
     }
 
     private fun parseFigure(figure: JSONObject): Pair<String?, String?> {
@@ -166,7 +225,7 @@ internal object PoseDirectionBundleParser {
         fun text(name: String): String? {
             if (name !in keys) return null
             val value = why.opt(name)
-            if (value !is String || value.isBlank() || value.length > MAX_TEXT_CHARS || value.any(Character::isISOControl)) {
+            if (value !is String || value.isBlank() || value.length > MAX_TEXT_CHARS || hasDisallowedControl(value)) {
                 reject(PoseDirectionReject.SCHEMA)
             }
             if (containsPrivate(value)) reject(PoseDirectionReject.PRIVATE_PATH)
@@ -205,6 +264,10 @@ internal object PoseDirectionBundleParser {
         if (urls.any { it !in ALLOWED_SVG_URLS }) return PoseDirectionReject.PRIVATE_PATH
         return null
     }
+
+    /** Allow newline step separators; reject other ISO controls. */
+    private fun hasDisallowedControl(value: String): Boolean =
+        value.any { ch -> Character.isISOControl(ch) && ch != '\n' && ch != '\r' }
 
     private fun containsPrivate(value: String): Boolean = PRIVATE_PATH.containsMatchIn(value)
 

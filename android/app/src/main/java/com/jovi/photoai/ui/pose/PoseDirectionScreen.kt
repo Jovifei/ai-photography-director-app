@@ -4,7 +4,9 @@ import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -17,7 +19,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -27,16 +29,19 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
-import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.jovi.photoai.pose.POSE_DIRECTION_ASSET
@@ -49,11 +54,15 @@ import com.jovi.photoai.ui.components.PrimaryActionButton
 import com.jovi.photoai.ui.components.SecondaryActionButton
 import com.jovi.photoai.ui.design.AppColors
 import com.jovi.photoai.ui.design.AppDimensions
+import com.jovi.photoai.ui.design.PoseTypography
 import com.jovi.photoai.ui.navigation.RootNavigation
 import com.jovi.photoai.ui.navigation.RootSection
 
+private val StickInk = Color(0xFF2C2C2C)
+private val ThumbFallbackBg = Color(0xFFF0F0F0)
+
 internal const val POSE_DIRECTION_FAILURE_MESSAGE =
-    "这份构图口令无法打开。内容为空、无效，或权威标记不是关闭。"
+    "\u8fd9\u4efd\u6784\u56fe\u53e3\u4ee4\u65e0\u6cd5\u6253\u5f00\u3002\u5185\u5bb9\u4e3a\u7a7a\u3001\u65e0\u6548\uff0c\u6216\u6807\u8bb0\u4e0d\u7b26\u5408\u8981\u6c42\u3002"
 
 @Composable
 internal fun PoseDirectionScreen(
@@ -104,102 +113,111 @@ internal fun PoseDirectionContent(
     onRootSection: ((RootSection) -> Unit)? = null,
     onImportReferences: (() -> Unit)? = null,
 ) {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(AppColors.AppBackground)
-            .safeDrawingPadding()
-            .verticalScroll(rememberScrollState())
-            .padding(horizontal = AppDimensions.PagePadding)
-            .testTag("pose-direction-screen"),
-    ) {
-        Spacer(Modifier.height(AppDimensions.Space8))
-        if (isRoot && onRootSection != null) {
-            RootNavigation(
-                selected = RootSection.POSE,
-                onSelect = onRootSection,
-            )
-            Spacer(Modifier.height(AppDimensions.Space16))
-        } else {
-            TextButton(onClick = onBack, modifier = Modifier.heightIn(min = AppDimensions.MinTouchTarget)) {
-                Text("返回")
-            }
-        }
-        Text(
-            "构图口令",
-            style = MaterialTheme.typography.headlineSmall,
-            color = AppColors.TextPrimary,
+    when (state) {
+        is PoseDirectionUiState.Detail -> PoseDirectionDetailScaffold(
+            state = state,
+            onShowList = onShowList,
+            onTakeToShoot = onTakeToShoot,
         )
-        Text(
-            "火柴人姿态 + 口述提示词 · 示例非权威（authority=false）",
-            style = MaterialTheme.typography.bodyMedium,
-            color = AppColors.TextSecondary,
-        )
-        Spacer(Modifier.height(AppDimensions.Space16))
-        when (state) {
-            PoseDirectionUiState.Failed -> {
+        else -> {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(AppColors.AppBackground)
+                    .safeDrawingPadding()
+                    .verticalScroll(rememberScrollState())
+                    .padding(horizontal = AppDimensions.PagePadding)
+                    .testTag("pose-direction-screen"),
+            ) {
+                Spacer(Modifier.height(AppDimensions.Space8))
+                if (isRoot && onRootSection != null) {
+                    RootNavigation(
+                        selected = RootSection.POSE,
+                        onSelect = onRootSection,
+                    )
+                    Spacer(Modifier.height(AppDimensions.Space16))
+                } else {
+                    TextButton(onClick = onBack, modifier = Modifier.heightIn(min = AppDimensions.MinTouchTarget)) {
+                        Text("\u8fd4\u56de", style = PoseTypography.labelLarge, color = AppColors.TextPrimary)
+                    }
+                }
                 Text(
-                    POSE_DIRECTION_FAILURE_MESSAGE,
-                    modifier = Modifier.testTag("pose-direction-failure"),
-                    style = MaterialTheme.typography.bodyLarge,
-                    color = AppColors.TextPrimary,
-                )
-                Spacer(Modifier.height(AppDimensions.Space16))
-                Text(
-                    "导入 1 张参考图开始",
-                    style = MaterialTheme.typography.titleMedium,
+                    "\u6784\u56fe\u53e3\u4ee4",
+                    style = PoseTypography.titleLarge,
                     color = AppColors.TextPrimary,
                 )
                 Text(
-                    "一张就够。不要求凑满 20 张。",
-                    style = MaterialTheme.typography.bodyMedium,
+                    "\u9009\u4e00\u4e2a\u59ff\u6001\uff0c\u6309\u53e3\u8ff0\u53e3\u4ee4\u62cd",
+                    style = PoseTypography.bodyMedium,
                     color = AppColors.TextSecondary,
                 )
-                if (onImportReferences != null) {
-                    Spacer(Modifier.height(AppDimensions.Space12))
-                    PrimaryActionButton(
-                        text = "导入参考图",
-                        onClick = onImportReferences,
-                        modifier = Modifier.fillMaxWidth().testTag("pose-direction-import"),
-                    )
-                }
-            }
-            is PoseDirectionUiState.ListReady -> {
-                if (state.items.isEmpty()) {
-                    Text(
-                        "导入 1 张参考图开始",
-                        modifier = Modifier.testTag("pose-direction-empty"),
-                        style = MaterialTheme.typography.titleMedium,
-                        color = AppColors.TextPrimary,
-                    )
-                    Text(
-                        "一张就够。",
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = AppColors.TextSecondary,
-                    )
-                    if (onImportReferences != null) {
-                        Spacer(Modifier.height(AppDimensions.Space12))
-                        PrimaryActionButton(
-                            text = "导入参考图",
-                            onClick = onImportReferences,
-                            modifier = Modifier.fillMaxWidth().testTag("pose-direction-import"),
+                Spacer(Modifier.height(AppDimensions.Space16))
+                when (state) {
+                    PoseDirectionUiState.Failed -> {
+                        Text(
+                            POSE_DIRECTION_FAILURE_MESSAGE,
+                            modifier = Modifier.testTag("pose-direction-failure"),
+                            style = PoseTypography.bodyLarge,
+                            color = AppColors.TextPrimary,
                         )
-                    }
-                } else {
-                    PoseDirectionList(state, onSelect)
-                    if (onImportReferences != null) {
                         Spacer(Modifier.height(AppDimensions.Space16))
-                        SecondaryActionButton(
-                            text = "导入参考图",
-                            onClick = onImportReferences,
-                            modifier = Modifier.fillMaxWidth().testTag("pose-direction-import"),
+                        Text(
+                            "\u5bfc\u5165 1 \u5f20\u53c2\u8003\u56fe\u5f00\u59cb",
+                            style = PoseTypography.titleMedium,
+                            color = AppColors.TextPrimary,
                         )
+                        Text(
+                            "\u4e00\u5f20\u5c31\u591f\u3002\u4e0d\u8981\u6c42\u51d1\u6ee1 20 \u5f20\u3002",
+                            style = PoseTypography.bodyMedium,
+                            color = AppColors.TextSecondary,
+                        )
+                        if (onImportReferences != null) {
+                            Spacer(Modifier.height(AppDimensions.Space12))
+                            PrimaryActionButton(
+                                text = "\u5bfc\u5165\u53c2\u8003\u56fe",
+                                onClick = onImportReferences,
+                                modifier = Modifier.fillMaxWidth().testTag("pose-direction-import"),
+                            )
+                        }
                     }
+                    is PoseDirectionUiState.ListReady -> {
+                        if (state.items.isEmpty()) {
+                            Text(
+                                "\u5bfc\u5165 1 \u5f20\u53c2\u8003\u56fe\u5f00\u59cb",
+                                modifier = Modifier.testTag("pose-direction-empty"),
+                                style = PoseTypography.titleMedium,
+                                color = AppColors.TextPrimary,
+                            )
+                            Text(
+                                "\u4e00\u5f20\u5c31\u591f\u3002",
+                                style = PoseTypography.bodyMedium,
+                                color = AppColors.TextSecondary,
+                            )
+                            if (onImportReferences != null) {
+                                Spacer(Modifier.height(AppDimensions.Space12))
+                                PrimaryActionButton(
+                                    text = "\u5bfc\u5165\u53c2\u8003\u56fe",
+                                    onClick = onImportReferences,
+                                    modifier = Modifier.fillMaxWidth().testTag("pose-direction-import"),
+                                )
+                            }
+                        } else {
+                            PoseDirectionList(state, onSelect)
+                            if (onImportReferences != null) {
+                                Spacer(Modifier.height(AppDimensions.Space16))
+                                SecondaryActionButton(
+                                    text = "\u5bfc\u5165\u53c2\u8003\u56fe",
+                                    onClick = onImportReferences,
+                                    modifier = Modifier.fillMaxWidth().testTag("pose-direction-import"),
+                                )
+                            }
+                        }
+                    }
+                    is PoseDirectionUiState.Detail -> Unit
                 }
+                Spacer(Modifier.height(AppDimensions.Space32))
             }
-            is PoseDirectionUiState.Detail -> PoseDirectionDetail(state, onShowList, onTakeToShoot)
         }
-        Spacer(Modifier.height(AppDimensions.Space32))
     }
 }
 
@@ -208,43 +226,79 @@ private fun PoseDirectionList(state: PoseDirectionUiState.ListReady, onSelect: (
     Column(verticalArrangement = Arrangement.spacedBy(AppDimensions.Space12)) {
         state.items.forEach { item ->
             val graphic = item.svg?.let(::parseStickFigureSvg)
+            val title = displayTitle(item)
+            val thumbAsset = referenceThumbAsset(item.referenceImage)
             GlassSurface(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .heightIn(min = AppDimensions.MinTouchTarget)
+                    .heightIn(min = 88.dp, max = 96.dp)
                     .testTag("pose-item-${item.id}")
                     .clickable(role = Role.Button, onClick = { onSelect(item.id) })
-                    .semantics { contentDescription = "打开构图 ${item.id}" },
-                contentPadding = androidx.compose.foundation.layout.PaddingValues(AppDimensions.Space12),
+                    .semantics { contentDescription = "\u6253\u5f00\u6784\u56fe $title" },
+                contentPadding = PaddingValues(AppDimensions.Space12),
             ) {
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(AppDimensions.Space12),
                 ) {
-                    if (graphic != null) {
-                        StickFigureDiagram(
-                            graphic = graphic,
-                            modifier = Modifier
-                                .size(72.dp)
-                                .testTag("pose-item-thumb-${item.id}"),
-                            diagramHeight = 72.dp,
-                        )
-                    } else {
-                        Spacer(Modifier.size(72.dp))
+                    Box(
+                        modifier = Modifier
+                            .size(72.dp)
+                            .clip(RoundedCornerShape(8.dp))
+                            .background(ThumbFallbackBg),
+                        contentAlignment = Alignment.Center,
+                    ) {
+                        if (thumbAsset != null) {
+                            PoseAssetImage(
+                                assetPath = thumbAsset,
+                                contentDescription = "\u53c2\u8003\u56fe",
+                                modifier = Modifier.fillMaxSize().testTag("pose-item-photo-${item.id}"),
+                                contentScale = ContentScale.Crop,
+                            )
+                        } else if (graphic != null) {
+                            StickFigureDiagram(
+                                graphic = graphic,
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .testTag("pose-item-thumb-${item.id}"),
+                                diagramHeight = 72.dp,
+                                showBackground = false,
+                            )
+                        }
                     }
                     Column(
                         modifier = Modifier.weight(1f),
                         verticalArrangement = Arrangement.spacedBy(AppDimensions.Space4),
                     ) {
-                        Row(horizontalArrangement = Arrangement.spacedBy(AppDimensions.Space8)) {
-                            Text(item.id, style = MaterialTheme.typography.labelLarge, color = AppColors.TextTertiary)
-                            Text("示例", style = MaterialTheme.typography.labelSmall, color = AppColors.AccentBlue)
+                        Row(
+                            horizontalArrangement = Arrangement.spacedBy(AppDimensions.Space8),
+                            verticalAlignment = Alignment.CenterVertically,
+                        ) {
+                            Text(
+                                title,
+                                style = PoseTypography.titleMedium,
+                                color = AppColors.TextPrimary,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis,
+                                modifier = Modifier.weight(1f, fill = false),
+                            )
+                            Text(
+                                "\u793a\u4f8b",
+                                style = PoseTypography.bodySmall,
+                                color = AppColors.AccentBlue,
+                            )
                         }
-                        Text(
-                            spokenPreview(item.spokenDirection),
-                            style = MaterialTheme.typography.bodyLarge,
-                            color = AppColors.TextPrimary,
-                        )
+                        Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
+                            resolveSpokenSteps(item).take(2).forEach { step ->
+                                Text(
+                                    step,
+                                    style = PoseTypography.bodyMedium,
+                                    color = AppColors.TextSecondary,
+                                    maxLines = 1,
+                                    overflow = TextOverflow.Ellipsis,
+                                )
+                            }
+                        }
                     }
                 }
             }
@@ -253,60 +307,127 @@ private fun PoseDirectionList(state: PoseDirectionUiState.ListReady, onSelect: (
 }
 
 @Composable
-private fun PoseDirectionDetail(
+private fun PoseDirectionDetailScaffold(
     state: PoseDirectionUiState.Detail,
     onShowList: () -> Unit,
     onTakeToShoot: () -> Unit,
 ) {
-    TextButton(onClick = onShowList, modifier = Modifier.heightIn(min = AppDimensions.MinTouchTarget)) {
-        Text("全部构图")
-    }
-    Text(state.item.id, style = MaterialTheme.typography.labelLarge, color = AppColors.TextTertiary)
-    Spacer(Modifier.height(AppDimensions.Space12))
-    val graphic = state.graphic
-    if (graphic != null) {
-        StickFigureDiagram(
-            graphic = graphic,
+    val clipboard = LocalClipboardManager.current
+    val title = displayTitle(state.item)
+    val thumbAsset = referenceThumbAsset(state.item.referenceImage)
+    Scaffold(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(AppColors.AppBackground)
+            .safeDrawingPadding()
+            .testTag("pose-direction-screen"),
+        containerColor = AppColors.AppBackground,
+        bottomBar = {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = AppDimensions.PagePadding, vertical = AppDimensions.Space12),
+            ) {
+                PrimaryActionButton(
+                    text = "\u7528\u6b64\u6784\u56fe\u62cd\u6444",
+                    onClick = onTakeToShoot,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(AppDimensions.PrimaryButtonHeight)
+                        .testTag("pose-direction-take-to-shoot"),
+                    contentDescription = "\u7528\u6b64\u6784\u56fe\u8fdb\u5165\u62cd\u6444",
+                )
+            }
+        },
+    ) { padding ->
+        Column(
             modifier = Modifier
-                .fillMaxWidth()
-                .testTag("pose-direction-figure")
-                .semantics { contentDescription = "火柴人姿态示意" },
-        )
-    }
-    state.figureNote?.let { note ->
-        Text(note, style = MaterialTheme.typography.bodyMedium, color = AppColors.TextSecondary)
-    }
-    Spacer(Modifier.height(AppDimensions.Space16))
-    Text(
-        state.item.spokenDirection,
-        modifier = Modifier.testTag("pose-direction-spoken"),
-        style = MaterialTheme.typography.titleLarge,
-        color = AppColors.TextPrimary,
-    )
-    if (state.whyLines.isNotEmpty()) {
-        Spacer(Modifier.height(AppDimensions.Space12))
-        state.whyLines.forEach { line ->
-            Text(line, style = MaterialTheme.typography.bodyMedium, color = AppColors.TextSecondary)
+                .fillMaxSize()
+                .padding(padding)
+                .verticalScroll(rememberScrollState())
+                .padding(horizontal = AppDimensions.PagePadding),
+        ) {
+            TextButton(onClick = onShowList, modifier = Modifier.heightIn(min = AppDimensions.MinTouchTarget)) {
+                Text("\u5168\u90e8\u6784\u56fe", style = PoseTypography.labelLarge, color = AppColors.TextPrimary)
+            }
+            Text(title, style = PoseTypography.titleLarge, color = AppColors.TextPrimary)
+            Spacer(Modifier.height(AppDimensions.Space12))
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(260.dp)
+                    .clip(RoundedCornerShape(12.dp))
+                    .background(ThumbFallbackBg)
+                    .testTag("pose-direction-reference"),
+                contentAlignment = Alignment.Center,
+            ) {
+                PoseAssetImage(
+                    assetPath = thumbAsset,
+                    contentDescription = "\u539f\u59cb\u53c2\u8003\u56fe",
+                    modifier = Modifier.fillMaxSize(),
+                    contentScale = ContentScale.Crop,
+                )
+            }
+            Spacer(Modifier.height(AppDimensions.Space16))
+            Text(
+                "\u59ff\u6001\u793a\u610f",
+                style = PoseTypography.titleSmall,
+                color = AppColors.TextSecondary,
+            )
+            Spacer(Modifier.height(AppDimensions.Space8))
+            val graphic = state.graphic
+            if (graphic != null) {
+                StickFigureDiagram(
+                    graphic = graphic,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .testTag("pose-direction-figure")
+                        .semantics { contentDescription = "\u59ff\u6001\u793a\u610f" },
+                    diagramHeight = 190.dp,
+                )
+            } else {
+                Text(
+                    state.figureNote ?: "\u6682\u65e0\u59ff\u6001\u793a\u610f",
+                    style = PoseTypography.bodyMedium,
+                    color = AppColors.TextSecondary,
+                )
+            }
+            Spacer(Modifier.height(AppDimensions.Space16))
+            Text(
+                "\u53e3\u8ff0\u53e3\u4ee4",
+                style = PoseTypography.titleSmall,
+                color = AppColors.TextSecondary,
+            )
+            Spacer(Modifier.height(AppDimensions.Space8))
+            Column(
+                modifier = Modifier.testTag("pose-direction-spoken"),
+                verticalArrangement = Arrangement.spacedBy(AppDimensions.Space8),
+            ) {
+                resolveSpokenSteps(state.item).forEach { step ->
+                    Text(
+                        step,
+                        style = PoseTypography.bodyLarge,
+                        color = AppColors.TextPrimary,
+                    )
+                }
+            }
+            if (state.whyLines.isNotEmpty()) {
+                Spacer(Modifier.height(AppDimensions.Space12))
+                state.whyLines.forEach { line ->
+                    Text(line, style = PoseTypography.bodyMedium, color = AppColors.TextSecondary)
+                }
+            }
+            Spacer(Modifier.height(AppDimensions.Space16))
+            SecondaryActionButton(
+                text = "\u590d\u5236\u53e3\u4ee4",
+                onClick = { clipboard.setText(AnnotatedString(state.item.spokenDirection)) },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .testTag("pose-direction-copy-spoken"),
+            )
+            Spacer(Modifier.height(AppDimensions.Space24))
         }
     }
-    Spacer(Modifier.height(AppDimensions.Space24))
-    PrimaryActionButton(
-        text = "用此构图拍摄",
-        onClick = onTakeToShoot,
-        modifier = Modifier
-            .fillMaxWidth()
-            .testTag("pose-direction-take-to-shoot"),
-        contentDescription = "用此构图进入拍摄",
-    )
-    val clipboard = LocalClipboardManager.current
-    Spacer(Modifier.height(AppDimensions.Space8))
-    SecondaryActionButton(
-        text = "复制口述提示",
-        onClick = { clipboard.setText(AnnotatedString(state.item.spokenDirection)) },
-        modifier = Modifier
-            .fillMaxWidth()
-            .testTag("pose-direction-copy-spoken"),
-    )
 }
 
 @Composable
@@ -314,48 +435,52 @@ internal fun StickFigureDiagram(
     graphic: StickFigureGraphic,
     modifier: Modifier = Modifier,
     diagramHeight: Dp = 320.dp,
+    showBackground: Boolean = true,
 ) {
-    Canvas(
+    val canvasMod = if (showBackground) {
         modifier
             .background(Color.White, RoundedCornerShape(AppDimensions.RadiusMedium))
-            .height(diagramHeight),
-    ) {
+            .height(diagramHeight)
+    } else {
+        modifier.height(diagramHeight)
+    }
+    Canvas(canvasMod) {
         val scaleX = size.width / graphic.width
         val scaleY = size.height / graphic.height
         val scale = minOf(scaleX, scaleY)
         fun px(x: Float) = (x - graphic.minX) * scale + (size.width - graphic.width * scale) / 2f
         fun py(y: Float) = (y - graphic.minY) * scale + (size.height - graphic.height * scale) / 2f
         graphic.shapes.forEach { shape ->
-            val stroke = Stroke(width = (shape.strokeWidth * scale).coerceAtLeast(1f))
+            val strokeWidth = (shape.strokeWidth * scale).coerceIn(3f, 4.5f)
             when (shape) {
                 is StickShape.Line -> drawLine(
-                    Color.Black,
+                    StickInk,
                     Offset(px(shape.x1), py(shape.y1)),
                     Offset(px(shape.x2), py(shape.y2)),
-                    strokeWidth = stroke.width,
+                    strokeWidth = strokeWidth,
                 )
                 is StickShape.Circle -> drawCircle(
-                    Color.Black,
+                    StickInk,
                     radius = shape.r * scale,
                     center = Offset(px(shape.cx), py(shape.cy)),
-                    style = stroke,
+                    style = Stroke(width = strokeWidth),
                 )
                 is StickShape.Polyline -> {
                     val points = shape.points
                     for (index in 0 until points.lastIndex) {
                         drawLine(
-                            Color.Black,
+                            StickInk,
                             Offset(px(points[index].first), py(points[index].second)),
                             Offset(px(points[index + 1].first), py(points[index + 1].second)),
-                            strokeWidth = stroke.width,
+                            strokeWidth = strokeWidth,
                         )
                     }
                 }
                 is StickShape.Rect -> drawRect(
-                    Color.Black,
+                    StickInk,
                     topLeft = Offset(px(shape.x), py(shape.y)),
                     size = androidx.compose.ui.geometry.Size(shape.width * scale, shape.height * scale),
-                    style = stroke,
+                    style = Stroke(width = strokeWidth),
                 )
             }
         }

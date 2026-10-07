@@ -50,6 +50,7 @@ class PoseDirectionViewModelTest {
         val selected = model.selectedPose()
         assertNotNull(selected)
         assertEquals("img-02-bbbbbbbb", selected!!.id)
+        assertEquals("\u6784\u56fe\u793a\u610f", selected.title)
         assertTrue(selected.spokenDirection.contains("\u91cd\u5fc3"))
         assertNotNull(selected.graphic)
         assertNull(selected.figureNote)

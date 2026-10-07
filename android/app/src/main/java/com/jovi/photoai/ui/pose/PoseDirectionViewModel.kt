@@ -53,9 +53,12 @@ internal class PoseDirectionViewModel(documentText: String?) {
         val detail = uiState() as? PoseDirectionUiState.Detail ?: return null
         return SelectedPoseDirection(
             id = detail.item.id,
+            title = displayTitle(detail.item),
             spokenDirection = detail.item.spokenDirection,
+            spokenSteps = resolveSpokenSteps(detail.item),
             graphic = detail.graphic,
             figureNote = detail.figureNote,
+            referenceImage = detail.item.referenceImage,
         )
     }
 }
@@ -70,6 +73,21 @@ internal fun whyLines(why: PoseWhyItWorks?): List<String> {
     )
 }
 
+internal fun resolveSpokenSteps(item: PoseDirectionItem): List<String> {
+    if (item.spokenSteps.isNotEmpty()) return item.spokenSteps
+    return item.spokenDirection
+        .split("\n", "\r")
+        .map { it.trim() }
+        .filter { it.isNotEmpty() }
+}
+
+/** List-card preview: up to two step lines, never a prose wall. */
+internal fun spokenPreview(item: PoseDirectionItem, maxSteps: Int = 2): String {
+    val steps = resolveSpokenSteps(item)
+    if (steps.isEmpty()) return item.spokenDirection
+    return steps.take(maxSteps).joinToString("\n")
+}
+
 internal fun spokenPreview(text: String, maxCodePoints: Int = 36): String {
     val count = text.codePointCount(0, text.length)
     if (count <= maxCodePoints) return text
@@ -81,3 +99,10 @@ private fun figureNote(item: PoseDirectionItem, graphic: StickFigureGraphic?): S
     graphic == null -> "\u65e0\u6cd5\u7ed8\u5236\u706b\u67f4\u4eba"
     else -> null
 }
+
+internal fun displayTitle(item: PoseDirectionItem): String =
+    item.title?.takeIf { it.isNotBlank() } ?: "构图示意"
+
+internal fun referenceThumbAsset(referenceImage: String?): String? =
+    referenceImage?.takeIf { it.isNotBlank() }?.let { "pose_direction/thumbs/$it.jpg" }
+
