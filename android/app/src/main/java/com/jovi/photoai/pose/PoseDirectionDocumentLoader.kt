@@ -24,7 +24,7 @@ internal object PoseDirectionDocumentLoader {
         }.getOrNull()
     }
 
-    /** Prefer an explicit external path when readable; otherwise use the asset text. */
+    /** Prefer an explicit external path when readable; otherwise use the shipped sample/asset text. */
     fun resolveDocument(assetText: String?, externalPath: String? = null): String? {
         return readExternalOrNull(externalPath) ?: assetText?.takeIf { it.isNotBlank() }
     }

@@ -6,7 +6,10 @@ import org.json.JSONObject
 
 internal const val POSE_DIRECTION_SCHEMA_ID = "pose-direction-bundle"
 internal const val POSE_DIRECTION_SCHEMA_VERSION = 1
-internal const val POSE_DIRECTION_ASSET = "pose_direction/synthetic_pose_direction_bundle_v1.json"
+/** Default on-device sample for the pose screen (18-item non-authority reference set). */
+internal const val POSE_DIRECTION_ASSET = "pose_direction/sample_pose_direction_bundle_v1.json"
+/** Tiny synthetic fixture kept for unit tests; not the product default. */
+internal const val POSE_DIRECTION_SYNTHETIC_ASSET = "pose_direction/synthetic_pose_direction_bundle_v1.json"
 
 private const val MAX_DOCUMENT_CHARS = 1_500_000
 private const val MAX_TEXT_CHARS = 2_000

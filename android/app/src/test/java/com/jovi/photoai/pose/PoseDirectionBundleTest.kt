@@ -11,6 +11,24 @@ import org.junit.Test
 
 class PoseDirectionBundleTest {
     @Test
+    fun sampleFixture_parsesEighteenItemsWithoutAuthority() {
+        val raw = sampleFixtureText()
+        assertTrue(raw.contains("\"authority\": false"))
+        assertTrue(raw.contains("Non-authority sample"))
+        assertTrue(!raw.contains(".jpg") && !raw.contains(".jpeg"))
+        val result = PoseDirectionBundleParser.parse(raw)
+        assertTrue(result is PoseDirectionParseResult.Success)
+        val bundle = (result as PoseDirectionParseResult.Success).bundle
+        assertEquals(18, bundle.items.size)
+        assertTrue(bundle.items.none { it.id.startsWith("img-08") })
+        assertTrue(bundle.items.all { it.svg != null && it.svgFile == null })
+        assertTrue(bundle.producerNote.contains("not a T14"))
+        val graphic = parseStickFigureSvg(bundle.items[0].svg!!)
+        assertNotNull(graphic)
+        assertTrue(graphic!!.shapes.isNotEmpty())
+    }
+
+    @Test
     fun syntheticFixture_parsesTwoItemsWithoutAuthority() {
         val raw = fixtureText()
         assertTrue(raw.contains("\"authority\": false"))
@@ -91,10 +109,14 @@ class PoseDirectionBundleTest {
     }
 }
 
-internal fun fixtureText(): String {
-    val relative = "src/main/assets/pose_direction/synthetic_pose_direction_bundle_v1.json"
+internal fun fixtureText(): String = assetText("pose_direction/synthetic_pose_direction_bundle_v1.json")
+
+internal fun sampleFixtureText(): String = assetText("pose_direction/sample_pose_direction_bundle_v1.json")
+
+private fun assetText(assetRelative: String): String {
+    val relative = "src/main/assets/$assetRelative"
     val candidates = listOf(File(relative), File("app/$relative"), File("android/app/$relative"))
     val file = candidates.firstOrNull { it.isFile }
-        ?: error("synthetic fixture missing from ${File(".").absolutePath}")
+        ?: error("$assetRelative missing from ${File(".").absolutePath}")
     return file.readText(Charsets.UTF_8)
 }

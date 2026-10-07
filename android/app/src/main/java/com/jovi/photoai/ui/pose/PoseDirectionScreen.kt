@@ -105,7 +105,7 @@ internal fun PoseDirectionContent(
             color = AppColors.TextPrimary,
         )
         Text(
-            "\u6743\u5a01\u4fdd\u6301\u5173\u95ed\uff0c\u4e0d\u662f T14 \u653e\u884c\u3002",
+            "\u975e\u6743\u5a01\u6837\u4f8b\uff08authority=false\uff09\uff0c\u4e0d\u662f T14 \u653e\u884c\u3002",
             style = MaterialTheme.typography.bodyMedium,
             color = AppColors.TextSecondary,
         )
