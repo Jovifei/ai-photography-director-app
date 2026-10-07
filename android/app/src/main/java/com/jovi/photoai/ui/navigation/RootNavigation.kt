@@ -11,20 +11,24 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import com.jovi.photoai.ui.design.AppColors
 import com.jovi.photoai.ui.design.AppDimensions
 
-enum class RootSection { INSPIRATION, CAPTURE }
+/** Product roots: composition first, inspiration stub, records demoted. */
+enum class RootSection { POSE, INSPIRATION, RECORDS }
 
-/** The two product roots stay separate from the transient Reference → Director flow pages. */
 @Composable
 fun RootNavigation(
     selected: RootSection,
     onSelect: (RootSection) -> Unit,
     modifier: Modifier = Modifier,
+    inspirationEnabled: Boolean = false,
 ) {
     Surface(
-        modifier = modifier.fillMaxWidth(),
+        modifier = modifier
+            .fillMaxWidth()
+            .testTag("root-navigation"),
         color = AppColors.SurfacePrimary.copy(alpha = 0.86f),
         shape = RoundedCornerShape(AppDimensions.RadiusLarge),
         border = androidx.compose.foundation.BorderStroke(AppDimensions.GlassStroke, AppColors.Divider),
@@ -34,16 +38,28 @@ fun RootNavigation(
             horizontalArrangement = Arrangement.spacedBy(AppDimensions.Space4),
         ) {
             RootNavigationItem(
-                text = "灵感",
-                selected = selected == RootSection.INSPIRATION,
-                onClick = { onSelect(RootSection.INSPIRATION) },
+                text = "构图口令",
+                selected = selected == RootSection.POSE,
+                enabled = true,
+                onClick = { onSelect(RootSection.POSE) },
                 modifier = Modifier.weight(1f),
+                testTag = "root-nav-pose",
             )
             RootNavigationItem(
-                text = "拍摄",
-                selected = selected == RootSection.CAPTURE,
-                onClick = { onSelect(RootSection.CAPTURE) },
+                text = "灵感",
+                selected = selected == RootSection.INSPIRATION,
+                enabled = inspirationEnabled,
+                onClick = { if (inspirationEnabled) onSelect(RootSection.INSPIRATION) },
                 modifier = Modifier.weight(1f),
+                testTag = "root-nav-inspiration",
+            )
+            RootNavigationItem(
+                text = "记录",
+                selected = selected == RootSection.RECORDS,
+                enabled = true,
+                onClick = { onSelect(RootSection.RECORDS) },
+                modifier = Modifier.weight(1f),
+                testTag = "root-nav-records",
             )
         }
     }
@@ -53,20 +69,35 @@ fun RootNavigation(
 private fun RootNavigationItem(
     text: String,
     selected: Boolean,
+    enabled: Boolean,
     onClick: () -> Unit,
     modifier: Modifier,
+    testTag: String,
 ) {
+    val background = when {
+        !enabled -> AppColors.SurfacePrimary.copy(alpha = 0.5f)
+        selected -> AppColors.AccentBlueSoft
+        else -> AppColors.SurfacePrimary
+    }
+    val foreground = when {
+        !enabled -> AppColors.TextTertiary
+        selected -> AppColors.AccentBlue
+        else -> AppColors.TextSecondary
+    }
     Surface(
         onClick = onClick,
-        modifier = modifier.heightIn(min = AppDimensions.MinTouchTarget),
-        color = if (selected) AppColors.AccentBlueSoft else AppColors.SurfacePrimary,
+        enabled = enabled,
+        modifier = modifier
+            .heightIn(min = AppDimensions.MinTouchTarget)
+            .testTag(testTag),
+        color = background,
         shape = RoundedCornerShape(AppDimensions.RadiusMedium),
     ) {
         Text(
             text = text,
             modifier = Modifier.padding(vertical = AppDimensions.Space12),
             style = MaterialTheme.typography.labelLarge,
-            color = if (selected) AppColors.AccentBlue else AppColors.TextSecondary,
+            color = foreground,
         )
     }
 }

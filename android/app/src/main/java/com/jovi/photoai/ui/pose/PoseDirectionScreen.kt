@@ -5,6 +5,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -12,6 +13,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawingPadding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -23,12 +25,15 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
@@ -38,19 +43,26 @@ import com.jovi.photoai.pose.POSE_DIRECTION_ASSET
 import com.jovi.photoai.pose.PoseDirectionDocumentLoader
 import com.jovi.photoai.pose.StickFigureGraphic
 import com.jovi.photoai.pose.StickShape
+import com.jovi.photoai.pose.parseStickFigureSvg
 import com.jovi.photoai.ui.components.GlassSurface
 import com.jovi.photoai.ui.components.PrimaryActionButton
+import com.jovi.photoai.ui.components.SecondaryActionButton
 import com.jovi.photoai.ui.design.AppColors
 import com.jovi.photoai.ui.design.AppDimensions
+import com.jovi.photoai.ui.navigation.RootNavigation
+import com.jovi.photoai.ui.navigation.RootSection
 
 internal const val POSE_DIRECTION_FAILURE_MESSAGE =
-    "\u8fd9\u4efd\u6784\u56fe\u53e3\u4ee4\u65e0\u6cd5\u6253\u5f00\u3002\u5185\u5bb9\u4e3a\u7a7a\u3001\u65e0\u6548\uff0c\u6216\u6743\u5a01\u6807\u8bb0\u4e0d\u662f\u5173\u95ed\u3002"
+    "这份构图口令无法打开。内容为空、无效，或权威标记不是关闭。"
 
 @Composable
 internal fun PoseDirectionScreen(
     onBack: () -> Unit,
     onTakeToShoot: (SelectedPoseDirection) -> Unit = {},
     externalBundlePath: String? = null,
+    isRoot: Boolean = false,
+    onRootSection: ((RootSection) -> Unit)? = null,
+    onImportReferences: (() -> Unit)? = null,
 ) {
     val context = LocalContext.current
     val model = remember(externalBundlePath) {
@@ -75,6 +87,9 @@ internal fun PoseDirectionScreen(
         onTakeToShoot = {
             model.selectedPose()?.let(onTakeToShoot)
         },
+        isRoot = isRoot,
+        onRootSection = onRootSection,
+        onImportReferences = onImportReferences,
     )
 }
 
@@ -85,6 +100,9 @@ internal fun PoseDirectionContent(
     onSelect: (String) -> Unit,
     onShowList: () -> Unit,
     onTakeToShoot: () -> Unit = {},
+    isRoot: Boolean = false,
+    onRootSection: ((RootSection) -> Unit)? = null,
+    onImportReferences: (() -> Unit)? = null,
 ) {
     Column(
         modifier = Modifier
@@ -96,28 +114,89 @@ internal fun PoseDirectionContent(
             .testTag("pose-direction-screen"),
     ) {
         Spacer(Modifier.height(AppDimensions.Space8))
-        TextButton(onClick = onBack, modifier = Modifier.heightIn(min = AppDimensions.MinTouchTarget)) {
-            Text("\u8fd4\u56de")
+        if (isRoot && onRootSection != null) {
+            RootNavigation(
+                selected = RootSection.POSE,
+                onSelect = onRootSection,
+            )
+            Spacer(Modifier.height(AppDimensions.Space16))
+        } else {
+            TextButton(onClick = onBack, modifier = Modifier.heightIn(min = AppDimensions.MinTouchTarget)) {
+                Text("返回")
+            }
         }
         Text(
-            "\u6784\u56fe\u53e3\u4ee4",
+            "构图口令",
             style = MaterialTheme.typography.headlineSmall,
             color = AppColors.TextPrimary,
         )
         Text(
-            "\u975e\u6743\u5a01\u6837\u4f8b\uff08authority=false\uff09\uff0c\u4e0d\u662f T14 \u653e\u884c\u3002",
+            "火柴人姿态 + 口述提示词 · 示例非权威（authority=false）",
             style = MaterialTheme.typography.bodyMedium,
             color = AppColors.TextSecondary,
         )
         Spacer(Modifier.height(AppDimensions.Space16))
         when (state) {
-            PoseDirectionUiState.Failed -> Text(
-                POSE_DIRECTION_FAILURE_MESSAGE,
-                modifier = Modifier.testTag("pose-direction-failure"),
-                style = MaterialTheme.typography.bodyLarge,
-                color = AppColors.TextPrimary,
-            )
-            is PoseDirectionUiState.ListReady -> PoseDirectionList(state, onSelect)
+            PoseDirectionUiState.Failed -> {
+                Text(
+                    POSE_DIRECTION_FAILURE_MESSAGE,
+                    modifier = Modifier.testTag("pose-direction-failure"),
+                    style = MaterialTheme.typography.bodyLarge,
+                    color = AppColors.TextPrimary,
+                )
+                Spacer(Modifier.height(AppDimensions.Space16))
+                Text(
+                    "导入 1 张参考图开始",
+                    style = MaterialTheme.typography.titleMedium,
+                    color = AppColors.TextPrimary,
+                )
+                Text(
+                    "一张就够。不要求凑满 20 张。",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = AppColors.TextSecondary,
+                )
+                if (onImportReferences != null) {
+                    Spacer(Modifier.height(AppDimensions.Space12))
+                    PrimaryActionButton(
+                        text = "导入参考图",
+                        onClick = onImportReferences,
+                        modifier = Modifier.fillMaxWidth().testTag("pose-direction-import"),
+                    )
+                }
+            }
+            is PoseDirectionUiState.ListReady -> {
+                if (state.items.isEmpty()) {
+                    Text(
+                        "导入 1 张参考图开始",
+                        modifier = Modifier.testTag("pose-direction-empty"),
+                        style = MaterialTheme.typography.titleMedium,
+                        color = AppColors.TextPrimary,
+                    )
+                    Text(
+                        "一张就够。",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = AppColors.TextSecondary,
+                    )
+                    if (onImportReferences != null) {
+                        Spacer(Modifier.height(AppDimensions.Space12))
+                        PrimaryActionButton(
+                            text = "导入参考图",
+                            onClick = onImportReferences,
+                            modifier = Modifier.fillMaxWidth().testTag("pose-direction-import"),
+                        )
+                    }
+                } else {
+                    PoseDirectionList(state, onSelect)
+                    if (onImportReferences != null) {
+                        Spacer(Modifier.height(AppDimensions.Space16))
+                        SecondaryActionButton(
+                            text = "导入参考图",
+                            onClick = onImportReferences,
+                            modifier = Modifier.fillMaxWidth().testTag("pose-direction-import"),
+                        )
+                    }
+                }
+            }
             is PoseDirectionUiState.Detail -> PoseDirectionDetail(state, onShowList, onTakeToShoot)
         }
         Spacer(Modifier.height(AppDimensions.Space32))
@@ -128,18 +207,45 @@ internal fun PoseDirectionContent(
 private fun PoseDirectionList(state: PoseDirectionUiState.ListReady, onSelect: (String) -> Unit) {
     Column(verticalArrangement = Arrangement.spacedBy(AppDimensions.Space12)) {
         state.items.forEach { item ->
+            val graphic = item.svg?.let(::parseStickFigureSvg)
             GlassSurface(
                 modifier = Modifier
                     .fillMaxWidth()
                     .heightIn(min = AppDimensions.MinTouchTarget)
                     .testTag("pose-item-${item.id}")
                     .clickable(role = Role.Button, onClick = { onSelect(item.id) })
-                    .semantics { contentDescription = "\u6253\u5f00\u6784\u56fe ${item.id}" },
-                contentPadding = androidx.compose.foundation.layout.PaddingValues(AppDimensions.Space16),
+                    .semantics { contentDescription = "打开构图 ${item.id}" },
+                contentPadding = androidx.compose.foundation.layout.PaddingValues(AppDimensions.Space12),
             ) {
-                Column(verticalArrangement = Arrangement.spacedBy(AppDimensions.Space4)) {
-                    Text(item.id, style = MaterialTheme.typography.labelLarge, color = AppColors.TextTertiary)
-                    Text(spokenPreview(item.spokenDirection), style = MaterialTheme.typography.bodyLarge, color = AppColors.TextPrimary)
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(AppDimensions.Space12),
+                ) {
+                    if (graphic != null) {
+                        StickFigureDiagram(
+                            graphic = graphic,
+                            modifier = Modifier
+                                .size(72.dp)
+                                .testTag("pose-item-thumb-${item.id}"),
+                            diagramHeight = 72.dp,
+                        )
+                    } else {
+                        Spacer(Modifier.size(72.dp))
+                    }
+                    Column(
+                        modifier = Modifier.weight(1f),
+                        verticalArrangement = Arrangement.spacedBy(AppDimensions.Space4),
+                    ) {
+                        Row(horizontalArrangement = Arrangement.spacedBy(AppDimensions.Space8)) {
+                            Text(item.id, style = MaterialTheme.typography.labelLarge, color = AppColors.TextTertiary)
+                            Text("示例", style = MaterialTheme.typography.labelSmall, color = AppColors.AccentBlue)
+                        }
+                        Text(
+                            spokenPreview(item.spokenDirection),
+                            style = MaterialTheme.typography.bodyLarge,
+                            color = AppColors.TextPrimary,
+                        )
+                    }
                 }
             }
         }
@@ -153,7 +259,7 @@ private fun PoseDirectionDetail(
     onTakeToShoot: () -> Unit,
 ) {
     TextButton(onClick = onShowList, modifier = Modifier.heightIn(min = AppDimensions.MinTouchTarget)) {
-        Text("\u5168\u90e8\u6784\u56fe")
+        Text("全部构图")
     }
     Text(state.item.id, style = MaterialTheme.typography.labelLarge, color = AppColors.TextTertiary)
     Spacer(Modifier.height(AppDimensions.Space12))
@@ -164,7 +270,7 @@ private fun PoseDirectionDetail(
             modifier = Modifier
                 .fillMaxWidth()
                 .testTag("pose-direction-figure")
-                .semantics { contentDescription = "\u706b\u67f4\u4eba\u59ff\u6001\u793a\u610f" },
+                .semantics { contentDescription = "火柴人姿态示意" },
         )
     }
     state.figureNote?.let { note ->
@@ -185,12 +291,21 @@ private fun PoseDirectionDetail(
     }
     Spacer(Modifier.height(AppDimensions.Space24))
     PrimaryActionButton(
-        text = "\u7528\u6b64\u6784\u56fe\u62cd\u6444",
+        text = "用此构图拍摄",
         onClick = onTakeToShoot,
         modifier = Modifier
             .fillMaxWidth()
             .testTag("pose-direction-take-to-shoot"),
-        contentDescription = "\u7528\u6b64\u6784\u56fe\u8fdb\u5165\u62cd\u6444",
+        contentDescription = "用此构图进入拍摄",
+    )
+    val clipboard = LocalClipboardManager.current
+    Spacer(Modifier.height(AppDimensions.Space8))
+    SecondaryActionButton(
+        text = "复制口述提示",
+        onClick = { clipboard.setText(AnnotatedString(state.item.spokenDirection)) },
+        modifier = Modifier
+            .fillMaxWidth()
+            .testTag("pose-direction-copy-spoken"),
     )
 }
 

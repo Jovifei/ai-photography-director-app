@@ -26,7 +26,8 @@ fun CaptureEntryScreen(
     referenceCount: Int,
     projectTitle: String? = null,
     offlineNotice: String? = null,
-    onOpenInspiration: () -> Unit,
+    onOpenPose: () -> Unit,
+    onOpenRecords: () -> Unit,
     onChooseReference: () -> Unit,
     onDirectCapture: () -> Unit,
 ) {
@@ -40,14 +41,20 @@ fun CaptureEntryScreen(
     ) {
         Spacer(Modifier.height(AppDimensions.Space8))
         RootNavigation(
-            selected = RootSection.CAPTURE,
-            onSelect = { section -> if (section == RootSection.INSPIRATION) onOpenInspiration() },
+            selected = RootSection.RECORDS,
+            onSelect = { section ->
+                when (section) {
+                    RootSection.POSE -> onOpenPose()
+                    RootSection.RECORDS -> onOpenRecords()
+                    RootSection.INSPIRATION -> Unit
+                }
+            },
         )
         Spacer(Modifier.height(AppDimensions.Space8))
-        Text("开始拍摄", style = MaterialTheme.typography.displaySmall, color = AppColors.TextPrimary)
+        Text("基础拍摄", style = MaterialTheme.typography.displaySmall, color = AppColors.TextPrimary)
         Text(
             if (projectTitle == null) {
-                "先选择参考图获得环境、人物和机位建议；也可以进入不带示例或参考指导的基础拍摄。"
+                "主路径请用构图口令。这里保留无指导直拍与旧参考流程。"
             } else {
                 "先为“$projectTitle”选择项目主参考；也可以进入不带示例或参考指导的基础拍摄。"
             },
@@ -87,7 +94,7 @@ fun CaptureEntryScreen(
                             "返回项目看板；只有已完成 READY 分析的主参考可进入 AI 指导，其他主参考可无 AI 拍摄。"
                         }
                     } else {
-                        "选择参考图会打开系统 Photo Picker；不会申请相册读取权限或上传图片。"
+                        "选择参考图会打开系统 Photo Picker；不会申请相册读取权限或上传图片。导入从 1 张起。"
                     },
                     style = MaterialTheme.typography.bodyMedium,
                     color = AppColors.TextSecondary,

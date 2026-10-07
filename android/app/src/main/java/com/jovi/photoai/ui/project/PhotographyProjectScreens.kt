@@ -78,7 +78,8 @@ internal fun ProjectsHomeScreen(
     onOpenProject: (String) -> Unit,
     onOpenCapture: () -> Unit,
     onOpenLibrary: () -> Unit,
-    onOpenPoseDirection: () -> Unit,
+    onOpenPoseDirection: () -> Unit = {},
+    onRootSection: ((com.jovi.photoai.ui.navigation.RootSection) -> Unit)? = null,
 ) {
     var showCreateDialog by rememberSaveable { mutableStateOf(false) }
     Column(
@@ -89,26 +90,22 @@ internal fun ProjectsHomeScreen(
             .verticalScroll(rememberScrollState())
             .padding(horizontal = AppDimensions.PagePadding),
     ) {
-        Spacer(Modifier.height(AppDimensions.Space12))
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            Column {
-                Text("拍摄项目", style = MaterialTheme.typography.headlineSmall, color = AppColors.TextPrimary)
-                Text("先整理素材，再带着方向开拍", style = MaterialTheme.typography.bodyMedium, color = AppColors.TextSecondary)
-            }
-            TextButton(onClick = onOpenCapture) { Text("拍摄") }
+        Spacer(Modifier.height(AppDimensions.Space8))
+        if (onRootSection != null) {
+            com.jovi.photoai.ui.navigation.RootNavigation(
+                selected = com.jovi.photoai.ui.navigation.RootSection.RECORDS,
+                onSelect = onRootSection,
+            )
+            Spacer(Modifier.height(AppDimensions.Space16))
         }
+        Text("记录", style = MaterialTheme.typography.headlineSmall, color = AppColors.TextPrimary)
+        Text("以往拍摄项目与参考整理（次要入口）", style = MaterialTheme.typography.bodyMedium, color = AppColors.TextSecondary)
+        Spacer(Modifier.height(AppDimensions.Space12))
         TextButton(onClick = onOpenLibrary, modifier = Modifier.heightIn(min = AppDimensions.MinTouchTarget)) {
             Text("查看全部参考图")
         }
-        TextButton(
-            onClick = onOpenPoseDirection,
-            modifier = Modifier.heightIn(min = AppDimensions.MinTouchTarget),
-        ) {
-            Text("\u6784\u56fe\u53e3\u4ee4")
+        TextButton(onClick = onOpenCapture, modifier = Modifier.heightIn(min = AppDimensions.MinTouchTarget)) {
+            Text("基础拍摄")
         }
         Spacer(Modifier.height(AppDimensions.Space20))
         GlassSurface(
@@ -117,14 +114,14 @@ internal fun ProjectsHomeScreen(
             contentPadding = PaddingValues(AppDimensions.CardPadding),
         ) {
             Column(verticalArrangement = Arrangement.spacedBy(AppDimensions.Space12)) {
-                GlassPill(text = "20 张 / 项目 · 逐张处理")
-                Text("把一组照片变成一次可执行的拍摄准备", style = MaterialTheme.typography.headlineSmall)
+                GlassPill(text = "可选 · 一张就够")
+                Text("需要时再整理项目素材", style = MaterialTheme.typography.headlineSmall)
                 Text(
-                    "每张照片单独私有导入并保留独立状态；只有带可信来源的 READY 结果可用于指导。",
+                    "构图口令才是主路径。这里只保留旧的项目记录；导入从 1 张起，不强制凑数。",
                     style = MaterialTheme.typography.bodyMedium,
                     color = AppColors.TextSecondary,
                 )
-                PrimaryActionButton(
+                SecondaryActionButton(
                     text = "新建拍摄项目",
                     onClick = { showCreateDialog = true },
                     modifier = Modifier.fillMaxWidth(),
@@ -132,12 +129,12 @@ internal fun ProjectsHomeScreen(
             }
         }
         Spacer(Modifier.height(AppDimensions.Space24))
-        Text("继续项目", style = MaterialTheme.typography.titleLarge)
+        Text("以往项目", style = MaterialTheme.typography.titleLarge)
         Spacer(Modifier.height(AppDimensions.Space12))
         if (projects.isEmpty()) {
             EmptyState(
-                title = "还没有拍摄项目",
-                message = "新建项目后，一次可导入并整理最多 20 张照片。",
+                title = "还没有项目记录",
+                message = "主路径请用构图口令。若要归档素材，建项目后导入 1 张即可。",
                 actionLabel = "新建拍摄项目",
                 onAction = { showCreateDialog = true },
             )
@@ -176,7 +173,7 @@ private fun ProjectHomeCard(item: ProjectHomeItem, onOpen: () -> Unit) {
             Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(AppDimensions.Space4)) {
                 Text(project.title, style = MaterialTheme.typography.titleMedium, maxLines = 1, overflow = TextOverflow.Ellipsis)
                 Text(
-                    "${item.photoCount}/$MAX_PROJECT_PHOTOS 张已私有导入" +
+                    "${item.photoCount} 张已私有导入" +
                         if (project.failedImportCount > 0) " · ${project.failedImportCount} 项未导入" else "",
                     style = MaterialTheme.typography.bodyMedium,
                     color = AppColors.TextSecondary,
@@ -224,7 +221,7 @@ internal fun BatchProjectImportScreen(
         onBack = onBack,
     ) {
         Text(
-            "${records.size}/$MAX_PROJECT_PHOTOS 张已私有导入",
+            if (records.isEmpty()) "尚未导入参考图" else "已导入 ${records.size} 张",
             style = MaterialTheme.typography.headlineSmall,
             color = AppColors.TextPrimary,
         )
@@ -247,8 +244,8 @@ internal fun BatchProjectImportScreen(
         Spacer(Modifier.height(AppDimensions.Space16))
         if (records.isEmpty()) {
             EmptyState(
-                title = "从一组照片开始",
-                message = "可一次选择多张，也可随时继续添加；每张照片互不覆盖。",
+                title = "导入 1 张参考图开始",
+                message = "一张就够。也可一次选多张；从不强制凑满。",
             )
         } else {
             ProjectPhotoGrid(
@@ -259,12 +256,13 @@ internal fun BatchProjectImportScreen(
             )
         }
         Spacer(Modifier.height(AppDimensions.Space20))
+        // Ceiling MAX_PROJECT_PHOTOS remains a soft cap only; never block CTA at count<20.
         if (remaining > 0) {
             PrimaryActionButton(
                 text = when {
-                    records.isEmpty() -> "选择照片"
-                    batchState.failedCount > 0 -> "重新选择未导入照片（剩余 $remaining 张）"
-                    else -> "继续添加照片（剩余 $remaining 张）"
+                    records.isEmpty() -> "导入参考图"
+                    batchState.failedCount > 0 -> "重新选择未导入照片"
+                    else -> "再添加照片"
                 },
                 onClick = openPicker,
                 enabled = !batchState.isImporting,
@@ -273,7 +271,7 @@ internal fun BatchProjectImportScreen(
             Spacer(Modifier.height(AppDimensions.Space12))
         }
         SecondaryActionButton(
-            text = if (records.isEmpty()) "稍后添加" else "进入项目看板",
+            text = if (records.isEmpty()) "进入项目" else "进入项目看板",
             onClick = onOpenBoard,
             modifier = Modifier.fillMaxWidth(),
             enabled = !batchState.isImporting,
@@ -325,7 +323,10 @@ internal fun ProjectBoardScreen(
                 modifier = Modifier.heightIn(min = AppDimensions.MinTouchTarget),
             ) { Text("修改项目名称") }
         }
-        Text("${records.size}/$MAX_PROJECT_PHOTOS 张照片", style = MaterialTheme.typography.headlineSmall)
+        Text(
+            if (records.isEmpty()) "尚未导入参考图" else "已导入 ${records.size} 张照片",
+            style = MaterialTheme.typography.headlineSmall,
+        )
         Spacer(Modifier.height(AppDimensions.Space4))
         Text(
             buildString {
@@ -356,7 +357,7 @@ internal fun ProjectBoardScreen(
         if (records.isEmpty()) {
             EmptyState(
                 title = "项目还没有照片",
-                message = "先从系统照片选择器添加 1 到 $MAX_PROJECT_PHOTOS 张照片。",
+                message = "导入 1 张参考图开始。一张就够。",
                 actionLabel = "添加照片",
                 onAction = onAddPhotos,
             )

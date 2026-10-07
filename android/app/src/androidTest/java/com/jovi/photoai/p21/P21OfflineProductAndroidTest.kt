@@ -35,7 +35,8 @@ class P21OfflineProductAndroidTest {
                         referenceCount = 1,
                         projectTitle = "合成项目",
                         offlineNotice = "该参考尚未完成真实分析，本次拍摄不会使用 AI 指导。",
-                        onOpenInspiration = {},
+                        onOpenPose = {},
+                        onOpenRecords = {},
                         onChooseReference = {},
                         onDirectCapture = {},
                     )

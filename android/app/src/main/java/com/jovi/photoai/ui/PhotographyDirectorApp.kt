@@ -64,6 +64,7 @@ import com.jovi.photoai.ui.project.ProjectSummaryScreen
 import com.jovi.photoai.ui.project.ProjectsHomeScreen
 import com.jovi.photoai.ui.pose.PoseDirectionScreen
 import com.jovi.photoai.ui.pose.SelectedPoseDirection
+import com.jovi.photoai.ui.navigation.RootSection
 import com.jovi.photoai.ui.project.LocalAnalysisConnectionDialog
 import com.jovi.photoai.ui.project.PhotoKnowledgeBundleImportScreen
 import com.jovi.photoai.ui.reference.DirectorCardScreen
@@ -131,9 +132,9 @@ internal fun PhotographyDirectorAppContent(
     var captureNavigationInFlight by remember { mutableStateOf(false) }
     var captureNavigationMessage by remember { mutableStateOf<String?>(null) }
     val knowledgeBundleState by knowledgeBundleViewModel.state.collectAsState()
-    var destinationName by rememberSaveable { mutableStateOf(AppDestination.HOME.name) }
+    var destinationName by rememberSaveable { mutableStateOf(AppDestination.POSE_DIRECTION.name) }
     var analysisReturnDestinationName by rememberSaveable { mutableStateOf(AppDestination.IMPORT_REFERENCE.name) }
-    var importReturnDestinationName by rememberSaveable { mutableStateOf(AppDestination.HOME.name) }
+    var importReturnDestinationName by rememberSaveable { mutableStateOf(AppDestination.POSE_DIRECTION.name) }
     var selectedProjectId by rememberSaveable { mutableStateOf<String?>(null) }
     var captureProjectId by rememberSaveable { mutableStateOf<String?>(null) }
     var selectedPoseDirection by remember { mutableStateOf<SelectedPoseDirection?>(null) }
@@ -221,7 +222,7 @@ internal fun PhotographyDirectorAppContent(
             AppDestination.ANALYSIS_DETAIL,
             AppDestination.DIRECTOR_CARD,
             AppDestination.CAMERA_DIRECTOR,
-        ) -> AppDestination.HOME
+        ) -> AppDestination.POSE_DIRECTION
         else -> guardedGuidanceDestination(
             destination,
             activeReference?.analysisStatus,
@@ -244,7 +245,7 @@ internal fun PhotographyDirectorAppContent(
                 AppDestination.CAMERA_DIRECTOR,
             )
         ) {
-            destinationName = AppDestination.HOME.name
+            destinationName = AppDestination.POSE_DIRECTION.name
         } else if (presentationDestination != destination) {
             captureProjectId = selectedProjectId
             captureNotice = offlineCaptureNotice(
@@ -266,14 +267,15 @@ internal fun PhotographyDirectorAppContent(
             pendingProject = project
             selectedProjectId = project.id
             importViewModel.dismissBatchResult()
-            navigateTo(AppDestination.PROJECT_IMPORT)
+            // Soft landing on board — do not force the MAX_PROJECT_PHOTOS import path.
+            navigateTo(AppDestination.PROJECT_BOARD)
         }
     }
 
     fun openProject(projectId: String) {
         if (projects.none { it.id == projectId }) {
             selectedProjectId = null
-            navigateTo(AppDestination.HOME)
+            navigateTo(AppDestination.POSE_DIRECTION)
             return
         }
         pendingProject = null
@@ -286,7 +288,7 @@ internal fun PhotographyDirectorAppContent(
         val projectId = selectedProjectId ?: return
         if (projectId == LEGACY_PROJECT_ID) return
         scope.launch {
-            if (!repository.renameProject(projectId, title)) navigateTo(AppDestination.HOME)
+            if (!repository.renameProject(projectId, title)) navigateTo(AppDestination.POSE_DIRECTION)
         }
     }
 
@@ -390,7 +392,7 @@ internal fun PhotographyDirectorAppContent(
         navigateTo(AppDestination.ANALYSIS_DETAIL)
     }
 
-    fun beginFreshImport(returnDestination: AppDestination = AppDestination.HOME) {
+    fun beginFreshImport(returnDestination: AppDestination = AppDestination.POSE_DIRECTION) {
         importViewModel.discardForBackOrReplacement()
         importReturnDestinationName = returnDestination.name
         navigateTo(AppDestination.IMPORT_REFERENCE)
@@ -455,6 +457,14 @@ internal fun PhotographyDirectorAppContent(
         addAll(records.map(::toAppReference))
         addAll(DemoContentRepository.referencePhotos.map(::demoReference))
     }
+    fun onRootSection(section: RootSection) {
+        when (section) {
+            RootSection.POSE -> navigateTo(AppDestination.POSE_DIRECTION)
+            RootSection.RECORDS -> navigateTo(AppDestination.HOME)
+            RootSection.INSPIRATION -> Unit
+        }
+    }
+
     val homeReferences = allReferences.map { reference ->
         HomeReferenceItem(
             id = reference.photo.id,
@@ -497,26 +507,26 @@ internal fun PhotographyDirectorAppContent(
 
     fun findReference(id: String): AppReference? = allReferences.firstOrNull { it.photo.id == id }
 
-    BackHandler(enabled = presentationDestination != AppDestination.HOME) {
+    BackHandler(enabled = presentationDestination != AppDestination.POSE_DIRECTION) {
         when (presentationDestination) {
-            AppDestination.HOME -> Unit
+            AppDestination.POSE_DIRECTION -> Unit
+            AppDestination.HOME -> navigateTo(AppDestination.POSE_DIRECTION)
             AppDestination.PROJECT_IMPORT -> navigateTo(AppDestination.PROJECT_BOARD)
             AppDestination.PROJECT_KNOWLEDGE_IMPORT -> leaveKnowledgeBundleImport()
             AppDestination.PROJECT_BOARD -> navigateTo(AppDestination.HOME)
             AppDestination.PROJECT_SUMMARY -> navigateTo(AppDestination.PROJECT_BOARD)
             AppDestination.CAPTURE_ENTRY -> navigateTo(
-                if (captureProjectId == null) AppDestination.HOME else AppDestination.PROJECT_BOARD,
+                if (captureProjectId == null) AppDestination.POSE_DIRECTION else AppDestination.PROJECT_BOARD,
             )
             AppDestination.REFERENCE_LIBRARY -> navigateTo(
                 if (libraryModeName == ReferenceLibraryMode.PICK_FOR_CAPTURE.name) AppDestination.CAPTURE_ENTRY
-                else AppDestination.HOME,
+                else AppDestination.POSE_DIRECTION,
             )
             AppDestination.IMPORT_REFERENCE -> leaveImport()
             AppDestination.ANALYSIS_DETAIL -> navigateTo(AppDestination.valueOf(analysisReturnDestinationName))
             AppDestination.DIRECTOR_CARD -> navigateTo(AppDestination.ANALYSIS_DETAIL)
             AppDestination.CAMERA_DIRECTOR -> navigateTo(AppDestination.DIRECTOR_CARD)
-            AppDestination.DIRECT_CAPTURE -> navigateTo(AppDestination.CAPTURE_ENTRY)
-            AppDestination.POSE_DIRECTION -> navigateTo(AppDestination.HOME)
+            AppDestination.DIRECT_CAPTURE -> navigateTo(AppDestination.POSE_DIRECTION)
         }
     }
 
@@ -531,6 +541,7 @@ internal fun PhotographyDirectorAppContent(
                 onOpenCapture = ::openCaptureEntry,
                 onOpenLibrary = { openReferenceLibrary(ReferenceLibraryMode.BROWSE_ALL_PROJECTS) },
                 onOpenPoseDirection = { navigateTo(AppDestination.POSE_DIRECTION) },
+                onRootSection = ::onRootSection,
             )
         }
 
@@ -622,7 +633,8 @@ internal fun PhotographyDirectorAppContent(
             } ?: records.size,
             projectTitle = captureProjectId?.let { projectId -> projects.firstOrNull { it.id == projectId }?.title },
             offlineNotice = captureNotice,
-            onOpenInspiration = { navigateTo(AppDestination.HOME) },
+            onOpenPose = { navigateTo(AppDestination.POSE_DIRECTION) },
+            onOpenRecords = { navigateTo(AppDestination.HOME) },
             onChooseReference = {
                 if (captureProjectId != null) {
                     navigateTo(AppDestination.PROJECT_BOARD)
@@ -649,7 +661,7 @@ internal fun PhotographyDirectorAppContent(
             onBack = {
                 navigateTo(
                     if (libraryModeName == ReferenceLibraryMode.PICK_FOR_CAPTURE.name) AppDestination.CAPTURE_ENTRY
-                    else AppDestination.HOME,
+                    else AppDestination.POSE_DIRECTION,
                 )
             },
             onImportReference = { beginFreshImport(AppDestination.REFERENCE_LIBRARY) },
@@ -723,7 +735,7 @@ internal fun PhotographyDirectorAppContent(
                 onBack = { navigateTo(AppDestination.DIRECTOR_CARD) },
                 onReturnToProject = {
                     if (cameraProjectId != null) selectedProjectId = cameraProjectId
-                    navigateTo(if (cameraProjectId != null) AppDestination.PROJECT_BOARD else AppDestination.HOME)
+                    navigateTo(if (cameraProjectId != null) AppDestination.PROJECT_BOARD else AppDestination.POSE_DIRECTION)
                 },
             )
         }
@@ -738,7 +750,10 @@ internal fun PhotographyDirectorAppContent(
         )
 
         AppDestination.POSE_DIRECTION -> PoseDirectionScreen(
-            onBack = { navigateTo(AppDestination.HOME) },
+            onBack = { navigateTo(AppDestination.POSE_DIRECTION) },
+            isRoot = true,
+            onRootSection = ::onRootSection,
+            onImportReferences = { beginFreshImport(AppDestination.POSE_DIRECTION) },
             onTakeToShoot = { selection ->
                 selectedPoseDirection = selection
                 navigateTo(AppDestination.DIRECT_CAPTURE)
@@ -867,7 +882,7 @@ private class PhotoKnowledgeBundleImportViewModelFactory(
 }
 
 internal fun cameraReturnDestination(from: AppDestination): AppDestination =
-    if (from == AppDestination.CAMERA_DIRECTOR) AppDestination.DIRECTOR_CARD else AppDestination.HOME
+    if (from == AppDestination.CAMERA_DIRECTOR) AppDestination.DIRECTOR_CARD else AppDestination.POSE_DIRECTION
 
 internal fun referenceNextDestination(from: AppDestination): AppDestination = when (from) {
     AppDestination.IMPORT_REFERENCE -> AppDestination.ANALYSIS_DETAIL

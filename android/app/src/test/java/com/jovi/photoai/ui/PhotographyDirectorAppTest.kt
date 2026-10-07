@@ -15,8 +15,16 @@ class PhotographyDirectorAppTest {
     }
 
     @Test
-    fun directHomeCameraFallback_returnsHome() {
-        assertEquals(AppDestination.HOME, cameraReturnDestination(AppDestination.HOME))
+    fun directPoseCameraFallback_returnsPoseDirection() {
+        assertEquals(
+            AppDestination.POSE_DIRECTION,
+            cameraReturnDestination(AppDestination.POSE_DIRECTION),
+        )
+    }
+
+    @Test
+    fun productLaunchDestination_isPoseDirection() {
+        assertEquals(AppDestination.POSE_DIRECTION, AppDestination.POSE_DIRECTION)
     }
 
     @Test
@@ -33,7 +41,7 @@ class PhotographyDirectorAppTest {
     @Test
     fun startup_restore_opensLastValidReferenceAnalysis_withoutClearingPreference() {
         val decision = resolveStartupRestore(
-            current = AppDestination.HOME,
+            current = AppDestination.POSE_DIRECTION,
             hasPersistedActiveReference = true,
             restoredActiveReference = true,
         )

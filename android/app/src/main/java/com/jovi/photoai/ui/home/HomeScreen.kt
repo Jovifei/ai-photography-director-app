@@ -62,6 +62,8 @@ fun HomeScreen(
     onOpenReferenceLibrary: () -> Unit,
     onOpenReference: (String) -> Unit,
     onOpenCapture: () -> Unit,
+    onOpenPose: () -> Unit = {},
+    onOpenRecords: () -> Unit = {},
 ) {
     val filtered = references.filter { item ->
         SearchableReference(
@@ -84,7 +86,14 @@ fun HomeScreen(
             Spacer(Modifier.height(AppDimensions.Space8))
             RootNavigation(
                 selected = RootSection.INSPIRATION,
-                onSelect = { section -> if (section == RootSection.CAPTURE) onOpenCapture() },
+                inspirationEnabled = true,
+                onSelect = { section ->
+                    when (section) {
+                        RootSection.POSE -> onOpenPose()
+                        RootSection.RECORDS -> onOpenRecords()
+                        RootSection.INSPIRATION -> Unit
+                    }
+                },
             )
             Spacer(Modifier.height(AppDimensions.Space16))
             GlassSurface(
