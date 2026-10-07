@@ -48,6 +48,7 @@ import com.jovi.photoai.camera.restoredZoomRatio
 import com.jovi.photoai.data.capture.CaptureFileState
 import com.jovi.photoai.data.capture.captureExportMessage
 import com.jovi.photoai.domain.model.GuidanceItem
+import com.jovi.photoai.ui.pose.SelectedPoseDirection
 import com.jovi.photoai.reference.CameraDirectorGuidance
 import com.jovi.photoai.ui.camera.*
 import com.jovi.photoai.ui.capture.CaptureLibraryHost
@@ -100,6 +101,7 @@ internal fun CameraScreen(
     referenceGuidance: CameraDirectorGuidance? = null,
     referenceImageFileName: String? = null,
     directCaptureMode: Boolean = false,
+    poseDirection: SelectedPoseDirection? = null,
     onBack: () -> Unit = {},
     onReturnToProject: () -> Unit = onBack,
     projectId: String? = null,
@@ -150,7 +152,7 @@ internal fun CameraScreen(
         val latest = libraryState.records.firstOrNull {
             it.projectId == projectId && it.fileState == CaptureFileState.AVAILABLE
         }
-        CameraContent(uiState, dispatch, referenceGuidance, referenceImageFileName, directCaptureMode, library,
+        CameraContent(uiState, dispatch, referenceGuidance, referenceImageFileName, directCaptureMode, poseDirection, library,
             projectId, referenceId, exposureIndex = confirmedExposureIndex,
             onExposureConfirmed = { confirmedExposureIndex = it },
             confirmedLens = confirmedLens, confirmedZoomRatio = confirmedZoomRatio,
@@ -176,6 +178,7 @@ private fun CameraContent(
     referenceGuidance: CameraDirectorGuidance?,
     referenceImageFileName: String?,
     directCaptureMode: Boolean,
+    poseDirection: SelectedPoseDirection?,
     library: CaptureLibraryViewModel,
     projectId: String?,
     referenceId: String?,
@@ -410,6 +413,7 @@ private fun CameraContent(
             onBack = onBack,
             referenceGuidance = referenceGuidance,
             directCaptureMode = directCaptureMode,
+            poseDirection = poseDirection,
             referenceCardVisible = referenceGuidance != null && !directCaptureMode,
             exposureRange = exposureCapability?.let { it.minIndex..it.maxIndex },
             exposureStepEv = exposureCapability?.stepEv ?: 0f,

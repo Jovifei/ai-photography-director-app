@@ -32,11 +32,14 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.jovi.photoai.pose.POSE_DIRECTION_ASSET
+import com.jovi.photoai.pose.PoseDirectionDocumentLoader
 import com.jovi.photoai.pose.StickFigureGraphic
 import com.jovi.photoai.pose.StickShape
 import com.jovi.photoai.ui.components.GlassSurface
+import com.jovi.photoai.ui.components.PrimaryActionButton
 import com.jovi.photoai.ui.design.AppColors
 import com.jovi.photoai.ui.design.AppDimensions
 
@@ -44,13 +47,18 @@ internal const val POSE_DIRECTION_FAILURE_MESSAGE =
     "\u8fd9\u4efd\u6784\u56fe\u53e3\u4ee4\u65e0\u6cd5\u6253\u5f00\u3002\u5185\u5bb9\u4e3a\u7a7a\u3001\u65e0\u6548\uff0c\u6216\u6743\u5a01\u6807\u8bb0\u4e0d\u662f\u5173\u95ed\u3002"
 
 @Composable
-internal fun PoseDirectionScreen(onBack: () -> Unit) {
+internal fun PoseDirectionScreen(
+    onBack: () -> Unit,
+    onTakeToShoot: (SelectedPoseDirection) -> Unit = {},
+    externalBundlePath: String? = null,
+) {
     val context = LocalContext.current
-    val model = remember {
-        val text = runCatching {
+    val model = remember(externalBundlePath) {
+        val assetText = runCatching {
             context.assets.open(POSE_DIRECTION_ASSET).bufferedReader(Charsets.UTF_8).use { it.readText() }
         }.getOrNull()
-        PoseDirectionViewModel(text)
+        val document = PoseDirectionDocumentLoader.resolveDocument(assetText, externalBundlePath)
+        PoseDirectionViewModel(document)
     }
     var state by remember { mutableStateOf(model.uiState()) }
     PoseDirectionContent(
@@ -64,6 +72,9 @@ internal fun PoseDirectionScreen(onBack: () -> Unit) {
             model.showList()
             state = model.uiState()
         },
+        onTakeToShoot = {
+            model.selectedPose()?.let(onTakeToShoot)
+        },
     )
 }
 
@@ -73,6 +84,7 @@ internal fun PoseDirectionContent(
     onBack: () -> Unit,
     onSelect: (String) -> Unit,
     onShowList: () -> Unit,
+    onTakeToShoot: () -> Unit = {},
 ) {
     Column(
         modifier = Modifier
@@ -106,7 +118,7 @@ internal fun PoseDirectionContent(
                 color = AppColors.TextPrimary,
             )
             is PoseDirectionUiState.ListReady -> PoseDirectionList(state, onSelect)
-            is PoseDirectionUiState.Detail -> PoseDirectionDetail(state, onShowList)
+            is PoseDirectionUiState.Detail -> PoseDirectionDetail(state, onShowList, onTakeToShoot)
         }
         Spacer(Modifier.height(AppDimensions.Space32))
     }
@@ -135,7 +147,11 @@ private fun PoseDirectionList(state: PoseDirectionUiState.ListReady, onSelect: (
 }
 
 @Composable
-private fun PoseDirectionDetail(state: PoseDirectionUiState.Detail, onShowList: () -> Unit) {
+private fun PoseDirectionDetail(
+    state: PoseDirectionUiState.Detail,
+    onShowList: () -> Unit,
+    onTakeToShoot: () -> Unit,
+) {
     TextButton(onClick = onShowList, modifier = Modifier.heightIn(min = AppDimensions.MinTouchTarget)) {
         Text("\u5168\u90e8\u6784\u56fe")
     }
@@ -167,14 +183,27 @@ private fun PoseDirectionDetail(state: PoseDirectionUiState.Detail, onShowList: 
             Text(line, style = MaterialTheme.typography.bodyMedium, color = AppColors.TextSecondary)
         }
     }
+    Spacer(Modifier.height(AppDimensions.Space24))
+    PrimaryActionButton(
+        text = "\u7528\u6b64\u6784\u56fe\u62cd\u6444",
+        onClick = onTakeToShoot,
+        modifier = Modifier
+            .fillMaxWidth()
+            .testTag("pose-direction-take-to-shoot"),
+        contentDescription = "\u7528\u6b64\u6784\u56fe\u8fdb\u5165\u62cd\u6444",
+    )
 }
 
 @Composable
-internal fun StickFigureDiagram(graphic: StickFigureGraphic, modifier: Modifier = Modifier) {
+internal fun StickFigureDiagram(
+    graphic: StickFigureGraphic,
+    modifier: Modifier = Modifier,
+    diagramHeight: Dp = 320.dp,
+) {
     Canvas(
         modifier
             .background(Color.White, RoundedCornerShape(AppDimensions.RadiusMedium))
-            .height(320.dp),
+            .height(diagramHeight),
     ) {
         val scaleX = size.width / graphic.width
         val scaleY = size.height / graphic.height

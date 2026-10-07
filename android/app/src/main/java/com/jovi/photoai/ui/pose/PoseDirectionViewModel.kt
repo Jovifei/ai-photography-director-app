@@ -47,6 +47,17 @@ internal class PoseDirectionViewModel(documentText: String?) {
     fun showList() {
         selectedId = null
     }
+
+    /** Snapshot for shoot / retake; null when list or failed (no fake direction). */
+    fun selectedPose(): SelectedPoseDirection? {
+        val detail = uiState() as? PoseDirectionUiState.Detail ?: return null
+        return SelectedPoseDirection(
+            id = detail.item.id,
+            spokenDirection = detail.item.spokenDirection,
+            graphic = detail.graphic,
+            figureNote = detail.figureNote,
+        )
+    }
 }
 
 internal fun whyLines(why: PoseWhyItWorks?): List<String> {

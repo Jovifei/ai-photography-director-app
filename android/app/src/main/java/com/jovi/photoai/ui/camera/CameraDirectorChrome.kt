@@ -59,6 +59,8 @@ import com.jovi.photoai.camera.CameraLens
 import com.jovi.photoai.camera.ZoomCapability
 import com.jovi.photoai.domain.model.OverlayMode
 import com.jovi.photoai.reference.CameraDirectorGuidance
+import com.jovi.photoai.ui.pose.PoseDirectionShootPanel
+import com.jovi.photoai.ui.pose.SelectedPoseDirection
 import com.jovi.photoai.ui.design.AppColors
 import com.jovi.photoai.ui.design.AppDimensions
 import java.util.Locale
@@ -68,7 +70,7 @@ import kotlin.math.roundToInt
 enum class DirectorGuidePanel { ENVIRONMENT, SUBJECT }
 
 @Composable
-fun CameraDirectorChrome(
+internal fun CameraDirectorChrome(
     uiState: CameraUiState,
     onEvent: (CameraUiEvent) -> Unit,
     onBack: () -> Unit,
@@ -96,6 +98,7 @@ fun CameraDirectorChrome(
     lensStatus: String? = null,
     onLensSelected: (CameraLens) -> Unit = {},
     captureEnabled: Boolean = uiState.canCapture,
+    poseDirection: SelectedPoseDirection? = null,
     modifier: Modifier = Modifier,
     referenceCard: (@Composable () -> Unit)? = null,
 ) {
@@ -144,8 +147,18 @@ fun CameraDirectorChrome(
                         referenceGuidance = referenceGuidance,
                         directCaptureMode = directCaptureMode,
                         compactLandscape = compactLandscape,
+                        poseDirection = poseDirection,
                         modifier = Modifier.align(Alignment.CenterHorizontally).padding(top = 12.dp),
                     )
+                    if (poseDirection != null) {
+                        PoseDirectionShootPanel(
+                            selection = poseDirection,
+                            compact = compactLandscape,
+                            modifier = Modifier
+                                .align(Alignment.CenterHorizontally)
+                                .padding(top = 8.dp, bottom = 8.dp),
+                        )
+                    }
                 }
             }
             CameraBottomControls(
@@ -334,10 +347,14 @@ private fun CameraHint(
     referenceGuidance: CameraDirectorGuidance?,
     directCaptureMode: Boolean,
     compactLandscape: Boolean,
+    poseDirection: SelectedPoseDirection? = null,
     modifier: Modifier = Modifier,
 ) {
     val text = when {
         uiState.message == CameraUiMessage.CAPTURE_FAILED -> "拍摄未完成，请稍后再试"
+        poseDirection != null && directCaptureMode -> "构图口令拍摄\n下方火柴人与口令可对照现场"
+        poseDirection != null && referenceGuidance != null -> "${referenceGuidance.sourceLabel}\n${referenceGuidance.centerHint}"
+        poseDirection != null -> "构图口令拍摄\n下方火柴人与口令可对照现场"
         directCaptureMode -> "基础拍摄 · 无参考指导\n请先确认现场安全与取景。"
         referenceGuidance != null -> "${referenceGuidance.sourceLabel}\n${referenceGuidance.centerHint}"
         uiState.currentGuidance != null -> {

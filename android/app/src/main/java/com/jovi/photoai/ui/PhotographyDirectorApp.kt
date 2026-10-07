@@ -63,6 +63,7 @@ import com.jovi.photoai.ui.project.ProjectHomeItem
 import com.jovi.photoai.ui.project.ProjectSummaryScreen
 import com.jovi.photoai.ui.project.ProjectsHomeScreen
 import com.jovi.photoai.ui.pose.PoseDirectionScreen
+import com.jovi.photoai.ui.pose.SelectedPoseDirection
 import com.jovi.photoai.ui.project.LocalAnalysisConnectionDialog
 import com.jovi.photoai.ui.project.PhotoKnowledgeBundleImportScreen
 import com.jovi.photoai.ui.reference.DirectorCardScreen
@@ -135,6 +136,7 @@ internal fun PhotographyDirectorAppContent(
     var importReturnDestinationName by rememberSaveable { mutableStateOf(AppDestination.HOME.name) }
     var selectedProjectId by rememberSaveable { mutableStateOf<String?>(null) }
     var captureProjectId by rememberSaveable { mutableStateOf<String?>(null) }
+    var selectedPoseDirection by remember { mutableStateOf<SelectedPoseDirection?>(null) }
     var captureNotice by rememberSaveable { mutableStateOf<String?>(null) }
     var pendingProject by remember { mutableStateOf<PhotographyProject?>(null) }
     var activeReference by remember { mutableStateOf<AppReference?>(null) }
@@ -717,6 +719,7 @@ internal fun PhotographyDirectorAppContent(
                     referenceTitle = reference.photo.title,
                     sourceLabel = reference.photo.sourceLabel,
                 ),
+                poseDirection = selectedPoseDirection,
                 onBack = { navigateTo(AppDestination.DIRECTOR_CARD) },
                 onReturnToProject = {
                     if (cameraProjectId != null) selectedProjectId = cameraProjectId
@@ -730,11 +733,16 @@ internal fun PhotographyDirectorAppContent(
             projectId = captureProjectId,
             guidanceItems = emptyList(),
             directCaptureMode = true,
+            poseDirection = selectedPoseDirection,
             onBack = { navigateTo(AppDestination.CAPTURE_ENTRY) },
         )
 
         AppDestination.POSE_DIRECTION -> PoseDirectionScreen(
             onBack = { navigateTo(AppDestination.HOME) },
+            onTakeToShoot = { selection ->
+                selectedPoseDirection = selection
+                navigateTo(AppDestination.DIRECT_CAPTURE)
+            },
         )
     }
 

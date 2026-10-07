@@ -40,4 +40,28 @@ class PoseDirectionViewModelTest {
         assertTrue(model.uiState() is PoseDirectionUiState.Failed)
         assertTrue(PoseDirectionViewModel("").uiState() is PoseDirectionUiState.Failed)
     }
+
+    @Test
+    fun selectedPose_isNullUntilDetailThenCarriesSpokenAndFigure() {
+        val model = PoseDirectionViewModel(fixtureText())
+        assertNull(model.selectedPose())
+
+        model.select("img-02-bbbbbbbb")
+        val selected = model.selectedPose()
+        assertNotNull(selected)
+        assertEquals("img-02-bbbbbbbb", selected!!.id)
+        assertTrue(selected.spokenDirection.contains("\u91cd\u5fc3"))
+        assertNotNull(selected.graphic)
+        assertNull(selected.figureNote)
+
+        model.showList()
+        assertNull(model.selectedPose())
+    }
+
+    @Test
+    fun selectedPose_staysNullWhenBundleFailed() {
+        val model = PoseDirectionViewModel("{")
+        model.select("img-01-aaaaaaaa")
+        assertNull(model.selectedPose())
+    }
 }
